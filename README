@@ -1,0 +1,34 @@
+ --------------------------------------------------------------------------- 
+               -= YOU MAY NOT REMOVE OR CHANGE THIS NOTICE =-                 
+ --------------------------------------------------------------------------- 
+ ApPHP Directy CMF
+ Version :      1.0.1
+ Developed by:  ApPHP <info@apphp.com>                                      
+ License:       GNU LGPL v.3                                                
+ Site:          http://www.apphp.com/php-directy-cmf/
+ Copyright:     ApPHP Restaurant Site (c) 2013                   
+                All rights reserved.                                        
+
+ Installation:
+ ---------------------------------------------------------------------------
+ - INSTALL
+ - http://www.apphp.com/php-directy-cmf/index.php?page=installation
+
+ Update:
+ ---------------------------------------------------------------------------
+ - UPDATE
+
+ Getting Started:
+ ---------------------------------------------------------------------------
+ - http://www.apphp.com/php-directy-cmf/index.php?page=getting_started
+
+ Additional (embedded) components and modules used in this project:
+ --------------------------------------------------------------------------- 
+ - TipTip (Tooltip jQuery plug-in, Drew Wilson)       v1.3     http://code.drewwilson.com/entry/tiptip-jquery-plugin
+ - CodeMirror (JavaScript component)                  v3.12    http://codemirror.net
+ - Coin Slider (Unique jQuery plug-in - Image Slider) v1.0     http://workshop.rs/projects/coin-slider
+ - TinyMCE (WYSIWYG editor)                           v3.5.8   http://www.tinymce.com/
+ - jQuery (JavaScript library)                        v1.8.3   http://jquery.com/
+ - jQuery User Interface (JavaScript library)         v1.10.2  http://jqueryui.com
+ - FancyBox (jQuery Plugin)                           v1.3.4   http://fancybox.net
+   

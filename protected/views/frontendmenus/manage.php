@@ -1,0 +1,73 @@
+<?php
+    $this->_activeMenu = 'frontendMenus/';
+    $this->_breadCrumbs = array(
+        array('label'=>A::t('app', 'General'), 'url'=>'backend/dashboard'),
+    );
+	if($parentId && $parentName != ''){
+		$this->_breadCrumbs[] = array('label'=>A::t('app', 'Frontend Menu'), 'url'=>'frontendMenus/manage');
+		$this->_breadCrumbs[] = array('label'=>A::t('app', $parentName));
+	}else{
+		$this->_breadCrumbs[] = array('label'=>A::t('app', 'Frontend Menu'));
+	}
+?>
+
+<h1><?php echo A::t('app', 'Frontend Menu Management'); ?></h1>	
+	
+<div class="bloc">
+    <div class="title">
+	<?php
+		echo (($parentName != '') ? $parentName.' <a class="back-link" href="frontendMenus/manage">'.A::t('app', 'Back').'</a>' : A::t('app', 'Frontend Menu')); 
+	?>
+	</div>
+    <div class="content">
+    <?php 
+    	echo $actionMessage;
+		
+		if($menuType == 'moduleblock'){
+			echo CWidget::create('CMessage', array('warning', A::t('app', 'Adding submenus to menu type "module block" is forbidden!'), array('button'=>true)));			
+		}else{
+			if(Admins::hasPrivilege('frontend_menu', 'edit')){
+				echo '<a href="frontendMenus/add'.($parentId ? '/pid/'.(int)$parentId : '').'" class="add-new">'.A::t('app', 'Add New').'</a>';
+			}		
+					
+			$fields = array(
+				'menu_name'    	=> array('title'=>A::t('app', 'Menu Title'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left'),
+				'menu_type'    	=> array('title'=>A::t('app', 'Menu Type'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px'),
+				'placement'		=> array('title'=>A::t('app', 'Display On'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>$placementsList, 'width'=>'130px'),
+				'access_level'	=> array('title'=>A::t('app', 'Access'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>$accessLevelsList, 'width'=>'80px'),
+				'sort_order'    => array('title'=>A::t('app', 'Sort Order'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'100px'),
+				'id'    		=> array('title'=>A::t('app', 'ID'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'60px'),
+				'submenus_link' => array('title'=>A::t('app', 'Sub-Menus'), 'type'=>'link', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px', 'isSortable'=>false, 'linkUrl'=>($parentId == 0 ? 'frontendMenus/manage/pid/{id}' : ''), 'linkText'=>($parentId == 0 ? A::t('app', 'Sub-Menus') : A::t('app', 'N/A'))),
+			);
+			
+			if($parentId){
+				unset($fields['placement']);
+			}
+			
+			echo CWidget::create('CGridView', array(
+				'model'=>'FrontendMenus',
+				'actionPath'=>'frontendMenus/manage'.($parentId ? '/pid/'.(int)$parentId : ''),
+				'pagination'=>array('enable'=>false),
+				'condition'=>'parent_id='.(int)$parentId,
+				'sorting'=>true,
+				'defaultOrder'=>array('placement'=>'ASC', 'sort_order'=>'ASC'),
+				'passParameters'=>true,
+			    'filters'=>array(
+			    	'placement' => array('title'=>A::t('app', 'Display On'), 'type'=>'enum', 'operator'=>'=', 'width'=>'', 'source'=>array(''=>'')+$placementsFilterList),
+			    ),
+				'fields'=>$fields,
+				'actions'=>array(
+					'edit'   => array(
+						'disabled'=>!Admins::hasPrivilege('frontend_menu', 'edit'),
+						'link'=>'frontendMenus/edit/id/{id}'.($parentId ? '/pid/'.(int)$parentId : ''), 'imagePath'=>'templates/backend/images/edit.png', 'title'=>A::t('app', 'Edit this record')
+					),
+					'delete' => array(
+						'disabled'=>!Admins::hasPrivilege('frontend_menu', 'edit'),
+						'link'=>'frontendMenus/delete/id/{id}/pid/'.($parentId ? (int)$parentId : '0'), 'imagePath'=>'templates/backend/images/delete.png', 'title'=>A::t('app', 'Delete this record'), 'onDeleteAlert'=>true
+					)
+				),
+			));			
+		}		
+    ?>
+    </div>
+</div>

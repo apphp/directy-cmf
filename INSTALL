@@ -1,0 +1,62 @@
+--------------------------------------------------------------------------- 
+ Installation for ApPHP Directy CMF
+---------------------------------------------------------------------------  
+
+Software requirements:
+- PHP 5.0 or later version.
+- PDO extension enabled
+
+A new installation of ApPHP Directy CMF is a very straight forward process:
+
+
+Step 1. Decompressing Downloaded Archive.
+-------------------------------------
+   Decompress the ApPHP Directy CMF script archive. The archive will create
+   a directory called "PHPDCMF_xxx", where xxx represents a number of current version
+   (for ex.: _201 means version number 2.0.1).
+
+
+Step 2. Uploading Files.
+-------------------------------------
+   Upload this directory (all files and sub-directories it includes) to your
+   document root (public_html, www, httpdocs etc.) or to your "directy cmf website"
+   directory using FTP. Pay attention to DON'T use the capital letters in the name
+   of the directories (for Linux users).
+
+   public_html/
+   or
+   public_html/{directy-cmf-website directory}/
+   
+
+Step 3. Creating Database and User.
+-------------------------------------
+   Using your hosting Control Panel, phpMyAdmin or another tool, create new database
+   and user, and assign that user to the database. Write down the database host, name of
+   the database, username and password. Grant this user all needed privileges on that
+   database to perform installation procedure.
+
+
+Step 4. Setting Up Access Permissions.
+-------------------------------------
+   Check access permissions to following directories: images/ and protected/tmp/.
+   Make sure that these directories are "writable" (often this means 755 access mode).
+
+
+Step 5. Running Setup Wizard.
+-------------------------------------
+   Now you can run setup wizard. To do this, open your Internet browser and type
+   in Address Bar following:
+
+   http://{www.mydomain.com}/
+   or
+   http://{www.mydomain.com}/{directy-cmf-website directory}/
+
+   If the script still not installed you will see the setup wizard starting page. 
+   Follow the instructions on the screen. You will be asked to enter: database host,
+   database name, username and password. Also you need to enter admin email, username
+   and password, that will be used to access the administration area of the site.
+   After successful installation you will see an appropriate message.
+
+
+Congratulations, you now have ApPHP Directy CMF installed!
+
