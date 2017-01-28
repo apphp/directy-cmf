@@ -2,7 +2,7 @@
 return array(
     // database settings
     'db' => array(
-        'type' => '<DB_TYPE>',
+        'driver' => '<DB_DRIVER>',
         'host' => '<DB_HOST>',
         'database' => '<DB_NAME>',
         'username' => '<DB_USER>',

@@ -3,20 +3,21 @@
 <install version="1.0" type="template">
     <name>Default Template</name>
     <creationDate>08/05/2013</creationDate>
-    <lastChangedDate>08/05/2013</lastChangedDate>
+    <lastChangedDate>16/06/2014</lastChangedDate>
     <author>ApPHP</author>
     <authorEmail></authorEmail>
     <authorUrl></authorUrl>
     <copyright>ApPHP</copyright>
     <license>LGPL</license>
     <version>1.0.1</version>
-    <description>ApPHP Restaurant Site Default Template</description>
+    <description>ApPHP Directy CMF Default Template</description>
     <layout>2 Column Static Layout</layout>
     <direction>Left-to-Right/Right-to-Left</direction>
     <icon>images/template_icon.png</icon>
     <menus>
         <menu>Top</menu>
         <menu>Right</menu>
+        <menu>Bottom</menu>
     </menus>    
     <files>        
         <php>

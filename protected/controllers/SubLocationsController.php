@@ -1,17 +1,17 @@
 <?php
 /**
-* SubLocationsController
-*
-* PUBLIC:                  PRIVATE
-* -----------              ------------------
-* __construct              
-* indexAction
-* manageAction
-* addAction
-* deleteAction
-* editAction
-*
-*/
+ * SubLocations controller
+ *
+ * PUBLIC:                  PRIVATE
+ * -----------              ------------------
+ * __construct              
+ * indexAction
+ * manageAction
+ * addAction
+ * deleteAction
+ * editAction
+ *
+ */
 
 class SubLocationsController extends CController
 {
@@ -32,13 +32,14 @@ class SubLocationsController extends CController
 		}
 		
         // set meta tags according to active language
-    	SiteSettings::setMetaTags(array('title'=>A::t('app', 'Sub-Locations')));
-		
-        A::app()->view->setTemplate('backend');
-        $this->view->actionMessage = '';
-        $this->view->errorField = '';
-		$this->view->countryId = '';
-		$this->view->countryCode = '';
+    	Website::setMetaTags(array('title'=>A::t('app', 'Sub-Locations')));
+        // set backend mode
+        Website::setBackend();
+
+        $this->_view->actionMessage = '';
+        $this->_view->errorField = '';
+		$this->_view->countryId = '';
+		$this->_view->countryCode = '';
 	}
         
 	/**
@@ -60,7 +61,7 @@ class SubLocationsController extends CController
 		if(!$selectedCountry){
 			$this->redirect('locations/manage');
 		}
-		$this->view->selectedCountry = $selectedCountry;
+		$this->_view->selectedCountry = $selectedCountry;
 			
 		switch($msg){
 			case 'added':
@@ -73,9 +74,9 @@ class SubLocationsController extends CController
 				$message = '';
 		}
 		if(!empty($message)){
-			$this->view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
+			$this->_view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
 		}
-		$this->view->render('sublocations/manage');    
+		$this->_view->render('sublocations/manage');    
     }
 
     /**
@@ -93,8 +94,8 @@ class SubLocationsController extends CController
 		if(!$selectedCountry){
 			$this->redirect('locations/manage');
 		}
-		$this->view->selectedCountry = $selectedCountry;		
-    	$this->view->render('sublocations/add');        
+		$this->_view->selectedCountry = $selectedCountry;		
+    	$this->_view->render('sublocations/add');        
 	}
 		
 	/**
@@ -109,37 +110,41 @@ class SubLocationsController extends CController
      	}
 		
      	$msg = '';
-		$errorType = '';
+		$msgType = '';
 	
 		$state = States::model()->findByPk((int)$id);
 		if(!$state){
-			$this->redirect('sublocations/manage');
+			$this->redirect('subLocations/manage');
 		}
-		$selectedCountry = Countries::model()->find('code = :code', array(':code'=>$state->country_code));
-	    $this->view->selectedCountry = SiteSettings::convertToObject(Countries::model(), $selectedCountry[0]);
+        $selectedCountry = Countries::model()->find('code = :code', array(':code'=>$state->country_code));
+		if($selectedCountry){
+            $this->_view->selectedCountry = $selectedCountry;
+        }else{
+            $this->redirect('subLocations/manage');
+        }
 				
 		// delete states names from translation table
 		if($state->delete()){				
 			if($state->getError()){
 				$msg = A::t('app', 'Delete Warning Message');
-				$errorType = 'warning';
+				$msgType = 'warning';
 			}else{		
 				$msg = A::t('app', 'Delete Success Message');
-				$errorType = 'success';	
+				$msgType = 'success';	
 			}		
 		}else{
 			if(APPHP_MODE == 'demo'){
 				$msg = CDatabase::init()->getErrorMessage();
-				$errorType = 'warning';
+				$msgType = 'warning';
 		   	}else{
 				$msg = A::t('app', 'Delete Error Message');
-				$errorType = 'error';
+				$msgType = 'error';
 		   	}			
 		}
 		if(!empty($msg)){
-			$this->view->actionMessage = CWidget::create('CMessage', array($errorType, $msg, array('button'=>true)));
+			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
 		}
-		$this->view->render('sublocations/manage');
+		$this->_view->render('sublocations/manage');
 	}
 	
 	/**
@@ -157,10 +162,13 @@ class SubLocationsController extends CController
 		if(!$state){
 			$this->redirect('sublocations/manage');
 		}
-		$this->view->id = $state->id;
-		$selectedCountry = Countries::model()->find('code = :code', array(':code'=>$state->country_code));
-	    $this->view->countryId = $selectedCountry[0]['id'];	    		
-	    $this->view->countryName = $selectedCountry[0]['country_name'];	    		
-	    $this->view->render('sublocations/edit');        
+		$this->_view->id = $state->id;
+        $this->_view->countryId = '';
+        $this->_view->countryName = '';	   		                        
+		if($selectedCountry = Countries::model()->find('code = :code', array(':code'=>$state->country_code))){
+            $this->_view->countryId = $selectedCountry->id;	    		
+            $this->_view->countryName = $selectedCountry->country_name;	    		            
+        }
+        $this->_view->render('sublocations/edit');        
 	}
 }

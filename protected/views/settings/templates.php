@@ -22,7 +22,7 @@
         if(is_array($allTemplates)){
         	foreach($allTemplates as $temp){
         		if(!in_array($temp, array('backend', 'setup'))){
-        				$templatesList[$temp] = ucfirst($temp);  			
+        			$templatesList[$temp] = ucfirst($temp);  			
         		}
         	}
         }
@@ -35,8 +35,8 @@
 				),
 				'requiredFieldsAlert'=>false,
 				'fields'=>array(
-					'act'        =>array('type'=>'hidden', 'value'=>'send'),
-					'template'	 =>array('type'=>'select', 'value'=>$selectedTemplate, 'title'=>A::t('app', 'Template'), 'tooltip'=>A::t('app', 'Template Tooltip'), 'data'=>$templatesList, 'mandatoryStar'=>true, 'htmlOptions'=>array('submit'=>'$(this).closest("form").find("input[name=act]").val("changeTemp");$(this).closest("form").submit();')),
+					'act'      =>array('type'=>'hidden', 'value'=>'send'),
+					'template' =>array('type'=>'select', 'value'=>$selectedTemplate, 'title'=>A::t('app', 'Template'), 'tooltip'=>A::t('app', 'Template Tooltip'), 'data'=>$templatesList, 'mandatoryStar'=>true, 'htmlOptions'=>array('submit'=>'$(this).closest("form").find("input[name=act]").val("changeTemp");$(this).closest("form").submit();')),
 				),
 				'buttons'=>Admins::hasPrivilege('site_settings', 'edit') ? 
 					array(

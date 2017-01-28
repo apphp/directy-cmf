@@ -65,7 +65,7 @@ MCTabs.prototype.displayTab = function(tab_id, panel_id) {
 };
 
 MCTabs.prototype.getAnchor = function() {
-	var pos, url = document.location.href;
+	var pos, url = window.location.href;
 
 	if ((pos = url.lastIndexOf('#')) != -1)
 		return url.substring(pos + 1);

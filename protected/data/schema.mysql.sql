@@ -15,13 +15,35 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>admins` (
   `role` enum('owner','mainadmin','admin') CHARACTER SET latin1 NOT NULL DEFAULT 'admin',
   `created_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `lastvisited_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_visited_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
 
-INSERT INTO `<DB_PREFIX>admins` (`id`, `username`, `password`, `salt`, `display_name`, `first_name`, `last_name`, `email`, `birth_date`, `language_code`, `avatar`, `role`, `created_at`, `updated_at`, `lastvisited_at`, `is_active`) VALUES
+INSERT INTO `<DB_PREFIX>admins` (`id`, `username`, `password`, `salt`, `display_name`, `first_name`, `last_name`, `email`, `birth_date`, `language_code`, `avatar`, `role`, `created_at`, `updated_at`, `last_visited_at`, `is_active`) VALUES
 (1, '<USERNAME>', '<PASSWORD>', '', '', '', '', '<EMAIL>', '0000-00-00', 'en', '', 'owner', '<CREATED_AT>', '0000-00-00 00:00:00', '0000-00-00 00:00:00', 1);
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>accounts`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>accounts` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `role` varchar(20) CHARACTER SET latin1 NOT NULL DEFAULT '' COMMENT 'defined for each module separately',
+  `username` varchar(25) CHARACTER SET latin1 NOT NULL,
+  `password` varchar(64) CHARACTER SET latin1 NOT NULL,
+  `email` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `language_code` varchar(2) CHARACTER SET latin1 NOT NULL DEFAULT 'en',
+  `created_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created_ip` varchar(15) CHARACTER SET latin1 NOT NULL,
+  `last_visited_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_visited_ip` varchar(15) CHARACTER SET latin1 NOT NULL DEFAULT '000.000.000.000',
+  `notifications` tinyint(1) NOT NULL DEFAULT '0',
+  `notifications_changed_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `is_active` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 - registration pending, 1 - active account',
+  `is_removed` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'for logical removal',
+  `comments` text COLLATE utf8_unicode_ci NOT NULL,
+  `registration_code` varchar(20) CHARACTER SET latin1 NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>languages`;
@@ -48,7 +70,7 @@ DROP TABLE IF EXISTS `<DB_PREFIX>settings`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>settings` (
   `id` smallint(6) NOT NULL,
   `template` varchar(32) CHARACTER SET latin1 NOT NULL,
-  `ssl_mode` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0 - no, 1 - entire site, 2 - admin only, 3 - user only',
+  `ssl_mode` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0 - no, 1 - entire site, 2 - admin area, 3 - user area, 4 - payment modules',
   `date_format` varchar(10) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Y-m-d',
   `time_format` varchar(5) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'H:i:s',
   `datetime_format` varchar(16) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Y-m-d H:i:s',
@@ -57,7 +79,9 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>settings` (
   `week_startday` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `number_format` enum('european','american') CHARACTER SET latin1 NOT NULL,
   `general_email` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `general_email_name` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `mailer` varchar(20) CHARACTER SET latin1 NOT NULL DEFAULT 'phpMail',
+  `smtp_auth` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `smtp_secure` enum('ssl','tls','') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ssl',
   `smtp_host` varchar(70) COLLATE utf8_unicode_ci NOT NULL,
   `smtp_port` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
@@ -69,18 +93,20 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>settings` (
   `rss_last_ids` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `is_offline` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `offline_message` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `caching_allowed` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `cache_lifetime` tinyint(3) unsigned NOT NULL DEFAULT '5' COMMENT 'in minutes',
+  `dashboard_hotkeys` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `dashboard_news` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `dashboard_statistics` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `google_rank` varchar(2) CHARACTER SET latin1 NOT NULL,
   `alexa_rank` varchar(12) CHARACTER SET latin1 NOT NULL,
   `cron_type` enum('batch','non-batch','stop') CHARACTER SET latin1 NOT NULL DEFAULT 'stop',
   `cron_run_last_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `cron_run_period` enum('minute','hour') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'hour',
-  `cron_run_period_value` smallint(6) unsigned NOT NULL DEFAULT '1'
+  `cron_run_period_value` smallint(6) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `<DB_PREFIX>settings` (`id`, `template`, `ssl_mode`, `date_format`, `time_format`, `datetime_format`, `time_zone`, `daylight_saving`, `week_startday`, `number_format`, `general_email`, `mailer`, `smtp_secure`, `smtp_host`, `smtp_port`, `smtp_username`, `smtp_password`, `wysiwyg_type`, `rss_feed`, `rss_feed_type`, `rss_last_ids`, `is_offline`, `offline_message`, `caching_allowed`, `cache_lifetime`, `google_rank`, `alexa_rank`, `cron_type`, `cron_run_last_time`, `cron_run_period`, `cron_run_period_value`) VALUES
-(1, 'default', 0, 'F d Y', 'H:i:s', 'Y-m-d H:i:s', 'UTC', 1, 1, 'american', 'info@email.me', 'phpMail', 'ssl', '', '', '', '', 'none', 1, 'rss2', '', 0, 'Our website is currently offline for maintenance. Please visit us later.', 0, 5, '', '', 'non-batch', '0000-00-00 00:00:00', 'minute', 1);
+INSERT INTO `<DB_PREFIX>settings` (`id`, `template`, `ssl_mode`, `date_format`, `time_format`, `datetime_format`, `time_zone`, `daylight_saving`, `week_startday`, `number_format`, `general_email`, `general_email_name`, `mailer`, `smtp_auth`, `smtp_secure`, `smtp_host`, `smtp_port`, `smtp_username`, `smtp_password`, `wysiwyg_type`, `rss_feed`, `rss_feed_type`, `rss_last_ids`, `is_offline`, `offline_message`, `dashboard_hotkeys`, `dashboard_news`, `dashboard_statistics`, `google_rank`, `alexa_rank`, `cron_type`, `cron_run_last_time`, `cron_run_period`, `cron_run_period_value`) VALUES
+(1, 'default', 0, 'F d Y', 'H:i:s', 'Y-m-d H:i:s', 'UTC', 1, 1, 'american', 'info@email.me', '', 'phpMail', 1, 'ssl', '', '', '', '', 'none', 1, 'rss2', '', 0, 'Our website is currently offline for maintenance. Please visit us later.', 1, 1, 1, '', '', 'non-batch', '0000-00-00 00:00:00', 'minute', 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>site_info`;
@@ -99,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>site_info` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
 
 INSERT INTO `<DB_PREFIX>site_info` (`id`, `language_code`, `logo`, `header`, `slogan`, `footer`, `meta_title`, `meta_description`, `meta_keywords`) VALUES
-(1, 'en', '', 'ApPHP Directy CMF', 'You are always welcome to our site!', 'ApPHP Directy CMF © <a class="footer_link" href="http://www.apphp.com/php-directy-cmf/index.php">ApPHP</a>', 'ApPHP Directy CMF', 'ApPHP Directy CMF', 'php content management framework');
+(1, 'en', '', 'Directy CMF', 'Welcome to our Directy CMF!', 'Directy CMF © <a class="footer_link" href="http://www.apphp.com/php-directy-cmf/index.php">ApPHP</a>', 'Directy CMF', 'Directy CMF', 'php cmf, php framework, php content management framework, php cms');
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>modules`;
@@ -110,8 +136,8 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>modules` (
   `description` varchar(255) CHARACTER SET latin1 NOT NULL,
   `version` varchar(5) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `icon` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `tables` varchar(500) CHARACTER SET latin1 NOT NULL,
   `show_on_dashboard` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `show_in_menu` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `is_installed` tinyint(1) NOT NULL DEFAULT '0',
   `is_system` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '0',
@@ -125,13 +151,15 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>module_settings` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `module_code` varchar(20) CHARACTER SET latin1 NOT NULL,
   `property_key` varchar(40) CHARACTER SET latin1 NOT NULL,
-  `property_value` text COLLATE utf8_unicode_ci NOT NULL,
+  `property_value` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `property_group` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `description` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `property_type` enum('string','email','numeric','float','positive float','unsigned float','integer','positive integer','unsigned integer','enum','range','bool','html size','text','code','label') CHARACTER SET latin1 NOT NULL,
   `property_source` varchar(255) CHARACTER SET latin1 NOT NULL COMMENT 'for ''enum'' and ''range'' property types',
   `is_required` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `code_key_value` (`module_code`,`property_key`,`property_value`),
   KEY `module_code` (`module_code`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 
@@ -639,10 +667,116 @@ DROP TABLE IF EXISTS `<DB_PREFIX>states`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>states` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `country_code` varchar(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `code` varchar(2) COLLATE utf8_unicode_ci NOT NULL,
   `is_active` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `sort_order` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `country_code` (`country_code`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=103 ;
+
+INSERT INTO `<DB_PREFIX>states` (`id`, `country_code`, `code`, `is_active`, `sort_order`) VALUES
+(1, 'US', 'AL', 1, 0),
+(2, 'US', 'AK', 1, 1),
+(3, 'US', 'AZ', 1, 2),
+(4, 'US', 'AR', 1, 3),
+(5, 'US', 'CA', 1, 4),
+(6, 'US', 'CO', 1, 5),
+(7, 'US', 'CT', 1, 6),
+(8, 'US', 'DE', 1, 7),
+(9, 'US', 'DC', 1, 8),
+(10, 'US', 'FL', 1, 9),
+(11, 'US', 'GA', 1, 10),
+(12, 'US', 'HI', 1, 11),
+(13, 'US', 'ID', 1, 12),
+(14, 'US', 'IL', 1, 13),
+(15, 'US', 'IN', 1, 14),
+(16, 'US', 'IA', 1, 15),
+(17, 'US', 'KS', 1, 16),
+(18, 'US', 'KY', 1, 17),
+(19, 'US', 'LA', 1, 18),
+(20, 'US', 'ME', 1, 19),
+(21, 'US', 'MD', 1, 20),
+(22, 'US', 'MA', 1, 21),
+(23, 'US', 'MI', 1, 22),
+(24, 'US', 'MN', 1, 23),
+(25, 'US', 'MS', 1, 24),
+(26, 'US', 'MT', 1, 25),
+(27, 'US', 'MO', 1, 26),
+(28, 'US', 'NE', 1, 27),
+(29, 'US', 'NV', 1, 28),
+(30, 'US', 'NH', 1, 29),
+(31, 'US', 'NJ', 1, 30),
+(32, 'US', 'NM', 1, 31),
+(33, 'US', 'NY', 1, 32),
+(34, 'US', 'NC', 1, 33),
+(35, 'US', 'ND', 1, 34),
+(36, 'US', 'OH', 1, 35),
+(37, 'US', 'OK', 1, 36),
+(38, 'US', 'OR', 1, 37),
+(39, 'US', 'PA', 1, 38),
+(40, 'US', 'RI', 1, 39),
+(41, 'US', 'SC', 1, 40),
+(42, 'US', 'SD', 1, 41),
+(43, 'US', 'TN', 1, 42),
+(44, 'US', 'TX', 1, 43),
+(45, 'US', 'UT', 1, 44),
+(46, 'US', 'VT', 1, 45),
+(47, 'US', 'VA', 1, 46),
+(48, 'US', 'WA', 1, 47),
+(49, 'US', 'WV', 1, 48),
+(50, 'US', 'WI', 1, 49),
+(51, 'US', 'WY', 1, 50),
+(52, 'AU', 'NS', 1, 0),
+(53, 'AU', 'QL', 1, 1),
+(54, 'AU', 'SA', 1, 2),
+(55, 'AU', 'TA', 1, 3),
+(56, 'AU', 'VI', 1, 4),
+(57, 'AU', 'WA', 1, 5),
+(58, 'CA', 'AB', 1, 0),
+(59, 'CA', 'BC', 1, 1),
+(60, 'CA', 'ON', 1, 2),
+(61, 'CA', 'QC', 1, 3),
+(62, 'CA', 'NS', 1, 4),
+(63, 'CA', 'NB', 1, 5),
+(64, 'CA', 'MB', 1, 6),
+(65, 'CA', 'PE', 1, 7),
+(66, 'CA', 'SK', 1, 8),
+(67, 'CA', 'NL', 1, 9),
+(68, 'IN', 'AP', 1, 0),
+(69, 'IN', 'AR', 1, 1),
+(70, 'IN', 'AS', 1, 2),
+(71, 'IN', 'BR', 1, 3),
+(72, 'IN', 'CG', 1, 4),
+(73, 'IN', 'GA', 1, 5),
+(74, 'IN', 'GJ', 1, 6),
+(75, 'IN', 'HR', 1, 7),
+(76, 'IN', 'HP', 1, 8),
+(77, 'IN', 'JK', 1, 9),
+(78, 'IN', 'JH', 1, 10),
+(79, 'IN', 'KA', 1, 11),
+(80, 'IN', 'KL', 1, 12),
+(81, 'IN', 'MP', 1, 13),
+(82, 'IN', 'MH', 1, 14),
+(83, 'IN', 'MN', 1, 15),
+(84, 'IN', 'ML', 1, 16),
+(85, 'IN', 'MZ', 1, 17),
+(86, 'IN', 'NL', 1, 18),
+(87, 'IN', 'OR', 1, 19),
+(88, 'IN', 'PB', 1, 20),
+(89, 'IN', 'RJ', 1, 21),
+(90, 'IN', 'SK', 1, 22),
+(91, 'IN', 'TN', 1, 23),
+(92, 'IN', 'TR', 1, 24),
+(93, 'IN', 'UT', 1, 25),
+(94, 'IN', 'UP', 1, 26),
+(95, 'IN', 'WB', 1, 27),
+(96, 'IN', 'AN', 1, 28),
+(97, 'IN', 'CH', 1, 29),
+(98, 'IN', 'DN', 1, 30),
+(99, 'IN', 'DD', 1, 31),
+(100, 'IN', 'DL', 1, 32),
+(101, 'IN', 'LD', 1, 33),
+(102, 'IN', 'PY', 1, 34);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>state_translations`;
@@ -654,7 +788,112 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>state_translations` (
   PRIMARY KEY (`id`),
   KEY `state_code` (`state_id`),
   KEY `language_code` (`language_code`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=103 ;
+
+INSERT INTO `<DB_PREFIX>state_translations` (`id`, `state_id`, `language_code`, `name`) VALUES
+(1, 1, 'en', 'Alabama'),
+(2, 2, 'en', 'Alaska'),
+(3, 3, 'en', 'Arizona'),
+(4, 4, 'en', 'Arkansas'),
+(5, 5, 'en', 'California'),
+(6, 6, 'en', 'Colorado'),
+(7, 7, 'en', 'Connecticut'),
+(8, 8, 'en', 'Delaware'),
+(9, 9, 'en', 'District of Columbia'),
+(10, 10, 'en', 'Florida'),
+(11, 11, 'en', 'Georgia'),
+(12, 12, 'en', 'Hawaii'),
+(13, 13, 'en', 'Idaho'),
+(14, 14, 'en', 'Illinois'),
+(15, 15, 'en', 'Indiana'),
+(16, 16, 'en', 'Iowa'),
+(17, 17, 'en', 'Kansas'),
+(18, 18, 'en', 'Kentucky'),
+(19, 19, 'en', 'Louisiana'),
+(20, 20, 'en', 'Maine'),
+(21, 21, 'en', 'Maryland'),
+(22, 22, 'en', 'Massachusetts'),
+(23, 23, 'en', 'Michigan'),
+(24, 24, 'en', 'Minnesota'),
+(25, 25, 'en', 'Mississippi'),
+(26, 26, 'en', 'Montana'),
+(27, 27, 'en', 'Missouri'),
+(28, 28, 'en', 'Nebraska'),
+(29, 29, 'en', 'Nevada'),
+(30, 30, 'en', 'New Hampshire'),
+(31, 31, 'en', 'New Jersey'),
+(32, 32, 'en', 'New Mexico'),
+(33, 33, 'en', 'New York'),
+(34, 34, 'en', 'North Carolina'),
+(35, 35, 'en', 'North Dakota'),
+(36, 36, 'en', 'Ohio'),
+(37, 37, 'en', 'Oklahoma'),
+(38, 38, 'en', 'Oregon'),
+(39, 39, 'en', 'Pennsylvania'),
+(40, 40, 'en', 'Rhode Island'),
+(41, 41, 'en', 'South Carolina'),
+(42, 42, 'en', 'South Dakota'),
+(43, 43, 'en', 'Tennessee'),
+(44, 44, 'en', 'Texas'),
+(45, 45, 'en', 'Utah'),
+(46, 46, 'en', 'Vermont'),
+(47, 47, 'en', 'Virginia'),
+(48, 48, 'en', 'Washington'),
+(49, 49, 'en', 'West Virginia'),
+(50, 50, 'en', 'Wisconsin'),
+(51, 51, 'en', 'Wyoming'),
+(52, 52, 'en', 'New South Wales'),
+(53, 53, 'en', 'Queensland'),
+(54, 54, 'en', 'South Australia'),
+(55, 55, 'en', 'Tasmania'),
+(56, 56, 'en', 'Victoria'),
+(57, 57, 'en', 'Western Australia'),
+(58, 58, 'en', 'Alberta'),
+(59, 59, 'en', 'British Columbia'),
+(60, 60, 'en', 'Ontario'),
+(61, 61, 'en', 'Quebec'),
+(62, 62, 'en', 'Nova Scotia'),
+(63, 63, 'en', 'New Brunswick'),
+(64, 64, 'en', 'Manitoba'),
+(65, 65, 'en', 'Prince Edward Island'),
+(66, 66, 'en', 'Saskatchewan'),
+(67, 67, 'en', 'Newfoundland and Labrador'),
+(68, 68, 'en', 'Andhra Pradesh'),
+(69, 69, 'en', 'Arunachal Pradesh'),
+(70, 70, 'en', 'Assam'),
+(71, 71, 'en', 'Bihar'),
+(72, 72, 'en', 'Chhattisgarh'),
+(73, 73, 'en', 'Goa'),
+(74, 74, 'en', 'Gujarat'),
+(75, 75, 'en', 'Haryana'),
+(76, 76, 'en', 'Himachal Pradesh'),
+(77, 77, 'en', 'Jammu & Kashmir'),
+(78, 78, 'en', 'Jharkhand'),
+(79, 79, 'en', 'Karnataka'),
+(80, 80, 'en', 'Kerala'),
+(81, 81, 'en', 'Madhya Pradesh'),
+(82, 82, 'en', 'Maharashtra'),
+(83, 83, 'en', 'Manipur'),
+(84, 84, 'en', 'Meghalaya'),
+(85, 85, 'en', 'Mizoram'),
+(86, 86, 'en', 'Nagaland'),
+(87, 87, 'en', 'Odisha'),
+(88, 88, 'en', 'Punjab'),
+(89, 89, 'en', 'Rajasthan'),
+(90, 90, 'en', 'Sikkim'),
+(91, 91, 'en', 'Tamil Nadu'),
+(92, 92, 'en', 'Tripura'),
+(93, 93, 'en', 'Uttarakhand'),
+(94, 94, 'en', 'Uttar Pradesh'),
+(95, 95, 'en', 'West Bengal'),
+(96, 96, 'en', 'Andaman & Nicobar'),
+(97, 97, 'en', 'Chandigarh'),
+(98, 98, 'en', 'Dadra and Nagar Haveli'),
+(99, 99, 'en', 'Daman & Diu'),
+(100, 100, 'en', 'Delhi'),
+(101, 101, 'en', 'Lakshadweep'),
+(102, 102, 'en', 'Puducherry');
+
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>currencies`;
@@ -699,31 +938,34 @@ INSERT INTO `<DB_PREFIX>roles` (`id`, `code`, `name`, `description`) VALUES
 DROP TABLE IF EXISTS `<DB_PREFIX>privileges`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>privileges` (
   `id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `module_code` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `category` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `code` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `description` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=17 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=19 ;
 
-INSERT INTO `<DB_PREFIX>privileges` (`id`, `category`, `code`, `name`, `description`) VALUES
-(1, 'site_settings', 'view', 'View Site Settings', 'View settings of the site'),
-(2, 'site_settings', 'edit', 'Edit Site Settings', 'Edit settings of the site'),
-(3, 'backend_menu', 'view', 'View Backend Menu', 'View Backend menu of the site'),
-(4, 'backend_menu', 'edit', 'Edit Backend Menu', 'Edit Backend menu of the site'),
-(5, 'frontend_menu', 'view', 'View Frontend Menu', 'View Frontend menu of the site'),
-(6, 'frontend_menu', 'edit', 'Edit Frontend Menu', 'Edit Frontend menu of the site'),
-(7, 'locations', 'view', 'View Locations', 'View locations and sub-locations'),
-(8, 'locations', 'edit', 'Edit Locations', 'Edit locations and sub-locations'),
-(9, 'currencies', 'view', 'View Currencies', 'View currencies'),
-(10, 'currencies', 'edit', 'Edit Currencies', 'Edit currencies'),
-(11, 'languages', 'view', 'View Languages', 'View languages installed on the site'),
-(12, 'languages', 'edit', 'Edit Languages', 'Edit languages installed on the site'),
-(13, 'vocabulary', 'view', 'View Vocabulary', 'View vocabulary of the site'),
-(14, 'vocabulary', 'edit', 'Edit Vocabulary', 'Edit vocabulary of the site'),
-(15, 'modules', 'view', 'View Modules', 'View modules settings and management pages'),
-(16, 'modules', 'edit', 'Edit Modules', 'Edit, manage, install and uninstall modules');
+INSERT INTO `<DB_PREFIX>privileges` (`id`, `module_code`, `category`, `code`, `name`, `description`) VALUES
+(1, '', 'site_settings', 'view', 'View Site Settings', 'View settings of the site'),
+(2, '', 'site_settings', 'edit', 'Edit Site Settings', 'Edit settings of the site'),
+(3, '', 'backend_menu', 'view', 'View Backend Menu', 'View Backend menu of the site'),
+(4, '', 'backend_menu', 'edit', 'Edit Backend Menu', 'Edit Backend menu of the site'),
+(5, '', 'frontend_menu', 'view', 'View Frontend Menu', 'View Frontend menu of the site'),
+(6, '', 'frontend_menu', 'edit', 'Edit Frontend Menu', 'Edit Frontend menu of the site'),
+(7, '', 'locations', 'view', 'View Locations', 'View locations and sub-locations'),
+(8, '', 'locations', 'edit', 'Edit Locations', 'Edit locations and sub-locations'),
+(9, '', 'currencies', 'view', 'View Currencies', 'View currencies used on the site'),
+(10, '', 'currencies', 'edit', 'Edit Currencies', 'Edit currencies used on the site'),
+(11, '', 'email_templates', 'view', 'View Email Templates', 'View Email Templates of the site'),
+(12, '', 'email_templates', 'edit', 'Edit Email Templates', 'Edit Email Templates of the site'),
+(13, '', 'languages', 'view', 'View Languages', 'View languages installed on the site'),
+(14, '', 'languages', 'edit', 'Edit Languages', 'Edit languages installed on the site'),
+(15, '', 'vocabulary', 'view', 'View Vocabulary', 'View vocabulary of the site'),
+(16, '', 'vocabulary', 'edit', 'Edit Vocabulary', 'Edit vocabulary of the site'),
+(17, '', 'modules', 'view', 'View Modules', 'View modules settings and management pages'),
+(18, '', 'modules', 'edit', 'Edit Modules', 'Edit, manage, install, update and uninstall modules');
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>role_privileges`;
@@ -733,7 +975,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>role_privileges` (
   `privilege_id` int(5) NOT NULL,
   `is_active` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=49 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=55 ;
 
 INSERT INTO `<DB_PREFIX>role_privileges` (`id`, `role_id`, `privilege_id`, `is_active`) VALUES
 (1, 1, 1, 1),
@@ -752,38 +994,44 @@ INSERT INTO `<DB_PREFIX>role_privileges` (`id`, `role_id`, `privilege_id`, `is_a
 (14, 1, 14, 1),
 (15, 1, 15, 1),
 (16, 1, 16, 1),
-(17, 2, 1, 1),
-(18, 2, 2, 1),
-(19, 2, 3, 1),
-(20, 2, 4, 1),
-(21, 2, 5, 1),
-(22, 2, 6, 1),
-(23, 2, 7, 1),
-(24, 2, 8, 1),
-(25, 2, 9, 1),
-(26, 2, 10, 1),
-(27, 2, 11, 1),
-(28, 2, 12, 1),
-(29, 2, 13, 1),
-(30, 2, 14, 1),
-(31, 2, 15, 1),
-(32, 2, 16, 1),
-(33, 3, 1, 1),
-(34, 3, 2, 1),
-(35, 3, 3, 0),
-(36, 3, 4, 0),
-(37, 3, 5, 0),
-(38, 3, 6, 0),
-(39, 3, 7, 1),
-(40, 3, 8, 0),
-(41, 3, 9, 1),
-(42, 3, 10, 0),
-(43, 3, 11, 0),
-(44, 3, 12, 0),
-(45, 3, 13, 1),
-(46, 3, 14, 0),
-(47, 3, 15, 1),
-(48, 3, 16, 0);
+(17, 1, 17, 1),
+(18, 1, 18, 1),
+(19, 2, 1, 1),
+(20, 2, 2, 1),
+(21, 2, 3, 1),
+(22, 2, 4, 1),
+(23, 2, 5, 1),
+(24, 2, 6, 1),
+(25, 2, 7, 1),
+(26, 2, 8, 1),
+(27, 2, 9, 1),
+(28, 2, 10, 1),
+(29, 2, 11, 1),
+(30, 2, 12, 1),
+(31, 2, 13, 1),
+(32, 2, 14, 1),
+(33, 2, 15, 1),
+(34, 2, 16, 1),
+(35, 2, 17, 1),
+(36, 2, 18, 1),
+(37, 3, 1, 1),
+(38, 3, 2, 1),
+(39, 3, 3, 0),
+(40, 3, 4, 0),
+(41, 3, 5, 0),
+(42, 3, 6, 0),
+(43, 3, 7, 1),
+(44, 3, 8, 0),
+(45, 3, 9, 1),
+(46, 3, 10, 0),
+(47, 3, 11, 0),
+(48, 3, 12, 0),
+(49, 3, 13, 0),
+(50, 3, 14, 0),
+(51, 3, 15, 1),
+(52, 3, 16, 0),
+(53, 3, 17, 1),
+(54, 3, 18, 0);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>backend_menus`;
@@ -797,7 +1045,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>backend_menus` (
   `is_visible` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `sort_order` smallint(6) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=18 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=19 ;
 
 INSERT INTO `<DB_PREFIX>backend_menus` (`id`, `parent_id`, `url`, `module_code`, `icon`, `is_system`, `is_visible`, `sort_order`) VALUES
 (1, 0, '', '', 'dashboard.png',  1, 1, 1),
@@ -810,13 +1058,14 @@ INSERT INTO `<DB_PREFIX>backend_menus` (`id`, `parent_id`, `url`, `module_code`,
 (8, 1, 'frontendMenus/', '', '', 1, 1, 4),
 (9, 1, 'locations/', '', '', 1, 1, 5),
 (10, 1, 'currencies/', '', '', 1, 1, 6),
-(11, 1, 'index/', '', '', 1, 1, 7),
-(12, 2, 'admins/', '', '', 1, 1, 1),
-(13, 2, 'roles/', '', '', 1, 1, 2),
-(14, 2, 'admins/myAccount', '', '', 1, 1, 3),
-(15, 3, 'languages/', '', '', 1, 1, 1),
-(16, 3, 'vocabulary/', '', '', 1, 1, 2),
-(17, 4, 'modules/', '', '', 1, 1, 1);
+(11, 1, 'emailTemplates/', '', '', 1, 1, 7),
+(12, 1, 'index/', '', '', 1, 1, 8),
+(13, 2, 'admins/', '', '', 1, 1, 1),
+(14, 2, 'roles/', '', '', 1, 1, 2),
+(15, 2, 'admins/myAccount', '', '', 1, 1, 3),
+(16, 3, 'languages/', '', '', 1, 1, 1),
+(17, 3, 'vocabulary/', '', '', 1, 1, 2),
+(18, 4, 'modules/', '', '', 1, 1, 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>backend_menu_translations`;
@@ -826,7 +1075,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>backend_menu_translations` (
   `language_code` varchar(2) CHARACTER SET latin1 NOT NULL,
   `name` varchar(125) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=18 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=19 ;
 
 INSERT INTO `<DB_PREFIX>backend_menu_translations` (`id`, `menu_id`, `language_code`, `name`) VALUES
 (1, 1, 'en', 'General'),
@@ -839,13 +1088,14 @@ INSERT INTO `<DB_PREFIX>backend_menu_translations` (`id`, `menu_id`, `language_c
 (8, 8, 'en', 'Frontend Menu'),
 (9, 9, 'en', 'Locations'),
 (10, 10, 'en', 'Currencies'),
-(11, 11, 'en', 'Preview'),
-(12, 12, 'en', 'Admins'),
-(13, 13, 'en', 'Roles & Privileges'),
-(14, 14, 'en', 'My Account'),
-(15, 15, 'en', 'Languages'),
-(16, 16, 'en', 'Vocabulary'),
-(17, 17, 'en', 'Modules Management');
+(11, 11, 'en', 'Email Templates'),
+(12, 12, 'en', 'Preview'),
+(13, 13, 'en', 'Admins'),
+(14, 14, 'en', 'Roles & Privileges'),
+(15, 15, 'en', 'My Account'),
+(16, 16, 'en', 'Languages'),
+(17, 17, 'en', 'Vocabulary'),
+(18, 18, 'en', 'Modules Management');
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>frontend_menus`;
@@ -881,3 +1131,34 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>frontend_menu_translations` (
 
 INSERT INTO `<DB_PREFIX>frontend_menu_translations` (`id`, `menu_id`, `language_code`, `name`) VALUES
 (1, 1, 'en', 'Home');
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>email_templates`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>email_templates` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `module_code` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `is_system` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>email_template_translations`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>email_template_translations` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `template_code` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `language_code` varchar(2) CHARACTER SET latin1 NOT NULL DEFAULT 'en',
+  `template_name` varchar(125) COLLATE utf8_unicode_ci NOT NULL,
+  `template_subject` varchar(125) COLLATE utf8_unicode_ci NOT NULL,
+  `template_content` text COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>sessions`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>sessions` (
+  `session_id` varchar(32) NOT NULL,
+  `expires_at` int(11) NOT NULL,
+  `session_data` text NOT NULL,
+  UNIQUE KEY `session_id` (`session_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;

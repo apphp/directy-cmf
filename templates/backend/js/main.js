@@ -1,5 +1,28 @@
 $(document).ready(function(){
     
+    // TOP MENU DROPDOWN ITEMS
+    // --------------------------------------
+    function DropDown(el){
+        this.pdd = el;
+        this.initEvents();
+    }
+    DropDown.prototype = {
+        initEvents : function() {
+            var obj = this;
+            obj.pdd.on('click', function(event){
+                $(this).toggleClass('active');
+                event.stopPropagation();
+            });	
+        }
+    }
+    $(function(){
+        var pdd = new DropDown($('#dd'));
+        $(document).click(function(){            
+            $('.wrapper-dropdown').removeClass('active');
+        });
+    });
+    
+
     // SIDE MENU ITEMS
     // --------------------------------------
     // restore previous state for menu
@@ -31,9 +54,10 @@ $(document).ready(function(){
     // SIDE MENU COLLAPSE
     // --------------------------------------
     var htmlCollapse = $('#menucollapse').html();
+    var collapsedChar = ($('#menucollapse').data('direction') == 'rtl') ? '&#9664;' : '&#9654;';
     if($.cookie('isCollapsed') == 'true'){
         $('body').addClass('collapsed');
-        $('#menucollapse').html('&#9654;');
+        $('#menucollapse').html(collapsedChar);
         $('#menuopen').hide();
         $('#menuclose').hide();
     }else{
@@ -45,7 +69,7 @@ $(document).ready(function(){
         var body=$('body');
         body.toggleClass('collapsed');
         isCollapsed=body.hasClass('collapsed');
-        if(isCollapsed){ $(this).html('&#9654;'); }else{ $(this).html(htmlCollapse); }
+        if(isCollapsed){ $(this).html(collapsedChar); }else{ $(this).html(htmlCollapse); }
         $.cookie('isCollapsed', isCollapsed);
         $('#menuopen').toggle();
         $('#menuclose').toggle();

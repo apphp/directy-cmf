@@ -32,13 +32,13 @@
 				'siteDescId'=>array('type'=>'hidden', 'value'=>$siteInfo->id),
 				'selectedLanguage' =>array('type'=>'select', 'value'=>$selectedLanguage, 'title'=>A::t('app', 'Language'), 'tooltip'=>A::t('app', 'Language Tooltip'), 'data'=>$langList, 'htmlOptions'=>$languageEvent),
 				'separatorHeadersFooters' =>array(
-					'separatorInfo' => array('legend'=>A::t('app', A::t('app', 'Headers & Footers'))),
+					'separatorInfo' => array('legend'=>A::t('app', 'Headers & Footers')),
 					'siteHeader'=>array('type'=>'textbox', 'value'=>$siteInfo->header, 'title'=>A::t('app', 'Header Text'), 'tooltip'=>A::t('app', 'Header Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'100', 'class'=>'text_header')),
 					'slogan'	=>array('type'=>'textarea', 'value'=>$siteInfo->slogan, 'title'=>A::t('app', 'Slogan'), 'tooltip'=>A::t('app', 'Slogan Tooltip'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxlength'=>'250', 'class'=>'small')),
 					'footer'	=>array('type'=>'textarea', 'value'=>$siteInfo->footer, 'title'=>A::t('app', 'Footer Text'), 'tooltip'=>A::t('app', 'Footer Tooltip'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxlength'=>'250', 'class'=>'middle')),
 				),
 				'separatorMetaTags' =>array(
-					'separatorInfo' => array('legend'=>A::t('app', A::t('app', 'META Tags'))),
+					'separatorInfo' => array('legend'=>A::t('app', 'META Tags')),
 					'metaTagTitle'	=>array('type'=>'textarea', 'value'=>$siteInfo->meta_title, 'title'=>CHtml::encode(A::t('app', 'Tag TITLE')), 'tooltip'=>A::t('app', 'Tag TITLE Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'250', 'class'=>'small')),
 					'metaTagKeywords'	=>array('type'=>'textarea', 'value'=>$siteInfo->meta_keywords, 'title'=>CHtml::encode(A::t('app', 'Meta Tag KEYWORDS')), 'tooltip'=>A::t('app', 'Meta Tag KEYWORDS Tooltip'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxlength'=>'250', 'class'=>'middle')),
 					'metaTagDescription'=>array('type'=>'textarea', 'value'=>$siteInfo->meta_description, 'title'=>CHtml::encode(A::t('app', 'Meta Tag DESCRIPTION')), 'tooltip'=>A::t('app', 'Meta Tag DESCRIPTION Tooltip'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxlength'=>'250', 'class'=>'middle')),

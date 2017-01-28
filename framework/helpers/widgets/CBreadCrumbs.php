@@ -10,9 +10,6 @@
  *
  * PUBLIC:					PROTECTED:					PRIVATE:		
  * ----------               ----------                  ----------
- * 
- * STATIC:
- * ---------------------------------------------------------------
  * init
  * 
  */	  
@@ -26,11 +23,12 @@ class CBreadCrumbs
      * @param array $params
      *
      * Usage:
-     *  CWidget::create('CBreadCrumbs' array(
+     *  CWidget::create('CBreadCrumbs', array(
      *      'links' => array(
      *          array('label'=>'Label A'), 'url'=>'url1/'),
      *          array('label'=>'Label B'), 'url'=>'url2/'),
      *      ),
+     *      'class' => '',
      *      'separator' => '&nbsp;/&nbsp;',
      *      'return' => true
      *  ));
@@ -38,12 +36,12 @@ class CBreadCrumbs
     public static function init($params = array())
     {
         $output = '';
-        $class = 'breadcrumbs';
         $tagName = 'div';
-        $htmlOptions = array('class'=>$class);
+        $class = (isset($params['class']) && !empty($params['class'])) ? $params['class'] : 'breadcrumbs';        
         $links = isset($params['links']) ? $params['links'] : '';        
         $separator = isset($params['separator']) ? $params['separator'] : '&raquo;';        
         $return = isset($params['return']) ? $params['return'] : true;
+        $htmlOptions = array('class'=>$class);
         
         if(is_array($links)){            
             $output .= CHtml::openTag($tagName, $htmlOptions).self::NL;
@@ -58,6 +56,7 @@ class CBreadCrumbs
                 
                 $counter++;
             }
+            
             $output .= CHtml::closeTag($tagName).self::NL;
         }
         

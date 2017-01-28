@@ -5,6 +5,9 @@ var tinymceConfigs = [{
     width: '660px',
     height: '300px',
     entity_encoding : 'raw',
+    //force_br_newlines : false,
+    //force_p_newlines : false,
+    forced_root_block : '',
     language: 'en',
     plugins : 'imageupload,pagebreak,advhr,advimage,advlink,insertdatetime,preview,media,print,contextmenu,directionality,fullscreen,visualchars',
 
@@ -19,7 +22,7 @@ var tinymceConfigs = [{
 	theme_advanced_resize_horizontal : false, 
 
     // Example word content CSS (should be your site CSS) this one removes paragraph margins
-    // content_css : 'css/word.css',
+    // content_css : 'css/style.css',
 
     // Drop lists for link/image/media/template dialogs
     //template_external_list_url : 'lists/template_list.js',
@@ -33,10 +36,13 @@ var tinymceConfigs = [{
 	// Allow absolute urls
 	remove_script_host : false,
     convert_urls : false,
+    
 	
 }];
 
-function setEditor(id){
+function setEditor(id, set_focus){
 	tinyMCE.settings = tinymceConfigs[0];
-	tinyMCE.execCommand('mceAddControl', true, id); 
+    // set focus on editor
+    if(set_focus) tinyMCE.settings.auto_focus = id;
+	tinyMCE.execCommand('mceAddControl', true, id);
 }

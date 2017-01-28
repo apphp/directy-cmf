@@ -5,13 +5,13 @@
  * PUBLIC:                PROTECTED               PRIVATE
  * ---------------        ---------------         ---------------
  * __construct
- * relations
  *
  * STATIC:
  * ------------------------------------------
  * model
  *
  */
+
 class SiteInfo extends CActiveRecord
 {
 
@@ -34,12 +34,5 @@ class SiteInfo extends CActiveRecord
 		return parent::model($className);
    	}
     	
-	/**
-     * Defines relations between different tables in database and current $_table
-	 */
-	public function relations()
-	{
 
-	}
-	
 }

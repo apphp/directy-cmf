@@ -21,7 +21,8 @@
     </div>
 </div>
 <?php } ?>
-            
+
+<?php if($dashboardHotkeys){ ?>
 <div class="bloc" id="blocHotKeys">
     <div class="title collapsible"><?php echo A::t('app', 'Dashboard (hotkeys)'); ?></div>
     <div class="content sortable-content">		
@@ -47,8 +48,10 @@
         <div class="cb"></div>
     </div>
 </div>    
+<?php } ?>
 
-<div class="bloc bloc-left" id="blocNews">
+<?php if($dashboardNews){ ?>
+<div class="bloc<?php echo ($dashboardStatistics ? ' bloc-left' : ''); ?>" id="blocNews">
     <div class="title collapsible"><?php echo A::t('app', 'Whats new'); ?></div>
     <div class="content">
 	<?php
@@ -60,12 +63,14 @@
 				$newsCount++;
 			}
 		}
-		if(!$newsCount) echo '<b>'.A::t('app', 'Still no news').'</b>';
+		if(!$newsCount) echo '<b>'.A::t('app', 'No news yet').'</b>';
 	?>
     </div>
 </div>
+<?php } ?>
 
-<div class="bloc bloc-right" id="blocStatistics">
+<?php if($dashboardStatistics){ ?>
+<div class="bloc<?php echo ($dashboardNews ? ' bloc-right' : ''); ?>" id="blocStatistics">
     <?php
         $tabStat1 = '<table>
         <tbody>
@@ -111,9 +116,9 @@
             'contentWrapper'=>array('tag'=>'div', 'class'=>'content'),
             'contentMessage'=>'',
             'tabs'=>array(
-                A::t('app', 'General Info') 	 =>array('href'=>'#tabStat1', 'id'=>'tabStat1', 'content'=>$tabStat1),
-                A::t('app', 'My Account')        =>array('href'=>'#tabStat2', 'id'=>'tabStat2', 'content'=>$tabStat2),
-                A::t('app', 'Admins Statistics') =>array('href'=>'#tabStat3', 'id'=>'tabStat3', 'content'=>$tabStat3),
+                A::t('app', 'General Info') 	 => array('href'=>'#tabStat1', 'id'=>'tabStat1', 'content'=>$tabStat1),
+                A::t('app', 'My Account')        => array('href'=>'#tabStat2', 'id'=>'tabStat2', 'content'=>$tabStat2),
+                A::t('app', 'Admins Statistics') => array('href'=>'#tabStat3', 'id'=>'tabStat3', 'content'=>$tabStat3),
             ),
             'events'=>array(
                 //'click'=>array('field'=>$errorField)
@@ -122,6 +127,7 @@
         ));        
     ?>
 </div>
+<?php } ?>
 
 <div class="cb"></div>
 

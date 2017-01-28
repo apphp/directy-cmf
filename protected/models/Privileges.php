@@ -2,10 +2,9 @@
 /**
  * Privileges model
  *
- * PUBLIC:                PROTECTED               PRIVATE
- * ---------------        ---------------         ---------------
- * __construct
- * relations
+ * PUBLIC:                 PROTECTED                  PRIVATE
+ * ---------------         ---------------            ---------------
+ * __construct             _relations 
  * updatePrivilege
  *
  * STATIC:
@@ -13,6 +12,7 @@
  * model
  *
  */
+
 class Privileges extends CActiveRecord
 {
 
@@ -38,7 +38,7 @@ class Privileges extends CActiveRecord
 	/**
      * Defines relations between different tables in database and current $_table
 	 */
-	public function relations()
+	protected function _relations()
 	{
 		return array(
 			'privilege_id' => array(
@@ -48,6 +48,7 @@ class Privileges extends CActiveRecord
 				'condition'=>'',
 				'joinType'=>self::LEFT_OUTER_JOIN,
 				'fields'=>array(
+                    'module_code'=>'module_code',
 					'category'=>'privilege_category',
 					'code'=>'privilege_code',
 					'name'=>'privilege_name',
@@ -73,7 +74,7 @@ class Privileges extends CActiveRecord
 	 */
 	public function updatePrivilege($roleId = 0, $privilegeId = 0, $activity = 1)
 	{
-		return $this->db->update('role_privileges', array('is_active'=>(int)$activity), 'role_id = '.(int)$roleId.' AND privilege_id = '.(int)$privilegeId);
+		return $this->_db->update('role_privileges', array('is_active'=>(int)$activity), 'role_id = '.(int)$roleId.' AND privilege_id = '.(int)$privilegeId);
 	}
 
 

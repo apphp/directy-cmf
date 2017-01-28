@@ -2,10 +2,11 @@
 /**
  * Modules model
  *
- * PUBLIC:                PROTECTED               PRIVATE
- * ---------------        ---------------         ---------------
- * __construct
- * relations
+ * PUBLIC:                 PROTECTED                  PRIVATE
+ * ---------------         ---------------            ---------------
+ * __construct             _relations
+ *                         _afterSave
+ * 
  *
  * STATIC:
  * ------------------------------------------
@@ -38,8 +39,28 @@ class Modules extends CActiveRecord
 	/**
      * Defines relations between different tables in database and current $_table
 	 */
-	public function relations()
+	protected function _relations()
 	{
 
-	}	
+	}
+    
+	/**
+	 * This method is invoked after saving a record successfully
+	 * @param string $pk
+	 * You may override this method
+	 */
+	protected function _afterSave($pk = '')
+	{
+        // $pk - key used for saving operation
+        if(BackendMenus::model()->exists('module_code = :moduleCode', array(':moduleCode'=>$this->_columns['code']))){
+            if($this->_columns['show_in_menu'] == 1){
+                // do nothing    
+            }else{
+                BackendMenus::model()->deleteMenu($this->_columns['code']);
+            }                
+        }else if($this->_columns['show_in_menu'] == 1){            
+            BackendMenus::model()->addMenu($this->_columns['code'], $this->_columns['name']);
+        }
+	}
+    
 }

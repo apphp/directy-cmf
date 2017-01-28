@@ -1,18 +1,19 @@
 <?php
     $this->_activeMenu = $this->_controller.'/'.$this->_action;
+    $baseUrl = A::app()->getRequest()->getBaseUrl();
 ?>
 
-<h1>Completed</h1>
+<h1><?php echo A::t('setup', 'Completed'); ?></h1>
 
 <?php echo $actionMessage; ?>
     
 <p>
-    Your website is available at <a href="<?php echo A::app()->getRequest()->getBaseUrl(); ?>"><?php echo A::app()->getRequest()->getBaseUrl(); ?></a>
+    <?php echo A::t('setup', 'Your website is available at'); ?> <a href="<?php echo $baseUrl; ?>"><?php echo $baseUrl; ?></a>
     <br><br>
     You may login using these details:<br>
-    Username is: <i><?php echo $username; ?></i>
+    <?php echo A::t('setup', 'Username is'); ?>: <i><?php echo $username; ?></i>
     <br>
-    Password is: <i><?php echo $password; ?></i>
+    <?php echo A::t('setup', 'Password is'); ?>: <i><?php echo $password; ?></i>
     <br><br>
 </p>
 

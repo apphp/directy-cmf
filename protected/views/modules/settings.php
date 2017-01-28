@@ -1,22 +1,23 @@
 <?php
-	$this->_activeMenu = 'modules/settings/code/'.$module[0]['code'];
+	$this->_activeMenu = 'modules/settings/code/'.$module->code;
     $this->_breadCrumbs = array(
         array('label'=>A::t('app', 'Modules'), 'url'=>'modules/'),
-		array('label'=>A::t('app', $module[0]['name']), 'url'=>'modules/settings/code/'.$module[0]['code']),
+		array('label'=>A::t('app', $module->name), 'url'=>'modules/settings/code/'.$module->code),
         array('label'=>A::t('app', 'Module Settings')),
     );
 	
 	$spinnersCount = 0;
 ?>
 
-<h1><?php echo A::t('app', 'Module Settings').' / '.$module[0]['name']; ?></h1>	
+<h1><?php echo A::t('app', 'Module Settings').' / '.$module->name; ?></h1>	
 
 <div class="bloc">
 	<?php echo $tabs; ?>
 	
     <div class="content">        
    	<?php 
-    	echo $actionMessage; 
+    	echo $actionMessage;
+        
 		if(is_array($moduleSettings) && count($moduleSettings) > 0){
 			// open form
 			$formName = 'frmModuleSettingsEdit';
@@ -27,7 +28,7 @@
 			
 			// hidden fields
 			echo CHtml::hiddenField('act', 'send');
-			echo CHtml::hiddenField('code', $module[0]['code']);
+			echo CHtml::hiddenField('code', $module->code);
 			?>
 			<table id="tblModulesSettings">
 			<thead>
@@ -37,22 +38,31 @@
 				<th class="right" style="width:235px;"><?php echo A::t('app', 'Value'); ?>&nbsp;&nbsp;</th>
 			</tr>
 			</thead>
+            </table>
+            
+            <table id="tblModulesSettings">
 			<tbody>
-			<?php 
+			<?php
+            $currentGroup = '';
 			// add settings fields for the module
-			foreach($moduleSettings as $setting){
-				
-				echo CHtml::hiddenField('id_'.$setting['id'], $setting['id']);
-				$settingName = $setting['name'].(($setting['is_required']) ? CHtml::$afterRequiredLabel : '');
+			foreach($moduleSettings as $setting){				
+				$hiddenField = CHtml::hiddenField('id_'.$setting['id'], $setting['id']);
+				$settingName = A::t($setting['module_code'], $setting['name']).(($setting['is_required']) ? CHtml::$afterRequiredLabel : '');
 				$fieldName = 'value_'.$setting['id'];
 				$fieldValue = isset($valuesArray[$setting['id']]) ? $valuesArray[$setting['id']] : $setting['property_value'];
-				
-			?>
+                
+                if($currentGroup != $setting['property_group'] && $setting['property_group'] != ''){
+                    echo '<tr><td class="property-group left" colspan="3"><div class="property-group-title">'.$setting['property_group'].' / '.A::t('app', 'Settings').':</div></td></tr>';
+                }
+                $currentGroup = $setting['property_group'];
+                ?>
 				<tr>
-					<td class="left"><?php echo CHtml::label($settingName, $fieldName); ?></td>
-					<td class="left"><?php echo $setting['description']; ?></td>
-					<td class="right"> 
-					<?php 
+					<td class="left" style="width:180px;"><?php echo CHtml::label($settingName, $fieldName); ?></td>
+					<td class="left"><?php echo A::t($setting['module_code'], $setting['description']); ?></td>
+					<td class="right" width="300px"> 
+					<?php
+                    echo $hiddenField;
+                    
 					if($errorField == $fieldName){
 						A::app()->getClientScript()->registerScript($formName, 'document.forms["'.$formName.'"].'.$fieldName.'.focus();', 2);
 					}
@@ -87,7 +97,7 @@
 							echo '</div>';
 							break;
 						case 'email': 
-							echo CHtml::textField($fieldName, $fieldValue, array('maxlength'=>'100', 'class'=>'email'));
+							echo CHtml::textField($fieldName, $fieldValue, array('maxlength'=>'100', 'class'=>'email', 'placeholder'=>'email@example.com', 'autocomplete'=>'off'));
 							break;
 						case 'string':	 
 							echo CHtml::textField($fieldName, $fieldValue, array('maxlength'=>'255')); 
@@ -105,14 +115,16 @@
 					&nbsp;
 					</td>
 				</tr>
-			<?php } ?>
+                <?php
+                }
+            ?>
 			</tbody>
 			</table>
 			
 			<?php if(Admins::hasPrivilege('modules', 'edit')){ ?>
 			<div class="buttons-wrapper">
 				<input value="<?php echo A::t('app', 'Update'); ?>" type="submit">
-				<input class="button white" onclick="$(location).attr('href','modules/<?php echo ($module[0]['is_system'] ? 'system' : 'application');?>');" value="<?php echo A::t('app', 'Cancel'); ?>" type="button">
+				<input class="button white" onclick="$(location).attr('href','modules/<?php echo ($module->is_system ? 'system' : 'application');?>');" value="<?php echo A::t('app', 'Cancel'); ?>" type="button">
 			</div>
 			<?php } ?>
 		<?php 

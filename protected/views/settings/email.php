@@ -26,14 +26,25 @@
 			),
 			'requiredFieldsAlert'=>true,
 			'fields'=>array(
-				'act'   =>array('type'=>'hidden', 'value'=>'send'),
-				'mailer'=>array('type'=>'select', 'value'=>($settings->mailer == '' ? CConfig::get('email.mailer') : $settings->mailer), 'title'=>A::t('app', 'Mailer'), 'tooltip'=>A::t('app', 'Mailer Tooltip'), 'data'=>$mailersList, 'htmlOptions'=>array('onchange'=>'showSMTPParams(this.value);')),
-				'email'	=>array('type'=>'textbox', 'value'=>($settings->general_email == '' ? CConfig::get('email.from') : $settings->general_email), 'title'=>A::t('app', 'Email Address'), 'tooltip'=>A::t('app', 'Email Address Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'100', 'class'=>'email', 'autocomplete'=>'off')),
-				'smtpSecure'=>array('type'=>'select', 'value'=>$settings->smtp_secure, 'title'=>A::t('app', 'SMTP Secure'), 'tooltip'=>A::t('app', 'SMTP Secure Tooltip'), 'data'=>array('ssl'=>'SSL', 'tls'=>'TLS', ''=>A::t('app', 'No')), 'mandatoryStar'=>false),
-				'smtpHost'	=>array('type'=>'textbox', 'value'=>($settings->smtp_host == '' ? CConfig::get('email.smtp.host') : $settings->smtp_host), 'title'=>A::t('app', 'SMTP Host'), 'tooltip'=>A::t('app', 'SMTP Host Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'70'), 'appendCode'=>A::t('app', 'e.g., smtp.gmail.com')),
-				'smtpPort'	=>array('type'=>'textbox', 'value'=>($settings->smtp_port == '' ? CConfig::get('email.smtp.port') : $settings->smtp_port), 'title'=>A::t('app', 'SMTP Port'), 'tooltip'=>A::t('app', 'SMTP Port Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'5', 'class'=>'small'), 'appendCode'=>A::t('app', 'e.g., 465 or 587')),
-				'smtpUsername'	=>array('type'=>'textbox', 'value'=>($settings->smtp_username == '' ? CConfig::get('email.smtp.username') : $settings->smtp_username), 'title'=>A::t('app', 'SMTP Username'), 'tooltip'=>A::t('app', 'SMTP Username Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'40'), 'appendCode'=>A::t('app', 'your full email address')),
-				'smtpPassword'	=>array('type'=>'password', 'value'=>($smtpPassword == '' ? CConfig::get('email.smtp.password') : $smtpPassword), 'title'=>A::t('app', 'SMTP Password'), 'tooltip'=>A::t('app', 'SMTP Password Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'20', 'placeholder'=>'&#9679;&#9679;&#9679;&#9679;&#9679;'), 'appendCode'=>A::t('app', 'your email password')),
+				'act' =>array('type'=>'hidden', 'value'=>'send'),
+	         	'separatorGeneral' =>array(
+	                'separatorInfo' => array('legend'=>A::t('app', 'General')),
+                    'mailer'     =>array('type'=>'select', 'value'=>($settings->mailer == '' ? CConfig::get('email.mailer') : $settings->mailer), 'title'=>A::t('app', 'Mailer'), 'tooltip'=>A::t('app', 'Mailer Tooltip'), 'data'=>$mailersList, 'htmlOptions'=>array('onchange'=>'showSMTPParams(this.value);')),
+                ),
+	         	'separatorEmail' =>array(
+	                'separatorInfo' => array('legend'=>A::t('app', 'From Email')),
+                    'email'	     =>array('type'=>'textbox', 'value'=>($settings->general_email == '' ? CConfig::get('email.from') : $settings->general_email), 'title'=>A::t('app', 'Email Address'), 'tooltip'=>A::t('app', 'Email Address Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'100', 'class'=>'email', 'autocomplete'=>'off'), 'appendCode'=>A::t('app', 'e.g., info@email.me')),
+                    'email_name' =>array('type'=>'textbox', 'value'=>($settings->general_email_name == '' ? CConfig::get('email.fromName') : $settings->general_email_name), 'title'=>A::t('app', 'Email Name'), 'tooltip'=>A::t('app', 'Email Name Tooltip'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxlength'=>'50', 'autocomplete'=>'off'), 'appendCode'=>A::t('app', 'e.g., John Smith')),	 
+	            ),
+	         	'separatorSmtp' =>array(
+	                'separatorInfo' => array('legend'=>A::t('app', 'SMTP Settings')),
+                    'smtpAuth'   =>array('type'=>'select', 'value'=>$settings->smtp_auth, 'title'=>A::t('app', 'SMTP Authentication'), 'tooltip'=>A::t('app', 'SMTP Authentication Tooltip'), 'data'=>array('0'=>A::t('app', 'No'), '1'=>A::t('app', 'Yes')), 'mandatoryStar'=>false),
+                    'smtpSecure' =>array('type'=>'select', 'value'=>$settings->smtp_secure, 'title'=>A::t('app', 'SMTP Secure'), 'tooltip'=>A::t('app', 'SMTP Secure Tooltip'), 'data'=>array('ssl'=>'SSL', 'tls'=>'TLS', ''=>A::t('app', 'No')), 'mandatoryStar'=>false),
+                    'smtpHost'	 =>array('type'=>'textbox', 'value'=>($settings->smtp_host == '' ? CConfig::get('email.smtp.host') : $settings->smtp_host), 'title'=>A::t('app', 'SMTP Host'), 'tooltip'=>A::t('app', 'SMTP Host Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'70'), 'appendCode'=>A::t('app', 'e.g., smtp.gmail.com')),
+                    'smtpPort'	 =>array('type'=>'textbox', 'value'=>($settings->smtp_port == '' ? CConfig::get('email.smtp.port') : $settings->smtp_port), 'title'=>A::t('app', 'SMTP Port'), 'tooltip'=>A::t('app', 'SMTP Port Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'5', 'class'=>'small'), 'appendCode'=>A::t('app', 'e.g., 465 or 587')),
+                    'smtpUsername'	=>array('type'=>'textbox', 'value'=>($settings->smtp_username == '' ? CConfig::get('email.smtp.username') : $settings->smtp_username), 'title'=>A::t('app', 'SMTP Username'), 'tooltip'=>A::t('app', 'SMTP Username Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'40'), 'appendCode'=>A::t('app', 'your full email address')),
+                    'smtpPassword'	=>array('type'=>'password', 'value'=>($smtpPassword == '' ? CConfig::get('email.smtp.password') : $smtpPassword), 'title'=>A::t('app', 'SMTP Password'), 'tooltip'=>A::t('app', 'SMTP Password Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'20', 'placeholder'=>'&#9679;&#9679;&#9679;&#9679;&#9679;'), 'appendCode'=>A::t('app', 'your email password')),
+                )
 			),
 			'buttons'=> Admins::hasPrivilege('site_settings', 'edit') ? 
 				array(
@@ -55,9 +66,9 @@
 		'smtp-toggle',
 		'function showSMTPParams(val){
 			if(val == "smtpMailer"){
-				$("#frmEmailSettings_row_2,#frmEmailSettings_row_3,#frmEmailSettings_row_4,#frmEmailSettings_row_5,#frmEmailSettings_row_6").show();
+				$("#frmEmailSettings_row_3").closest("fieldset").show();
 			}else{
-				$("#frmEmailSettings_row_2,#frmEmailSettings_row_3,#frmEmailSettings_row_4,#frmEmailSettings_row_5,#frmEmailSettings_row_6").hide();
+				$("#frmEmailSettings_row_3").closest("fieldset").hide();
 			}
 		};',
 		0

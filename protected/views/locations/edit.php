@@ -29,19 +29,19 @@
 				'autoGenerateId'=>true
 			),
 			'fields'=>array(
-				'id'         => array('type'=>'hidden'),
-				'code'       => array('type'=>'textbox', 'title'=>A::t('app', 'Code'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'alpha', 'unique'=>true), 'htmlOptions'=>array('maxlength'=>'2', 'readonly'=>true, 'class'=>'small')),
+				'code'       => array('type'=>'label', 'title'=>A::t('app', 'Code'), 'tooltip'=>''),
 				'is_active'  => array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'htmlOptions'=>($country->is_default == 1 ? array('disabled'=>'disabled', 'uncheckValue'=>$country->is_active) : array())),
 				'is_default' => array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'htmlOptions'=>($country->is_default == 1 ? array('disabled'=>'disabled', 'uncheckValue'=>$country->is_default) : array())),                    
-				'sort_order' => array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'4', 'class'=>'small')),
+				'sort_order' => array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'maxLength'=>'4', 'type'=>'numeric'), 'htmlOptions'=>array('maxLength'=>'4', 'class'=>'small')),
 			),
 			'translationInfo' => array('relation'=>array('code', 'country_code'), 'languages'=>Languages::model()->findAll('is_active = 1')),
 			'translationFields' => array(
 				'name' => array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'any'), 'htmlOptions'=>array('title'=>'')),
 			),
 			'buttons' => array(
-			   'submit' => array('type'=>'submit', 'value'=>A::t('app', 'Update'), 'htmlOptions'=>array('name'=>'')),
-			   'cancel' => array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
+                'submitUpdateClose' => array('type'=>'submit', 'value'=>A::t('app', 'Update & Close'), 'htmlOptions'=>array('name'=>'btnUpdateClose')),
+                'submitUpdate' => array('type'=>'submit', 'value'=>A::t('app', 'Update'), 'htmlOptions'=>array('name'=>'btnUpdate')),
+                'cancel' => array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
 			),                
 		));
 	?>    

@@ -2485,7 +2485,7 @@ tinymce.create('static tinymce.util.XHR', {
 						if (children.length == 1 && children[0] && children[0].nodeType == 1 && children[0].getAttribute('_mce_type') == 'bookmark')
 							node.parentNode.insertBefore(children[0], node);
 
-						// Keep non empty elements or img, hr etc
+						// Keep non empty elements or img, hr, etc
 						if (children.length || /^(br|hr|input|img)$/i.test(node.nodeName))
 							return;
 					}
@@ -6345,7 +6345,7 @@ window.tinymce.dom.Sizzle = Sizzle;
 				else
 					n = doc.body;
 
-				// set the new document in DOMUtils so createElement etc works
+				// set the new document in DOMUtils so createElement, etc works
 				oldDoc = t.dom.doc;
 				t.dom.doc = doc;
 			}
@@ -6885,7 +6885,7 @@ window.tinymce.dom.Sizzle = Sizzle;
 			};
 
 			// Most browsers support this feature so we report errors
-			// for those at least to help users track their missing plugins etc
+			// for those at least to help users track their missing plugins, etc
 			// todo: Removed since it produced error if the document is unloaded by navigating away, re-add it as an option
 			/*elm.onerror = function() {
 				alert('Failed to load: ' + url);

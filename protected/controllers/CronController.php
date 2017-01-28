@@ -1,7 +1,6 @@
 <?php
-
 /**
- * CronController
+ * Cron controller
  *
  * PUBLIC:                 PRIVATE
  * -----------             ------------------
@@ -9,6 +8,7 @@
  * runAction
  *
  */
+
 class CronController extends CController
 {
     

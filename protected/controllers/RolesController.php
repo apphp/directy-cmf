@@ -1,15 +1,16 @@
 <?php
 /**
-* RolesController
-*
-* PUBLIC:                  PRIVATE
-* -----------              ------------------
-* __construct              
-* indexAction
-* manageAction
-* editAction
-*
-*/
+ * Roles controller
+ *
+ * PUBLIC:                  PRIVATE
+ * -----------              ------------------
+ * __construct              
+ * indexAction
+ * manageAction
+ * editAction
+ *
+ */
+
 class RolesController extends CController
 {
     /**
@@ -26,11 +27,12 @@ class RolesController extends CController
         	$this->redirect('backend/index');
         }
         // set meta tags according to active language
-    	SiteSettings::setMetaTags(array('title'=>A::t('app', 'Roles Management')));
+    	Website::setMetaTags(array('title'=>A::t('app', 'Roles Management')));
+        // set backend mode
+        Website::setBackend();
 
-        A::app()->view->setTemplate('backend');
-        $this->view->actionMessage = '';
-        $this->view->errorField = '';        
+        $this->_view->actionMessage = '';
+        $this->_view->errorField = '';        
 	}	
 		
 	/**
@@ -47,15 +49,15 @@ class RolesController extends CController
 	 */
 	public function manageAction($msg = '')
 	{
-		$this->view->rolesCondition = '';
+		$this->_view->rolesCondition = '';
 		// "main admin" can view and edit only "simple admin" role
 		if(CAuth::isLoggedInAs('mainadmin')){
-        	$this->view->rolesCondition = 'code = "admin"';
+        	$this->_view->rolesCondition = 'code = "admin"';
         }
 		if($msg == 'updated'){
-			$this->view->actionMessage = CWidget::create('CMessage', array('success', A::t('core', 'The updating operation has been successfully completed!'), array('button'=>true)));
+			$this->_view->actionMessage = CWidget::create('CMessage', array('success', A::t('core', 'The updating operation has been successfully completed!'), array('button'=>true)));
 		}
-		$this->view->render('roles/manage');
+		$this->_view->render('roles/manage');
 	}
 	
 	/**
@@ -72,8 +74,8 @@ class RolesController extends CController
 		if(CAuth::isLoggedInAs('mainadmin') && $roleModel->code != 'admin'){
 			$this->redirect('roles/manage');
         }
-		$this->view->id = (int)$id;
-    	$this->view->render('roles/edit');
+		$this->_view->id = (int)$id;
+    	$this->_view->render('roles/edit');
 	}
   
 }

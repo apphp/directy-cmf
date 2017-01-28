@@ -22,6 +22,8 @@
 		$nl = "\n";
 
         $currentCategory = '';
+        $currentModule = '';
+        $currentModulesCount = 0;
 		$buttons = '';
 		if($role->code != 'owner'){
 			$buttons = '<div class="buttons-wrapper">
@@ -37,29 +39,47 @@
 		echo $buttons;
 		echo '<fieldset>'.$nl;
         foreach($privileges as $key => $val){
-            if($val['privilege_category'] == '') continue;            
-            if($currentCategory != '' && $currentCategory != $val['privilege_category']){
-                echo '</fieldset>'.$nl;
-            }            
+            if($val['privilege_category'] == '') continue;
+            
+            $privilegeName = A::t('app', $val['privilege_name']);
+            $privilegeDescription = A::t('app', $val['privilege_description']);
+            $categoryName = A::t('app', $val['privilege_category']).'#'.$val['privilege_code'];
+            
+            // draw privilege category frame
+            if($currentCategory != $val['privilege_category']){
+                if($currentCategory != '') echo '</fieldset>'.$nl;
+            }
+
+            // draw module frame
+            if($currentModule != $val['module_code']){
+                if($currentModulesCount) echo '</fieldset>'.$nl; 
+                echo '<fieldset>'.$nl;
+                echo '<legend>'.A::t('app', 'Module').': '.ucfirst($val['module_code']).'</legend>'.$nl;
+                $currentModulesCount++;
+            }
+            
+            // draw privilege category frame
             if($currentCategory != $val['privilege_category']){
                 if($currentCategory != '') echo '<fieldset>'.$nl;
                 echo '<legend>'.ucwords(str_replace('_', ' ', $val['privilege_category'])).'</legend>'.$nl;
             }
-			echo '<div class="privilege-property">'; 
-			$name = $val['privilege_category'].'#'.$val['privilege_code'];
+
+			echo '<div class="privilege-property">'; 			
 			if($role->code == 'owner'){
 				echo CHtml::tag('span', array('class'=>'badge-green', 'style'=>'float:left;margin-top:3px;text-transform:uppercase;'), '&nbsp;'.A::t('app', 'On'));
 			}else{
 				echo '<div class="slideBox">';
-				echo CHtml::checkBox($name, ($val['is_active'] ? true : false), array('uncheckValue'=>0, 'id'=>$val['privilege_name']));
-				echo '<label for="'.$val['privilege_name'].'"></label>';
-				echo '</div>';			
+				echo CHtml::checkBox($categoryName, ($val['is_active'] ? true : false), array('uncheckValue'=>0, 'id'=>$privilegeName));
+				echo '<label for="'.$privilegeName.'"></label>';
+				echo '</div>';
 			}
-			echo '<label class="description tooltip-link" title="'.$val['privilege_description'].'" for="'.$val['privilege_name'].'">'.$val['privilege_name'].'</label>';			
+			echo '<label class="description tooltip-link" title="'.$privilegeDescription.'" for="'.$privilegeName.'">'.$privilegeName.'</label>';			
 			echo '</div>'.$nl;
             $currentCategory = $val['privilege_category'];
+            $currentModule = $val['module_code'];
         }
 		echo '</fieldset>'.$nl;
+        if($currentModulesCount) echo '</fieldset>'.$nl; 
 		echo $buttons;
 		
 		echo CHtml::closeForm();

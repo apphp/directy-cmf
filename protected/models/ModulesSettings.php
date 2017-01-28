@@ -1,10 +1,10 @@
 <?php
 /**
- * ModulesSettings
+ * ModulesSettings model
  *
  * PUBLIC:                PROTECTED               PRIVATE
  * ---------------        ---------------         ---------------
- * __construct             loadSettings 
+ * __construct                                    _loadSettings 
  * update
  * getSettings
  * getShortcodes
@@ -16,13 +16,14 @@
  * get
  *
  */
+
 class ModulesSettings extends CActiveRecord
 {
 
     /** @var string */    
     protected $_table = 'module_settings';
 	/** @var array */    
-	private static $arrModuleSettings = array();
+	private static $_arrModuleSettings = array();
 
     /**
 	 * Class default constructor
@@ -30,7 +31,7 @@ class ModulesSettings extends CActiveRecord
     public function __construct()
     {		
         parent::__construct();
-		$this->loadSettings();
+		$this->_loadSettings();
     }
 
 	/**
@@ -49,7 +50,7 @@ class ModulesSettings extends CActiveRecord
 		$result = true;
 		if(is_array($valuesArray)){
 			foreach($valuesArray as $id => $value){
-				if(!$this->db->update($this->_table, array('property_value'=>$value), 'id='.$id)){
+				if(!$this->_db->update($this->_table, array('property_value'=>$value), 'id='.$id)){
 					$result = false;
 				}
 			}
@@ -59,12 +60,13 @@ class ModulesSettings extends CActiveRecord
 	
 	/**
 	 *	Returns module settings parameter
-	 *	@param $module
-	 *	@param $param
+	 *	@param string $module
+	 *	@param string $param
+	 *	@param string $type
 	 */
-	public static function param($module = '', $param = '')
+	public static function param($module = '', $param = '', $type = 'value')
 	{
-		return isset(self::$arrModuleSettings[$module][$param]) ? self::$arrModuleSettings[$module][$param] : '';
+		return isset(self::$_arrModuleSettings[$module][$param][$type]) ? self::$_arrModuleSettings[$module][$param][$type] : '';
 	}
 	
 	/**
@@ -72,7 +74,7 @@ class ModulesSettings extends CActiveRecord
 	 */
 	public function getSettings()
 	{
-		return self::$arrModuleSettings;
+		return self::$_arrModuleSettings;
 	}
 	
 	/**
@@ -80,8 +82,8 @@ class ModulesSettings extends CActiveRecord
 	 */
 	public function getShortcodes()
 	{
-		$arrModuleSettings = array();
-		$modulesSettings = $this->db->select('
+		$_arrModuleSettings = array();
+		$modulesSettings = $this->_db->select('
             SELECT ms.*
 			FROM '.CConfig::get('db.prefix').$this->_table.' ms
 			INNER JOIN '.CConfig::get('db.prefix').'modules m ON ms.module_code = m.code  
@@ -89,19 +91,22 @@ class ModulesSettings extends CActiveRecord
 		);
 		
 		foreach($modulesSettings as $key => $val){			
-			$arrModuleSettings[$val['module_code']] = $val['property_value'];
+			$_arrModuleSettings[$val['module_code']] = array('value'=>$val['property_value'], 'description'=>$val['description']);
 		}
-		return $arrModuleSettings;
+		return $_arrModuleSettings;
 	}
 
 	/**
 	 * Loads all modules settings 1 time
 	 */
-	private function loadSettings()
+	private function _loadSettings()
 	{
 		$modulesSettings = $this->findAll();
 		foreach($modulesSettings as $key => $val){			
-			self::$arrModuleSettings[$val['module_code']][$val['property_key']] = $val['property_value'];
+			self::$_arrModuleSettings[$val['module_code']][$val['property_key']] = array(
+                'value'=>$val['property_value'],
+                'source'=>$val['property_source']
+            );
 		}
 	}
 	

@@ -1,0 +1,183 @@
+body { }
+
+caption, th, td { text-align:right; }
+table { direction: rtl}
+fieldset { direction: rtl }
+h1, h2, h3 { direction: rtl}
+
+#head .left{ position:absolute; right:15px; left:auto; }
+#head .right{ padding-left:30px; position:absolute; left:15px; right:auto; text-align:left; }
+#head .right .logout { position:absolute; left:0px; }
+
+.collapsed #content .breadcrumbs { margin:0px -30px 0 -20px; }
+.collapsed #sidebar>ul>li:hover>ul{ overflow:visible; right:56px; left:auto;  }
+.collapsed #sidebar>ul>li ul{ position:absolute; width:146px; right:-150px; display:block!important;}
+.collapsed #content { margin-left:20px; margin-right:80px;}
+
+/* BREADCRUMBS
+---------------------------------------------------------- */
+#content .breadcrumbs { padding:10px 50px 10px 14px; background-position:right 15px center; text-align: right; }
+
+/* MESSAGES
+---------------------------------------------------------- */
+.alert                  { padding:12px; padding-right: 45px; }
+.login .alert,
+#blocAlerts .alert      { background-image:none; padding-right:45px; padding-left:0; text-align: right; }  
+.alert .close           { float:left; left:14px; right:auto;}
+.alert-success          { background-position: right 8px top 6px; }
+.alert-error            { background-position: right 8px top 6px; }
+.alert-warning          { background-position: right 8px top 6px; }
+.alert-info             { background-position: right 8px top 6px; }
+.alert-validation       { background-position: right 8px top 6px; }
+
+/* CONTENT
+---------------------------------------------------------- */
+#content { margin:52px 250px 40px 20px; }
+#content .bloc-left { float:right; }
+#content .bloc-right{ float:left; }
+#content .bloc .title{ text-align: right; }
+#content .bloc .title .toggle{ display:block; height:18px; width:18px; background:url(../images/slide-buttons.png) left top; float:left; background-position:left top; margin-top:8px; margin-right:-1px; }
+#content .bloc .title .toggle.hide{ background-position:left top; } 
+#content .bloc .title .close{ float:left; margin-left:-1px; margin-right:8px; }
+#content .bloc .title .back-link { float:left; }
+
+/* SHORTCUTS
+---------------------------------------------------------- */
+#content .bloc .shortcut{ float:right; }
+
+/* TABLES
+---------------------------------------------------------- */
+table { text-align:right; }
+table thead th.left{ text-align:right; float:none; }
+table thead th.right{ text-align:left; float:none; }
+table thead th.center{ text-align:center; float:none; }
+table tbody tr td:first-child{ padding-left:auto; padding-right:5px; }
+table tbody tr td.left{ text-align:right; }
+table tbody tr td.right{ text-align:left; }
+table tbody tr td.center{ text-align:center; }
+
+/* TEXTS
+---------------------------------------------------------- */
+#content .bloc .content{ text-align: right; }
+#content .bloc .content ul,
+#content .bloc .content ol{ margin-right:25px; direction: rtl;}
+
+/* HEADER
+---------------------------------------------------------- */
+#content .title .tabs { left:auto; right: 10px; direction: rtl}
+
+/* BUTTONS
+---------------------------------------------------------- */
+.alert button.close,
+.alert button.close:hover { margin:-4px 0px 0px 4px !important; }
+
+/* SIDEBAR
+---------------------------------------------------------- */
+#sidebar { direction: rtl; right:0; left:auto; }
+#sidebar { border-right:none; box-shadow:inset 0px 0px 0 #dcdcdc; }
+
+#sidebar>ul>li>a { border-left:4px solid #d6d6d6; border-right: 0px; }
+
+#sidebar ul { direction: rtl; }
+
+#sidebar>ul>li>a>img { padding-left:4px; padding-right:0px; margin-left:10px; margin-right:0px; }
+#sidebar>ul>li>ul>li ul{ margin-right:13px; margin-left:0px; }
+#sidebar>ul>li:hover>a, #sidebar>ul>li.active>a{ border-left-color:#808080; }
+#sidebar ul li ul   { border-left:4px solid #C5C5C5; border-right: 0px; }
+
+#sidebar div#top-line{ border-left:4px solid rgb(214, 214, 214); border-right:0px; text-align: right; padding-right:15px; }
+#sidebar a#menuopen { float: right; border-right:0px; border-left:1px solid #e7e7e7; margin-left:15px; margin-right:0px; text-align:right; padding-left:0px; padding-right:0px; }
+#sidebar a#menuopen:hover { border-right:0px; border-left:1px solid #eee; }
+#sidebar a#menucollapse{ float:left; text-align:left; padding-left:15px; padding-right:0px; }
+
+#sidebar ul li li a { background-image:url(../images/side-li-rtl.png); background-position:right 20px top 9px; }
+#sidebar ul li li a:hover,
+#sidebar ul li li.active a { background-position:right 20px top 9px; background-image:url(../images/side-li-rtl.png); }
+#sidebar img.sub-menu-icon { height:16px; margin-bottom:-3px; margin-left:9px; margin-right:0px; }
+
+/* FORMS
+---------------------------------------------------------- */
+form { direction: rtl; }
+form label { float:right; }
+form span label { float:right; width:auto; margin:0 5px 0 10px; }
+form span input[type=radio] { float:right; }
+form input.email { margin-left:10px; margin-right:0px; }
+form input[type=password],
+form input[type=text] { margin-left:10px; margin-right:0px; }
+
+/* SETTINGS
+---------------------------------------------------------- */
+div.left-side 		{ float:right; width:300px; }
+div.left-side select { min-width:100px; }
+div.central-part 	{ float:right; margin-left:10px; padding-left:10px; border-left-width:1px; border-left-style:solid; border-left-color:#c7c7e7;  }
+div.right-side 		{ margin-left:0px; margin-right:563px; }
+#right-cronjobs 	{ float:none; margin-left:0px; margin-right:405px; }
+
+/* TABLES
+---------------------------------------------------------- */
+table { width:100%; text-align:right; }
+table thead th.left{ text-align:right; }
+table thead th.right{ text-align:left; }
+table thead th.actions{ text-align:left; padding-left:5px; padding-right:0px; width:90px; }
+table thead tr th:first-child{ padding-right:5px; padding-left:0px; }
+table tbody tr td.left { text-align:right; }
+table tbody tr td.right { text-align:left; }
+table tbody tr td.actions{ text-align:left; padding-left:5px; padding-right:0px; }
+table tbody tr td.actions img{ margin-left:5px; padding-right:0px; }
+
+/* FILTERING
+---------------------------------------------------------- */
+#content div.filtering-wrapper div.buttons-wrapper{ float:left; text-align:left; }
+#content div.filtering-wrapper div.buttons-wrapper button[type="submit"],
+#content div.filtering-wrapper div.buttons-wrapper input[type="submit"]{ float:left; }
+
+/* POPUP DIALOG
+---------------------------------------------------------- */
+.ui-dialog .ui-dialog-content { direction: rtl; }
+.ui-datepicker { direction: rtl; }
+.ui-datepicker-trigger { margin: 0 -7px -7px 10px; padding-right: 1px; }
+
+/* PRIVILEGES SETTING
+---------------------------------------------------------- */
+#privilegesSettings .slideBox { float:right; }
+#privilegesSettings .slideBox:before { content:'OFF'; font:12px/26px Arial, sans-serif; color: #880000; position: absolute; left: 7px; right: auto; top:0px; z-index: 0; font-weight: bold; text-shadow: 1px 1px 0px rgba(255,255,255,.15); }
+#privilegesSettings .slideBox:after { content:'ON'; font:12px/26px Arial, sans-serif; color: #008800; position: absolute; right: 8px; left:auto; top:0px; z-index: 0; font-weight: bold; }
+#privilegesSettings label.description { float:right; margin-right:10px; margin-left:auto; }
+#privilegesSettings .slideBox input[type=checkbox]:checked + label { right:35px; }
+#privilegesSettings .slideBox input[type=checkbox]:empty + label { left:35px; }
+#privilegesSettings .privilege-property { float:right; }
+
+/* MODULES SETTINGS TAB
+---------------------------------------------------------- */
+.modules-settings-tab { background:url('../images/icons/modules-settings.png') right 11px top 6px no-repeat; text-indent:18px; }
+.modules-settings-tab.active,
+.modules-settings-tab:hover { background:url('../images/icons/modules-settings.png') right 10px top -29px no-repeat; text-indent:18px; }
+
+/* MODULES SETTINGS
+---------------------------------------------------------- */
+#tblModulesSettings .slideBox { margin:0px 0px 0px 6px; float:left; }
+#tblModulesSettings .slideBox:before { content:'OFF'; font:12px/26px Arial, sans-serif; color: #880000; position: absolute; left: 7px; right: auto; top:0px; z-index: 0; font-weight: bold; text-shadow: 1px 1px 0px rgba(255,255,255,.15); }
+#tblModulesSettings .slideBox:after { content:'ON'; font:12px/26px Arial, sans-serif; color: #008800; position: absolute; right: 8px; left:auto; top:0px; z-index: 0; font-weight: bold; }
+#tblModulesSettings label.description { float:right; margin-right:10px; margin-left:auto; }
+#tblModulesSettings .slideBox input[type=checkbox]:checked + label { right:35px; }
+#tblModulesSettings .slideBox input[type=checkbox]:empty + label { left:35px; }
+#tblModulesSettings .privilege-property { float:right; }
+
+/* LOGIN
+---------------------------------------------------------- */
+#content.login img { float:right; }
+#content.login div.checkboxes-wrapper{ width:229px; float:right; }
+#content.login div.checkboxes-wrapper input[type=checkbox] { float:right; }
+#content.login div.checkboxes-wrapper label{ float:right; }
+#content.login div.buttons-wrapper{ float:left; text-align:left; }
+
+/* PROFILE DROPDOWN 
+---------------------------------------------------------- */
+.wrapper-dropdown span { float:right }
+.wrapper-dropdown:after { left: 15px; }
+.wrapper-dropdown img { float: right; margin-left: 30px;}
+.wrapper-dropdown .dropdown:after { left: 15px; }
+.wrapper-dropdown .dropdown:before { left: 13px; }
+.wrapper-dropdown .dropdown li a { text-align: right; }
+.wrapper-dropdown .dropdown li i { float:right; margin-top:10px; margin-left:8px; margin-right:0px; }
+

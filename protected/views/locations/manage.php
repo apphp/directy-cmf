@@ -23,7 +23,7 @@
 			'actionPath'=>'locations/manage',
 			'defaultOrder'=>array('sort_order'=>'DESC', 'name'=>'ASC'),
 			'passParameters'=>true,
-			'pagination'=>array('enable'=>true, 'pageSize'=>10),
+			'pagination'=>array('enable'=>true, 'pageSize'=>20),
 			'sorting'=>true,
 			'filters'=>array(
 				'name'           => array('title'=>A::t('app', 'Name'), 'type'=>'textbox', 'operator'=>'like%', 'width'=>'140px', 'maxLength'=>''),
@@ -35,7 +35,7 @@
 				'sort_order'     => array('title'=>A::t('app', 'Sort Order'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px'),
 				'is_default'     => array('title'=>A::t('app', 'Default'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>array('0'=>'<span class="badge-gray">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'width'=>'110px'),
 				'is_active'      => array('title'=>A::t('app', 'Active'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>array('0'=>'<span class="badge-red">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'width'=>'110px'),
-				'sub_locations_link' => array('title'=>A::t('app', 'Sub-Locations'), 'type'=>'link', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px', 'isSortable'=>false, 'linkUrl'=>'subLocations/manage/country/{id}', 'linkText'=>A::t('app', 'States')),
+				'sub_locations_link' => array('title'=>A::t('app', 'Sub-Locations'), 'type'=>'link', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px', 'isSortable'=>false, 'linkUrl'=>'subLocations/manage/country/{id}', 'linkText'=>A::t('app', 'States'), 'htmlOptions'=>array('class'=>'subgrid-link'), 'prependCode'=>'[ ', 'appendCode'=>' ]'),
 			),
 			'actions'=>array(
 				'edit'   => array(

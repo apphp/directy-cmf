@@ -12,33 +12,34 @@
 <div class="bloc">
 	<div class="title"><?php echo A::t('app', 'Edit Role')?></div>
     <div class="content">    
-		<?php
-			echo CWidget::create('CDataForm', array(
-				'model'=>'Roles',
-				'operationType'=>'edit',
-				'primaryKey'=>$id,
-				'action'=>'roles/edit/id/'.$id,
-				'successUrl'=>'roles/manage/msg/updated',
-				'cancelUrl'=>'roles/manage',
-				'requiredFieldsAlert'=>true,
-				'return'=>true,
-				'htmlOptions'=>array(
-					'name'=>'frmRoleEdit',
-					'autoGenerateId'=>true
-				),
-				'fields'=>array(
-					'id'         => array('type'=>'hidden'),
-					'name'       => array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'50')),
-					'description'=> array('type'=>'textarea', 'title'=>A::t('app', 'Description'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'255')),
-				),
-				'buttons' => array(
-				   'submit' => array('type'=>'submit', 'value'=>A::t('app', 'Update'), 'htmlOptions'=>array('name'=>'')),
-				   'cancel' => array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
-				),                
-				'events'=>array(
-					'focus'=>array('field'=>$errorField)
-				),
-			));				
-		?>        	
+    <?php
+        echo CWidget::create('CDataForm', array(
+            'model'=>'Roles',
+            'operationType'=>'edit',
+            'primaryKey'=>$id,
+            'action'=>'roles/edit/id/'.$id,
+            'successUrl'=>'roles/manage/msg/updated',
+            'cancelUrl'=>'roles/manage',
+            'requiredFieldsAlert'=>true,
+            'return'=>true,
+            'htmlOptions'=>array(
+                'name'=>'frmRoleEdit',
+                'autoGenerateId'=>true
+            ),
+            'fields'=>array(
+                'id'         => array('type'=>'hidden'),
+                'name'       => array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'50')),
+                'description'=> array('type'=>'textarea', 'title'=>A::t('app', 'Description'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'255')),
+            ),
+            'buttons' => array(
+                'submitUpdateClose' => array('type'=>'submit', 'value'=>A::t('app', 'Update & Close'), 'htmlOptions'=>array('name'=>'btnUpdateClose')),
+                'submitUpdate' => array('type'=>'submit', 'value'=>A::t('app', 'Update'), 'htmlOptions'=>array('name'=>'btnUpdate')),
+                'cancel' => array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
+            ),                
+            'events' => array(
+                'focus' => array('field'=>$errorField)
+            ),
+        ));				
+    ?>        	
     </div>
 </div>

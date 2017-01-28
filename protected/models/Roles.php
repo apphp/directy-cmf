@@ -2,16 +2,16 @@
 /**
  * Roles model
  *
- * PUBLIC:                PROTECTED               PRIVATE
- * ---------------        ---------------         ---------------
- * __construct
- * relations
+ * PUBLIC:                 PROTECTED                  PRIVATE
+ * ---------------         ---------------            ---------------
+ * __construct             _relations
  *
  * STATIC:
  * ------------------------------------------
  * model
  *
  */
+
 class Roles extends CActiveRecord
 {
 
@@ -37,7 +37,7 @@ class Roles extends CActiveRecord
 	/**
      * Defines relations between different tables in database and current $_table
 	 */
-	public function relations()
+	protected function _relations()
 	{
 		return array();
 	}

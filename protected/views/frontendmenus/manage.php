@@ -1,14 +1,15 @@
 <?php
     $this->_activeMenu = 'frontendMenus/';
-    $this->_breadCrumbs = array(
+    $breadCrumbs = array(
         array('label'=>A::t('app', 'General'), 'url'=>'backend/dashboard'),
     );
 	if($parentId && $parentName != ''){
-		$this->_breadCrumbs[] = array('label'=>A::t('app', 'Frontend Menu'), 'url'=>'frontendMenus/manage');
-		$this->_breadCrumbs[] = array('label'=>A::t('app', $parentName));
+		$breadCrumbs[] = array('label'=>A::t('app', 'Frontend Menu'), 'url'=>'frontendMenus/manage');
+		$breadCrumbs[] = array('label'=>A::t('app', $parentName));
 	}else{
-		$this->_breadCrumbs[] = array('label'=>A::t('app', 'Frontend Menu'));
+		$breadCrumbs[] = array('label'=>A::t('app', 'Frontend Menu'));
 	}
+    $this->_breadCrumbs = $breadCrumbs;
 ?>
 
 <h1><?php echo A::t('app', 'Frontend Menu Management'); ?></h1>	
@@ -37,7 +38,7 @@
 				'access_level'	=> array('title'=>A::t('app', 'Access'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>$accessLevelsList, 'width'=>'80px'),
 				'sort_order'    => array('title'=>A::t('app', 'Sort Order'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'100px'),
 				'id'    		=> array('title'=>A::t('app', 'ID'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'60px'),
-				'submenus_link' => array('title'=>A::t('app', 'Sub-Menus'), 'type'=>'link', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px', 'isSortable'=>false, 'linkUrl'=>($parentId == 0 ? 'frontendMenus/manage/pid/{id}' : ''), 'linkText'=>($parentId == 0 ? A::t('app', 'Sub-Menus') : A::t('app', 'N/A'))),
+				'sub_menus_link' => array('title'=>A::t('app', 'Sub-Menus'), 'type'=>'link', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px', 'isSortable'=>false, 'linkUrl'=>($parentId == 0 ? 'frontendMenus/manage/pid/{id}' : ''), 'linkText'=>($parentId == 0 ? A::t('app', 'Sub-Menus') : A::t('app', 'N/A')), 'htmlOptions'=>array('class'=>'subgrid-link'), 'prependCode'=>($parentId == 0 ? '[ ' : ''), 'appendCode'=>($parentId == 0 ? ' ]' : '')),
 			);
 			
 			if($parentId){

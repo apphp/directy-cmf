@@ -2,14 +2,11 @@
 /**
  * Currencies model
  *
- * PUBLIC:                PROTECTED               PRIVATE
- * ---------------        ---------------         ---------------
- * __construct
- * beforeSave
- * afterSave
- * afterDelete
- * getError
- * getDefaultCurrency
+ * PUBLIC:                 PROTECTED                  PRIVATE
+ * ---------------         ---------------            ---------------
+ * __construct             _beforeSave
+ * getError                _afterSave
+ * getDefaultCurrency      _customFields
  * getDefaultCurrencyInfo
  *
  * STATIC:
@@ -17,13 +14,14 @@
  * model
  *
  */
+
 class Currencies extends CActiveRecord
 {
     
     /** @var string */    
     protected $_table = 'currencies';
-    
-    private $isError = false;
+    /** @var bool */
+    private $_isError = false;
     
     /**
 	 * Class default constructor
@@ -70,7 +68,7 @@ class Currencies extends CActiveRecord
      * Used to define custom fields
 	 * This method should be overridden
 	 */
-	public function customFields()
+	protected function _customFields()
 	{
 		return array(
 			'IF(symbol_place = "before", CONCAT(symbol_place, " (", symbol, 100, ")"), CONCAT(symbol_place, " (", 100, "", symbol, ")"))' => 'example_symbol_place'
@@ -81,7 +79,7 @@ class Currencies extends CActiveRecord
 	 * This method is invoked before saving a record
 	 * @param string $id
 	 */
-	public function beforeSave($id = 0)
+	protected function _beforeSave($id = 0)
 	{
 		// if currency is default - it must be active
 		if($this->is_default) $this->is_active = 1;
@@ -93,14 +91,14 @@ class Currencies extends CActiveRecord
 	 * This method is invoked after saving a record successfully
 	 * @param string $id
 	 */
-	public function afterSave($id = 0)
+	protected function _afterSave($id = 0)
 	{
-		$this->isError = false;
+		$this->_isError = false;
 		
 		// if this currency is default - remove default flag in all other currencies
 		if($this->is_default){
-        	if(!$this->db->update($this->_table, array('is_default'=>0), 'id != '.$id)){
-        		$this->isError = true;
+        	if(!$this->_db->update($this->_table, array('is_default'=>0), 'id != '.$id)){
+        		$this->_isError = true;
         	}
 		}		
 	}
@@ -111,7 +109,7 @@ class Currencies extends CActiveRecord
 	 */
 	public function getError()
 	{
-		return $this->isError;
+		return $this->_isError;
 	}
 
 	/**
@@ -119,8 +117,7 @@ class Currencies extends CActiveRecord
 	 */
 	public function getDefaultCurrency()
 	{
-		$currency = $this->find('is_default = 1');
-		return isset($currency[0]['code']) ? $currency[0]['code'] : '';
+        return ($currency = $this->find('is_default = 1')) ? $currency->code : '';
 	}
 	
 	/**
@@ -128,7 +125,6 @@ class Currencies extends CActiveRecord
 	 */
 	public function getDefaultCurrencyInfo()
 	{
-		$currency = $this->find('is_default = 1');
-		return isset($currency[0]) ? $currency[0] : '';
+		return ($currency = $this->find('is_default = 1')) ? $currency : '';
 	}
 }

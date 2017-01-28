@@ -26,7 +26,7 @@ class Setup extends CModel
     public function doBeginTransaction()
     {
         /* begin a transaction, turning off autocommit */
-        $this->db->beginTransaction();
+        $this->_db->beginTransaction();
     }
     
 	/**
@@ -35,7 +35,7 @@ class Setup extends CModel
     public function doRollBack()
     {
         /* recognize mistake and roll back changes */
-        $this->db->rollBack();
+        $this->_db->rollBack();
     }
 
 	/**
@@ -44,7 +44,7 @@ class Setup extends CModel
     public function doCommit()
     {
         /* commit the changes */
-        $this->db->commit();            
+        $this->_db->commit();            
     }
     
 	/**
@@ -58,11 +58,11 @@ class Setup extends CModel
     {
         if(empty($sqlDump)){
             $this->_error = true;
-            $this->_errorMessage = 'No SQL statements found! Please check your data file.';
+            $this->_errorMessage = A::t('setup', 'No SQL statements found! Please check your data file.');
             return false;
         }else{
             /* begin a transaction, turning off autocommit */
-            if($transaction) $this->db->beginTransaction();
+            if($transaction) $this->_db->beginTransaction();
             $query = '';                
             foreach($sqlDump as $sqlLine){
                 $tsl = trim(utf8_decode($sqlLine));
@@ -70,13 +70,13 @@ class Setup extends CModel
                     $query .= $sqlLine;
                     if(preg_match("/;\s*$/", $sqlLine)){
                         if(strlen(trim($query)) > 5){
-                            $result = $this->db->customExec($query);
+                            $result = $this->_db->customExec($query);
                             if(CDatabase::getError()){
                                 $this->_error = true;
                                 $this->_errorMessage = CDatabase::getErrorMessage();
                                 if(!$ignoreErrors){
                                     /* recognize mistake and roll back changes */
-                                    if($transaction) $this->db->rollBack();                                
+                                    if($transaction) $this->_db->rollBack();                                
                                     return false;
                                 }
                             }
@@ -86,7 +86,7 @@ class Setup extends CModel
                 }
             }
             /* commit the changes */
-            if($transaction) $this->db->commit();            
+            if($transaction) $this->_db->commit();            
             return true;
         }        
     }    

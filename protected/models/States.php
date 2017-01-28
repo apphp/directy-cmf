@@ -2,18 +2,18 @@
 /**
  * States model
  *
- * PUBLIC:                PROTECTED               PRIVATE
- * ---------------        ---------------         ---------------
- * __construct
- * relations
- * afterDelete
- * getError
+ * PUBLIC:                 PROTECTED                  PRIVATE
+ * ---------------         ---------------            ---------------
+ * __construct             _relations
+ * getError                _afterDelete
+ * 
  *
  * STATIC:
  * ------------------------------------------
  * model
  *
  */
+
 class States extends CActiveRecord
 {
 
@@ -21,8 +21,8 @@ class States extends CActiveRecord
     protected $_table = 'states';
     /** @var string */
     protected $_tableTranslation = 'state_translations';
-
-    private $isError = false;
+    /** @var bool */
+    private $_isError = false;
 	
     /**
 	 * Class default constructor
@@ -43,7 +43,7 @@ class States extends CActiveRecord
 	/**
      * Defines relations between different tables in database and current $_table
 	 */
-	public function relations()
+	protected function _relations()
 	{
 		return array(
 			'id' => array(
@@ -61,12 +61,12 @@ class States extends CActiveRecord
 	 * This method is invoked after deleting a record successfully
 	 * @param string $id
 	 */
-	public function afterDelete($id = 0)
+	protected function _afterDelete($id = 0)
 	{
-		$this->isError = false;
+		$this->_isError = false;
 		// delete state names from translation table
-		if(false === $this->db->delete($this->_tableTranslation, 'state_id="'.$id.'"')){
-			$this->isError = true;
+		if(false === $this->_db->delete($this->_tableTranslation, 'state_id="'.$id.'"')){
+			$this->_isError = true;
 		}
 	}
 	
@@ -76,7 +76,7 @@ class States extends CActiveRecord
 	 */
 	public function getError()
 	{
-		return $this->isError;
+		return $this->_isError;
 	}
 	
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Settings
+ * Settings model
  *
  * PUBLIC:                PROTECTED               PRIVATE
  * ---------------        ---------------         ---------------
@@ -11,6 +11,7 @@
  * model
  *
  */
+
 class Settings extends CActiveRecord
 {
 

@@ -26,8 +26,10 @@
 			),
 			'requiredFieldsAlert'=>true,
 			'fields'=>array(
-				'country_code'=>array('type'=>'hidden', 'default'=>$selectedCountry->code),
-				'is_active'  => array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>true, 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>array()),
+				'country_code'=> array('type'=>'data', 'default'=>$selectedCountry->code),
+				'code'        => array('type'=>'textbox', 'title'=>A::t('app', 'Code'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'alpha', 'maxLength'=>'2', 'unique'=>false), 'htmlOptions'=>array('maxLength'=>'2', 'class'=>'small')),
+				'is_active'   => array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>true, 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>array()),
+				'sort_order' => array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'default'=>0, 'tooltip'=>'', 'validation'=>array('required'=>true, 'maxLength'=>'2', 'type'=>'numeric'), 'htmlOptions'=>array('maxLength'=>'2', 'class'=>'small')),
 			),
 			'translationInfo' => array('relation'=>array('id', 'state_id'), 'languages'=>Languages::model()->findAll('is_active = 1')),
 			'translationFields' => array(

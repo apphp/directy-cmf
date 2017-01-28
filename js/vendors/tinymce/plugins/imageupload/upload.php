@@ -1,17 +1,46 @@
 <?php
+/**
+ * --------------------------------------------------------------------------- 
+ * -= YOU MAY NOT REMOVE OR CHANGE THIS NOTICE =-                 
+ * --------------------------------------------------------------------------- 
+ * ApPHP image upload plugin for TinyMCE editor
+ * License      : GNU LGPL v.3                                                
+ * Copyright    : ApPHP Directy CMF (c) 2013 - 2014, All rights reserved.
+ * Last changes : 19.06.2014 
+*/
+
+/* Available options: "full" or "relative" */ 
+$mode = 'relative'; 
+
+/**
+ * Framework directory
+ * This varibale includes a relative path from application directory to the framework directory.
+ * By default it defined for the case when application and framework are both placed in the same level:
+ * site/
+ *    - framework/
+ *    - application/
+ * If you change framework directory placement don't forget to change value of $frameworkDir
+*/
+$frameworkDir = '';
+
 /* Base directory */
-$baseDir = '../../../../../';
+if($mode == 'full'){
+    $baseDir = str_ireplace('js\vendors\tinymce\plugins\imageupload', '', dirname(__FILE__));
+    $baseDirFull = $baseDir;    
+}else{
+    $baseDir = '../../../../../';
+    $baseDirFull = dirname(__FILE__).'/'.$baseDir;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-
-defined('APPHP_PATH') || define('APPHP_PATH', dirname(__FILE__).'/'.$baseDir);
+defined('APPHP_PATH') || define('APPHP_PATH', $baseDirFull);
 // directory separator
 defined('DS') || define('DS', DIRECTORY_SEPARATOR);
 // production | debug | demo | test | hidden
 defined('APPHP_MODE') or define('APPHP_MODE', 'hidden'); 
 
 // application and framework in the same directory level
-$apphp = dirname(__FILE__).'/'.$baseDir.'../framework/Apphp.php';
+$apphp = $baseDirFull.$frameworkDir.'framework/Apphp.php';
 $config = APPHP_PATH.'/protected/config/';
 
 require_once($apphp);
@@ -42,15 +71,17 @@ if(!CAuth::isLoggedInAsAdmin()){
     /** 
      * Check image directory and create it if needed
      */
-    $salt = CConfig::get('installationKey') ? CConfig::get('installationKey') : 'admins_';
-    $imageDir = 'images/upload/'.md5($salt.$loggedId).'/';
-    if(!is_dir($baseDir.$imageDir)){
-        if(!mkdir($baseDir.$imageDir, 0755, true)){
-            A::t('core', 'Failed to create directory {path}.', array('{path}'=>$imageDir));
-            exit;
-        }
+    if(!$isDemo){
+        $salt = CConfig::get('installationKey') ? CConfig::get('installationKey') : 'admins_';
+        $imageDir = 'images/upload/'.md5($salt.$loggedId).'/';
+        if(!is_dir($baseDir.$imageDir)){
+            if(!mkdir($baseDir.$imageDir, 0755, true)){
+                A::t('core', 'Failed to create directory {path}.', array('{path}'=>$imageDir));
+                exit;
+            }
+        }        
     }
-    
+
     $imagebasedir = $baseDir.$imageDir;
     
     /**
@@ -92,7 +123,12 @@ if(!CAuth::isLoggedInAsAdmin()){
             if($size > $max_file_size) $act = 'wrong_size';
             
             if($act == 'upload'){
-                move_uploaded_file($_FILES['image']['tmp_name'], $baseDir.$image);
+                if($isDemo){
+                    $msg = 'This operation is blocked in demo version!';
+                    $act = '';
+                }else{
+                    move_uploaded_file($_FILES['image']['tmp_name'], $baseDir.$image);
+                }
             }else if($act == 'wrong_size'){
                 $msg = 'The uploaded file exceeds the maximum allowed size '.$upload_file_size.'!';            
             }else{
@@ -104,8 +140,9 @@ if(!CAuth::isLoggedInAsAdmin()){
     }else if($act == 'remove'){
         if($isDemo){
             $msg = 'This operation is blocked in demo version!';
+            $act = '';
         }else{
-            @unlink($baseDir.str_replace('../', '', $selFile));
+            CFile::deleteFile($baseDir.$selFile);
         }
     }
     
@@ -154,9 +191,10 @@ if(!CAuth::isLoggedInAsAdmin()){
 }
     
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">	
+<!DOCTYPE HTML>	
 <html>
 <head>
+    <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Upload/Select Image</title>
     <script type="text/javascript" src="../../tiny_mce_popup.js"></script>    
@@ -178,7 +216,7 @@ if(!CAuth::isLoggedInAsAdmin()){
         tinyMCEPopup.onInit.add(ImageDialog.init, ImageDialog);        
     }
     function deleteImage(file_name){
-        document.location.href = 'upload.php?act=remove&file=' + file_name;
+        window.location.href = 'upload.php?act=remove&file=' + file_name;
     }
     </script>
 </head>
@@ -217,7 +255,7 @@ if(!CAuth::isLoggedInAsAdmin()){
 
             echo '<tr>';
             echo '<td width="30px" align="center"><img src="img/'.$icon.'" alt="icon" /></td>';
-            echo '<td><a href="javascript:void(0)" onclick="document.location.href=\'upload.php?act=select&file='.$filedir.$filename.'\'"><b>'.$filename.'</b></a></td>';
+            echo '<td><a href="javascript:void(0)" onclick="window.location.href=\'upload.php?act=select&file='.$filedir.$filename.'\'"><b>'.$filename.'</b></a></td>';
             if($isDemo){
                 echo '<td>[x]</td>';
             }else{
@@ -231,11 +269,7 @@ if(!CAuth::isLoggedInAsAdmin()){
     echo '</div>';
     echo '</fieldset>';
     
-    
-    
 }
 ?>
-                        
-                        
 </body>
 </html>

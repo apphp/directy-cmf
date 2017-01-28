@@ -1,16 +1,16 @@
 <?php
 /**
-* BackendController
-*
-* PUBLIC:                  PRIVATE
-* -----------              ------------------
-* __construct              
-* indexAction
-* dashboardAction
-* loginAction
-* logoutAction
-*
-*/
+ * Backend controller
+ *
+ * PUBLIC:                  PRIVATE
+ * -----------              ------------------
+ * __construct              
+ * indexAction
+ * dashboardAction
+ * loginAction
+ * logoutAction
+ *
+ */
 
 class BackendController extends CController
 {
@@ -25,14 +25,9 @@ class BackendController extends CController
 	{
         parent::__construct();
 
-        A::app()->view->setTemplate('backend');
-        $this->view->actionMessage = '';
-        $this->view->errorField = ''; 
-
-		//#000 
-		$this->checkBruteforce = CConfig::get('validation.bruteforce.enable');
-		$this->redirectDelay = (int)CConfig::get('validation.bruteforce.redirectDelay', 3);
-		$this->badLogins = (int)CConfig::get('validation.bruteforce.badLogins', 5);		
+        Website::setBackend();
+        $this->_view->actionMessage = '';
+        $this->_view->errorField = ''; 
     }
         
 	/**
@@ -52,26 +47,41 @@ class BackendController extends CController
 		CAuth::handleLogin('backend/login');
 
 		// set meta tags according to active language
-		SiteSettings::setMetaTags(array('title'=>A::t('app', 'Dashboard')));
-		
+		Website::setMetaTags(array('title'=>A::t('app', 'Dashboard')));
+
         $alerts = array();
+        // draw predefined alerts
         if(APPHP_MODE == 'debug') $alerts[] = array('type'=>'warning', 'message'=>A::t('app', 'Debug Mode Alert'));
 		if(CConfig::get('cookies.path') == '/' && A::app()->getRequest()->getBasePath() != '/') $alerts[] = array('type'=>'warning', 'message'=>A::t('app', 'Cookies Base Path Alert', array('{path}'=>A::app()->getRequest()->getBasePath())));			 
         if(CAuth::getLoggedEmail() == '' || preg_match('/email.me/i', CAuth::getLoggedEmail())) $alerts[] = array('type'=>'error', 'message'=>A::t('app', 'Default Email Alert'));
-        $this->view->alerts = $alerts;
+		// draw alerts from modules		
+		$modules = Modules::model()->findAll('is_active = 1');		
+		if(is_array($modules)){
+			foreach($modules as $key => $val){
+                $class = $val['code'].'Component';
+                if(class_exists($class, false) && method_exists($class, 'drawAlerts')){
+                    if($alert = call_user_func_array($class.'::drawAlerts', array())){
+                        $alerts[] = array('type'=>'warning', 'message'=>$alert);
+                    }
+                }
+			}
+		}
+        $this->_view->alerts = $alerts;
         
         // fetch modules that need to be shown in hotkeys
-        $this->view->modulesToShow = Modules::model()->findAll('show_on_dashboard=1 AND is_active=1');
+        $this->_view->modulesToShow = Modules::model()->findAll('show_on_dashboard=1 AND is_active=1');
 
 		// fetch datetime format from settings table
-    	$settings = Settings::model()->findByPk(1);
-    	$dateTimeFormat = $settings->datetime_format;
+    	$dateTimeFormat = Bootstrap::init()->getSettings('datetime_format');
 		
-        $this->view->todayDate = date($dateTimeFormat);
-        $this->view->lastLoginDate = strtotime(CAuth::getLoggedLastVisit()) > 0 ? date($dateTimeFormat, strtotime(CAuth::getLoggedLastVisit())) : A::t('app', 'Never');
-        $this->view->adminsCount = Admins::model()->count();
-		$this->view->scriptName = CConfig::get('name');
-		$this->view->scriptVersion = CConfig::get('version');
+        $this->_view->dashboardHotkeys = Bootstrap::init()->getSettings('dashboard_hotkeys');
+        $this->_view->dashboardNews = Bootstrap::init()->getSettings('dashboard_news');
+        $this->_view->dashboardStatistics = Bootstrap::init()->getSettings('dashboard_statistics');
+        $this->_view->todayDate = date($dateTimeFormat);
+        $this->_view->lastLoginDate = strtotime(CAuth::getLoggedLastVisit()) > 0 ? date($dateTimeFormat, strtotime(CAuth::getLoggedLastVisit())) : A::t('app', 'Never');
+        $this->_view->adminsCount = Admins::model()->count();
+		$this->_view->scriptName = CConfig::get('name');
+		$this->_view->scriptVersion = CConfig::get('version');
 
 		// fetch last 5 admins
 		$lastAdmins = Admins::model()->findAll(array('order'=>'id DESC', 'limit'=>'5'));
@@ -81,12 +91,12 @@ class BackendController extends CController
 				$lastAdminsList = ($lastAdminsList == '') ? $admin['username'] : $lastAdminsList.', '.$admin['username'];	
 			}
 		}
-		$this->view->lastAdminsList = $lastAdminsList;
+		$this->_view->lastAdminsList = $lastAdminsList;
 
 		// prepare news 
 		$newsContent = array();
-		if(Modules::model()->exists('code = :code AND is_installed = 1', array(':code'=>'news'))){
-			$news = News::model()->findAll('is_published = 1');
+        if(Modules::model()->exists("code = 'news' AND is_installed = 1")){                    
+			$news = News::model()->findAll(array('condition'=>'is_published = 1', 'limit'=>'0, 5'));
 			foreach($news as $key => $val){
 				$newsContent[$key] = array(
 					'date' => $val['created_at'],
@@ -95,9 +105,9 @@ class BackendController extends CController
 				);
 			}
 		}
-		$this->view->newsContent = $newsContent;
+		$this->_view->newsContent = $newsContent;
 		
-        $this->view->render('backend/dashboard');
+        $this->_view->render('backend/dashboard');
     }
 
     /**
@@ -105,29 +115,38 @@ class BackendController extends CController
      */
 	public function loginAction()
 	{
-        // redirect logged in users
+        // redirect logged in admins
 		CAuth::handleLoggedIn('backend/dashboard');
-        
-		// set meta tags according to active language
-		SiteSettings::setMetaTags(array('title'=>A::t('app', 'Login')));
+        // set default language for backend
+        Website::setDefaultLanguage();		
+        // set meta tags according to active language
+		Website::setMetaTags(array('title'=>A::t('app', 'Login')));
 		
-		$model = new Backend();				
+		//#000 
+		$this->checkBruteforce = CConfig::get('validation.bruteforce.enable');
+		$this->redirectDelay = (int)CConfig::get('validation.bruteforce.redirectDelay', 3);
+		$this->badLogins = (int)CConfig::get('validation.bruteforce.badLogins', 5);		
+
+		$admin = new Admins();				
 
 		// perform auto-login "remember me"
-		parse_str(A::app()->getCookie()->get('auth'));
-		if(!empty($usr) && !empty($hash)){
-			$username = $usr;
-			$password = CHash::decrypt($hash, CConfig::get('password.hashKey'));
-			if($model->login($username, $password)){
-				$this->redirect('backend/index');				
-			}
-		}
+        if(!CAuth::isLoggedIn()){
+            parse_str(A::app()->getCookie()->get('auth'));
+            if(!empty($usr) && !empty($hash)){
+                $username = $usr;
+                $password = CHash::decrypt($hash, CConfig::get('password.hashKey'));
+                if($admin->login($username, $password)){
+                    $this->redirect('backend/index');				
+                }
+            }            
+        }
 		
 		$cRequest = A::app()->getRequest();
-		$this->view->username = $cRequest->getPost('username');
-		$this->view->password = $cRequest->getPost('password');
-        $this->view->remember = $cRequest->getPost('remember');
+		$this->_view->username = $cRequest->getPost('username');
+		$this->_view->password = $cRequest->getPost('password');
+        $this->_view->remember = $cRequest->getPost('remember');
 		$msg = A::t('app', 'Login Message');
+        $msgType = '';
 		
 		if($cRequest->getPost('act') == 'send'){			
             // perform login form validation
@@ -140,36 +159,35 @@ class BackendController extends CController
             ));
             if($result['error']){
 				$msg = $result['errorMessage'];
-				$this->view->errorField = $result['errorField'];
-				$messageType = 'validation';                
+				$msgType = 'validation';                
+				$this->_view->errorField = $result['errorField'];
             }else{
-				if($model->login($this->view->username, $this->view->password)){
-                    if($this->view->remember){
-                        $passwordHash = CHash::encrypt($this->view->password, CConfig::get('password.hashKey'));
-                        A::app()->getCookie()->set('auth', 'usr='.$this->view->username.'&hash='.$passwordHash, time() + 3600 * 24 * 14);
+				if($admin->login($this->_view->username, $this->_view->password)){
+                    if($this->_view->remember){
+                        $passwordHash = CHash::encrypt($this->_view->password, CConfig::get('password.hashKey'));
+                        A::app()->getCookie()->set('auth', 'usr='.$this->_view->username.'&hash='.$passwordHash, time() + 3600 * 24 * 14);
                     }
 					//#001 clean login attempts counter
 					if($this->checkBruteforce){
 						A::app()->getSession()->remove('loginAttempts');
 						A::app()->getCookie()->remove('loginAttemptsAuth');
 					}
-					
-					$this->redirect('backend/index');	
+                    $this->redirect('backend/dashboard');	
 				}else{
-					$msg = A::t('app', 'Login Error Message');
-					$this->view->errorField = 'username';
-					$messageType = 'error';
+					$msg = $admin->getErrorDescription();
+					$msgType = 'error';
+					$this->_view->errorField = 'username';
 				}
 			}
 
 			if(!empty($msg)){				
-				$this->view->username = $cRequest->getPost('username');
-				$this->view->password = $cRequest->getPost('password');
-                $this->view->remember = $cRequest->getPost('remember', 'string');
-				$this->view->actionMessage = CWidget::create('CMessage', array($messageType, $msg));
+				$this->_view->username = $cRequest->getPost('username');
+				$this->_view->password = $cRequest->getPost('password');
+                $this->_view->remember = $cRequest->getPost('remember', 'string');
+				$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg));
 				
 				//#002 increment login attempts counter
-				if($this->checkBruteforce && $this->view->username != '' && $this->view->password != ''){
+				if($this->checkBruteforce && $this->_view->username != '' && $this->_view->password != ''){
 					$logAttempts = A::app()->getSession()->get('loginAttempts', 1);
 					if($logAttempts < $this->badLogins){
 						A::app()->getSession()->set('loginAttempts', $logAttempts+1);
@@ -194,10 +212,10 @@ class BackendController extends CController
 					}
 				}
 			}
-            $this->view->actionMessage = CWidget::create('CMessage', array('info', $msg));
+            $this->_view->actionMessage = CWidget::create('CMessage', array('info', $msg));
         }
         
-		$this->view->render('backend/login');	        
+		$this->_view->render('backend/login');	        
     }
 
     /**
@@ -207,6 +225,8 @@ class BackendController extends CController
 	{
         A::app()->getSession()->endSession();
 		A::app()->getCookie()->remove('auth');
+        // clear cache
+        if(CConfig::get('cache.enable')) CFile::emptyDirectory('protected/tmp/cache/');
         $this->redirect('backend/login');        
     }    
 

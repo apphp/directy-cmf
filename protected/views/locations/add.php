@@ -29,10 +29,10 @@
 			),
 			'requiredFieldsAlert'=>true,
 			'fields'=>array(
-				'code'       => array('type'=>'textbox', 'title'=>A::t('app', 'Code'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'alpha', 'unique'=>true), 'htmlOptions'=>array('maxlength'=>'2', 'class'=>'small')),
+				'code'       => array('type'=>'textbox', 'title'=>A::t('app', 'Code'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'alpha', 'maxLength'=>'2', 'unique'=>true), 'htmlOptions'=>array('maxLength'=>'2', 'class'=>'small')),
 				'is_active'  => array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>true, 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>array()),
 				'is_default' => array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>array()),                    
-				'sort_order' => array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'default'=>0, 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'4', 'class'=>'small')),
+				'sort_order' => array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'default'=>0, 'tooltip'=>'', 'validation'=>array('required'=>true, 'maxLength'=>'4', 'type'=>'numeric'), 'htmlOptions'=>array('maxLength'=>'4', 'class'=>'small')),
 			),
 			'translationInfo' => array('relation'=>array('code', 'country_code'), 'languages'=>Languages::model()->findAll('is_active = 1')),
 			'translationFields' => array(

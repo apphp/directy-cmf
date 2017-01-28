@@ -3,7 +3,7 @@
 return array(
     // application data
     'name' => 'ApPHP Directy CMF',
-    'version' => '1.0.1',
+    'version' => '1.1.2',
     
     // installation settings
     'installationKey' => '<INSTALLATION_KEY>',
@@ -19,9 +19,11 @@ return array(
     // default email settings
 	'email' => array(
         'mailer' => 'smtpMailer', /* phpMail | phpMailer | smtpMailer */
-        'from'   => 'info@email.me',
+        'from' => 'info@email.me',
+        'fromName' => '', /* John Smith */
         'isHtml' => true,
-        'smtp'   => array(
+        'smtp' => array(
+            'auth' => true, /* true or false */
             'secure' => 'ssl', /* 'ssl', 'tls' or '' */
             'host' => 'smtp.gmail.com',
             'port' => '465',
@@ -38,6 +40,7 @@ return array(
 
     // session settings
     'session' => array(
+        'customStorage' => false, /* true value means to use a custom storage */
         'cacheLimiter' => '' /* private,must-revalidate */
     ),
     
@@ -45,6 +48,13 @@ return array(
     'cookies' => array(
         'domain' => '', 
         'path' => '/' 
+    ),
+
+    // cache settings 
+    'cache' => array(
+        'enable' => false, 
+        'lifetime' => 20,  /* in minutes */
+        'path' => 'protected/tmp/cache/'
     ),
 
     // datetime settings
@@ -57,10 +67,11 @@ return array(
     
     // application components
     'components' => array(
-        'AdminMenu' => array('enable' => true, 'class' => 'AdminMenu'),
-        'SiteMenu' 	=> array('enable' => true, 'class' => 'SiteMenu'),               
-        'Bootstrap' => array('enable' => true, 'class' => 'Bootstrap'),               
-        'SiteSettings' => array('enable' => true, 'class' => 'SiteSettings'),        
+        'BackendMenu' => array('enable' => true, 'class' => 'BackendMenu'),
+        'Bootstrap' => array('enable' => true, 'class' => 'Bootstrap'),
+        'FrontendMenu' => array('enable' => true, 'class' => 'FrontendMenu'),               
+        'LocalTime' => array('enable' => true, 'class' => 'LocalTime'),               
+        'Website' => array('enable' => true, 'class' => 'Website'),        
     ),
 
     // application modules

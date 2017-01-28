@@ -1,17 +1,18 @@
 <?php
 /**
-* LocationsController
-*
-* PUBLIC:                  PRIVATE
-* -----------              ------------------
-* __construct              
-* indexAction
-* manageAction
-* addAction
-* editAction
-* deleteAction
-*
-*/
+ * Locations controller
+ *
+ * PUBLIC:                  PRIVATE
+ * -----------              ------------------
+ * __construct              
+ * indexAction
+ * manageAction
+ * addAction
+ * editAction
+ * deleteAction
+ * getSubLocationsAction
+ *
+ */
 
 class LocationsController extends CController
 {
@@ -22,21 +23,9 @@ class LocationsController extends CController
 	public function __construct()
 	{
         parent::__construct();
-
-        // block access to this controller for not-logged users
-		CAuth::handleLogin('backend/login');
-		
-		// block access if admin has no active privilege to view locations
-		if(!Admins::hasPrivilege('locations', 'view','edit')){
-			$this->redirect('backend/index');
-		}
-		
-        // set meta tags according to active language
-    	SiteSettings::setMetaTags(array('title'=>A::t('app', 'Locations Management')));
-		
-        A::app()->view->setTemplate('backend');
-        $this->view->actionMessage = '';
-        $this->view->errorField = '';
+        
+        $this->_view->actionMessage = '';
+        $this->_view->errorField = '';
     }
         
 	/**
@@ -53,6 +42,19 @@ class LocationsController extends CController
      */
 	public function manageAction($msg = '')
 	{			
+        // block access to this controller for not-logged users
+		CAuth::handleLogin('backend/login');
+
+		// block access if admin has no active privilege to view locations
+		if(!Admins::hasPrivilege('locations', array('view', 'edit'))){
+			$this->redirect('backend/index');
+		}
+		
+        // set meta tags according to active language
+    	Website::setMetaTags(array('title'=>A::t('app', 'Locations Management')));
+        // set backend mode
+        Website::setBackend();
+		
 		switch($msg){
 			case 'added':
 				$message = A::t('core', 'The adding operation has been successfully completed!');
@@ -64,9 +66,9 @@ class LocationsController extends CController
 				$message = '';
 		}
 		if(!empty($message)){
-			$this->view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
+			$this->_view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
 		}
-		$this->view->render('locations/manage');    
+		$this->_view->render('locations/manage');    
     }
 
     /**
@@ -74,31 +76,48 @@ class LocationsController extends CController
      */
 	public function addAction()
 	{		
+        // block access to this controller for not-logged users
+		CAuth::handleLogin('backend/login');
+		
 		// block access if admin has no active privilege to edit locations
      	if(!Admins::hasPrivilege('locations', 'edit')){
      		$this->redirect('backend/index');
      	}
      	
-		$this->view->render('locations/add');        
+        // set meta tags according to active language
+    	Website::setMetaTags(array('title'=>A::t('app', 'Add Locations')));
+        // set backend mode
+        Website::setBackend();
+
+		$this->_view->render('locations/add');        
 	}
 
 	/**
 	 * Edit location (country) action handler
-	 * @param int $id The country id 
+	 * @param int $id the country id 
 	 */
 	public function editAction($id = 0)
 	{		
+        // block access to this controller for not-logged users
+		CAuth::handleLogin('backend/login');
+		
 		// block access if admin has no active privilege to edit locations
      	if(!Admins::hasPrivilege('locations', 'edit')){
      		$this->redirect('backend/index');
      	}
 		
-     	$country = Countries::model()->findByPk($id);
+     	$country = Countries::model()->findByPk((int)$id);
 		if(!$country){
 			$this->redirect('locations/manage');
 		}
-		$this->view->country = $country;		
-		$this->view->render('locations/edit');        
+        
+        // set meta tags according to active language
+    	Website::setMetaTags(array('title'=>A::t('app', 'Edit Locations')));
+        // set backend mode
+        Website::setBackend();
+
+		$this->_view->country = $country;		
+		$this->_view->render('locations/edit');        
 	}
 
 	/**
@@ -107,44 +126,84 @@ class LocationsController extends CController
 	 */
 	public function deleteAction($id = 0)
 	{
+        // block access to this controller for not-logged users
+		CAuth::handleLogin('backend/login');
+
 		// block access if admin has no active privilege to edit locations
      	if(!Admins::hasPrivilege('locations', 'edit')){
      		$this->redirect('backend/index');
      	}
      	
-		$msg = '';
-		$errorType = '';
-	
-		$country = Countries::model()->findByPk($id);
+		$country = Countries::model()->findByPk((int)$id);
 		if(!$country){
 			$this->redirect('locations/manage');
 		}
 		
+		$msg = '';
+		$msgType = '';
+	
+        // set meta tags according to active language
+    	Website::setMetaTags(array('title'=>A::t('app', 'Delete Locations')));
+        // set backend mode
+        Website::setBackend();
+
 		// check if the country is default
 		if($country->is_default){
 			$msg = A::t('app', 'Delete Default Alert');
-			$errorType = 'error';
+			$msgType = 'error';
 		}else if($country->delete()){				
 			if($country->getError()){
 				$msg = A::t('app', 'Delete Warning Message');
-				$errorType = 'warning';
+				$msgType = 'warning';
 			}else{		
 				$msg = A::t('app', 'Delete Success Message');
-				$errorType = 'success';	
+				$msgType = 'success';	
 			}		
 		}else{
 			if(APPHP_MODE == 'demo'){
 				$msg = CDatabase::init()->getErrorMessage();
-				$errorType = 'warning';
+				$msgType = 'warning';
 		   	}else{
-				$msg = A::t('app', 'Delete Error Message');
-				$errorType = 'error';
+				$msg = $country->getError() ? $country->getErrorMessage() : A::t('app', 'Delete Error Message');
+				$msgType = 'error';
 		   	}			
 		}
 		if(!empty($msg)){
-			$this->view->actionMessage = CWidget::create('CMessage', array($errorType, $msg, array('button'=>true)));
+			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
 		}
-		$this->view->render('locations/manage');
+		$this->_view->render('locations/manage');
 	}
+
+	/**
+	 * Returns sub-locations (states) by given location (country)
+	 * @return JSON array
+	 */
+	public function getSubLocationsAction()
+	{
+        $arr = array();
+        $cRequest = A::app()->getRequest();
+        
+        if($cRequest->getPost('act') == 'send'){        
+            $arr[] = '{"status": "1"}';
+            $result = States::model()->findAll('country_code = :code', array('s:code'=>$cRequest->getPost('country_code')));
+            foreach($result as $key => $val){
+                $arr[] = '{"code": "'.$val['code'].'", "name": "'.$val['state_name'].'"}';  
+            }            
+        }else{
+            $arr[] = '{"status": "0"}';            
+        }
+        
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');   // date in the past
+        header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        header('Cache-Control: no-cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: no-cache'); // HTTP/1.0
+        header('Content-Type: application/json');
+
+        echo '[';
+        echo implode(',', $arr);
+        echo ']';
+    
+        exit;
+    }
 
 }

@@ -1,13 +1,13 @@
 <?php
-
 /**
- * ErrorController
+ * Error controller
  *
  * PUBLIC:                 PRIVATE
  * -----------             ------------------
  * indexAction
  *
  */
+
 class ErrorController extends CController
 {
     
@@ -23,10 +23,14 @@ class ErrorController extends CController
         }
 
 		if(CAuth::isLoggedInAsAdmin()){
-			A::app()->view->setTemplate('backend');        	
-		}		
+            // set backend mode
+            Website::setBackend();
+		}else{
+            // set frontend mode
+            Website::setFrontend();
+        }
 
-        $this->view->render('error/'.$redirectCode);
+        $this->_view->render('error/'.$redirectCode);
     }
 	
 }

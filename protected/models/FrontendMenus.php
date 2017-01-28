@@ -1,19 +1,18 @@
 <?php
 /**
- * FrontendMenus
+ * FrontendMenus model
  *
- * PUBLIC:                PROTECTED               PRIVATE
- * ---------------        ---------------         ---------------
- * __construct
- * relations
- * afterDelete
- * getError
+ * PUBLIC:                 PROTECTED                  PRIVATE
+ * ---------------         ---------------            ---------------
+ * __construct             _afterDelete
+ * getError                _relations
  *
  * STATIC:
  * ------------------------------------------
  * model
  *
  */
+
 class FrontendMenus extends CActiveRecord
 {
 
@@ -22,6 +21,7 @@ class FrontendMenus extends CActiveRecord
     /** @var string */
     protected $_tableTranslation = 'frontend_menu_translations';
     
+    /** @var bool */
     private $_isError = false;
 	private $_parentId = '';
     
@@ -44,7 +44,7 @@ class FrontendMenus extends CActiveRecord
 	/**
 	 * Defines relations between different tables in database and current $_table
 	 */
-	public function relations()
+	protected function _relations()
 	{
 		return array(
 			'id' => array(
@@ -62,19 +62,19 @@ class FrontendMenus extends CActiveRecord
 	 * This method is invoked after deleting a record successfully
 	 * @param string $id
 	 */
-	public function afterDelete($id = 0)
+	protected function _afterDelete($id = 0)
 	{
 		$this->_isError = false;
 		// delete menu names from translation table
-		if(!$this->db->delete($this->_tableTranslation, 'menu_id = \''.$id.'\'')){
+		if(!$this->_db->delete($this->_tableTranslation, 'menu_id = \''.$id.'\'')){
 			$this->_isError = true;
 		}
 		
 		// delete sub-menus 
-		if(!$this->db->delete($this->_tableTranslation, 'WHERE menu_id IN (SELECT id FROM '.CConfig::get('db.prefix').$this->_table.' WHERE parent_id = \''.$id.'\')')){
+		if(!$this->_db->delete($this->_tableTranslation, 'WHERE menu_id IN (SELECT id FROM '.CConfig::get('db.prefix').$this->_table.' WHERE parent_id = \''.$id.'\')')){
 			$this->_isError = true;
 		}else{
-			if(!$this->db->delete($this->_table, 'parent_id = \''.$id.'\'')){
+			if(!$this->_db->delete($this->_table, 'parent_id = \''.$id.'\'')){
 				$this->_isError = true;
 			}
 		}

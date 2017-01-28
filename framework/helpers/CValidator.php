@@ -10,9 +10,6 @@
  *
  * PUBLIC:					PROTECTED:					PRIVATE:		
  * ----------               ----------                  ----------
- * 
- * STATIC:
- * ---------------------------------------------------------------
  * isEmpty          
  * isAlpha
  * isAlphaBetic
@@ -20,8 +17,10 @@
  * isAlphaNumeric
  * isVariable
  * isMixed
+ * isText
  * isTimeZone
  * isPhone
+ * isPhoneString
  * isPassword
  * isUsername
  * isEmail
@@ -29,13 +28,20 @@
  * isDate
  * isDigit
  * isInteger
+ * isPositiveInteger
  * isFloat
  * isHtmlSize
+ * isUrl
  * isAlignment
  * inArray
  * validateLength
- * validateMinlength
- * validateMaxlength
+ * validateMinLength
+ * validateMaxLength
+ * validateMin
+ * validateMax
+ * validateMinDate
+ * validateMaxDate
+ * validateRange
  * 
  */	  
 
@@ -113,6 +119,33 @@ class CValidator
     }
 
 	/**
+	 * Checks if the given value is a textual value and allowed HTML tags
+	 * @param mixed $value
+	 * @return boolean
+	 */
+    public static function isText($value)
+	{
+        if((preg_match("/<[^>]*script*\"?[^>]*>/i", $value)) ||
+            (preg_match("/<[^>]*object*\"?[^>]*>/i", $value)) ||
+            (preg_match("/<[^>]*iframe*\"?[^>]*>/i", $value)) ||
+            (preg_match("/<[^>]*applet*\"?[^>]*>/i", $value)) ||
+            (preg_match("/<[^>]*meta*\"?[^>]*>/i", $value)) ||
+            (preg_match("/<[^>]*style*\"?[^>]*>/i", $value)) ||
+            (preg_match("/<[^>]*form*\"?[^>]*>/i", $value)) ||
+            (preg_match("/<[^>]*img*\"?[^>]*>/i", $value)) ||
+            (preg_match("/<[^>]*onmouseover*\"?[^>]*>/i", $value)) ||
+            (preg_match("/<[^>]*body*\"?[^>]*>/i", $value)) ||
+            (preg_match("/\([^>]*\"?[^)]*\)/i", $value)) || 
+            (preg_match("/ftp:\/\//i", $value)) || 
+            (preg_match("/https:\/\//i", $value)) || 
+            (preg_match("/http:\/\//i", $value)) )
+        {		
+            return false;
+        }	
+        return true; 
+    }
+
+	/**
 	 * Checks if the given value is a valid php timezone value
 	 * @param mixed $value
 	 * @return boolean
@@ -129,7 +162,18 @@ class CValidator
 	 */
     public static function isPhone($value)
 	{
-        return preg_match('/^[\d]{3,12}[-]{0,1}[\d]{0,6}[-]{0,1}[\d]{0,6}$/', $value);
+        return preg_match('/^[+]{0,1}[\d]{3,12}[-| ]{0,1}[\d]{0,6}[-| ]{0,1}[\d]{0,6}$/', $value);
+    }
+
+	/**
+	 * Checks if the given value is a phone number in a free format:
+	 * 7 or 10 digit number, with extensions allowed, delimiters are spaces, dashes or periods
+	 * @param mixed $value
+	 * @return boolean
+	 */
+    public static function isPhoneString($value)
+	{
+        return preg_match('/^[+]?([\d]{0,3})?[-| ]{0,1}[\(\.\-\s]?([\d]{0,3})[\)\.\-\s]?[-| ]{0,1}[\d]{0,6}[-| ]{0,1}[\d]{0,6}[-| ]{0,1}[\d]{0,6}$/', $value);
     }
 
 	/**
@@ -182,7 +226,16 @@ class CValidator
 	 */
     public static function isDate($value)
 	{
-        return self::isNumeric(strtotime($value));
+        $year = substr($value, 0, 4);
+        $month = substr($value, 5, 2);
+        $day = substr($value, 8, 2);
+        if(strtotime($value) == strtotime($year.'-'.$month.'-'.$day)){
+            return checkdate($month, $day, $year);
+        }else{
+            $date = strtotime($value);        
+            return (!empty($date) && self::isInteger($date));            
+        }
+        $date = strtotime($value);        
     }
 
 	/**
@@ -204,14 +257,26 @@ class CValidator
     {
 		return is_numeric($value) ? intval($value) == $value : false;
     }
-
+	
 	/**
-	 * Checks if the given value is a float value
+	 * Checks if the given value is a positive integer value
 	 * @param mixed $value
 	 * @return boolean
 	 */
-    public static function isFloat($value)
+    public static function isPositiveInteger($value)
     {
+		return (is_numeric($value) && $value > 0) ? intval($value) == $value : false;
+    }
+	
+	/**
+	 * Checks if the given value is a float value
+	 * @param mixed $value
+	 * @param string $format
+	 * @return boolean
+	 */
+    public static function isFloat($value, $format = '')
+    {
+        if($format == 'european') $value = CNumber::europeanFormat($value);
 		return is_numeric($value) ? floatval($value) == $value : false;
     }
 	
@@ -225,6 +290,16 @@ class CValidator
 		return preg_match('/^[0-9]{1,4}[\.]{0,1}[0-9]{0,1}(px|em|pt|%){0,1}$/i', $value) ? true : false;
     }
 	
+	/**
+	 * Checks if the given value is a valid URL address
+	 * @param mixed $value
+	 * @return boolean
+	 */
+    public static function isUrl($value)    
+	{
+        return (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $value)) ? false : true;
+    }
+
 	/**
 	 * Checks if the given value is an alignment value
 	 * @param mixed $value
@@ -268,7 +343,7 @@ class CValidator
 	 * @param boolean $encoding
 	 * @return boolean
 	 */
-    public static function validateMinlength($value, $min, $encoding = true)
+    public static function validateMinLength($value, $min, $encoding = true)
     {
 		$strlen = (function_exists('mb_strlen') && $encoding !== false) ? mb_strlen($value, A::app()->charset) : strlen($value);    
         return ($strlen < $min) ? false : true;
@@ -281,10 +356,75 @@ class CValidator
 	 * @param boolean $encoding
 	 * @return boolean
 	 */
-    public static function validateMaxlength($value, $max, $encoding = true)
+    public static function validateMaxLength($value, $max, $encoding = true)
     {
 		$strlen = (function_exists('mb_strlen') && $encoding !== false) ? mb_strlen($value, A::app()->charset) : strlen($value);    
         return ($strlen > $max) ? false : true;
+    }
+
+	/**
+	 * Validates if the given numeric value is grater or equal to specified value
+	 * @param string $value
+	 * @param integer $min
+	 * @param string $format
+	 * @return boolean
+	 */
+    public static function validateMin($value, $min, $format = '')
+    {
+        if($format == 'european') $value = CNumber::europeanFormat($value);
+		if(!is_numeric($value)) return false;
+        return ($value >= $min) ? true : false;
+    }
+
+	/**
+	 * Validates if the given numeric value is less than or equal to specified value
+	 * @param string $value
+	 * @param integer $max
+	 * @param string $format
+	 * @return boolean
+	 */
+    public static function validateMax($value, $max, $format = '')
+    {
+        if($format == 'european') $value = CNumber::europeanFormat($value);        
+		if(!is_numeric($value)) return false;
+        return ($value <= $max) ? true : false;
+    }
+
+	/**
+	 * Validates if the given date value is grater or equal to specified value
+	 * @param string $value
+	 * @param integer $min
+	 * @return boolean
+	 */
+    public static function validateMinDate($value, $min)
+    {
+        if($format == 'european') $value = CNumber::europeanFormat($value);
+        return ($value >= $min) ? true : false;
+    }
+
+	/**
+	 * Validates if the given date value is less than or equal to specified value
+	 * @param string $value
+	 * @param integer $max
+	 * @return boolean
+	 */
+    public static function validateMaxDate($value, $max)
+    {
+        if($format == 'european') $value = CNumber::europeanFormat($value);        
+        return ($value <= $max) ? true : false;
+    }
+        
+	/**
+	 * Validates if the given numeric value in a specified range
+	 * @param string $value
+	 * @param integer $min
+	 * @param integer $max
+	 * @return boolean
+	 */
+    public static function validateRange($value, $min, $max)
+    {
+		if(!is_numeric($value)) return false;
+        return ($value >= $min && $value <= $max) ? true : false;
     }
 	
 }    

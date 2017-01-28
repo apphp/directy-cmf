@@ -1,14 +1,15 @@
 <?php
 /**
-* PrivilegesController
-*
-* PUBLIC:                  PRIVATE
-* -----------              ------------------
-* __construct              
-* indexAction
-* manageAction
-*
-*/
+ * Privileges controller
+ *
+ * PUBLIC:                  PRIVATE
+ * -----------              ------------------
+ * __construct              
+ * indexAction
+ * manageAction
+ *
+ */
+
 class PrivilegesController extends CController
 {
     /**
@@ -26,11 +27,12 @@ class PrivilegesController extends CController
         	$this->redirect('backend/index');
         }
         // set meta tags according to active language
-    	SiteSettings::setMetaTags(array('title'=>A::t('app', 'Privileges Management')));
+    	Website::setMetaTags(array('title'=>A::t('app', 'Privileges Management')));
+        // set backend mode
+        Website::setBackend();
 
-        A::app()->view->setTemplate('backend');
-        $this->view->actionMessage = '';
-        $this->view->errorField = '';        
+        $this->_view->actionMessage = '';
+        $this->_view->errorField = '';        
 	}	
 		
 	/**
@@ -48,7 +50,7 @@ class PrivilegesController extends CController
 	 */
 	public function manageAction($roleID = 0, $msg = '')
 	{
-		$this->view->id = (int)$roleID;
+		$this->_view->id = (int)$roleID;
 		$cRequest = A::app()->getRequest();
 		
 		$roleModel = Roles::model()->findByPk((int)$roleID);
@@ -59,17 +61,17 @@ class PrivilegesController extends CController
 		if(CAuth::isLoggedInAs('mainadmin') && $roleModel->code != 'admin'){
 			$this->redirect('roles/manage');
         }
-		$this->view->role = $roleModel;
+		$this->_view->role = $roleModel;
 		
 		if($cRequest->getPost('act') == 'send'){
 			if(APPHP_MODE == 'demo'){
-				$this->view->actionMessage = CWidget::create('CMessage', array('warning', A::t('core', 'This operation is blocked in Demo Mode!'), array('button'=>true)));
+				$this->_view->actionMessage = CWidget::create('CMessage', array('warning', A::t('core', 'This operation is blocked in Demo Mode!'), array('button'=>true)));
 		   	}else{
 				// get current privileges from database			
-				$privileges = Privileges::model()->findAll(
+                $privileges = Privileges::model()->findAll(
 					array(
-						'condition'=>'role_id='.$this->view->id,
-						'order'=>'privilege_category ASC',
+						'condition'=>'role_id='.$this->_view->id,
+						'order'=>'module_code ASC, privilege_category ASC',
 						'limit'=>'0, 1000'
 					)			
 				);
@@ -83,19 +85,19 @@ class PrivilegesController extends CController
 						}					
 					}
 				}
-				$this->view->actionMessage = CWidget::create('CMessage', array('success', A::t('core', 'The updating operation has been successfully completed!'), array('button'=>true)));
+				$this->_view->actionMessage = CWidget::create('CMessage', array('success', A::t('core', 'The updating operation has been successfully completed!'), array('button'=>true)));
 			}			
 		}
 
-		$this->view->privileges = Privileges::model()->findAll(
+		$this->_view->privileges = Privileges::model()->findAll(
 			array(
-				'condition'=>'role_id='.$this->view->id,
-				'order'=>'privilege_category ASC',
+				'condition'=>'role_id='.$this->_view->id,
+				'order'=>'module_code ASC, privilege_category ASC',
 				'limit'=>'0, 1000'
 			)			
 		);
 	
-		$this->view->render('privileges/manage');
+		$this->_view->render('privileges/manage');
 	}
 	
 }

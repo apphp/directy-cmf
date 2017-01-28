@@ -1,19 +1,20 @@
 <?php
 /**
-* FrontendMenusController
-*
-* PUBLIC:                  	PRIVATE
-* -----------              	------------------
-* __construct              	getPlacementsList
-* indexAction				getAccessLevelsList
-* manageAction				getLinkTargetsList
-* addAction                 getMenuTypesList 
-* editAction                getPagesLinks
-* deleteAction              getModulesLinks
-*                           getModulesBlock
-*                           getDialogContent 
-*
-*/
+ * FrontendMenus controller
+ *
+ * PUBLIC:                   PRIVATE
+ * -----------               ------------------
+ * __construct               _getPlacementsList
+ * indexAction				 _getAccessLevelsList
+ * manageAction				 _getLinkTargetsList
+ * addAction                 _getMenuTypesList 
+ * editAction                _getPagesLinks
+ * deleteAction              _getModulesLinks
+ *                           _getModulesBlock
+ *                           _getDialogContent 
+ *
+ */
+
 class FrontendMenusController extends CController
 {
     /**
@@ -32,24 +33,25 @@ class FrontendMenusController extends CController
         }
        
         // set meta tags according to active language
-        SiteSettings::setMetaTags(array('title'=>A::t('app', 'Frontend Menu Management')));
-        
-        A::app()->view->setTemplate('backend');
-        $this->view->actionMessage = '';
-        $this->view->errorField = '';
-    	$this->view->parentId = 0;
-		$this->view->parentName = '';
-		$this->view->moduleCode = '';
-        $this->view->menuType = '';
+        Website::setMetaTags(array('title'=>A::t('app', 'Frontend Menu Management')));
+        // set backend mode
+        Website::setBackend();
+
+        $this->_view->actionMessage = '';
+        $this->_view->errorField = '';
+    	$this->_view->parentId = 0;
+		$this->_view->parentName = '';
+		$this->_view->moduleCode = '';
+        $this->_view->menuType = '';
 		
-    	$this->view->placementsList = $this->getPlacementsList();
-		$this->view->placementsFilterList = $this->getPlacementsList('all');
-    	$this->view->accessLevelsList = $this->getAccessLevelsList();
-		$this->view->linkTargetsList = $this->getLinkTargetsList();
-		$this->view->menuTypesList = $this->getMenuTypesList();
-		$this->view->pagesList = $this->getPagesLinks();
-		$this->view->modulesList = $this->getModulesLinks();
-		$this->view->modulesBlock = $this->getModulesBlock();
+    	$this->_view->placementsList = $this->_getPlacementsList();
+		$this->_view->placementsFilterList = $this->_getPlacementsList('all');
+    	$this->_view->accessLevelsList = $this->_getAccessLevelsList();
+		$this->_view->linkTargetsList = $this->_getLinkTargetsList();
+		$this->_view->menuTypesList = $this->_getMenuTypesList();
+		$this->_view->pagesList = $this->_getPagesLinks();
+		$this->_view->modulesList = $this->_getModulesLinks();
+		$this->_view->modulesBlock = $this->_getModulesBlock();
 	}
 	
 	/**
@@ -67,12 +69,12 @@ class FrontendMenusController extends CController
      */
     public function manageAction($pid = 0, $msg = '')
     {
-		$this->view->parentId = 0;
+		$this->_view->parentId = 0;
 		$menu = FrontendMenus::model()->findByPk((int)$pid);
 		if(!empty($menu)){
-			$this->view->parentId = (int)$pid;
-			$this->view->parentName = $menu->menu_name;
-			$this->view->menuType =	$menu->menu_type;
+			$this->_view->parentId = (int)$pid;
+			$this->_view->parentName = $menu->menu_name;
+			$this->_view->menuType =	$menu->menu_type;
 		}
 
 	    switch($msg){
@@ -87,9 +89,9 @@ class FrontendMenusController extends CController
         }
 		
         if(!empty($message)){
-    		$this->view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
+    		$this->_view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
     	}
-		$this->view->render('frontendMenus/manage');	   	
+		$this->_view->render('frontendMenus/manage');	   	
     }
     
     /**
@@ -103,28 +105,30 @@ class FrontendMenusController extends CController
         	$this->redirect('frontendMenus/manage');
         }
 
-		$this->view->parentId = 0;
-		$this->view->parentName = A::t('app', 'Top Level Menu');
-		$this->view->menuType = '';
+		$this->_view->parentId = 0;
+		$this->_view->parentName = A::t('app', 'Top Level Menu');
+		$this->_view->menuType = '';
 		$menu = FrontendMenus::model()->findbyPk($pid);
 		if(!empty($menu)){
-			$this->view->parentId = $pid;
-			$this->view->parentName = $menu->menu_name;
+			$this->_view->parentId = $pid;
+			$this->_view->parentName = $menu->menu_name;
 		}
 
 		// prepare menu type
-		if(A::app()->getRequest()->getPost('APPHP_FORM_ACT') == 'change'){
-			$this->view->menuType =	A::app()->getRequest()->getPost('menu_type');
+		if(A::app()->getRequest()->isPostRequest()){
+			$this->_view->menuType = A::app()->getRequest()->getPost('menu_type');            
+        }
+        if(A::app()->getRequest()->getPost('APPHP_FORM_ACT') == 'change'){
 			A::app()->getRequest()->setPost('link_url', '');
 			A::app()->getRequest()->setPost('link_target', '');
 			A::app()->getRequest()->setPost('module_code', '');
 		}
 
-		$dialog = $this->getDialogContent($this->view->menuType, 'Add');
-		$this->view->dialogTitle = $dialog['title'];
-		$this->view->dialogContent = $dialog['content'];
+		$dialog = $this->_getDialogContent($this->_view->menuType, 'Add');
+		$this->_view->dialogTitle = $dialog['title'];
+		$this->_view->dialogContent = $dialog['content'];
 
-    	$this->view->render('frontendMenus/add');
+    	$this->_view->render('frontendMenus/add');
     }    
   
     /**
@@ -138,36 +142,38 @@ class FrontendMenusController extends CController
         	$this->redirect('frontendMenus/manage');
         }
 		
-		$this->view->parentId = 0;
-		$this->view->parentName = A::t('app', 'Top Level Menu');
-		$this->view->moduleCode = '';
-		$this->view->menuType = '';
+		$this->_view->parentId = 0;
+		$this->_view->parentName = A::t('app', 'Top Level Menu');
+		$this->_view->moduleCode = '';
+		$this->_view->menuType = '';
 		$menu = FrontendMenus::model()->findByPk($id);
         if(!empty($menu)){
-			$this->view->moduleCode = $menu->module_code;
-			$this->view->menuType =	$menu->menu_type;
+			$this->_view->moduleCode = $menu->module_code;
+			$this->_view->menuType = $menu->menu_type;
         	$parentMenu = FrontendMenus::model()->findbyPk($menu->parent_id);
         	if(!empty($parentMenu)){
-				$this->view->parentName = $parentMenu->menu_name;
-				$this->view->parentId = $parentMenu->id;
-				$this->view->moduleCode = '';
+				$this->_view->parentName = $parentMenu->menu_name;
+				$this->_view->parentId = $parentMenu->id;
+				$this->_view->moduleCode = '';
 			}
         }
 
 		// prepare menu type
+		if(A::app()->getRequest()->isPostRequest()){
+			$this->_view->menuType = A::app()->getRequest()->getPost('menu_type');            
+        }
 		if(A::app()->getRequest()->getPost('APPHP_FORM_ACT') == 'change'){
-			$this->view->menuType =	A::app()->getRequest()->getPost('menu_type');
 			A::app()->getRequest()->setPost('link_url', '');
 			A::app()->getRequest()->setPost('link_target', '');
 			A::app()->getRequest()->setPost('module_code', '');
 		}		
 
-		$dialog = $this->getDialogContent($this->view->menuType, 'Edit');
-		$this->view->dialogTitle = $dialog['title'];
-		$this->view->dialogContent = $dialog['content'];
-    	$this->view->id = (int)$id;
+		$dialog = $this->_getDialogContent($this->_view->menuType, 'Edit');
+		$this->_view->dialogTitle = $dialog['title'];
+		$this->_view->dialogContent = $dialog['content'];
+    	$this->_view->id = (int)$id;
 		
-    	$this->view->render('frontendMenus/edit');
+    	$this->_view->render('frontendMenus/edit');
     }    
   
     /**
@@ -178,7 +184,7 @@ class FrontendMenusController extends CController
     public function deleteAction($id = 0, $pid = 0)
     {
     	$msg = '';
-    	$errorType = '';
+    	$msgType = '';
     
 		$menu = FrontendMenus::model()->findByPk($id);
 		if(!$menu){
@@ -189,28 +195,28 @@ class FrontendMenusController extends CController
         	$this->redirect('frontendMenus/manage');
         }else if($menu->delete()){
 			$msg = A::t('app', 'Delete Success Message');
-			$errorType = 'success';	
+			$msgType = 'success';	
 		}else{
 			if(APPHP_MODE == 'demo'){
 				$msg = CDatabase::init()->getErrorMessage();
-				$errorType = 'warning';	
+				$msgType = 'warning';	
 		   	}else{
 				$msg = A::t('app', 'Delete Error Message');
-				$errorType = 'error';
+				$msgType = 'error';
 		   	}			
 		}
 		if(!empty($msg)){
-			$this->view->actionMessage = CWidget::create('CMessage', array($errorType, $msg, array('button'=>true)));
-			$this->view->parentId = $pid;
+			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
+			$this->_view->parentId = $pid;
 		}
-		$this->view->render('frontendMenus/manage');
+		$this->_view->render('frontendMenus/manage');
     }
 
     /**
      * Returns an array with available menu placements
      * @param string $type
      */
-    private function getPlacementsList($type = '')
+    private function _getPlacementsList($type = '')
     {
     	$placementsList = array(			
 			'left' 	=> A::t('app', 'Left'),
@@ -221,7 +227,7 @@ class FrontendMenusController extends CController
 		
 		if($type != 'all'){
 			// remove menu placements that are not allowed by active template
-			$template = Settings::model()->findByPk(1)->template;
+			$template = Bootstrap::init()->getSettings('template');
 			// load data from XML file
 			if(@file_exists('templates/'.$template.'/info.xml')) {
 				$xml = simplexml_load_file('templates/'.$template.'/info.xml');		 
@@ -243,7 +249,7 @@ class FrontendMenusController extends CController
     /**
      * Returns an array with available menu access levels
      */
-    private function getAccessLevelsList()
+    private function _getAccessLevelsList()
     {
     	return array(
 			'public' 	 => A::t('app', 'Public'),
@@ -254,7 +260,7 @@ class FrontendMenusController extends CController
     /**
      * Returns an array with available menu access levels
      */
-    private function getLinkTargetsList()
+    private function _getLinkTargetsList()
     {
     	return array(
 			''  	 => '',
@@ -266,7 +272,7 @@ class FrontendMenusController extends CController
     /**
      * Returns an array with available menu types
      */
-    private function getMenuTypesList()
+    private function _getMenuTypesList()
     {
     	return array(
 			'pagelink'    => A::t('app', 'Page Link'),
@@ -278,13 +284,13 @@ class FrontendMenusController extends CController
     /**
      * Returns an array with available pages links
      */
-    private function getPagesLinks()
+    private function _getPagesLinks()
     {
 		$result = array();
-        if(Modules::model()->exists('code = :code AND is_installed = 1', array(':code'=>'cms'))){
+        if(Modules::model()->exists("code = 'cms' AND is_installed = 1")){            
 			$pages = Pages::model()->findAll('publish_status = 1'); 
 			foreach($pages as $key => $val){
-				$result[$val['id']] = array('link'=>'pages/view/id/'.$val['id'], 'title'=>$val['page_header']);
+				$result[$val['id']] = array('id'=>$val['id'], 'link'=>'pages/view/id/'.$val['id'], 'title'=>$val['page_header']);
 			}
         }		
 		return $result;
@@ -293,7 +299,7 @@ class FrontendMenusController extends CController
     /**
      * Returns an array with available modules links
      */
-    private function getModulesLinks()
+    private function _getModulesLinks()
     {
 		$result = array();
 		if($modules = ModulesSettings::model()->findAll(array('condition'=>'property_key = :property_key', 'order'=>'id ASC'), array(':property_key'=>'modulelink'))){
@@ -307,7 +313,7 @@ class FrontendMenusController extends CController
     /**
      * Returns an array with available modules blocks
      */
-    private function getModulesBlock()
+    private function _getModulesBlock()
     {
 		$result = array();
 		if($modules = ModulesSettings::model()->findAll(array('condition'=>'property_key = :property_key', 'order'=>'id ASC'), array(':property_key'=>'moduleblock'))){
@@ -320,40 +326,43 @@ class FrontendMenusController extends CController
 
     /**
      * Returns a dialog content according to selected menu type
+     * @param string $menuType
+     * @param string $viewType
      */
-    private function getDialogContent($menuType = '', $viewType = 'Add')
+    private function _getDialogContent($menuType = '', $viewType = 'Add')
     {
 		$output = array('content'=>'', 'title'=>'');
 		if($menuType == 'modulelink'){
-			$modulesList = $this->view->modulesList;
+			$modulesList = $this->_view->modulesList;
 			$output['title'] = 'Module Links';
 			if(count($modulesList) > 0){
 				$output['content'] = '<p>'.A::t('app', 'Click on the Module Link below to add a module link URL').'</p><br>';
 				foreach($modulesList as $key => $val){
-					$output['content'] .= '&bull; <a href="javascript:void(0)" onclick="javascript:setMenuType(\''.$viewType.'\',\''.$val['link'].'\',\''.$val['module'].'\');" title="'.$val['tooltip'].'">'.$val['title'].'</a><br>';
+					$output['content'] .= '&bull; <a href="javascript:void(0)" onclick="javascript:setMenuType(\''.$viewType.'\',\''.$val['link'].'\',\''.$val['module'].'\');" title="'.$val['tooltip'].'">'.strip_tags($val['title']).'</a><br>';
 				}
 			}else{
 				$output['content'] = A::t('app', 'No module links available');
 			}			
 		}else if($menuType == 'moduleblock'){
-			$modulesBlock = $this->view->modulesBlock;
+			$modulesBlock = $this->_view->modulesBlock;
 			$output['title'] = 'Module Blocks';
 			if(count($modulesBlock) > 0){				
 				$output['content'] = '<p>'.A::t('app', 'Click on the Module Block below to add a module block link').'</p><br>';
 				foreach($modulesBlock as $key => $val){
-					$output['content'] .= '&bull; <a href="javascript:void(0)" onclick="javascript:setMenuType(\''.$viewType.'\',\''.$val['link'].'\',\''.$val['module'].'\');" title="'.$val['tooltip'].'">'.$val['title'].'</a><br>';
+					$output['content'] .= '&bull; <a href="javascript:void(0)" onclick="javascript:setMenuType(\''.$viewType.'\',\''.$val['link'].'\',\''.$val['module'].'\');" title="'.$val['tooltip'].'">'.strip_tags($val['title']).'</a><br>';
 				}
 			}else{
 				$output['content'] = A::t('app', 'No module blocks available');
 			}
 		}else{
 			// 'pagelink'
-			$pagesList = $this->view->pagesList;
+			$pagesList = $this->_view->pagesList;
 			$output['title'] = 'Page Links';
 			if(count($pagesList) > 0){
 				$output['content'] = '<p>'.A::t('app', 'Click on the Page Name below to add a page link URL').'</p><br>';
 				foreach($pagesList as $key => $val){
-					$output['content'] .= '&bull; <a href="javascript:void(0)" onclick="javascript:setMenuType(\''.$viewType.'\',\''.$val['link'].'\',\'\');">'.$val['title'].'</a><br>';
+                    $pageLink = Website::prepareLinkByFormat('cms', 'page_link_format', $val['id'], $val['title']);                     
+					$output['content'] .= '&bull; <a href="javascript:void(0)" onclick="javascript:setMenuType(\''.$viewType.'\',\''.$pageLink.'\',\'\');">'.strip_tags($val['title']).'</a><br>';
 				}
 			}else{
 				$output['content'] = A::t('app', 'No page links available');

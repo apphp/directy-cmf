@@ -1,16 +1,17 @@
 <?php
     $this->_activeMenu = 'frontendMenus/';
-    $this->_breadCrumbs = array(
+    $breadCrumbs = array(
         array('label'=>A::t('app', 'General'), 'url'=>'backend/dashboard'),
     );
 	if($parentId && $parentName != ''){
-		$this->_breadCrumbs[] = array('label'=>A::t('app', 'Frontend Menu'), 'url'=>'frontendMenus/manage');
-		$this->_breadCrumbs[] = array('label'=>A::t('app', $parentName), 'url'=>'frontendMenus/manage/pid/'.$parentId);
+		$breadCrumbs[] = array('label'=>A::t('app', 'Frontend Menu'), 'url'=>'frontendMenus/manage');
+		$breadCrumbs[] = array('label'=>A::t('app', $parentName), 'url'=>'frontendMenus/manage/pid/'.$parentId);
 		unset($menuTypesList['moduleblock']);
 	}else{
-		$this->_breadCrumbs[] = array('label'=>A::t('app', 'Frontend Menu'), 'url'=>'frontendMenus/manage');
+		$breadCrumbs[] = array('label'=>A::t('app', 'Frontend Menu'), 'url'=>'frontendMenus/manage');
 	}
-	$this->_breadCrumbs[] = array('label'=>A::t('app', 'Edit Menu'));
+	$breadCrumbs[] = array('label'=>A::t('app', 'Edit Menu'));
+    $this->_breadCrumbs = $breadCrumbs;
 	
 	A::app()->getClientScript()->registerCssFile('js/vendors/jquery/jquery-ui.min.css');
 	A::app()->getClientScript()->registerScriptFile('templates/backend/js/menu.js');
@@ -30,17 +31,17 @@
 
 		$appendCode = '<a href="javascript:void(0)" onclick="$(\'#dialog\').dialog();" title="'.A::t('app', 'Set Link').'"><img style="margin-bottom:-7px;" src="js/vendors/jquery/images/set_link.png" alt="Set Link" /></a>';
 		if($menuType == 'modulelink'){
-			$fields['link_target'] = array('type'=>'hidden', 'default'=>'_self');
+			$fields['link_target'] = array('type'=>'data', 'default'=>'_self');
 			$fields['link_url']    = array('type'=>'textbox', 'title'=>A::t('app', 'Link URL'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('readonly'=>true, 'maxlength'=>'255', 'class'=>'middle'), 'appendCode'=>$appendCode);
 			$fields['module_code'] = array('type'=>'textbox', 'title'=>A::t('app', 'Module Code'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'mixed'), 'htmlOptions'=>array('readonly'=>true));
 		}else if($menuType == 'moduleblock'){	
-			$fields['link_target'] = array('type'=>'hidden', 'default'=>'');
+			$fields['link_target'] = array('type'=>'data', 'default'=>'');
 			$fields['link_url']    = array('type'=>'textbox', 'title'=>A::t('app', 'Link URL'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('readonly'=>true, 'maxlength'=>'255', 'class'=>'middle'), 'appendCode'=>$appendCode);
 			$fields['module_code'] = array('type'=>'textbox', 'title'=>A::t('app', 'Module Code'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'mixed'), 'htmlOptions'=>array('readonly'=>true));
 		}else{
 			$fields['link_target'] = array('type'=>'select', 'title'=>A::t('app', 'Link Target'), 'default'=>'', 'data'=>$linkTargetsList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($linkTargetsList)));
-			$fields['link_url']    = array('type'=>'textbox', 'title'=>A::t('app', 'Link URL'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'255', 'class'=>'middle'), 'appendCode'=>$appendCode);
-			$fields['module_code'] = array('type'=>'hidden', 'default'=>'');
+			$fields['link_url']    = array('type'=>'textbox', 'title'=>A::t('app', 'Link URL'), 'tooltip'=>A::t('app', 'Link URL Tooltip'), 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'255', 'class'=>'middle'), 'appendCode'=>$appendCode);
+			$fields['module_code'] = array('type'=>'data', 'default'=>'');
 		}
 
 		$fields['parent_id']  = array('type'=>'hidden', 'default'=>$parentId, 'htmlOptions'=>array());
@@ -73,13 +74,14 @@
 				'name' => array('type'=>'textbox', 'title'=>A::t('app', 'Menu Title'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any')),
 			),
 			'buttons'=>array(
-			   'submit' => array('type'=>'submit', 'value'=>A::t('app', 'Update'), 'htmlOptions'=>array('name'=>'')),
-			   'cancel' => array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
+                'submitUpdateClose' => array('type'=>'submit', 'value'=>A::t('app', 'Update & Close'), 'htmlOptions'=>array('name'=>'btnUpdateClose')),
+                'submitUpdate' => array('type'=>'submit', 'value'=>A::t('app', 'Update'), 'htmlOptions'=>array('name'=>'btnUpdate')),
+                'cancel' => array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
 			),
 		));
 	?>
 	
-	<div id="dialog" style="display:none;padding-bottom:10px;" title="<?php echo $dialogTitle; ?>">
+	<div id="dialog" class="dialog-window" title="<?php echo $dialogTitle; ?>">
 	<?php echo $dialogContent; ?>
 	</div>
 

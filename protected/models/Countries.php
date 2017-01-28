@@ -2,22 +2,20 @@
 /**
  * Countries model
  *
- * PUBLIC:                PROTECTED               PRIVATE
- * ---------------        ---------------         ---------------
- * __construct
- * relations
- * beforeSave
- * afterSave
- * afterDelete
- * setTranslationsArray
- * selectTranslations
- * getError
+ * PUBLIC:                 PROTECTED                  PRIVATE
+ * ---------------         ---------------            ---------------
+ * __construct             _relations
+ * getError                _beforeDelete
+ *                         _beforeSave
+ *                         _afterSave
+ *                         _afterDelete
  *
  * STATIC:
  * ------------------------------------------
  * model
  *
  */
+
 class Countries extends CActiveRecord
 {
 
@@ -28,7 +26,8 @@ class Countries extends CActiveRecord
 	protected $_columnsTranslation = array('name');
 		
 	private $_translationsArray;
-	private $isError = false;
+	/** @var bool */
+    private $_isError = false;
 	
     /**
 	 * Class default constructor
@@ -49,7 +48,7 @@ class Countries extends CActiveRecord
 	/**
      * Defines relations between different tables in database and current $_table
 	 */
-	public function relations()
+	protected function _relations()
 	{
 		return array(
 			'code' => array(
@@ -67,7 +66,7 @@ class Countries extends CActiveRecord
 	 * This method is invoked before saving a record
 	 * @param string $id
 	 */
-	public function beforeSave($id = 0)
+	protected function _beforeSave($id = 0)
 	{
 		// if country is default - it must be active
 		if($this->is_default) $this->is_active = 1;
@@ -78,35 +77,61 @@ class Countries extends CActiveRecord
 	 * This method is invoked after saving a record successfully
 	 * @param string $id
 	 */
-	public function afterSave($id = 0)
+	protected function _afterSave($id = 0)
 	{
-		$this->isError = false;
+		$this->_isError = false;
 		// if this country is default - remove default flag in all other countries
 		if($this->is_default){
-			if(!$this->db->update($this->_table, array('is_default'=>0), 'id != '.$id)){
-				$this->isError = true;
+			if(!$this->_db->update($this->_table, array('is_default'=>0), 'id != '.$id)){
+				$this->_isError = true;
 			}
 		}
 	}
+
+	/**
+	 * This method is invoked before deleting a record (after validation, if any)
+	 * @param string $pk
+	 * @return boolean
+	 */
+	protected function _beforeDelete($pk = '')
+	{        
+        if($this->count() > 1){
+            return true;
+        }else{
+            $this->_isError = true;
+            $this->_errorMessage = A::t('core', 'You cannot delete the last remaining record in table {table}!', array('{table}'=>'<b>'.ucfirst($this->_table).'</b>'));
+            return false;    
+        }
+	}
+
 	/**
 	 * This method is invoked after deleting a record successfully
-	 * @param string $id
+	 * @param string $pk
 	 */
-	public function afterDelete($id = 0)
+	protected function _afterDelete($pk = '')
 	{
-		$this->isError = false;
+		$this->_isError = false;
 		// delete country names from translation table
-		if(false === $this->db->delete($this->_tableTranslation, 'country_code="'.$this->code.'"')){
-			$this->isError = true;
+		if(false === $this->_db->delete($this->_tableTranslation, 'country_code="'.$this->code.'"')){
+			$this->_isError = true;
 		}
 		
 		// delete states in loop to force call to afterDelete for each state to delete states translations 
 		$states = States::model()->findAll('country_code = :countryCode', array(':countryCode'=>$this->code));
 		if(is_array($states)){
 			foreach($states as $state){
-				if(!States::model()->deleteByPk($state['id'])) $this->isError = true;
+				if(!States::model()->deleteByPk($state['id'])) $this->_isError = true;
 			}
 		}
 	}
 	
+	/**
+	 * Returns boolean that indicates if the last operation was successfull
+	 * @return boolean
+	 */
+	public function getError()
+	{
+		return $this->_isError;
+	}
+
 }

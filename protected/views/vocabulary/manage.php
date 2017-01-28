@@ -53,7 +53,7 @@ A::app()->getClientScript()->registerScript(
 	'vocabularyEditor',
 	'var editor = CodeMirror.fromTextArea(
 		document.getElementById("frmVocabulary_fileContent"),
-		{ lineNumbers: true, mode: "text/x-csrc", indentUnit: 4, indentWithTabs: true, enterMode: "keep", tabMode: "shift" }
+		{ lineNumbers: true, '.(A::app()->getLanguage('direction') == 'rtl' ? 'rtlMoveVisually: true,' : '').' mode: "text/x-csrc", indentUnit: 4, indentWithTabs: true, enterMode: "keep", tabMode: "shift" }
 	);'
 );
 

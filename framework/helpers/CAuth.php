@@ -10,10 +10,6 @@
  *
  * PUBLIC:					PROTECTED:					PRIVATE:		
  * ----------               ----------                  ----------
- * 
- * 
- * STATIC:
- * ---------------------------------------------------------------
  * isLoggedIn
  * isLoggedInAs
  * isLoggedInAsAdmin
@@ -25,6 +21,7 @@
  * getLoggedEmail
  * getLoggedLastVisit
  * getLoggedAvatar
+ * getLoggedLang
  * getLoggedRole
  * getLoggedParam
  * 
@@ -49,8 +46,7 @@ class CAuth
      */
     public static function isLoggedInAs()
     {
-		if(!self::isLoggedIn()) return false;
-	
+		if(!self::isLoggedIn()) return false;	
 		$loggedRole = self::getLoggedRole();
 		$roles = func_get_args();
 		if(in_array($loggedRole, $roles)){
@@ -65,8 +61,7 @@ class CAuth
      */
     public static function isLoggedInAsAdmin()
     {
-		if(!self::isLoggedIn()) return false;
-	
+		if(!self::isLoggedIn()) return false;	
 		$loggedRole = self::getLoggedRole();
 		$adminRoles = array('owner', 'mainadmin', 'admin');
 		if(in_array($loggedRole, $adminRoles)){
@@ -87,12 +82,14 @@ class CAuth
     /**
      * Handles access for non-logged users (block access)
      * @param string $location
+     * @param string $role
      */
-    public static function handleLogin($location = 'login/index')
+    public static function handleLogin($location = 'index/index', $role = '')
     {
         if(APPHP_MODE == 'test') return '';
-        if(!self::isLoggedIn()){
-            session_destroy();
+        $isLoggedIn = ($role === '') ? self::isLoggedInAsAdmin() : self::isLoggedInAs($role);
+        if(!$isLoggedIn){
+            //session_destroy();
             header('location: '.A::app()->getRequest()->getBaseUrl().$location);
             exit;
         }
@@ -101,11 +98,13 @@ class CAuth
     /**
      * Handles access for logged in users (redirect logged in users)
      * @param string $location
+     * @param string $role
      */
-    public static function handleLoggedIn($location = '')
+    public static function handleLoggedIn($location = '', $role = '')
     {
         if(APPHP_MODE == 'test') return '';
-        if(self::isLoggedIn()){
+        $isLoggedIn = ($role === '') ? self::isLoggedInAsAdmin() : self::isLoggedInAs($role);
+        if($isLoggedIn){
             header('location: '.A::app()->getRequest()->getBaseUrl().$location);
             exit;
         }
@@ -155,6 +154,15 @@ class CAuth
     {
         return (self::isLoggedIn()) ? A::app()->getSession()->get('loggedAvatar') : null;
     }
+    
+    /**
+     * Returns preferred language of logged in user
+     * @return string
+     */
+    public static function getLoggedLang()
+    {
+        return (self::isLoggedIn()) ? A::app()->getSession()->get('loggedLanguage') : null;
+    }    
 	
     /**
      * Returns role of logged in user

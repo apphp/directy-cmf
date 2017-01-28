@@ -1,17 +1,18 @@
 <?php
 /**
-* LanguagesController
-*
-* PUBLIC:                  	PRIVATE
-* -----------              	------------------
-* __construct              	getDirectonsList
-* indexAction				getUsedOnList
-* changeAction				
-* manageAction				
-* addAction
-* editAction
-* deleteAction
-*/
+ * Languages controller
+ *
+ * PUBLIC:                  	PRIVATE
+ * -----------              	------------------
+ * __construct              	_getDirectonsList
+ * indexAction				    _getUsedOnList
+ * changeAction				
+ * manageAction				
+ * addAction
+ * editAction
+ * deleteAction
+ * 
+ */
 
 class LanguagesController extends CController
 {    
@@ -23,14 +24,13 @@ class LanguagesController extends CController
         parent::__construct();
 
         // set meta tags according to active language
-    	SiteSettings::setMetaTags(array('title'=>A::t('app', 'Languages')));
+    	Website::setMetaTags(array('title'=>A::t('app', 'Languages')));
+        // set backend mode
+        Website::setBackend();
     	
-    	$settings = Settings::model()->findByPk(1);
-    	$this->view->frontEndTemplate = $settings->template; 
-
-    	A::app()->view->setTemplate('backend');        
-        $this->view->actionMessage = '';
-        $this->view->errorField = '';
+    	$this->_view->frontEndTemplate = Bootstrap::init()->getSettings('template'); 
+        $this->_view->actionMessage = '';
+        $this->_view->errorField = '';
     }
 	
 	/**
@@ -51,9 +51,12 @@ class LanguagesController extends CController
         if(empty($lang)) $lang = A::app()->getRequest()->getQuery('lang');
         
         // check for existing $lang in DB
-        if($result = Languages::model()->find('code = :code AND is_active = 1', array(':code'=>$lang))){
-            $locale = isset($result[0]['lc_time_name']) ? $result[0]['lc_time_name'] : '';
-			A::app()->setLanguage($lang, $locale);
+        if($result = Languages::model()->find("code = :code AND used_on IN ('front-end','global') AND is_active = 1", array(':code'=>$lang))){
+            $params = array(
+                'locale' => $result->lc_time_name,
+                'direction' => $result->direction
+            );
+            A::app()->setLanguage($lang, $params);
         }
         $this->redirect('index/index');
     }
@@ -83,10 +86,10 @@ class LanguagesController extends CController
 				$message = '';
 		}
 		if(!empty($message)){
-			$this->view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
+			$this->_view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
 		}
 		
-    	$this->view->render('languages/manage');        
+    	$this->_view->render('languages/manage');        
 	}
 
 	/**
@@ -102,11 +105,11 @@ class LanguagesController extends CController
 			$this->redirect('backend/index');
 		}
 		
-		$this->view->localesList = A::app()->getLocalTime()->getLocales();		
-		$this->view->directionsList = $this->getDirectonsList();		
-		$this->view->usedOnList = $this->getUsedOnList();
+		$this->_view->localesList = A::app()->getLocalTime()->getLocales();		
+		$this->_view->directionsList = $this->_getDirectonsList();		
+		$this->_view->usedOnList = $this->_getUsedOnList();
 		
-    	$this->view->render('languages/add');
+    	$this->_view->render('languages/add');
 	}
 
 	/**
@@ -129,32 +132,31 @@ class LanguagesController extends CController
 			$this->redirect('languages/manage');
 		}
 		
-		$this->view->localesList = A::app()->getLocalTime()->getLocales();
-		$this->view->directionsList = $this->getDirectonsList();
-		$this->view->usedOnList = $this->getUsedOnList();	
-		$this->view->language = $language;
+		$this->_view->localesList = A::app()->getLocalTime()->getLocales();
+		$this->_view->directionsList = $this->_getDirectonsList();
+		$this->_view->usedOnList = $this->_getUsedOnList();	
+		$this->_view->language = $language;
 	
 		// delete the icon file
 		if($icon == 'delete'){
 			$msg = '';
-			$errorType = '';
+			$msgType = '';
 			$iconFile = 'images/flags/'.$language->icon;
 			$language->icon = '';
 			// save the changes in Languages table and delete the icon file
-			if($language->save() && unlink($iconFile)){
+			if($language->save() && CFile::deleteFile($iconFile)){
 				$msg = A::t('app', 'Image Delete Success Message');
-				$errorType = 'success';
+				$msgType = 'success';
 			}else{
 				$msg = A::t('app', 'Image Delete Error Message');
-				$this->view->errorField = '';
-				$errorType = 'error';
+				$msgType = 'error';
+				$this->_view->errorField = '';
 			}
 			if(!empty($msg)){
-				$this->view->actionMessage = CWidget::create('CMessage', array($errorType, $msg, array('button'=>true)));
+				$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
 			}
 		}
-		
-		$this->view->render('languages/edit');
+		$this->_view->render('languages/edit');
 	}
 
 	/**
@@ -172,14 +174,14 @@ class LanguagesController extends CController
 		}
 		
 		$msg = '';
-		$errorType = '';
+		$msgType = '';
 		
 		// check if there is only one language
 		if(Languages::model()->count() == 1){
 			$msg = A::t('app', 'Delete Last Language Alert');
-			$errorType = 'error';
-			$this->view->actionMessage = CWidget::create('CMessage', array($errorType, $msg, array('button'=>true)));
-			$this->view->render('languages/manage');
+			$msgType = 'error';
+			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
+			$this->_view->render('languages/manage');
 			return;
 		}
 
@@ -191,37 +193,37 @@ class LanguagesController extends CController
 		// check if the language is default
 		if($language->is_default){
 			$msg = A::t('app', 'Delete Default Alert');
-			$errorType = 'error';
+			$msgType = 'error';
 		}else if($language->delete()){				
 			// delete messages folder for this language
 			CFile::deleteDirectory('protected/messages/'.$language->code);	
 			if($language->getError()){
 				$msg = A::t('app', 'Delete Warning Message');
-				$errorType = 'warning';
+				$msgType = 'warning';
 			}else{		
 				$msg = A::t('app', 'Delete Success Message');
-				$errorType = 'success';	
+				$msgType = 'success';	
 			}		
 		}else{
 			if(APPHP_MODE == 'demo'){
 				$msg = CDatabase::init()->getErrorMessage();
-				$errorType = 'warning';
+				$msgType = 'warning';
 		   	}else{
-				$msg = A::t('app', 'Delete Error Message');
-				$errorType = 'error';
+				$msg = $language->getError() ? $language->getErrorMessage() : A::t('app', 'Delete Error Message');
+				$msgType = 'error';
 		   	}			
 		}
 		if(!empty($msg)){
-			$this->view->actionMessage = CWidget::create('CMessage', array($errorType, $msg, array('button'=>true)));
+			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
 		}	
-		$this->view->render('languages/manage');
+		$this->_view->render('languages/manage');
 	}
 
 	/**
      *	Returns a list of language direction options
      *	@return array
 	 */
-	private function getDirectonsList()
+	private function _getDirectonsList()
 	{
 		return array(
 			'' => A::t('app', '-- select --'),
@@ -234,7 +236,7 @@ class LanguagesController extends CController
      *	Returns a list of language used-on options
      *	@return array
 	 */
-	private function getUsedOnList()
+	private function _getUsedOnList()
 	{
 		return array(
 			'' => A::t('app', '-- select --'),

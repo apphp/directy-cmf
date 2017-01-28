@@ -33,7 +33,7 @@
 				),
         		'fields'=>array(
 					'act'     =>array('type'=>'hidden', 'value'=>'send'),
-					'cronType'=>array('type'=>'radioButtonList', 'checked'=>$settings->cron_type, 'title'=>A::t('app', 'Run Cron'), 'tooltip'=>A::t('app', 'Run Cron Tooltip'), 'data'=>$cronTypesList, 'mandatoryStar'=>true, 'htmlOptions'=>array('onchange'=>'showRunPeriod(this.value);')),
+					'cronType'=>array('type'=>'radioButtonList', 'checked'=>$settings->cron_type, 'title'=>A::t('app', 'Run Cron'), 'tooltip'=>A::t('app', 'Run Cron Tooltip'), 'data'=>$cronTypesList, 'mandatoryStar'=>true, 'htmlOptions'=>array('onchange'=>'showRunPeriod(this.value);', 'class'=>'css-radiobutton', 'labelOptions'=>array('class'=>'css-radiobutton-label'))),
 					'cronRunPeriodValue'=>array('type'=>'select', 'value'=>$settings->cron_run_period_value, 'title'=>A::t('app', 'Run Every'), 'tooltip'=>A::t('app', 'Run Every Tooltip'), 'data'=>$numbersList),
 					'cronRunPeriod'=>array('type'=>'select', 'value'=>$settings->cron_run_period, 'title'=>' ', 'data'=>$cronRunPeriodsList),
 					'cronRunLastTime'=>array('type'=>'label', 'value'=>$cronRunLastTime, 'title'=>A::t('app', 'Last Run')),

@@ -23,7 +23,7 @@
                 'fields'=>array(
                     'name'    		 => array('title'=>A::t('app', 'Name'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left', 'width'=>'100px',),
                 	'description'    => array('title'=>A::t('app', 'Description'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left'),
-                    'privileges_link'=> array('title'=>'', 'type'=>'link', 'class'=>'center', 'headerClass'=>'center', 'width'=>'100px', 'isSortable'=>false, 'linkUrl'=>'privileges/manage/role/{id}', 'linkText'=>A::t('app', 'Privileges')),
+                    'privileges_link'=> array('title'=>'', 'type'=>'link', 'class'=>'center', 'headerClass'=>'center', 'width'=>'100px', 'isSortable'=>false, 'linkUrl'=>'privileges/manage/role/{id}', 'linkText'=>A::t('app', 'Privileges'), 'htmlOptions'=>array('class'=>'subgrid-link'), 'prependCode'=>'[ ', 'appendCode'=>' ]'),
                 ),
                 'actions'=>array(
                     'edit'   => array('link'=>'roles/edit/id/{id}', 'imagePath'=>'templates/backend/images/edit.png', 'title'=>A::t('app', 'Edit this record')),

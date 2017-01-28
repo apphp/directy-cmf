@@ -32,17 +32,17 @@
 				foreach($modulesList as $module){
 					echo '<tr>';
 					echo '<td class="left" width="36px"><img src="images/modules/'.$module['code'].'/'.$module['icon'].'" alt="icon" style="height:24px;margin-top:1px;" /></td>';
-						
-					echo '<td class="left">';
-					echo (Admins::hasPrivilege('modules', 'edit')) ? '<a href="modules/settings/code/'.$module['code'].'">'.$module['name'].'</a>' : $module['name'];	
-					echo '</td>';
-					
-					echo '<td class="left">'.$module['description'].'</td>';
+					echo '<td class="left">'.((Admins::hasPrivilege('modules', 'edit')) ? '<a href="modules/settings/code/'.$module['code'].'">'.A::t($module['code'], $module['name']).'</a>' : A::t($module['code'], $module['name'])).'</td>';
+                    echo '<td class="left">'.A::t($module['code'], $module['description']).'</td>';
 					echo '<td class="center">'.$module['version'].'</td>';
 					echo '<td class="center"><img src="templates/backend/images/enabled.png" title="'.A::t('app', 'Enabled').'" class="tooltip-link" alt="tooltip" height="16px" /></td>';
 					
 					if(Admins::hasPrivilege('modules', 'edit')){
-						echo '<td class="actions"><a class="tooltip-link" title="'.A::t('app', 'Edit this record').'" href="modules/edit/id/'.$module['id'].'"><img src="templates/backend/images/edit.png" alt="edit"></a> </td>';
+                        $moduleVersion = $allModulesList[$module['code']]['version'];
+						echo '<td class="actions">';
+                        if(!empty($moduleVersion) && $module['version'] < $moduleVersion) echo '<a href="modules/update/code/'.$module['code'].'" class="tooltip-link" title="'.A::t('app', 'Update to version {version}', array('{version}'=>$moduleVersion)).'"><img src="templates/backend/images/update.png" alt="update"></a>';
+                        echo '<a class="tooltip-link" title="'.A::t('app', 'Edit this record').'" href="modules/edit/id/'.$module['id'].'"><img src="templates/backend/images/edit.png" alt="edit"></a>';
+                        echo '</td>';
 					}
 					echo '</tr>';
 				}

@@ -1,18 +1,18 @@
 <?php
 /**
-* CurrenciesController
-*
-* PUBLIC:                  PRIVATE
-* -----------              ------------------
-* __construct              
-* indexAction
-* changeAction
-* manageAction
-* addAction
-* editAction
-* deleteAction
-*
-*/
+ * Currencies controller
+ *
+ * PUBLIC:                  PRIVATE
+ * -----------              ------------------
+ * __construct              
+ * indexAction
+ * changeAction
+ * manageAction
+ * addAction
+ * editAction
+ * deleteAction
+ *
+ */
 
 class CurrenciesController extends CController
 {	
@@ -24,11 +24,13 @@ class CurrenciesController extends CController
         parent::__construct();
 
         // set meta tags according to active currencies
-    	SiteSettings::setMetaTags(array('title'=>A::t('app', 'Currencies Management')));
-		
-    	A::app()->view->setTemplate('backend');        
-        $this->view->actionMessage = '';
-        $this->view->errorField = '';
+    	Website::setMetaTags(array('title'=>A::t('app', 'Currencies Management')));
+        // set backend mode
+        Website::setBackend();
+
+        $this->_view->numberFormat = Bootstrap::init()->getSettings('number_format');
+        $this->_view->actionMessage = '';
+        $this->_view->errorField = '';
     }
 
    	/**
@@ -51,10 +53,10 @@ class CurrenciesController extends CController
         // check for existing currency in DB
         if($result = Currencies::model()->find('code = :code AND is_active = 1', array(':code'=>$currency_code))){
 			$params = array();
-			$params['symbol'] = $result[0]['symbol'];
-			$params['symbol_place'] = $result[0]['symbol_place'];
-			$params['decimals'] = $result[0]['decimals'];
-			$params['rate'] = $result[0]['rate'];
+			$params['symbol'] = $result->symbol;
+			$params['symbol_place'] = $result->symbol_place;
+			$params['decimals'] = $result->decimals;
+			$params['rate'] = $result->rate;
 			A::app()->setCurrency($currency_code, $params);
         }
         $this->redirect('index/index');
@@ -85,10 +87,12 @@ class CurrenciesController extends CController
 				$message = '';
 		}
 		if(!empty($message)){
-			$this->view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
+            // clean the previous data from session
+            A::app()->getSession()->set('currency_code', '');
+			$this->_view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
 		}
 		
-    	$this->view->render('currencies/manage');        
+    	$this->_view->render('currencies/manage');        
 	}
 
 	/**
@@ -104,7 +108,7 @@ class CurrenciesController extends CController
         	$this->redirect('backend/index');
         }
 		
-    	$this->view->render('currencies/add');
+    	$this->_view->render('currencies/add');
 	}
 	
 	/**
@@ -126,8 +130,8 @@ class CurrenciesController extends CController
 			$this->redirect('currencies/manage');
 		}
 		
-		$this->view->currency = $currency;
-		$this->view->render('currencies/edit');
+		$this->_view->currency = $currency;
+		$this->_view->render('currencies/edit');
 	}
 
 	/**
@@ -142,7 +146,7 @@ class CurrenciesController extends CController
         }
      	
 		$msg = '';
-		$errorType = '';
+		$msgType = '';
 	
 		$currency = Currencies::model()->findByPk($id);
 		if(!$currency){
@@ -152,28 +156,28 @@ class CurrenciesController extends CController
 		// check if the currency is default
 		if($currency->is_default){
 			$msg = A::t('app', 'Delete Default Alert');
-			$errorType = 'error';
+			$msgType = 'error';
 		}else if($currency->delete()){				
 			if($currency->getError()){
 				$msg = A::t('app', 'Delete Warning Message');
-				$errorType = 'warning';
+				$msgType = 'warning';
 			}else{		
 				$msg = A::t('app', 'Delete Success Message');
-				$errorType = 'success';	
+				$msgType = 'success';	
 			}		
 		}else{
 			if(APPHP_MODE == 'demo'){
 				$msg = CDatabase::init()->getErrorMessage();
-				$errorType = 'warning';
+				$msgType = 'warning';
 		   	}else{
 				$msg = A::t('app', 'Delete Error Message');
-				$errorType = 'error';
+				$msgType = 'error';
 		   	}			
 		}
 		if(!empty($msg)){
-			$this->view->actionMessage = CWidget::create('CMessage', array($errorType, $msg, array('button'=>true)));
+			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
 		}
-		$this->view->render('currencies/manage');
+		$this->_view->render('currencies/manage');
 	}
 	
 	
