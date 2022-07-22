@@ -10,7 +10,10 @@
     "apphp"
   ],
   "homepage": "https://apphp.com",
-  "license": "LGPL",
+  "license": [
+    "LGPL-2.0-or-later",
+    "MIT"
+  ],
   "authors": [
     {
       "name": "Samuel Akopyan",
