@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="83a39d8b-2272-4ea0-a9f6-3d8a2a08652c" name="Default Changelist" comment="" />
+    <list default="true" id="83a39d8b-2272-4ea0-a9f6-3d8a2a08652c" name="Default Changelist" comment="New version 1.3.2">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+    </option>
   </component>
   <component name="ComposerSettings">
     <execution />
@@ -694,14 +701,7 @@
       <workItem from="1612538836467" duration="75000" />
       <workItem from="1613137746560" duration="25000" />
       <workItem from="1615555538427" duration="33000" />
-      <workItem from="1658504804234" duration="358000" />
-    </task>
-    <task id="LOCAL-00147" summary="~ changes">
-      <created>1572596330859</created>
-      <option name="number" value="00147" />
-      <option name="presentableId" value="LOCAL-00147" />
-      <option name="project" value="LOCAL" />
-      <updated>1572596330859</updated>
+      <workItem from="1658504804234" duration="772000" />
     </task>
     <task id="LOCAL-00148" summary="~ changes">
       <created>1572596341244</created>
@@ -1039,7 +1039,14 @@
       <option name="project" value="LOCAL" />
       <updated>1612538888259</updated>
     </task>
-    <option name="localTasksCounter" value="196" />
+    <task id="LOCAL-00196" summary="New version 1.3.2">
+      <created>1658505474903</created>
+      <option name="number" value="00196" />
+      <option name="presentableId" value="LOCAL-00196" />
+      <option name="project" value="LOCAL" />
+      <updated>1658505474904</updated>
+    </task>
+    <option name="localTasksCounter" value="197" />
     <servers />
   </component>
   <component name="TodoView" selected-index="3">
@@ -1082,29 +1089,8 @@
     <MESSAGE value="Changes" />
     <MESSAGE value="Removed magic quote functionality" />
     <MESSAGE value="Fix for PHP7 in nusoap" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix for PHP7 in nusoap" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="124" y="29" width="1418" height="801" key="CommitChangelistDialog2" timestamp="1612538885353">
-      <screen x="0" y="0" width="1600" height="860" />
-    </state>
-    <state x="124" y="29" width="1418" height="801" key="CommitChangelistDialog2/0.0.1600.860@0.0.1600.860" timestamp="1612538885353" />
-    <state x="185" y="67" key="DiffContextDialog" timestamp="1608896114400">
-      <screen x="0" y="0" width="1600" height="860" />
-    </state>
-    <state x="185" y="67" key="DiffContextDialog/0.0.1600.860@0.0.1600.860" timestamp="1608896114400" />
-    <state x="392" y="165" key="Vcs.Push.Dialog.v2" timestamp="1612538910010">
-      <screen x="0" y="0" width="1600" height="860" />
-    </state>
-    <state x="392" y="165" key="Vcs.Push.Dialog.v2/0.0.1600.860@0.0.1600.860" timestamp="1612538910010" />
-    <state x="227" y="49" width="1211" height="723" key="find.popup" timestamp="1608895928068">
-      <screen x="0" y="0" width="1600" height="860" />
-    </state>
-    <state x="227" y="49" width="1211" height="723" key="find.popup/0.0.1600.860@0.0.1600.860" timestamp="1608895928068" />
-    <state x="480" y="233" key="git4idea.merge.GitPullDialog" timestamp="1611305077255">
-      <screen x="0" y="0" width="1600" height="860" />
-    </state>
-    <state x="480" y="233" key="git4idea.merge.GitPullDialog/0.0.1600.860@0.0.1600.860" timestamp="1611305077255" />
+    <MESSAGE value="New version 1.3.2" />
+    <option name="LAST_COMMIT_MESSAGE" value="New version 1.3.2" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
