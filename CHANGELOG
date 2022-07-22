@@ -1,0 +1,53 @@
+
+Version 2.3.2 - 16 Jun, 2014
+----------------------------
+- New: added new model EmailTemplates and possibility to manage templates for emails
+- New: added possibility to define dashboard alerts in each module separatelly
+- Enh: minor changes in Website component
+- Enh: minor changes on Admin Management page
+- Enh: minor changes on Locations Controller
+- Bug: fixed issue with privilages of Locations Controller
+- Bug: fixed issue with losing token for datepicker in jQuery DatePicker
+
+
+Version 2.2.1 - 29 Apr, 2014
+----------------------------
+- New: added new modules - Blog, Gallery and FAQ
+- New: added possibility to define what block can be shown on Dashboard
+- New: implemented db caching operations
+- New: added new model Accounts
+- Enh: module privileges grouped in one fieldset
+- Enh: component SiteData and SiteMenu renamed into Website and FrontendMenu
+- Enh: login procedures moved from Backend to Admins model
+- Bug: fixed issue with definition of paths for imageupload plugin for TinyMCE editor
+
+
+Version 2.1.2 - 01 Apr, 2014
+----------------------------
+- New: added new feature to Backend - Force SSl mode
+- New: added possibility to add/delete icons for submenus in Backend menu
+- New: added possibility to show installed module links in Backend menu
+- New: implemented accumulative update feature for modules
+- New: added possibility to add icons for sub-menus in Backend menu
+- New: implemented daylight saving settings
+- Enh: implemented RTL for beckend template
+- Enh: FrontendMenu component - added possibility to define whether to draw menu caption or not
+- Enh: added RTL styles for Coin Slider and Fancybox
+- Enh: improved language and currency handler procedures
+- Enh: added "sort order" field to sub-locations
+- Enh: AdminMenu component renamed into Backend Menu
+- Enh: enable/disable preferred language procedures
+- Enh: improved site email settings
+- Enh: improved forms submision procedures
+- Enh: improved module settings page
+- Enh: reduces executing time by reducing number of calls to Settings::model()
+- Enh: minor changes in application components
+- Enh: implemented american|european numeric formats for framework helper classes
+- Enh: improved offline feature
+- Bug: fixed issue with deleting of the last records in Countries and Languages models
+- Bug: fixed issue with changing meta tags for different languages
+
+
+Version 1.0.1 - 17 Sep, 2013
+----------------------------
+Initial release 

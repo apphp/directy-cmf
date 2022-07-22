@@ -1,0 +1,66 @@
+--------------------------------------------------------------------------- 
+ Update for ApPHP Directy CMF
+---------------------------------------------------------------------------  
+
+Software requirements:
+- PHP 5.0 or later version
+- PDO extension enabled
+
+An update of ApPHP Directy CMF is a very straight forward process:
+
+
+Step 1. Backup
+----------------------------------------------
+   Make a full backup of your previously installed site and database before you
+   start updating procedure.
+   
+Step 2. Saving database connection parameters.
+----------------------------------------------
+   Write down all data from protected/config/db.php file and then delete from
+   previous installation following files:
+   - protected/config/db.php
+   - protected/config/main.php
+
+Step 3. Decompressing Downloaded Archive.
+-------------------------------------
+   Decompress the ApPHP Directy CMF script archive. The archive will create
+   a directory called "PHPDCMF_xxx", where xxx represents a number of current version
+   (for ex.: _201 means version number 2.0.1).
+
+Step 4. Uploading Files.
+-------------------------------------
+   Upload all files from the new archive into the directory of your current site
+   (replace your old files).
+
+Step 5. Running Setup Wizard.
+-------------------------------------
+   Now you can run setup wizard. To do this, open your Internet browser and type
+   in Address Bar following:
+
+   http://{www.mydomain.com}/
+   or
+   http://{www.mydomain.com}/{directy-cmf directory}/
+
+   You have to will see the setup wizard starting page. Follow the instructions on the
+   screen. While updating process select Update option, then enter the database connection
+   parameters and database prefix that were written in protected/config/db.php (see step 2),
+   also enter admin username and password, that were used in your previous installation.
+   
+   REMEMBER!
+   ---------
+   You must select Installation Type: UPDATE
+
+Step 6. Updating complete.
+-------------------------------------
+   After successful updating you will get an appropriate message on the screen. 
+
+Step 7. Placing Back Configuration Data.
+-------------------------------------
+   To make sure your previous accounts are working as extected, open protected/config/main.php file
+   and change there some important configuration data from previous installation (see p.2):
+   all 'installationKey' and 'password' parameters. Also if your previous installation used multiple
+   languages, you have to replace all needed translation files with the saved from previous
+   installation (see p.2).
+
+Congratulations, you now have ApPHP Directy CMF updated!
+

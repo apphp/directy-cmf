@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<install version="1.0" type="template">
+    <name>Default Template</name>
+    <creationDate>08/05/2013</creationDate>
+    <lastChangedDate>16/06/2014</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail></authorEmail>
+    <authorUrl></authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <version>1.0.1</version>
+    <description>ApPHP Directy CMF Default Template</description>
+    <layout>2 Column Static Layout</layout>
+    <direction>Left-to-Right/Right-to-Left</direction>
+    <icon>images/template_icon.png</icon>
+    <menus>
+        <menu>Top</menu>
+        <menu>Right</menu>
+        <menu>Bottom</menu>
+    </menus>    
+    <files>        
+        <php>
+            <filename>default.php</filename>
+            <filename>header.php</filename>
+            <filename>footer.php</filename>
+        </php>
+        <css>
+            <filename>css/style.css</filename>
+        </css>
+        <xml>        
+            <filename>info.xml</filename>
+        </xml>        
+    </files>
+</install>
