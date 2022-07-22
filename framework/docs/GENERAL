@@ -2,20 +2,23 @@
             -= YOU MAY NOT REMOVE OR CHANGE THIS NOTICE =-                 
  --------------------------------------------------------------------------- 
  ApPHP Web Development Framework                                            
- Version :      0.5.x
+ Version :      1.2.2
  Developed by:  ApPHP <info@apphp.com>                                      
  License:       GNU LGPL v.3                                                
- Site:          http://www.apphp.com/php-framework/                         
+ Site:          https://www.apphp.com/php-framework/                         
                 http://www.apphpframework.com                               
-                https://code.google.com/p/apphp-framework/                    
- Copyright:     ApPHP Web Development Framework (c) 2012 - 2013                   
+ Copyright:     ApPHP Web Development Framework (c) 2012 - 2020
                 All rights reserved.                                        
 
 
  Additional components and modules (embedded):
  --------------------------------------------------------------------------- 
- - PHPMailer v5.2 (PHP mailer)
-    https://code.google.com/a/apache-extras.org/p/phpmailer/ 
- - DlHighlight (JavaScript-based syntax highlighting engine)
-    Mihai Bazon, http://mihai.bazon.net/blog
+ - CI_Security (Security Class from CodeIgniter framework) 		v1.0.0 		http://www.codeigniter.com
+ - dBug (PHP version of ColdFusion's cfdump) 					v1.1 		http://dbug.ospinto.com
+ - MobileDetect (Mobile Detect Library) 						v2.8.4 		http://mobiledetect.net
+ - NuSOAP - Web Services Toolkit for PHP						v1.123 		http://dietrich.ganx4.com/nusoap
+ - Opauth - Multi-provider authentication framework for PHP					http://opauth.org
+ - PHPMailer (PHP mailer)										v5.2.16		https://github.com/PHPMailer/PHPMailer
+ - TCPDF (PHP PDF Library) 										v6.2.13 	http://www.tcpdf.org
 
+ - DlHighlight (JavaScript-based syntax highlighting engine)				http://mihai.bazon.net/blog (Mihai Bazon)

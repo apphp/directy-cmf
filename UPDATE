@@ -1,66 +1,75 @@
---------------------------------------------------------------------------- 
- Update for ApPHP Directy CMF
----------------------------------------------------------------------------  
+Updating Instructions for ApPHP Framework
+=========================================
 
-Software requirements:
-- PHP 5.0 or later version
-- PDO extension enabled
+!!!IMPORTANT!!!
 
-An update of ApPHP Directy CMF is a very straight forward process:
+The following updating instructions are cumulative. That is, if you want to update
+from version A to version C and there is version B between A and C, you need to
+following the instructions for both A and B.
+
+General update instructions
+---------------------------
+- Make a backup.
+- Replace 'framework' directory with the new one or point SVN to a fresh release and update.
+- Check if everything is OK, if not - revert from backup and post issues to ApPHP issue tracker.
 
 
-Step 1. Backup
-----------------------------------------------
-   Make a full backup of your previously installed site and database before you
-   start updating procedure.
-   
-Step 2. Saving database connection parameters.
-----------------------------------------------
-   Write down all data from protected/config/db.php file and then delete from
-   previous installation following files:
-   - protected/config/db.php
-   - protected/config/main.php
+Updating from 1.2.2 to 1.3.2
+------------------------------
+- general update instructions
 
-Step 3. Decompressing Downloaded Archive.
--------------------------------------
-   Decompress the ApPHP Directy CMF script archive. The archive will create
-   a directory called "PHPDCMF_xxx", where xxx represents a number of current version
-   (for ex.: _201 means version number 2.0.1).
+Updating from 1.1.5 to 1.2.2
+------------------------------
+- changed format for 'cache' in config file
 
-Step 4. Uploading Files.
--------------------------------------
-   Upload all files from the new archive into the directory of your current site
-   (replace your old files).
+Updating from 1.0.3 to 1.1.5
+------------------------------
+- changed format for 'layouts' in config file
 
-Step 5. Running Setup Wizard.
--------------------------------------
-   Now you can run setup wizard. To do this, open your Internet browser and type
-   in Address Bar following:
+Updating from 0.9.0 to 1.0.3
+------------------------------
+- in AR->findall() cacheId added as a 3rd optional parameter
+- move modules/ and vendors/ directories to assets/ directory
+- change format of compression in config files: 'compression.enable' to 'compression.gzip.enable'
 
-   http://{www.mydomain.com}/
-   or
-   http://{www.mydomain.com}/{directy-cmf directory}/
+Updating from 0.8.3 to 0.9.0
+------------------------------
+- CConfig::get('defaultTemplate') redo with CConfig::get('default.template')
 
-   You have to will see the setup wizard starting page. Follow the instructions on the
-   screen. While updating process select Update option, then enter the database connection
-   parameters and database prefix that were written in protected/config/db.php (see step 2),
-   also enter admin username and password, that were used in your previous installation.
-   
-   REMEMBER!
-   ---------
-   You must select Installation Type: UPDATE
+Updating from 0.7.7 to 0.8.3
+------------------------------
+- general update instructions
 
-Step 6. Updating complete.
--------------------------------------
-   After successful updating you will get an appropriate message on the screen. 
+Updating from 0.6.9 to 0.7.7
+------------------------------
+- general update instructions
 
-Step 7. Placing Back Configuration Data.
--------------------------------------
-   To make sure your previous accounts are working as extected, open protected/config/main.php file
-   and change there some important configuration data from previous installation (see p.2):
-   all 'installationKey' and 'password' parameters. Also if your previous installation used multiple
-   languages, you have to replace all needed translation files with the saved from previous
-   installation (see p.2).
+Updating from 0.5.9 to 0.6.9
+------------------------------
+- view files from protected/components/views/ must be moved to protected/views/components/
+- in widget CCaptcha changed syntax definition, see CCaptcha description
 
-Congratulations, you now have ApPHP Directy CMF updated!
+Updating from 0.4.4 to 0.5.9
+------------------------------
+- general update instructions
 
+Updating from 0.3.4 to 0.4.4
+------------------------------
+- replace in all controllers $this->view with $this->_view
+- replace in all models $this->db with $this->_db
+
+Updating from 0.2.4 to 0.3.4
+------------------------------
+- setting default time zone removed from A class and placed into CLocalTime component. Ex.: A::app()->getLocalTime()->setTimeZone('UTC');	
+- changed syntax for all widgets. Ex.: from CWidget::gridView(...) to CWidget::create('CGridView', ...)
+- rename all framework files that used by the code with prefix "C", ex: Model -> CModel, Controller -> CController, etc.
+- in widgets: CFormView, CFormValidation and CGridView attribute 'label'=>'' renamed into 'title'=>''
+
+Updating from 0.1.0 - 0.1.2
+------------------------------
+- if your PHP version is less that 5.2.0 comment following line of code in setComponent() method in Apphp class
+  $this->_components[$id] = $component::init();
+
+Updating from 0.0.1 - 0.0.3
+------------------------------
+- general update instructions

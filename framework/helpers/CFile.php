@@ -5,94 +5,264 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2020 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
- * PUBLIC:					PROTECTED:					PRIVATE:		
+ * PUBLIC (static):			PROTECTED:					PRIVATE:		
  * ----------               ----------                  ----------
- * getExtension          	                            _findFilesRecursive
- * deleteDirectory                                      _validatePath
- * emptyDirectory                                       _errorHanler
+ * isWritable											_findFilesRecursive
+ * getExtension          	                            _validatePath
+ * getMimeType        									_errorHanler
+ * getMimeTypeByExtension								
+ * deleteDirectory                                      
+ * emptyDirectory                                       
  * copyDirectory
  * isDirectoryEmpty
- * getDirectoryFilesNumber
+ * getDirectoryFilesCount
+ * removeDirectoryOldestFile
  * findSubDirectories
+ * fileExists
  * writeToFile
  * copyFile
  * findFiles
  * deleteFile
  * getFileSize
+ * getFileTime
+ * getImageDimensions
  * createShortenName
+ * getFileContent
  * 
- */	  
+ */
 
 class CFile
 {
-    
+	
+	/**
+	 * Tests for file writability
+	 * Windows servers return true for is_writable() returns TRUE even if you really can't write to file.
+	 * But on on Unix servers if safe_mode is "on" it's is also unreliable.
+	 * @link https://bugs.php.net/bug.php?id=54709
+	 * @param string
+	 * @return bool
+	 */
+	public static function isWritable($file)
+	{
+		// Check if we're on a Unix server with safe_mode "off", in this case we call is_writable
+		if (DIRECTORY_SEPARATOR === '/' && (substr(phpversion(), 0, 3) == '5.4' || !ini_get('safe_mode'))) {
+			return is_writable($file);
+		}
+		
+		// For Windows servers and safe_mode "on" we'll actually write a file and then read it.
+		if (is_dir($file)) {
+			$file = rtrim($file, '/') . '/' . md5(mt_rand());
+			if (($fp = @fopen($file, 'ab')) === false) {
+				return false;
+			}
+			fclose($fp);
+			@chmod($file, 0777);
+			@unlink($file);
+			return true;
+		} elseif (!is_file($file) || ($fp = @fopen($file, 'ab')) === false) {
+			return false;
+		}
+		
+		fclose($fp);
+		return true;
+	}
+	
 	/**
 	 * Returns the extension name of a given file path (ex.: "path/to/some/thing.php" will return "php")
-	 * @param string $path 
-	 * @return string 
+	 * @param string $path
+	 * @return string
 	 */
 	public static function getExtension($path)
 	{
 		return pathinfo($path, PATHINFO_EXTENSION);
 	}
-
+	
 	/**
-	 * Deletes given directory with files it includes 
-	 * @param string $dir
+	 * Determines the MIME type of the specified file
+	 * @param string $file
+	 * @param bool $checkExtension
+	 * @return string the MIME type
+	 */
+	public static function getMimeType($file, $checkExtension = true)
+	{
+		if (empty($file)) {
+			return null;
+		}
+		
+		if (function_exists('finfo_open')) {
+			$options = defined('FILEINFO_MIME_TYPE') ? FILEINFO_MIME_TYPE : FILEINFO_MIME;
+			$info = finfo_open($options);
+			
+			if ($info && ($result = finfo_file($info, $file)) !== false) {
+				return $result;
+			}
+		}
+		
+		if (function_exists('mime_content_type') && ($result = mime_content_type($file)) !== false) {
+			return $result;
+		}
+		
+		return $checkExtension ? self::getMimeTypeByExtension($file) : null;
+	}
+	
+	/**
+	 * Determines the MIME type based on the extension name of the specified file
+	 * @param string $file
+	 * @return string the MIME type
+	 */
+	public static function getMimeTypeByExtension($file)
+	{
+		// Predefined mime types
+		$mime_types = array(
+			'txt' => 'text/plain',
+			'htm' => 'text/html',
+			'html' => 'text/html',
+			'php' => 'text/html',
+			'css' => 'text/css',
+			'js' => 'application/javascript',
+			'json' => 'application/json',
+			'xml' => 'application/xml',
+			'swf' => 'application/x-shockwave-flash',
+			'flv' => 'video/x-flv',
+			
+			// Images
+			'png' => 'image/png',
+			'jpe' => 'image/jpeg',
+			'jpeg' => 'image/jpeg',
+			'jpg' => 'image/jpeg',
+			'gif' => 'image/gif',
+			'bmp' => 'image/bmp',
+			'ico' => 'image/vnd.microsoft.icon',
+			'tiff' => 'image/tiff',
+			'tif' => 'image/tiff',
+			'svg' => 'image/svg+xml',
+			'svgz' => 'image/svg+xml',
+			
+			// Archives
+			'zip' => 'application/zip',
+			'rar' => 'application/x-rar-compressed',
+			'exe' => 'application/x-msdownload',
+			'msi' => 'application/x-msdownload',
+			'cab' => 'application/vnd.ms-cab-compressed',
+			
+			// Audio/video
+			'mp3' => 'audio/mpeg',
+			'qt' => 'video/quicktime',
+			'mov' => 'video/quicktime',
+			
+			// Adobe
+			'pdf' => 'application/pdf',
+			'psd' => 'image/vnd.adobe.photoshop',
+			'ai' => 'application/postscript',
+			'eps' => 'application/postscript',
+			'ps' => 'application/postscript',
+			
+			// MS Office
+			'doc' => 'application/msword',
+			'rtf' => 'application/rtf',
+			'xls' => 'application/vnd.ms-excel',
+			'csv' => 'text/csv',
+			'ppt' => 'application/vnd.ms-powerpoint',
+			
+			// Open Office
+			'odt' => 'application/vnd.oasis.opendocument.text',
+			'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+		);
+		
+		if (($ext = pathinfo($file, PATHINFO_EXTENSION)) !== '') {
+			$ext = strtolower($ext);
+			if (isset($mime_types[$ext])) {
+				return $mime_types[$ext];
+			}
+		}
+		
+		return '';
+	}
+	
+	/**
+	 * Deletes given directory with files it includes
+	 * @param string $path
+	 * @param bool $deleteHidden
 	 * @return bool
 	 */
-	public static function deleteDirectory($dir = '')
+	public static function deleteDirectory($path = '', $deleteHidden = false)
 	{
-		self::emptyDirectory($dir);
-        return rmdir($dir);
+		if (empty($path)) return false;
+		
+		$path = trim($path, '/') . '/';
+		
+		$files = glob($path . '*');
+		foreach ($files as $file) {
+			is_dir($file) ? self::deleteDirectory($file, $deleteHidden) : unlink($file);
+		}
+		
+		if ($deleteHidden && is_file($path . '.htaccess')) {
+			unlink($path . '.htaccess');
+		}
+		
+		rmdir($path);
+		return true;
 	}
-
+	
 	/**
 	 * Removes files and subdirectories of the given directory
-	 * @param string $dir
+	 * @param string $path
+	 * @param array $exclude
 	 * @return bool
 	 */
-	public static function emptyDirectory($dir = '')
+	public static function emptyDirectory($path = '', $exclude = array())
 	{
-		foreach(glob($dir.'/*') as $file){
-			if(is_dir($file)){
+		$files = glob($path . '/*');
+		foreach ($files as $file) {
+			if (is_dir($file)) {
 				self::emptyDirectory($file);
-			}else{
+			} elseif (!in_array(basename($file), $exclude)) {
 				unlink($file);
 			}
 		}
 		return true;
 	}
-
+	
 	/**
 	 * Copies content of source directory into destination directory
 	 * Warning: if the destination file already exists, it will be overwritten
 	 * @param string $src
 	 * @param string $dest
 	 * @param bool $fullPath
+	 * @param array $options
+	 *      newDirMode - the permission to be set for newly copied directories (defaults to 0777)
+	 *      newFileMode - the permission to be set for newly copied files (defaults to the current environment setting)
 	 * @return bool
 	 */
-	public static function copyDirectory($src = '', $dest = '', $fullPath = true)
+	public static function copyDirectory($src = '', $dest = '', $fullPath = true, $options = array())
 	{
 		$result = false;
-		$dirPath = (($fullPath) ? APPHP_PATH.'/' : '').$src;
+		$dirPath = (($fullPath) ? APPHP_PATH . '/' : '') . $src;
 		
-		if(is_dir($dirPath)){
+		if (is_dir($dirPath)) {
 			$dir = opendir($dirPath);
-			if(!$dir) return $result;
-			if(!file_exists(trim($dest, '/').'/')) mkdir((($fullPath) ? APPHP_PATH.'/' : '').$dest);
-			while(false !== ($file = readdir($dir))){	
-				if(($file != '.') && ($file != '..')){				
-					$fromDir = trim($src, '/').'/'.$file;
-					$toDir = trim($dest, '/').'/'.$file;
-					if(is_dir($fromDir)){
-						$result = self::copyDirectory($fromDir, $toDir, $fullPath);
-					}else{
-						$result = copy($fromDir, $toDir);	
-					}				
+			if (!$dir) return $result;
+			if (!file_exists(trim($dest, '/') . '/')) {
+				mkdir((($fullPath) ? APPHP_PATH . '/' : '') . ltrim($dest, '/'), 0777, true);
+			}
+			if (is_dir($dest)) {
+				@chmod($dest, (isset($options['newDirMode']) ? $options['newDirMode'] : 0777));
+			}
+			while (false !== ($file = readdir($dir))) {
+				if (($file != '.') && ($file != '..')) {
+					$fromDir = trim($src, '/') . '/' . $file;
+					$toDir = trim($dest, '/') . '/' . $file;
+					if (is_dir($fromDir)) {
+						$result = self::copyDirectory($fromDir, $toDir, $fullPath, $options);
+					} else {
+						$result = copy($fromDir, $toDir);
+						if (isset($options['newFileMode'])) {
+							@chmod($toDir, $options['newFileMode']);
+						}
+					}
 				}
 			}
 			closedir($dir);
@@ -104,54 +274,72 @@ class CFile
 	/**
 	 * Returns the result of check if given directory is empty
 	 * @param string $dir
-	*/
-	public static function isDirectoryEmpty($dir = '')
+	 * @param array $exclude
+	 * @return bool
+	 */
+	public static function isDirectoryEmpty($dir = '', $exclude = array())
 	{
-		if($dir == '' || !is_readable($dir)) return false; 
+		if ($dir == '' || !is_readable($dir)) return false;
+		
 		$hd = opendir($dir);
-		while(false !== ($entry = readdir($hd))){
-			if($entry !== '.' && $entry !== '..'){
-				return false;
+		if (!$hd) return false;
+		while (false !== ($entry = readdir($hd))) {
+			if (($entry !== '.' && $entry !== '..')) {
+				if (!in_array($entry, $exclude)) {
+					return false;
+				}
 			}
 		}
 		closedir($hd);
 		return true;
-	}	
+	}
 	
 	/**
 	 * Returns the number of files in a given directory
 	 * @param string $dir
-	*/
-	public static function getDirectoryFilesNumber($dir = '')
+	 * @param string $fileExtension
+	 * @return int
+	 */
+	public static function getDirectoryFilesCount($dir = '', $fileExtension = '')
 	{
-        return count(glob($dir.'*'));
-    }
-    
+		$search = !empty($fileExtension) ? '*' . $fileExtension : '*';
+		return count(glob($dir . $search));
+	}
+	
 	/**
-	 * Deletes the oldest file in a given directory
+	 * Deletes the oldest file in a given directory or file older than a given days before
 	 * @param string $dir
-	*/
-	public static function removeDirectoryOldestDile($dir = '')
+	 * @param int $days
+	 * @param array $exclude
+	 * return void
+	 */
+	public static function removeDirectoryOldestFile($dir = '', $days = 0, $exclude = array())
 	{
-        $oldestFileTime = @date('Y-m-d H:i:s');
-        $oldestFileName = '';
-        if($hdir = opendir($dir)){
-            while(false !== ($obj = @readdir($hdir))){
-                if($obj == '.' || $obj == '..' || $obj == '.htaccess') continue; 
-                $fileTime = @date('Y-m-d H:i:s', @filectime($dir.$obj));
-                if($fileTime < $oldestFileTime){
-                    $oldestFileTime = $fileTime;
-                    $oldestFileName = $obj;
-                }				
-            }
-        }		
-        if(!empty($oldestFileName)){
-            self::deleteFile($dir.$oldestFileName);
-        }
-    }    
-
+		if (!empty($days)) {
+			$oldestFileTime = @date('Y-m-d H:i:s', strtotime('-' . (int)$days . ' days'));
+		} else {
+			$oldestFileTime = @date('Y-m-d H:i:s');
+		}
+		$oldestFileName = '';
+		if ($hdir = opendir($dir)) {
+			while (false !== ($obj = @readdir($hdir))) {
+				if ($obj == '.' || $obj == '..' || $obj == '.htaccess' || in_array($obj, $exclude)) {
+					continue;
+				}
+				$fileTime = @date('Y-m-d H:i:s', @filectime($dir . $obj));
+				if ($fileTime < $oldestFileTime) {
+					$oldestFileTime = $fileTime;
+					$oldestFileName = $obj;
+				}
+			}
+		}
+		if (!empty($oldestFileName)) {
+			self::deleteFile($dir . $oldestFileName);
+		}
+	}
+	
 	/**
-	 * Returns the list of subdirectories in a given path 
+	 * Returns the list of subdirectories in a given path
 	 * @param string $dir
 	 * @param bool $fullPath
 	 * @return array
@@ -159,32 +347,53 @@ class CFile
 	public static function findSubDirectories($dir = '.', $fullPath = false)
 	{
 		$subDirectories = array();
-		$folder = dir($dir); 
-		while($entry = $folder->read()){
-			if($entry != '.' && $entry != '..' && is_dir($dir.$entry)){
-			    $subDirectories[] = ($fullPath ? $dir : '').$entry; 
+		$folder = dir($dir);
+		while ($entry = $folder->read()) {
+			if ($entry != '.' && $entry != '..' && is_dir($dir . $entry)) {
+				$subDirectories[] = ($fullPath ? $dir : '') . $entry;
 			}
-		}     
-		$folder->close(); 
+		}
+		$folder->close();
 		return $subDirectories;
 	}
-    
+	
+	/**
+	 * Check sif file exists
+	 * @param string $path
+	 * @return bool
+	 */
+	public static function fileExists($path = '')
+	{
+		$result = true;
+		if (substr($path, -1) === '/' || !file_exists($path)) {
+			$result = false;
+			CDebug::addMessage('warnings', 'missing-file', A::t('core', 'Unable to find file: "{file}".', array('{file}' => $path)));
+		}
+		return $result;
+	}
+	
 	/**
 	 * Writes to the file
-	 * @param string $file  
+	 * @param string $file
 	 * @param mixed $content
-	 * @param string $mode 
+	 * @param string $mode
 	 * @return bool
 	 */
 	public static function writeToFile($file = '', $content = '', $mode = 'w')
 	{
-        $fp = @fopen($file, $mode);                     
-        @fwrite($fp, $content);
-        @fclose($fp);
-        self::_errorHanler('file-writing-error', A::t('core', 'An error occurred while writing to file {file}.', array('{file}'=>$file)));
-        return true;
-    }
-
+		if (!$fp = @fopen($file, $mode)) {
+			self::_errorHanler('file-opening-error', A::t('core', 'Cannot open file {file}.', array('{file}' => $file)));
+			return false;
+		}
+		if (@fwrite($fp, $content) === FALSE) {
+			self::_errorHanler('file-writing-error', A::t('core', 'An error occurred while writing to file {file}.', array('{file}' => $file)));
+			return false;
+		}
+		
+		@fclose($fp);
+		return true;
+	}
+	
 	/**
 	 * Copies a file
 	 * @param string $src (absolute path APPHP_PATH.DS.$sourcePath)
@@ -193,26 +402,26 @@ class CFile
 	 */
 	public static function copyFile($src = '', $dest = '')
 	{
-        $result = @copy($src, $dest);
-        self::_errorHanler('file-coping-error', A::t('core', 'An error occurred while copying the file {source} to {destination}.', array('{source}'=>$src, '{destination}'=>$dest)));
-        return $result;
+		$result = @copy($src, $dest);
+		self::_errorHanler('file-coping-error', A::t('core', 'An error occurred while copying the file {source} to {destination}.', array('{source}' => $src, '{destination}' => $dest)));
+		return $result;
 	}
-
+	
 	/**
 	 * Returns the files found under the given directory and subdirectories
-	 * @param string $dir 
+	 * @param string $dir
 	 * @param array $options
 	 * Usage:
 	 * findFiles(
 	 *    $dir,
 	 *    array(
 	 *       'fileTypes'=>array('php', 'zip'),
-	 *   	 'exclude'=>array('html', 'htaccess', 'path/to/'),
-	 '*   	 'level'=>-1
+	 *     'exclude'=>array('html', 'htaccess', 'path/to/'),
+	 * '*     'level'=>-1
 	 *       'returnType'=>'fileOnly'
 	 *  ))
 	 * Description:
-	 * fileTypes: array, list of file name suffix (without dot). 
+	 * fileTypes: array, list of file name suffix (without dot).
 	 * exclude: array, list of directory and file exclusions. Each exclusion can be either a name or a path.
 	 * level: integer, recursion depth, (-1 - unlimited depth, 0 - current directory only, N - recursion depth)
 	 * returnType : 'fileOnly' or 'fullPath'
@@ -236,23 +445,25 @@ class CFile
 	 */
 	public static function deleteFile($file = '')
 	{
-        $result = @unlink($file);
-        self::_errorHanler('file-deleting-error', A::t('core', 'An error occurred while deleting the file {file}.', array('{file}'=>$file)));
+		if (empty($file)) return false;
+		
+		$result = @unlink($file);
+		self::_errorHanler('file-deleting-error', A::t('core', 'An error occurred while deleting the file {file}.', array('{file}' => $file)));
 		return $result;
 	}
-
+	
 	/**
 	 * Returns size of the given file
 	 * @param string $file
 	 * @param string $units
-	 * @return number
+	 * @return float
 	 */
 	public static function getFileSize($file, $units = 'kb')
 	{
-		if(!$file || !is_file($file)) return 0;
+		if (!$file || !is_file($file)) return 0;
 		
 		$filesSize = filesize($file);
-		switch(strtolower($units)){
+		switch (strtolower($units)) {
 			case 'g':
 			case 'gb':
 				$result = number_format($filesSize / (1024 * 1024 * 1024), 2, '.', ',');
@@ -270,9 +481,53 @@ class CFile
 				$result = number_format($filesSize, 2, '.', ',');
 				break;
 		}
+		
 		return $result;
-	}	
-   
+	}
+	
+	/**
+	 * Returns last date of the given file modification
+	 * @param string $file
+	 * @param string $timeFormat
+	 * @return bool|string
+	 */
+	public static function getFileTime($file, $timeFormat = 'Y-m-d H:i:s')
+	{
+		$result = false;
+		
+		if (!$file || !is_file($file)) return $result;
+		
+		if (file_exists($file)) {
+			$result = date($timeFormat, filemtime($file));
+		}
+		
+		return $result;
+	}
+	
+	/**
+	 * Returns dimensions of the given file
+	 * @param string $image
+	 * @return int|array
+	 */
+	public static function getImageDimensions($image)
+	{
+		if (!$image || !is_file($image)) return 0;
+		
+		list($width, $height) = getimagesize($image);
+		
+		return array('width' => $width, 'height' => $height);
+	}
+	
+	/**
+	 * Returns content of the given file
+	 * @param string $file
+	 * @return string
+	 */
+	public static function getFileContent($file)
+	{
+		return file_get_contents($file);
+	}
+	
 	/**
 	 * Returns shorten name of the given file
 	 * @param string $file
@@ -281,79 +536,78 @@ class CFile
 	 * @return string
 	 */
 	public static function createShortenName($file, $lengthFirst = 10, $lengthLast = 10)
-    {
-        return preg_replace("/(?<=.{{$lengthFirst}})(.+)(?=.{{$lengthLast}})/", "...", $file);  
-    }
-
+	{
+		return preg_replace("/(?<=.{{$lengthFirst}})(.+)(?=.{{$lengthLast}})/", "...", $file);
+	}
+	
 	/**
 	 * Returns the files found under the specified directory and subdirectories
-	 * @param string $dir 
-	 * @param string $base 
-	 * @param array $fileTypes 
+	 * @param string $dir
+	 * @param string $base
+	 * @param array $fileTypes
 	 * @param array $exclude
 	 * @param integer $level
 	 * @param string $returnType
-	 * @return array 
+	 * @return array
 	 */
 	protected static function _findFilesRecursive($dir, $base, $fileTypes, $exclude, $level, $returnType = 'fileOnly')
 	{
 		$list = array();
-		if($hdir = opendir($dir)){
-			while(($file = readdir($hdir)) !== false){
-				if($file === '.' || $file === '..') continue;
-				$path = $dir.DS.$file;
+		if ($hdir = opendir($dir)) {
+			while (($file = readdir($hdir)) !== false) {
+				if ($file === '.' || $file === '..') continue;
+				$path = $dir . DS . $file;
 				$isFile = is_file($path);
-				if(self::_validatePath($base, $file, $isFile, $fileTypes, $exclude)){
-					if($isFile){
+				if (self::_validatePath($base, $file, $isFile, $fileTypes, $exclude)) {
+					if ($isFile) {
 						$list[] = ($returnType == 'fileOnly') ? $file : $path;
-					}else if($level){
-						$list = array_merge($list, self::_findFilesRecursive($path, $base.'/'.$file, $fileTypes, $exclude, $level-1, $returnType));
+					} elseif ($level) {
+						$list = array_merge($list, self::_findFilesRecursive($path, $base . '/' . $file, $fileTypes, $exclude, $level - 1, $returnType));
 					}
 				}
-			}			
+			}
 		}
 		closedir($hdir);
 		return $list;
 	}
-
+	
 	/**
-	 * Validates whether given path is the valid file or directory 
+	 * Validates whether given path is the valid file or directory
 	 * @param string $base
 	 * @param string $file
 	 * @param boolean $isFile
 	 * @param array $fileTypes
 	 * @param array $exclude
-	 * @return boolean 
+	 * @return boolean
 	 */
 	protected static function _validatePath($base, $file, $isFile, $fileTypes, $exclude)
 	{
-		foreach($exclude as $e){
-			if($file === $e || strpos($base.'/'.$file, $e) === 0) return false;
+		foreach ($exclude as $e) {
+			if ($file === $e || strpos($base . '/' . $file, $e) === 0) return false;
 		}
-		if(!$isFile || empty($fileTypes)) return true;
-		if(($type = pathinfo($file, PATHINFO_EXTENSION)) !== ''){
+		if (!$isFile || empty($fileTypes)) return true;
+		if (($type = pathinfo($file, PATHINFO_EXTENSION)) !== '') {
 			return in_array($type, $fileTypes);
-		}else{
+		} else {
 			return false;
 		}
 	}
-
-    /**
-     * Handlers errors for specified method
-     * @param string $msgType
-     * @param string $msg
-     */
-    private static function _errorHanler($msgType = '', $msg = '')
-    {
-        if(version_compare(PHP_VERSION, '5.2.0', '>=')){	
-            $err = error_get_last();
-            if(isset($err['message']) && $err['message'] != ''){
-                $lastError = $err['message'].' | file: '.$err['file'].' | line: '.$err['line'];
-                $errorMsg = ($lastError) ? $lastError : $msg;
-                CDebug::addMessage('errors', $msgType, $errorMsg, 'session');
-                @trigger_error('');
-            }
-        }        
-    }
-    
+	
+	/**
+	 * Handlers errors for specified method
+	 * @param string $msgType
+	 * @param string $msg
+	 * @return void
+	 */
+	private static function _errorHanler($msgType = '', $msg = '')
+	{
+		$err = error_get_last();
+		if (isset($err['message']) && $err['message'] != '') {
+			$lastError = $err['message'] . ' | file: ' . $err['file'] . ' | line: ' . $err['line'];
+			$errorMsg = ($lastError) ? $lastError : $msg;
+			CDebug::addMessage('errors', $msgType, $errorMsg, 'session');
+			@trigger_error('');
+		}
+	}
+	
 }

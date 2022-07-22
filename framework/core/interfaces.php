@@ -5,11 +5,11 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2020 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  *
- */	  
+ */
 
 /**
  * IActiveRecord is the interface that must be implemented by model classes

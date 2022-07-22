@@ -2,8 +2,8 @@
 /**
 * Class controller
 *
-* PUBLIC:                  PRIVATE
-* -----------              ------------------
+* PUBLIC:                 PROTECTED                  PRIVATE
+* -----------             ------------------         ------------------
 * __construct              
 * 
 */

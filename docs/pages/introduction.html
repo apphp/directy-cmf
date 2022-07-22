@@ -1,0 +1,39 @@
+<h1>ApPHP Framework</h1>
+
+ApPHP MVC Framework is a web application framework that is designed to provide modern and rapid development of websites, web applications and web services.
+<br><br>
+
+It implements the the Model-View-Controller (MVC) design pattern and principles, including separation of display, logic, and data layers. It provides a special architecture, components for database access, templating, session management and many other tools for developers to build a complex web applications faster and safer. 
+<br><br>
+
+Choosing ApPHP MVC Framework allows you to release your applications earlier, host and scale them without problem, and maintain them over time with easy.
+<br>
+    
+<h4>MVC</h4>
+Like most modern web programming frameworks, ApPHP Framework has been developed in accordance with the
+MVC pattern ("Model-View-Controller"). The MVC requires that the entire software logic should be separated
+into three loosely bound parts (layers):
+
+<ul>
+    <li>Data management layer (Model)</li>
+    <li>View presentation layer</li>
+    <li>Business logic layer (Controller) which is responsible for receiving, validating and processing
+        user requests as well as for obtaining data from the model (database) and preparing them for proper
+        displaying in users' browsers
+    </li>
+</ul>
+
+For more information: <a class="external" href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller" title="MVC (Wikipedia)" target="_blank" rel="noopener noreferrer">MVC  (Wikipedia)</a>
+<br><br>
+
+<h4>HTTP request processing scheme</h4>    
+<ol>
+    <li>A user request is received for processing by the main dispatching file.</li>
+    <li>Framework kernel parses the requested URL.</li>
+    <li>The routing system determines which application must be requested and which action it must execute according to the URL contents.</li>
+    <li>For each application action, the appropriate controller is located which handles further request processing.</li>
+    <li>The controller executes business logic and requests data from the database using model classes where necessary.</li>
+    <li>To generate the resulting web page, the controller consecutively calls methods of one or more action classes.</li>
+    <li>The data returned by actions are passed on to the template engine to generate the resulting HTML code.</li>
+    <li>The template engine generates HTML code using the received data and the specified template files.</li>
+</ol>
