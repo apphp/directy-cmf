@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="83a39d8b-2272-4ea0-a9f6-3d8a2a08652c" name="Default Changelist" comment="New version 1.3.2">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="83a39d8b-2272-4ea0-a9f6-3d8a2a08652c" name="Default Changelist" comment="New version 1.3.2" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -701,14 +699,7 @@
       <workItem from="1612538836467" duration="75000" />
       <workItem from="1613137746560" duration="25000" />
       <workItem from="1615555538427" duration="33000" />
-      <workItem from="1658504804234" duration="772000" />
-    </task>
-    <task id="LOCAL-00148" summary="~ changes">
-      <created>1572596341244</created>
-      <option name="number" value="00148" />
-      <option name="presentableId" value="LOCAL-00148" />
-      <option name="project" value="LOCAL" />
-      <updated>1572596341244</updated>
+      <workItem from="1658504804234" duration="823000" />
     </task>
     <task id="LOCAL-00149" summary="~ changes">
       <created>1572596842958</created>
@@ -1046,7 +1037,14 @@
       <option name="project" value="LOCAL" />
       <updated>1658505474904</updated>
     </task>
-    <option name="localTasksCounter" value="197" />
+    <task id="LOCAL-00197" summary="New version 1.3.2">
+      <created>1658505607749</created>
+      <option name="number" value="00197" />
+      <option name="presentableId" value="LOCAL-00197" />
+      <option name="project" value="LOCAL" />
+      <updated>1658505607749</updated>
+    </task>
+    <option name="localTasksCounter" value="198" />
     <servers />
   </component>
   <component name="TodoView" selected-index="3">
