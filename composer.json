@@ -1,7 +1,8 @@
 {
-    "name": "apphp/php-mvc-framework",
+    "name": "apphp/php-directy-cmf",
     "type": "project",
-    "description": "The ApPHP Framework.",
+    "version": "1.3.2",
+    "description": "The ApPHP Directy CMF.",
     "keywords": [
         "framework",
         "mvc",
@@ -14,7 +15,7 @@
         {
             "name": "Samuel Akopyan",
             "email": "admin@apphp.com",
-            "homepage": "https://apphp.com/php-framework",
+            "homepage": "https://apphp.com",
             "role": "Founder and project lead"
         }
     ],
