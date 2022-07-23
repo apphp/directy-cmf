@@ -13,7 +13,8 @@
     <?php echo CHtml::cssFile("templates/setup/css/main.css"); ?>
 	<?php echo CHtml::scriptFile('http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'); ?>
 </head>
-<body>
+<body>  
+<div id="container">
     <header>        
         <nav>
             <?php echo A::t('setup', 'Setup Wizard'); ?><br>
@@ -26,7 +27,7 @@
                 <b><?php echo $this->_programName; ?></b><br>
                 <?php echo A::t('setup', 'version'); ?>: <?php echo $this->_programVersion; ?>
             </div>            
-
+    
             <?php
                 CWidget::create('CMenu', array(
                     'type'=>'vertical',					
@@ -39,17 +40,18 @@
                         array('label'=>'6. '.A::t('setup', 'Completed'), 'url'=>'setup/completed', 'readonly'=>true),
                     ),
                     'selected'=>$this->_activeMenu,
-					'return'=>false
+                    'return'=>false
                 ));
             ?>
         </aside>
         <article>
             <?php echo A::app()->view->getContent(); ?>
         </article>
-    </section>
+    </section>    
     <footer>
         <p class="copyright"><?php echo A::t('setup', 'Copyright'); ?> &copy; <?php echo date('Y'); ?> <?php echo $this->_programName; ?></p>
         <p class="powered"><?php echo A::powered(); ?></p>
-    </footer>    
+    </footer>
+</div>    
 </body>
 </html>

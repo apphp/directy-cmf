@@ -29,7 +29,6 @@
                 'autoGenerateId'=>true
             ),
             'fields'=>array(
-                'id'         => array('type'=>'hidden'),
                 'name'		 => array('type'=>'label', 'title'=>A::t('app', 'Name')),
                 'code'		 => array('type'=>'label', 'title'=>A::t('app', 'Code')),
                 'description'=> array('type'=>'label', 'title'=>A::t('app', 'Description'), 'htmlOptions'=>array('class'=>'label-description')),

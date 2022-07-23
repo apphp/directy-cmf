@@ -50,7 +50,7 @@ class ModulesSettings extends CActiveRecord
 		$result = true;
 		if(is_array($valuesArray)){
 			foreach($valuesArray as $id => $value){
-				if(!$this->_db->update($this->_table, array('property_value'=>$value), 'id='.$id)){
+                if(!$this->_db->update($this->_table, array('property_value'=>$value), 'id = :id', array(':id'=>(int)$id))){    
 					$result = false;
 				}
 			}
@@ -83,12 +83,10 @@ class ModulesSettings extends CActiveRecord
 	public function getShortcodes()
 	{
 		$_arrModuleSettings = array();
-		$modulesSettings = $this->_db->select('
-            SELECT ms.*
-			FROM '.CConfig::get('db.prefix').$this->_table.' ms
-			INNER JOIN '.CConfig::get('db.prefix').'modules m ON ms.module_code = m.code  
-            WHERE ms.property_key = \'shortcode\' AND  m.is_active = 1 AND m.is_installed = 1'
-		);
+		$modulesSettings = $this->_db->select("SELECT ms.*
+			FROM ".CConfig::get('db.prefix').$this->_table." ms
+			INNER JOIN ".CConfig::get('db.prefix')."modules m ON ms.module_code = m.code  
+            WHERE ms.property_key = 'shortcode' AND  m.is_active = 1 AND m.is_installed = 1");
 		
 		foreach($modulesSettings as $key => $val){			
 			$_arrModuleSettings[$val['module_code']] = array('value'=>$val['property_value'], 'description'=>$val['description']);

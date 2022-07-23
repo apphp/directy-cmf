@@ -137,6 +137,7 @@ abstract class CActiveRecord extends CModel
 	public static function init($params = array())
 	{
 		if(self::$_instance == null) self::$_instance = new self($params);
+        
         return self::$_instance;    		
 	}
     
@@ -303,7 +304,8 @@ abstract class CActiveRecord extends CModel
                 $resultArray[$res['language_code']][$field] = $res[$field];    
             }			
 		}
-		return $resultArray;
+		
+        return $resultArray;
 	}	
 
 	/**
@@ -470,7 +472,7 @@ abstract class CActiveRecord extends CModel
         }
         $whereClause = !empty($where) ? ' AND '.$where : '';
         $orderBy = !empty($order) ? ' ORDER BY '.$order : '';
-        $limit = !empty($limit) ? ' LIMIT '.$limit : '';
+        $limitClause = !empty($limit) ? ' LIMIT '.$limit : '';
         
         $relations = $this->_getRelations();
         $customFields = $this->_getCustomFields();
@@ -489,8 +491,8 @@ abstract class CActiveRecord extends CModel
                     '.$attributes_clause.'
                 '.$whereClause.'
                 '.$orderBy.'
-               '.$limit;
-                
+               '.$limitClause;                
+        
         return $this->_db->select($sql, $params);
     }
     
@@ -519,7 +521,7 @@ abstract class CActiveRecord extends CModel
         $whereClause = !empty($where) ? ' WHERE '.$where : '';
         $groupBy = !empty($group) ? ' GROUP BY '.$group : '';
         $orderBy = !empty($order) ? ' ORDER BY '.$order : '';
-        $limit = !empty($limit) ? ' LIMIT '.$limit : '';
+        $limitClause = !empty($limit) ? ' LIMIT '.$limit : '';
         
         $relations = $this->_getRelations();
         $customFields = $this->_getCustomFields();
@@ -533,7 +535,7 @@ abstract class CActiveRecord extends CModel
                 '.$whereClause.'
                 '.$groupBy.'
                 '.$orderBy.'
-                '.$limit;
+                '.$limitClause;
                 
         return $this->_db->select($sql, $params, $fetchMode, $cacheId);
     }
@@ -551,6 +553,7 @@ abstract class CActiveRecord extends CModel
             $key = $this->_primaryKey;
             return $result->$key;
         }
+        
         return '';
     }
 
@@ -591,6 +594,7 @@ abstract class CActiveRecord extends CModel
         }else{
             CDebug::AddMessage('errors', 'before-save', A::t('core', 'AR before operation on table: {table}', array('{table}'=>$this->_table)));
         }
+        
         return false;
     }
     
@@ -601,6 +605,7 @@ abstract class CActiveRecord extends CModel
     public function clearPkValue()
     {
         $this->_pkValue = 0;
+        
         return true;
     }        
     
@@ -668,6 +673,7 @@ abstract class CActiveRecord extends CModel
         if(!empty($this->_pkValue) && $this->deleteByPk($this->_pkValue)){
             return true;                
         }        
+        
         return false;
     }
 
@@ -698,6 +704,7 @@ abstract class CActiveRecord extends CModel
         }else{
             CDebug::AddMessage('errors', 'before-delete', A::t('core', 'AR before delete operation on table: {table}', array('{table}'=>$this->_table)));
         }
+        
         return false;
     }
     
@@ -726,6 +733,7 @@ abstract class CActiveRecord extends CModel
         }else{
             CDebug::AddMessage('errors', 'before-delete', A::t('core', 'AR before delete operation on table: {table}', array('{table}'=>$this->_table)));
         }
+        
         return false;
     }
     
@@ -756,13 +764,14 @@ abstract class CActiveRecord extends CModel
     
         $sql = 'SELECT * FROM `'.CConfig::get('db.prefix').$this->_table.'` '.$whereClause.' LIMIT 1';
         $result = $this->_db->select($sql, $params);
+        
         return ($result) ? true : false;
     }
 
 	/**
 	 * Finds the number of rows satisfying the specified query condition
      * Ex.: count('postID = :postID AND isActive = :isActive', array(':postID'=>10, 'isActive'=>1));
-     * Ex.: count(array('condition'=>'post_id = :postID AND is_active = :isActive', 'count'=>'', 'group'=>''), array(':postID'=>10, ':isActive'=>1));
+     * Ex.: count(array('condition'=>'post_id = :postID AND is_active = :isActive', 'select'=>'', 'count'=>'*', 'group'=>'', 'allRows'=>false), array(':postID'=>10, ':isActive'=>1));
 	 * @param mixed $conditions
 	 * @param array $params 
 	 * @return integer 
@@ -772,27 +781,37 @@ abstract class CActiveRecord extends CModel
         if(is_array($conditions)){
             $where = isset($conditions['condition']) ? $conditions['condition'] : '';
             $group = isset($conditions['group']) ? $conditions['group'] : '';
-            $count = isset($conditions['count']) ? $conditions['count'] : '';
+            $count = isset($conditions['count']) ? $conditions['count'] : '*';
+            $select = isset($conditions['select']) ? $conditions['select'] : '';
+            $allRows = isset($conditions['allRows']) ? (bool)$conditions['allRows'] : false;
         }else{
             $where = $conditions;
             $group = '';
             $count = '*';
+            $select = '';
+            $allRows = false;
         }        
         $whereClause = !empty($where) ? ' WHERE '.$where : '';
         $groupBy = !empty($group) ? ' GROUP BY '.$group : '';
+        $limitClause = $allRows ? '' : ' LIMIT 1';
         $relations = $this->_getRelations();
 
         $sql = 'SELECT 
                     COUNT('.$count.') as cnt
+                    '.($select ? ', '.$select : '').'
                 FROM `'.CConfig::get('db.prefix').$this->_table.'`
                     '.$relations['tables'].'
                 '.$whereClause.'
                 '.$groupBy.'
-                LIMIT 1';
+                '.$limitClause;
         $result = $this->_db->select($sql, $params);
-        return (isset($result[0]['cnt'])) ? $result[0]['cnt'] : 0;
-    }
 
+        if($allRows){
+            return (isset($result)) ? $result : null;    
+        }else{
+            return (isset($result[0]['cnt'])) ? $result[0]['cnt'] : 0;    
+        }        
+    }
 
 	/**
 	 * Finds a maximum value of the specified column
@@ -820,6 +839,7 @@ abstract class CActiveRecord extends CModel
                 '.$whereClause.'
                 LIMIT 1';
         $result = $this->_db->select($sql, $params);
+        
         return (isset($result[0]['column_max'])) ? $result[0]['column_max'] : 0;
     }
 
@@ -849,6 +869,7 @@ abstract class CActiveRecord extends CModel
                 '.$whereClause.'
                 LIMIT 1';
         $result = $this->_db->select($sql, $params);
+        
         return (isset($result[0]['column_sum'])) ? $result[0]['column_sum'] : 0;
     }
 
@@ -932,6 +953,7 @@ abstract class CActiveRecord extends CModel
                 $result .= ', '.$key.' as '.$val;
             }
         }
+        
         return $result;
     }
 

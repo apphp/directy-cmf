@@ -29,26 +29,26 @@
 		$fields['access_level'] = array('type'=>'select', 'title'=>A::t('app', 'Access'), 'data'=>$accessLevelsList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($accessLevelsList)));
 		$fields['menu_type']    = array('type'=>'select', 'title'=>A::t('app', 'Menu Type'), 'data'=>$menuTypesList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($menuTypesList)), 'htmlOptions'=>array('onchange'=>'changeMenuType(this)'));
 
-		$appendCode = '<a href="javascript:void(0)" onclick="$(\'#dialog\').dialog();" title="'.A::t('app', 'Set Link').'"><img style="margin-bottom:-7px;" src="js/vendors/jquery/images/set_link.png" alt="Set Link" /></a>';
+		$appendCode = '<a href="javascript:void(0)" onclick="$(\'#dialog\').dialog({maxHeight:400,width:320,maxWidth:600});" title="'.A::t('app', 'Set Link').'"><img style="margin-bottom:-7px;" src="js/vendors/jquery/images/set_link.png" alt="Set Link" /></a>';
 		if($menuType == 'modulelink'){
 			$fields['link_target'] = array('type'=>'data', 'default'=>'_self');
-			$fields['link_url']    = array('type'=>'textbox', 'title'=>A::t('app', 'Link URL'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('readonly'=>true, 'maxlength'=>'255', 'class'=>'middle'), 'appendCode'=>$appendCode);
+			$fields['link_url']    = array('type'=>'textbox', 'title'=>A::t('app', 'Link URL'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('readonly'=>true, 'maxlength'=>'255', 'class'=>'large'), 'appendCode'=>$appendCode);
 			$fields['module_code'] = array('type'=>'textbox', 'title'=>A::t('app', 'Module Code'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'mixed'), 'htmlOptions'=>array('readonly'=>true));
 		}else if($menuType == 'moduleblock'){	
 			$fields['link_target'] = array('type'=>'data', 'default'=>'');
-			$fields['link_url']    = array('type'=>'textbox', 'title'=>A::t('app', 'Link URL'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('readonly'=>true, 'maxlength'=>'255', 'class'=>'middle'), 'appendCode'=>$appendCode);
+			$fields['link_url']    = array('type'=>'textbox', 'title'=>A::t('app', 'Link URL'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('readonly'=>true, 'maxlength'=>'255', 'class'=>'large'), 'appendCode'=>$appendCode);
 			$fields['module_code'] = array('type'=>'textbox', 'title'=>A::t('app', 'Module Code'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'mixed'), 'htmlOptions'=>array('readonly'=>true));
 		}else{
 			$fields['link_target'] = array('type'=>'select', 'title'=>A::t('app', 'Link Target'), 'default'=>'', 'data'=>$linkTargetsList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($linkTargetsList)));
-			$fields['link_url']    = array('type'=>'textbox', 'title'=>A::t('app', 'Link URL'), 'tooltip'=>A::t('app', 'Link URL Tooltip'), 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'255', 'class'=>'middle'), 'appendCode'=>$appendCode);
+			$fields['link_url']    = array('type'=>'textbox', 'title'=>A::t('app', 'Link URL'), 'tooltip'=>A::t('app', 'Link URL Tooltip'), 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'255', 'class'=>'large'), 'appendCode'=>$appendCode);
 			$fields['module_code'] = array('type'=>'data', 'default'=>'');
 		}
 
-		$fields['parent_id']  = array('type'=>'hidden', 'default'=>$parentId, 'htmlOptions'=>array());
+		$fields['parent_id']  = array('type'=>'data', 'default'=>$parentId);
 		$fields['sort_order'] = array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'tooltip'=>'', 'default'=>'0', 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'3', 'class'=>'small'));
 		
 		if($parentId){
-			$fields['placement'] = array('type'=>'hidden', 'default'=>'');
+			$fields['placement'] = array('type'=>'data', 'default'=>'');
 		}
 
 		echo CWidget::create('CDataForm', array(
@@ -71,7 +71,7 @@
 			'fields'=>$fields,
 			'translationInfo' => array('relation'=>array('id', 'menu_id'), 'languages'=>Languages::model()->findAll('is_active = 1')),
 			'translationFields' => array(
-				'name' => array('type'=>'textbox', 'title'=>A::t('app', 'Menu Title'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any')),
+				'name' => array('type'=>'textbox', 'title'=>A::t('app', 'Menu Title'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any'), 'htmlOptions'=>array('title'=>'', 'class'=>'middle')),
 			),
 			'buttons'=>array(
                 'submitUpdateClose' => array('type'=>'submit', 'value'=>A::t('app', 'Update & Close'), 'htmlOptions'=>array('name'=>'btnUpdateClose')),

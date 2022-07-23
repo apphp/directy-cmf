@@ -21,6 +21,9 @@ Step 2. Saving database connection parameters.
    - protected/config/db.php
    - protected/config/main.php
 
+   Copy all translation files from the following directory:
+   - protected/messages/
+
 Step 3. Decompressing Downloaded Archive.
 -------------------------------------
    Decompress the ApPHP Directy CMF script archive. The archive will create
@@ -30,7 +33,7 @@ Step 3. Decompressing Downloaded Archive.
 Step 4. Uploading Files.
 -------------------------------------
    Upload all files from the new archive into the directory of your current site
-   (replace your old files).
+   (this operation will replace your old files). .
 
 Step 5. Running Setup Wizard.
 -------------------------------------
@@ -41,7 +44,7 @@ Step 5. Running Setup Wizard.
    or
    http://{www.mydomain.com}/{directy-cmf directory}/
 
-   You have to will see the setup wizard starting page. Follow the instructions on the
+   You have to see the setup wizard starting page. Follow the instructions on the
    screen. While updating process select Update option, then enter the database connection
    parameters and database prefix that were written in protected/config/db.php (see step 2),
    also enter admin username and password, that were used in your previous installation.

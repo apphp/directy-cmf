@@ -13,7 +13,7 @@
 
 <div class="tmenu">
     <div class="hmenu-container">
-        <?php echo FrontendMenu::draw('top', $this->activeMenu); ?>
+        <?php echo FrontendMenu::draw('top', $this->_activeMenu); ?>
    </div>
 </div>
 

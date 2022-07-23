@@ -31,7 +31,7 @@
                     <?php echo A::app()->view->getContent(); ?>
                 </div>    
                 <div class="side-panel">					
-					<?php echo FrontendMenu::draw('right', $this->activeMenu); ?>    
+					<?php echo FrontendMenu::draw('right', $this->_activeMenu); ?>    
                 </div>                    
                 <div class="clear"></div>
             </div>

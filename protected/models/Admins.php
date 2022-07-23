@@ -139,7 +139,7 @@ class Admins extends CActiveRecord
                 }
     
                 // update admin's last visit time
-                $this->_db->update($this->_table, array('last_visited_at' => LocalTime::currentDateTime()), 'id = '.(int)CAuth::getLoggedId());
+                $this->_db->update($this->_table, array('last_visited_at' => LocalTime::currentDateTime()), 'id = :id', array(':id'=>(int)CAuth::getLoggedId()));
                 return true;
             }else{
                 $this->_errorDescription = A::t('app', 'Login Inactive Message');            

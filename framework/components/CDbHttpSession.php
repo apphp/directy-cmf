@@ -156,7 +156,7 @@ class CDbHttpSession extends CComponent
 	 */
 	public function openSession($savePath, $sessionName)
 	{
-        $this->_db->delete('sessions', 'expires_at < '.time());
+        $this->_db->delete('sessions', 'expires_at < :expires_at', array(':expires_at'=>time()));
 		return true;
 	}
     
@@ -179,7 +179,7 @@ class CDbHttpSession extends CComponent
 	 */
 	public function readSession($id)
 	{
-        $result = $this->_db->select("SELECT session_data FROM sessions WHERE session_id = '".$id."'");
+        $result = $this->_db->select('SELECT session_data FROM sessions WHERE session_id = :session_id', array(':session_id'=>$id));
         return isset($result[0]) ? $result[0] : '';
 	}
 
@@ -192,22 +192,23 @@ class CDbHttpSession extends CComponent
 	 */
 	public function writeSession($id, $data)
 	{        
-        $result = $this->_db->select("SELECT * from sessions WHERE session_id = '".$id."'");
+        $result = $this->_db->select('SELECT * from sessions WHERE session_id = :session_id', array(':session_id'=>$id));
         if(isset($result[0])){
             $result = $this->_db->update(
                 'sessions',
                 array(
-                    'expires_at'=>time() + $this->getTimeout(),
+                    'expires_at'=>time()+$this->getTimeout(),
                     'session_data'=>$data
                 ),
-                "session_id = '".$id."'"
+                'session_id = :session_id',
+                array(':session_id'=>$id)
             );
         }else{
             $result = $this->_db->insert(
                 'sessions',
                 array(
                     'session_id'=>$id,
-                    'expires_at'=>time() + $this->getTimeout(),
+                    'expires_at'=>time()+$this->getTimeout(),
                     'session_data'=>$data
                 )
             );
@@ -224,8 +225,7 @@ class CDbHttpSession extends CComponent
 	 */
 	public function destroySession($id)
 	{
-		$this->_db->delete('sessions', "session_id = '".$id."'");        
-		return true;
+		return $this->_db->delete('sessions', "session_id = :session_id", array(':session_id'=>$id));        
 	}
 
 	/**
@@ -236,8 +236,7 @@ class CDbHttpSession extends CComponent
 	 */
 	public function gcSession($maxLifetime)
 	{
-        $this->_db->delete('sessions', 'expires_at < '.time());		        
-		return true;
+        return $this->_db->delete('sessions', 'expires_at < :expires_at', array(':expires_at'=>time()));
 	}
     
 	/**

@@ -345,6 +345,7 @@ class CDataForm
 					}else{
 						if(APPHP_MODE == 'demo'){
                             $msg = CDatabase::init()->getErrorMessage();
+                            if(!$msg) $msg = A::t('core', 'This operation is blocked in Demo Mode!');
                             $msgType = 'warning';					
                         }else if($records->getError()){
                             $msg = $records->getErrorMessage();
@@ -417,8 +418,9 @@ class CDataForm
 				$translationsArray = $objModel->getTranslations(array('key'=>$keyTo, 'value'=>(isset($recordsAssoc[$keyFrom]) ? $recordsAssoc[$keyFrom] : ''), 'fields'=>$translationFieldsArray));
 				
 				foreach($languages as $lang){
+                    $flagIcon = ($lang['icon'] != '') ? $lang['icon'] : 'no_image.png';
 					$formViewParams['fields']['separator_'.$lang['code']] = array(
-						'separatorInfo' => array('legend'=>'<img width="16px" src="images/flags/'.$lang['icon'].'"> &nbsp;'.$lang['name_native']),
+                        'separatorInfo' => array('legend'=>'<img width="16px" src="images/flags/'.$flagIcon.'" alt="'.$lang['code'].'"> &nbsp;'.$lang['name_native']),
 					);			
 					foreach($translationFields as $transFieldKey => $transFieldVal){
 						$tfTitle = isset($transFieldVal['title']) ? $transFieldVal['title'] : '';
@@ -493,6 +495,8 @@ class CDataForm
 					$fieldInfo['value'] = '';
                 }else if($validationType == 'float' && $validationFormat == 'european'){
                     $fieldInfo['value'] = isset($recordsAssoc[$fieldInd]) ? CNumber::europeanFormat($recordsAssoc[$fieldInd]) : '';		
+				}else if(isset($fieldInfo['defaultEditMode'])){
+                    $fieldInfo['value'] = $fieldInfo['defaultEditMode'];
 				}else{
 					$fieldInfo['value'] = isset($recordsAssoc[$fieldInd]) ? $recordsAssoc[$fieldInd] : '';		
 				}								

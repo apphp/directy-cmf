@@ -19,17 +19,17 @@
         <menu>Right</menu>
         <menu>Bottom</menu>
     </menus>    
-    <files>        
-        <php>
-            <filename>default.php</filename>
-            <filename>header.php</filename>
-            <filename>footer.php</filename>
-        </php>
+    <files>
+        <images>
+            <filename>template_icon.png</filename>
+            <filename>body-bg.jpg</filename>
+        </images>    
         <css>
-            <filename>css/style.css</filename>
+            <filename>style.css</filename>
         </css>
-        <xml>        
-            <filename>info.xml</filename>
-        </xml>        
+        <filename>default.php</filename>
+        <filename>header.php</filename>
+        <filename>footer.php</filename>
+        <filename>info.xml</filename>
     </files>
 </install>

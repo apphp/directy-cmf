@@ -1,3 +1,21 @@
+Version 2.4.9 - 16 Jan, 2015
+----------------------------
+
+- Enh: added new parameter in FrontendMenu component
+- Enh: updated setup module to v0.0.9
+- Enh: minor changes in Backend styling
+- Enh: added possibility to install system modules from Modules Management page
+- Bug: fixed issue on changing FrontendMenu type
+- Bug: fixed issue on loading default language in Frontend
+- Bug: fixed SimpleXMLElement::count() error
+- Bug: fixed wrong characters in modules installation error message
+- Bug: fixed issue on drawing empty Backend menu
+- Bug: fixed issue on instalaltion/updating system modules
+- Bug: fixed issue in sql for accounts table
+- Bug: fixed undefined variables in index/index
+- Bug: fixed minor template issues
+- Bug: fixed error on changing default language
+
 
 Version 2.3.2 - 16 Jun, 2014
 ----------------------------

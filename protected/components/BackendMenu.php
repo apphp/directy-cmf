@@ -32,6 +32,9 @@ class BackendMenu extends CComponent
 				if($item['module_code'] != '' && !Admins::hasPrivilege('modules', 'view')) continue;				
 				
 				$subItems = ($parentId == 0 ? self::_getMenu($item['id']) : '') ;
+                // don't show parent menu if it has no child items
+                if($parentId == 0 && is_array($subItems) && !count($subItems)) continue;
+
 				$imagePath = (preg_match('/\//', $item['icon'])) ? '' : 'templates/backend/images/icons/';
 				$image = ($item['icon'] == '' ? '' : '<img src="'.$imagePath.$item['icon'].'" alt="icon" class="'.($parentId ? 'sub-' : '').'menu-icon" />'); 				
 				$show = true;
@@ -110,15 +113,13 @@ class BackendMenu extends CComponent
 	public static function drawProfileMenu($activeMenu = '')
 	{
         $output = '';
-        
-        $output .= CHtml::tag('div', array('class'=>'logout'));
+        $output .= CHtml::openTag('div', array('class'=>'logout'));
         $output .= CHtml::link(CHtml::image('templates/backend/images/icons/logout-white.png', 'logout'), 'backend/logout', array('class'=>'tooltip-link', 'title'=>A::t('app', 'Logout')));
         $output .= CHtml::closeTag('div');
-        
-        $output .= CHtml::tag('div', array('id'=>'dd', 'class'=>'wrapper-dropdown'));
+        $output .= CHtml::openTag('div', array('id'=>'dd', 'class'=>'wrapper-dropdown'));
         $output .= CHtml::image('templates/backend/images/accounts/'.CAuth::getLoggedAvatar(), 'avatar', array('height'=>'36px'));
         $output .= CHtml::tag('span', array(), A::t('app', 'Hi').', '.CAuth::getLoggedName());
-        $output .= CHtml::tag('ul', array('class'=>'dropdown'));
+        $output .= CHtml::openTag('ul', array('class'=>'dropdown'));
         $output .= CHtml::tag('li', array('class'=>($activeMenu == 'backend/' ? 'active' : '')), CHtml::link('<i class="icon-dashboard"></i>'.A::t('app', 'Dashboard'), 'backend/dashboard'));
         $output .= CHtml::tag('li', array('class'=>($activeMenu == 'settings/' ? 'active' : '')), CHtml::link('<i class="icon-settings"></i>'.A::t('app', 'Settings'), 'settings/general'));
         $output .= CHtml::tag('li', array('class'=>($activeMenu == 'admins/myAccount' ? 'active' : '')), CHtml::link('<i class="icon-account"></i>'.A::t('app', 'My Account'), 'admins/myAccount'));

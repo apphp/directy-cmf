@@ -109,6 +109,8 @@ class LanguagesController extends CController
 		$this->_view->directionsList = $this->_getDirectonsList();		
 		$this->_view->usedOnList = $this->_getUsedOnList();
 		
+        $sortOrder = Languages::model()->count();
+        $this->_view->sortOrder = ($sortOrder < 99) ? $sortOrder + 1 : 99;        		        
     	$this->_view->render('languages/add');
 	}
 

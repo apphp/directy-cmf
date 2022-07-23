@@ -1,7 +1,7 @@
 {
   "name": "apphp/directy-cmf",
   "type": "project",
-  "version": "2.3.2",
+  "version": "2.4.9",
   "description": "The ApPHP Directy CMF.",
   "keywords": [
     "framework",
@@ -29,9 +29,6 @@
   },
   "require": {
     "php": ">=7.1.0"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^7.5"
   },
   "autoload": {
     "psr-4": {

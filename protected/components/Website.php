@@ -144,7 +144,6 @@ class Website extends CComponent
      */
     public static function prepareBackendAction($action = '', $privilegeCategory = '', $redirectPath = '')
     {
-        $args = func_get_args();
         $baseUrl = A::app()->getRequest()->getBaseUrl();
 
         // block access to this action for not-logged users

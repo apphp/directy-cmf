@@ -30,7 +30,6 @@
 			'requiredFieldsAlert'=>true,
 			'fields'=>array(
 				'code'       => array('type'=>'textbox', 'title'=>A::t('app', 'Code'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'variable', 'maxLength'=>'40', 'unique'=>true), 'htmlOptions'=>array('maxlength'=>'40', 'class'=>'middle')),
-				//'is_system'  => array('type'=>'hidden', 'default'=>'0', 'htmlOptions'=>array()),
 			),
 			'translationInfo' => array('relation'=>array('code', 'template_code'), 'languages'=>Languages::model()->findAll('is_active = 1')),
 			'translationFields' => array(

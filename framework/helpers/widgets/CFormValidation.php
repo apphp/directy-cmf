@@ -25,8 +25,8 @@ class CFormValidation
      * Usage: (in Controller class)
      * - possible validation types:
      *  	alpha, numeric, alphanumeric, variable, mixed, phone, phoneString, username, timeZone
-     *  	password, email, fileName, date, integer, positiveInteger, float, any, confirm,
-     *  	url, range ('minValue'=>'' and 'maxValue'=>''), set, text
+     *  	password, email, fileName, identity|identityCode, date, integer, positiveInteger,
+     *  	float, any, confirm, url, range ('minValue'=>'' and 'maxValue'=>''), set, text
      * - attribute 'validation'=>array(..., 'forbiddenChars'=>array('+', '$')) is used to define forbidden characters
      * - attribute 'validation'=>array(..., 'trim'=>true) - removes spaces from field value before validation
      * 
@@ -134,7 +134,7 @@ class CFormValidation
 						$valid = false;
                         $errorMessage = A::t($msgSource, 'Invalid image height for field {title}: {image_height}px (max. allowed: {max_allowed}px)', array('{title}'=>$title, '{image_height}'=>$fileHeight, '{max_allowed}'=>$maxHeight));
                     }else{
-						// set pre-defined file name
+						// set predefined file name
 						$targetFileName = (!empty($fileDefinedName)) ? $fileDefinedName.'.'.pathinfo($fileName, PATHINFO_EXTENSION) : basename($fileName);
                         $targetFullName = $targetPath.$targetFileName;
                         if(APPHP_MODE == 'demo'){
@@ -232,6 +232,11 @@ class CFormValidation
                         case 'email':
                             $valid = CValidator::isEmail($fieldValue);
                             $errorMessage = A::t($msgSource, 'The field {title} must be a valid email address! Please re-enter.', array('{title}'=>$title));
+                            break;                                                
+                        case 'identity':
+                        case 'identityCode':
+                            $valid = CValidator::isIdentityCode($fieldValue);
+                            $errorMessage = A::t($msgSource, 'The field {title} must be a valid identity code! Please re-enter.', array('{title}'=>$title));
                             break;                                                
                         case 'fileName':
                             $valid = CValidator::isFileName($fieldValue);

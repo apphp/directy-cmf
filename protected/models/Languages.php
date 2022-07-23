@@ -43,10 +43,15 @@ class Languages extends CActiveRecord
 
   	/**
 	 * Draws language selector
+	 * @param array $params
+	 *      'display' => 'names|keys|icons',
 	 * @return string - html code for languages selector
 	 */
-	public static function drawSelector()
+	public static function drawSelector($params = array())
 	{
+        // 'display' => 'names|keys|icons',
+        $display = isset($params['display']) ? $params['display'] : 'icons';
+        
         $arrLanguages = array();
         $templateName = A::app()->view->getTemplate();
         $languages = self::model()->findAll("is_active = 1 AND used_on IN ('front-end', 'global')");
@@ -58,7 +63,7 @@ class Languages extends CActiveRecord
 
         $output = CWidget::create('CLanguageSelector', array(
             'languages' => $arrLanguages,
-            'display' => 'icons',
+            'display' => $display,
             'imagesPath' => 'images/flags/',
             'currentLanguage' => A::app()->getLanguage(),
         ));
@@ -87,7 +92,7 @@ class Languages extends CActiveRecord
 		
 		// if this language is default - remove default flag in all other languages
 		if($this->is_default){
-        	if(!$this->_db->update($this->_table, array('is_default'=>0), 'id != '.$id)){
+            if(!$this->_db->update($this->_table, array('is_default'=>0), 'id != :id', array(':id'=>(int)$id))){    
         		$this->_isError = true;
         	}
 		}
@@ -174,7 +179,7 @@ class Languages extends CActiveRecord
 			foreach($allTables as $table){
 				// check if it is a translation or description table
 				if(preg_match($pattern, $table[0], $matches)){
-					if(false === $this->_db->delete($matches[1], 'language_code="'.$this->code.'"')){
+					if(false === $this->_db->delete($matches[1], 'language_code = :language_code', array(':language_code'=>$this->code))){
 						$this->_isError = true;
 					}
 				}

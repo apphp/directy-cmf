@@ -251,17 +251,17 @@ class ModulesController extends CController
 				// if failed to read XML file, $xml will contain error message 
 				$msg = A::t('app', 'XML File Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$code.'/info.xml', 30, 50)));
 				$msgType = 'error';				
-			}else if($xml->moduleType == 'system'){
+			//}else if($xml->moduleType == 'system'){
 				// check if this module is a system module
-				$msg = A::t('app', 'Operation Blocked Error Message');
-				$msgType = 'error';
+				//$msg = A::t('app', 'Operation Blocked Error Message');
+				//$msgType = 'error';
 			}else{								
 				// get sql schema filename from the xml
 				$sqlInstallFile = isset($xml->files->data->install) ? $xml->files->data->install : '';
 				$sqlUninstallFile = isset($xml->files->data->uninstall) ? $xml->files->data->uninstall : '';
                 $msgSql = $this->_runSqlFile(APPHP_PATH.'/protected/modules/'.$code.'/data/'.$sqlInstallFile);
 				if($msgSql){
-					$msg = A::t('app', 'Module Installation Error Message', array('{module}'=>$name)).'<br><br>'.$msgSql;
+					$msg = A::t('app', 'Module Installation Error Message', array('{module}'=>$name)).'<br><br>'.htmlspecialchars($msgSql);
     				$msgType = 'error';
 					$this->_runSqlFile(APPHP_PATH.'/protected/modules/'.$code.'/data/'.$sqlUninstallFile, true);
 				}else{
@@ -283,7 +283,7 @@ class ModulesController extends CController
 		}
 		$this->_view->actionMessage .= CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
 			
-        $this->_view->modulesList = $this->_getApplicationModules();
+        $this->_view->modulesList = ($moduleType == 'application') ? $this->_getApplicationModules() : $this->_getSystemModules();
 		$this->_view->notInstalledModulesList = $this->_getNotInstalledModules();
         $this->_view->allModulesList = $this->_getModules('application');
 		$this->_view->tabs = $this->_prepareTab(($moduleType == 'application') ? 'application' : 'system');
@@ -328,10 +328,10 @@ class ModulesController extends CController
 				// if failed to read XML file, $xml will contain error message                
 				$msg = A::t('app', 'XML File Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$code.'/info.xml', 30, 50)));
 				$msgType = 'error';				
-			}else if($xml->moduleType == 'system'){
-				// check if this module is a system module
-				$msg = A::t('app', 'Operation Blocked Error Message');
-				$msgType = 'error';
+			//}else if($xml->moduleType == 'system'){
+			//	// check if this module is a system module
+			//	$msg = A::t('app', 'Operation Blocked Error Message');
+			//	$msgType = 'error';
 			}else{								
 				// get sql schema filename from the xml
 				$sqlUpdateFiles = isset($xml->files->data->update) ? $xml->files->data->update : '';
@@ -454,6 +454,7 @@ class ModulesController extends CController
                                     $destPaths = $this->_getSubDirectories($folder);
                                     foreach($destPaths as $destPath){                                        
                                         // by files in subdirectories
+                                        // if($file->count()){ $file->count() is not supported in PHP prior to 5.3.0 
                                         if(count($file->children())){
                                             // subdirectory exists
                                             if(basename($destPath) != trim($file->getName(), '/')) continue;
@@ -733,6 +734,7 @@ class ModulesController extends CController
                             $defaultFile = $file->filename;
                         } 
                         // by files in subdirectories
+                        // if($file->count()){ $file->count() is not supported in PHP prior to 5.3.0 
                         if(count($file->children())){
                             // subdirectory exists
                             $destSubPath = $file->getName().'/';

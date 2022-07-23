@@ -3,7 +3,7 @@
 return array(
     // application data
     'name' => 'ApPHP Directy CMF',
-    'version' => '2.3.2',
+    'version' => '2.4.9',
     
     // installation settings
     'installationKey' => '<INSTALLATION_KEY>',
@@ -76,7 +76,7 @@ return array(
 
     // application modules
     'modules' => array(
-        'setup' => array('enable' => true),
+        'setup' => array('enable' => true, 'removable' => false),
     ),
 
     // url manager

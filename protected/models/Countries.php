@@ -82,7 +82,7 @@ class Countries extends CActiveRecord
 		$this->_isError = false;
 		// if this country is default - remove default flag in all other countries
 		if($this->is_default){
-			if(!$this->_db->update($this->_table, array('is_default'=>0), 'id != '.$id)){
+			if(!$this->_db->update($this->_table, array('is_default'=>0), 'id != :id', array(':id'=>(int)$id))){
 				$this->_isError = true;
 			}
 		}
@@ -112,7 +112,7 @@ class Countries extends CActiveRecord
 	{
 		$this->_isError = false;
 		// delete country names from translation table
-		if(false === $this->_db->delete($this->_tableTranslation, 'country_code="'.$this->code.'"')){
+		if(false === $this->_db->delete($this->_tableTranslation, 'country_code = :country_code', array(':country_code'=>$this->code))){
 			$this->_isError = true;
 		}
 		

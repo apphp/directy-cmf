@@ -80,7 +80,8 @@ class Accounts extends CActiveRecord
                         'last_visited_at' => LocalTime::currentDateTime(),
                         'last_visited_ip' => A::app()->getRequest()->getUserHostAddress()
                     ),
-                    'id = '.(int)CAuth::getLoggedId()
+                    'id = :id',
+                    array(':id'=>(int)CAuth::getLoggedId())
                 );
                 return true;
             }else{

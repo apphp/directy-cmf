@@ -108,6 +108,8 @@ class CurrenciesController extends CController
         	$this->redirect('backend/index');
         }
 		
+        $sortOrder = Currencies::model()->count();
+        $this->_view->sortOrder = ($sortOrder < 99) ? $sortOrder + 1 : 99;        		
     	$this->_view->render('currencies/add');
 	}
 	

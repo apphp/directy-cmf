@@ -2,18 +2,18 @@
                -= YOU MAY NOT REMOVE OR CHANGE THIS NOTICE =-                 
  --------------------------------------------------------------------------- 
  ApPHP Directy CMF - Content Management Framework
- Version :      2.3.2
+ Version :      2.4.9
  Developed by:  ApPHP <info@apphp.com>                                      
  License:       GNU LGPL v.3                                                
  Site:          http://www.apphp.com/php-directy-cmf/
- Copyright:     ApPHP Directy CMF (c) 2013 - 2014
+ Copyright:     ApPHP Directy CMF (c) 2013 - 2015
                 All rights reserved.                                        
 
  Requirements
  ---------------------------------------------------------------------------
  - PHP 5.1.0 or later
  - PDO extension enabled
- - ApPHP MVC Framework v0.4.0 or later (included in release)
+ - ApPHP MVC Framework v0.5.0 or later (included in release)
 
  Additional (embedded) components and modules used in this project:
  --------------------------------------------------------------------------- 
@@ -34,6 +34,10 @@
  ---------------------------------------------------------------------------
  - UPDATE
  - http://www.apphp.com/php-directy-cmf/index.php?page=update
+
+ Modules Installation/Update:
+ ---------------------------------------------------------------------------
+ - http://www.apphp.com/php-directy-cmf/index.php?page=module-installation-and-update
 
  Getting Started:
  ---------------------------------------------------------------------------

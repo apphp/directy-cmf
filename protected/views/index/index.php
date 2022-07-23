@@ -1,5 +1,8 @@
 <?php 
     $this->_pageTitle = '';
+    
+    if(!isset($title)) $title = '';
+    if(!isset($text)) $text = '';
 ?>
 
 <h1 class="title"><?php echo $title; ?></h1>

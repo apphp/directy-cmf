@@ -58,14 +58,15 @@ class CFormView
      *           'field_4'=>array('type'=>'textarea', 'title'=>'Field 4', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'htmlOptions'=>array('maxLength'=>'250')),
      *           'field_5'=>array('type'=>'file',     'title'=>'Field 5', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'htmlOptions'=>array()),
      *           'field_6'=>array('type'=>'image',    'title'=>'Field 6', 'tooltip'=>'', 'mandatoryStar'=>true, 'src'=>'', 'alt'=>'Field 6', 'htmlOptions'=>array()),
-     *           'field_7'=>array('type'=>'label',    'title'=>'Field 7', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'definedValues'=>array(), 'format'=>'', 'stripTags'=>false, 'htmlOptions'=>array()),
-     *           'field_8'=>array('type'=>'link',     'title'=>'Field 8', 'tooltip'=>'', 'mandatoryStar'=>true, 'linkUrl'=>'path/to/param', 'linkText'=>'', 'htmlOptions'=>array()),
-     *           'field_9'=>array('type'=>'datetime', 'title'=>'Field 9', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'definedValues'=>array(), 'format'=>'', 'minDate'=>'', 'maxDate'=>'', 'htmlOptions'=>array()),
-     *          'field_10'=>array('type'=>'checkbox', 'title'=>'Field 10', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'checked'=>true, 'htmlOptions'=>array(), 'viewType'=>''),
-     *          'field_11'=>array('type'=>'select',   'title'=>'Field 11', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'data'=>array(), 'htmlOptions'=>array()),
-     *          'field_12'=>array('type'=>'radioButton', 'title'=>'Field 12', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'checked'=>'true', 'htmlOptions'=>array()),
-     *          'field_13'=>array('type'=>'radioButtonList', 'title'=>'Field 13', 'tooltip'=>'', 'mandatoryStar'=>true, 'checked'=>0, 'data'=>array(), 'htmlOptions'=>array()),
-	 *          'field_14'=>array('type'=>'imageUpload', 'title'=>'Field 14', 'tooltip'=>'', 'mandatoryStar'=>false, 'value'=>'', 
+     *           'field_7'=>array('type'=>'html',     'title'=>'Field 7', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>''),
+     *           'field_8'=>array('type'=>'label',    'title'=>'Field 8', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'definedValues'=>array(), 'format'=>'', 'stripTags'=>false, 'htmlOptions'=>array()),
+     *           'field_9'=>array('type'=>'link',     'title'=>'Field 9', 'tooltip'=>'', 'mandatoryStar'=>true, 'linkUrl'=>'path/to/param', 'linkText'=>'', 'htmlOptions'=>array()),
+     *          'field_10'=>array('type'=>'datetime', 'title'=>'Field 10', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'definedValues'=>array(), 'format'=>'', 'minDate'=>'', 'maxDate'=>'', 'htmlOptions'=>array()),
+     *          'field_11'=>array('type'=>'checkbox', 'title'=>'Field 11', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'checked'=>true, 'htmlOptions'=>array(), 'viewType'=>''),
+     *          'field_12'=>array('type'=>'select',   'title'=>'Field 12', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'data'=>array(), 'htmlOptions'=>array()),
+     *          'field_13'=>array('type'=>'radioButton', 'title'=>'Field 13', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'checked'=>'true', 'htmlOptions'=>array()),
+     *          'field_14'=>array('type'=>'radioButtonList', 'title'=>'Field 14', 'tooltip'=>'', 'mandatoryStar'=>true, 'checked'=>0, 'data'=>array(), 'htmlOptions'=>array()),
+	 *          'field_15'=>array('type'=>'imageUpload', 'title'=>'Field 15', 'tooltip'=>'', 'mandatoryStar'=>false, 'value'=>'', 
 	 *          	'imageOptions' =>array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'imagePath'=>'templates/backend/images/accounts/', 'imageClass'=>'avatar'),
 	 *          	'deleteOptions'=>array('showLink'=>true, 'linkUrl'=>'admins/edit/avatar/delete', 'linkText'=>'Delete'),
 	 *          	'fileOptions'  =>array('showAlways'=>false, 'class'=>'file', 'size'=>'25')
@@ -79,7 +80,7 @@ class CFormView
      *          'submitUpdate'=>array('type'=>'submit', 'value'=>'Update', 'htmlOptions'=>array('name'=>'btnUpdate')),
      *          'submitUpdateClose'=>array('type'=>'submit', 'value'=>'Update & Close', 'htmlOptions'=>array('name'=>'btnUpdateClose')),
 	 *          'reset' =>array('type'=>'reset', 'value'=>'Reset', 'htmlOptions'=>array()),
-     *          'cancel'=>array('type'=>'button', 'value'=>'Cancel', 'htmlOptions'=>array('name'=>'')),
+     *          'cancel'=>array('type'=>'button', 'value'=>'Cancel', 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
 	 *          'custom' =>array('type'=>'button', 'value'=>'Custom', 'htmlOptions'=>array('onclick'=>"$(location).attr('href','categories/index');")),
      *       ),
      *       'buttonsPosition'=>'bottom',
@@ -120,13 +121,20 @@ class CFormView
         // draw top buttons
         if($buttonsPosition == 'top' || $buttonsPosition == 'both') $output .= self::_drawButtons($buttons, 'top');
 
-		// remove disabled fields
+		// run in loop to remove disabled fields
 		foreach($fields as $field => $fieldInfo){
-            if(isset($fieldInfo['type']) && $fieldInfo['type'] === 'data') unset($fields[$field]);
-            else if(isset($fieldInfo['disabled']) && (bool)$fieldInfo['disabled'] === true) unset($fields[$field]);
+            if(preg_match('/separator/i', $field) && is_array($fieldInfo)){
+                foreach($fieldInfo as $iField => $iFieldInfo){						
+                    if(isset($iFieldInfo['type']) && $iFieldInfo['type'] === 'data') unset($fields[$field][$iField]);
+                    else if(isset($iFieldInfo['disabled']) && (bool)$iFieldInfo['disabled'] === true) unset($fields[$field][$iField]);
+                }                
+            }else{
+                if(isset($fieldInfo['type']) && $fieldInfo['type'] === 'data') unset($fields[$field]);
+                else if(isset($fieldInfo['disabled']) && (bool)$fieldInfo['disabled'] === true) unset($fields[$field]);
+            }
 		}
 
-		// draw fields
+		// run in loop to draw fields
         foreach($fields as $field => $fieldInfo){
             if(preg_match('/separator/i', $field) && is_array($fieldInfo)){                
                 $legend = isset($fieldInfo['separatorInfo']['legend']) ? $fieldInfo['separatorInfo']['legend'] : '';                
@@ -250,6 +258,9 @@ class CFormView
         			$fieldHtml = CHtml::checkBox($field, $checked, $htmlOptions);                    
                 }
 				break;
+            case 'html':
+                $fieldHtml = html_entity_decode($value);
+                break;
             case 'label':				
 				$format = isset($fieldInfo['format']) ? $fieldInfo['format'] : '';
                 $stripTags = isset($fieldInfo['stripTags']) ? (bool)$fieldInfo['stripTags'] : false;

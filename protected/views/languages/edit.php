@@ -32,7 +32,7 @@
 			'fields'=>array(
 				'name_native'=>array('type'=>'textbox', 'title'=>A::t('app', 'Language Name'), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>32), 'htmlOptions'=>array('maxlength'=>'32')),
 				'name'		=>array('type'=>'textbox', 'title'=>A::t('app', 'Language Name (English)'), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>32, 'unique'=>true), 'htmlOptions'=>array('maxlength'=>'32')),
-				'code'		=>array('type'=>'textbox', 'title'=>A::t('app', 'Code'), 'validation'=>array('required'=>true, 'type'=>'alpha', 'minLength'=>2, 'unique'=>true), 'htmlOptions'=>array('maxlength'=>'2', 'class'=>'small', 'readonly'=>true)),
+                'code'      =>array('type'=>'label',  'title'=>A::t('app', 'Code'), 'default'=>'', 'tooltip'=>'', 'definedValues'=>array(), 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false),
 				'lc_time_name' =>array('type'=>'select', 'title'=>A::t('app', 'Server Locale'), 'data'=>$localesList, 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($localesList))),
 				'direction' =>array('type'=>'select', 'title'=>A::t('app', 'Text Direction'), 'data'=>$directionsList, 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($directionsList))),
 				'icon' =>array(

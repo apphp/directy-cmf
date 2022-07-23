@@ -239,7 +239,7 @@ class VocabularyController extends CController
 	}
 	
 	/*
-	 * Returns a list of pre-defined languages in application
+	 * Returns a list of predefined languages in application
 	 */
 	private function _getPredefinedLanguages()
 	{

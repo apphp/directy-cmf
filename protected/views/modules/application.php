@@ -39,12 +39,15 @@
 					echo '<td class="center"><img src="templates/backend/images/'.($module['is_active'] ? 'enabled.png' : 'disabled.png').'" title="'.($module['is_active'] ? A::t('app', 'Enabled') : A::t('app', 'Disabled')).'" class="tooltip-link" alt="tooltip" height="16px" /></td>';
 					
 					if(Admins::hasPrivilege('modules', 'edit')){
-                        $moduleVersion = $allModulesList[$module['code']]['version'];
-						echo '<td class="actions">
-							'.(!empty($moduleVersion) && $module['version'] < $moduleVersion ? '<a href="modules/update/code/'.$module['code'].'" class="tooltip-link" title="'.A::t('app', 'Update to version {version}', array('{version}'=>$moduleVersion)).'"><img src="templates/backend/images/update.png" alt="update"></a>' : '').'
-                            <a href="modules/edit/id/'.$module['id'].'" class="tooltip-link" title="'.A::t('app', 'Edit this record').'"><img src="templates/backend/images/edit.png" alt="edit"></a>
-							<a href="modules/uninstall/id/'.$module['id'].'" class="tooltip-link" data-module="'.$module['name'].'" title="'.A::t('app', 'Uninstall this module').'" onclick="return onUninstallClick(this);"><img src="templates/backend/images/uninstall.png" alt="uninstall"></a>
-						</td>';
+                        echo '<td class="actions">';
+                            $removalbe = (!CConfig::exists('modules.'.$module['code'].'.removable') || CConfig::get('modules.'.$module['code'].'.removable')) ? true : false;
+                            $moduleVersion = isset($allModulesList[$module['code']]['version']) ? $allModulesList[$module['code']]['version'] : '';
+                            echo (!empty($moduleVersion) && $module['version'] < $moduleVersion ? '<a href="modules/update/code/'.$module['code'].'" class="tooltip-link" title="'.A::t('app', 'Update to version {version}', array('{version}'=>$moduleVersion)).'"><img src="templates/backend/images/update.png" alt="update"></a>' : '');
+                            echo '<a href="modules/edit/id/'.$module['id'].'" class="tooltip-link" title="'.A::t('app', 'Edit this record').'"><img src="templates/backend/images/edit.png" alt="edit"></a>';
+                            if($removalbe){    
+                                echo '<a href="modules/uninstall/id/'.$module['id'].'" class="tooltip-link" data-module="'.$module['name'].'" title="'.A::t('app', 'Uninstall this module').'" onclick="return onUninstallClick(this);"><img src="templates/backend/images/uninstall.png" alt="uninstall"></a>';
+                            }
+						echo '</td>';
 					}
 					echo '</tr>';
 				}

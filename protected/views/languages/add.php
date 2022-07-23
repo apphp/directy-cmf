@@ -40,7 +40,7 @@
 					'validation'  =>array('required'=>false, 'type'=>'image', 'maxSize'=>'100k', 'targetPath'=>'images/flags/', 'mimeType'=>'image/jpeg, image/png, image/gif, image/jpg', 'fileName'=>''),
 					'fileOptions' =>array('showAlways'=>false, 'class'=>'file', 'size'=>'25')
 				),					
-				'sort_order' =>array('type'=>'textbox', 'title'=>A::t('app', 'Order'), 'default'=>Languages::model()->count()+1, 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'2', 'class'=>'small')),
+				'sort_order' =>array('type'=>'textbox', 'title'=>A::t('app', 'Order'), 'default'=>$sortOrder, 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'2', 'class'=>'small')),
 				'used_on' 	 =>array('type'=>'select', 'title'=>A::t('app', 'Used On'), 'default'=>'global', 'data'=>$usedOnList, 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($usedOnList))),
 				'is_default' =>array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'validation'=>array('type'=>'set', 'source'=>array(0,1))),
 				'is_active'  =>array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>true, 'validation'=>array('type'=>'set', 'source'=>array(0,1))),

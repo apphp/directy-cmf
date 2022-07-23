@@ -5,7 +5,7 @@
  * --------------------------------------------------------------------------- 
  * ApPHP image upload plugin for TinyMCE editor
  * License      : GNU LGPL v.3                                                
- * Copyright    : ApPHP Directy CMF (c) 2013 - 2014, All rights reserved.
+ * Copyright    : ApPHP Directy CMF (c) 2013 - 2015, All rights reserved.
  * Last changes : 19.06.2014 
 */
 

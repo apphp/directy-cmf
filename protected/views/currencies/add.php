@@ -36,7 +36,7 @@
                 'rate'       =>array('type'=>'textbox', 'title'=>A::t('app', 'Rate'), 'tooltip'=>A::t('app', 'Relative to the default currency'), 'default'=>($numberFormat == 'european' ? '1,00' : '1.00'), 'validation'=>array('required'=>true, 'type'=>'float', 'minValue'=>'0', 'format'=>$numberFormat, 'maxLength'=>10), 'htmlOptions'=>array('maxLength'=>'10', 'class'=>'small')),
                 'symbol_place' =>array('type'=>'select', 'title'=>A::t('app', 'Symbol Place'), 'tooltip'=>'', 'default'=>'after', 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array('before', 'after')), 'data'=>array('before'=>A::t('app', 'before'), 'after'=>A::t('app', 'after')), 'htmlOptions'=>array()),
                 'decimals'   =>array('type'=>'select', 'title'=>A::t('app', 'Decimals'), 'tooltip'=>'', 'default'=>'2', 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array('0','1','2','3','4')), 'data'=>array('0','1','2','3','4'), 'htmlOptions'=>array()),
-				'sort_order' =>array('type'=>'textbox', 'title'=>A::t('app', 'Order'), 'default'=>Currencies::model()->count()+1, 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'2', 'class'=>'small')),
+				'sort_order' =>array('type'=>'textbox', 'title'=>A::t('app', 'Order'), 'default'=>$sortOrder, 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'2', 'class'=>'small')),
 				'is_default' =>array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'validation'=>array('type'=>'set', 'source'=>array(0,1))),
 				'is_active'  =>array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>true, 'validation'=>array('type'=>'set', 'source'=>array(0,1))),
             ),

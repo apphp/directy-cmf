@@ -5,7 +5,7 @@
  * @project ApPHP Directy CMF
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphp.com/php-directy-cmf/
- * @copyright Copyright (c) 2013 - 2014 Directy CMF
+ * @copyright Copyright (c) 2013 - 2015 ApPHP Directy CMF
  * @license http://www.apphp.com/php-directy-cmf/
  */	  
 

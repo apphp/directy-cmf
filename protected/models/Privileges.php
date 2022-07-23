@@ -74,8 +74,12 @@ class Privileges extends CActiveRecord
 	 */
 	public function updatePrivilege($roleId = 0, $privilegeId = 0, $activity = 1)
 	{
-		return $this->_db->update('role_privileges', array('is_active'=>(int)$activity), 'role_id = '.(int)$roleId.' AND privilege_id = '.(int)$privilegeId);
+		return $this->_db->update(
+            'role_privileges',
+            array('is_active'=>(int)$activity),
+            'role_id = :role_id AND privilege_id = :privilege_id',
+            array(':role_id'=>$roleId, ':privilege_id'=>$privilegeId)
+        );
 	}
-
 
 }

@@ -27,7 +27,6 @@
                 'autoGenerateId'=>true
             ),
             'fields'=>array(
-                'id'         => array('type'=>'hidden'),
                 'name'       => array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'50')),
                 'description'=> array('type'=>'textarea', 'title'=>A::t('app', 'Description'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'255')),
             ),

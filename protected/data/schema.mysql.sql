@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>site_info` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
 
 INSERT INTO `<DB_PREFIX>site_info` (`id`, `language_code`, `logo`, `header`, `slogan`, `footer`, `meta_title`, `meta_description`, `meta_keywords`) VALUES
-(1, 'en', '', 'Directy CMF', 'Welcome to our Directy CMF!', 'Directy CMF © <a class="footer_link" href="http://www.apphp.com/php-directy-cmf/index.php">ApPHP</a>', 'Directy CMF', 'Directy CMF', 'php cmf, php framework, php content management framework, php cms');
+(1, 'en', '', 'PHP Directy CMF', 'Welcome to PHP Directy CMF!', 'PHP Directy CMF © <a class="footer_link" target="_new" href="http://www.apphp.com/php-directy-cmf/index.php">ApPHP</a>', 'PHP Directy CMF', 'Directy CMF', 'php cmf, php framework, php content management framework, php cms');
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>modules`;
@@ -1118,7 +1118,7 @@ INSERT INTO `<DB_PREFIX>frontend_menus` (`id`, `parent_id`, `menu_type`, `module
 (1, 0, 'pagelink', '', 'index/index', '', 'top', 1, 'public');
 
 
-DROP TABLE IF EXISTS `<DB_PREFIX>frontend_menu_translation`;
+DROP TABLE IF EXISTS `<DB_PREFIX>frontend_menu_translations`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>frontend_menu_translations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `menu_id` int(11) DEFAULT '0',

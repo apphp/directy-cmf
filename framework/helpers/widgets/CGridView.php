@@ -26,6 +26,8 @@ class CGridView
      *   - to disable any field or button use: 'disabled'=>true
      *   - insert code (for all fields): 'prependCode=>'', 'appendCode'=>''
      *   - to perform search by few fields define them comma separated: 'field1,field2' => array(...)
+     *   - for filters attribute 'table' is empty by default. Remember: to add CConfig::get('db.prefix') in 'table'=>CConfig::get('db.prefix').'table'
+     *   - 'data'=>'' attribute for type 'label' allows to show data from PHP variables
      *   
      * Usage:
      *  echo CWidget::create('CGridView', array(
@@ -37,18 +39,19 @@ class CGridView
 	 *    'pagination'=>array('enable'=>true, 'pageSize'=>20),
 	 *    'sorting'=>true,
      *    'filters'=>array(
-     *    	 'field_1' => array('title'=>'Field 1', 'type'=>'textbox', 'operator'=>'=', 'default'=>'', 'width'=>'', 'maxLength'=>''),
-     *    	 'field_2' => array('title'=>'Field 2', 'type'=>'enum', 'operator'=>'=', 'default'=>'', 'width'=>'', 'source'=>array('0'=>'No', '1'=>'Yes')),
-     *    	 'field_3' => array('title'=>'Field 3', 'type'=>'datetime', 'operator'=>'=', 'default'=>'', 'width'=>'80px', 'maxLength'=>'', 'format'=>''),
+     *    	 'field_1' => array('title'=>'Field 1', 'type'=>'textbox', 'table'=>'', 'operator'=>'=', 'default'=>'', 'width'=>'', 'maxLength'=>''),
+     *    	 'field_2' => array('title'=>'Field 2', 'type'=>'enum', 'table'=>'', 'operator'=>'=', 'default'=>'', 'width'=>'', 'source'=>array('0'=>'No', '1'=>'Yes')),
+     *    	 'field_3' => array('title'=>'Field 3', 'type'=>'datetime', 'table'=>'', 'operator'=>'=', 'default'=>'', 'width'=>'80px', 'maxLength'=>'', 'format'=>''),
      *    ),
 	 *    'fields'=>array(
-	 *       'field_1' => array('title'=>'Field 1', 'type'=>'concat', 'align'=>'', 'width'=>'', 'class'=>'left', 'headerClass'=>'left', 'isSortable'=>true, 'concatFields'=>array('first_name', 'last_name'), 'concatSeparator'=>', ',),
-	 *       'field_2' => array('title'=>'Field 2', 'type'=>'decimal', 'align'=>'', 'width'=>'', 'class'=>'right', 'headerClass'=>'right', 'isSortable'=>true, 'format'=>'american|european'),
-	 *       'field_3' => array('title'=>'Field 5', 'type'=>'datetime', 'align'=>'', 'width'=>'', 'class'=>'left', 'headerClass'=>'left', 'isSortable'=>true, 'definedValues'=>array(), 'format'=>''),
-	 *       'field_4' => array('title'=>'Field 3', 'type'=>'enum', 'align'=>'', 'width'=>'', 'class'=>'center', 'headerClass'=>'center', 'isSortable'=>true, 'source'=>array('0'=>'No', '1'=>'Yes')),
-	 *       'field_5' => array('title'=>'Field 4', 'type'=>'image', 'align'=>'', 'width'=>'', 'class'=>'center', 'headerClass'=>'center', 'isSortable'=>false, 'imagePath'=>'images/flags/', 'defaultImage'=>'', 'imageWidth'=>'16px', 'imageHeight'=>'16px', 'alt'=>''),
-	 *       'field_6' => array('title'=>'Field 5', 'type'=>'label', 'align'=>'', 'width'=>'', 'class'=>'left', 'headerClass'=>'left', 'isSortable'=>true, 'definedValues'=>array(), 'stripTags'=>false),
-	 *       'field_7' => array('title'=>'Field 6', 'type'=>'link', 'align'=>'', 'width'=>'', 'class'=>'center', 'headerClass'=>'center', 'isSortable'=>false, 'linkUrl'=>'path/to/param/{field_name}', 'linkText'=>'', 'htmlOptions'=>array()),
+	 *       'field_1' => array('title'=>'Field 1', 'type'=>'index', 'align'=>'', 'width'=>'', 'class'=>'left', 'headerClass'=>'left', 'isSortable'=>false),
+	 *       'field_2' => array('title'=>'Field 2', 'type'=>'concat', 'align'=>'', 'width'=>'', 'class'=>'left', 'headerClass'=>'left', 'isSortable'=>true, 'concatFields'=>array('first_name', 'last_name'), 'concatSeparator'=>', ',),
+	 *       'field_3' => array('title'=>'Field 3', 'type'=>'decimal', 'align'=>'', 'width'=>'', 'class'=>'right', 'headerClass'=>'right', 'isSortable'=>true, 'format'=>'american|european'),
+	 *       'field_4' => array('title'=>'Field 4', 'type'=>'datetime', 'align'=>'', 'width'=>'', 'class'=>'left', 'headerClass'=>'left', 'isSortable'=>true, 'definedValues'=>array(), 'format'=>''),
+	 *       'field_5' => array('title'=>'Field 5', 'type'=>'enum', 'align'=>'', 'width'=>'', 'class'=>'center', 'headerClass'=>'center', 'isSortable'=>true, 'source'=>array('0'=>'No', '1'=>'Yes')),
+	 *       'field_6' => array('title'=>'Field 6', 'type'=>'image', 'align'=>'', 'width'=>'', 'class'=>'center', 'headerClass'=>'center', 'isSortable'=>false, 'imagePath'=>'images/flags/', 'defaultImage'=>'', 'imageWidth'=>'16px', 'imageHeight'=>'16px', 'alt'=>''),
+	 *       'field_7' => array('title'=>'Field 7', 'type'=>'label', 'align'=>'', 'width'=>'', 'class'=>'left', 'headerClass'=>'left', 'isSortable'=>true, 'definedValues'=>array(), 'stripTags'=>false),
+	 *       'field_8' => array('title'=>'Field 8', 'type'=>'link', 'align'=>'', 'width'=>'', 'class'=>'center', 'headerClass'=>'center', 'isSortable'=>false, 'linkUrl'=>'path/to/param/{field_name}', 'linkText'=>'', 'definedValues'=>array(), 'htmlOptions'=>array()),
 	 *    ),
 	 *    'actions'=>array(
      *    	 'edit'    => array('link'=>'locations/edit/id/{id}/page/{page}', 'imagePath'=>'templates/backend/images/edit.png', 'title'=>'Edit this record'),
@@ -108,6 +111,7 @@ class CGridView
 			foreach($filters as $fKey => $fValue){
 				$title = isset($fValue['title']) ? $fValue['title'] : '';				
 				$type = isset($fValue['type']) ? $fValue['type'] : '';
+                $table = isset($fValue['table']) ? $fValue['table'] : '';
 				$width = (isset($fValue['width']) && CValidator::isHtmlSize($fValue['width'])) ? 'width:'.$fValue['width'].';' : '';
 				$maxLength = isset($fValue['maxLength']) && !empty($fValue['maxLength']) ? (int)$fValue['maxLength'] : '255';
 				$fieldOperator = isset($fValue['operator']) ? $fValue['operator'] : '';
@@ -159,6 +163,7 @@ class CGridView
 					$escapedFieldValue = strip_tags(CString::quote($fieldValue));
 					$whereClauseMiddle = '';
                     
+                    if(!empty($table)) $fKey = $table.'.'.$fKey;
                     $fKeyParts = explode(',', $fKey);
                     foreach($fKeyParts as $key => $val){
                         if(count($fKeyParts) == 1){
@@ -219,7 +224,11 @@ class CGridView
 		$pageSize = isset($params['pagination']['pageSize']) ? abs((int)$params['pagination']['pageSize']) : '10';
 		$totalRecords = $totalPageRecords = 0;
 		$currentPage = '';
-		$objModel = call_user_func_array($model.'::model', array());
+        $objModel = @call_user_func_array($model.'::model', array());    
+		if(!$objModel){
+            CDebug::addMessage('errors', 'missing-model', A::t('core', 'Unable to find class "{class}".', array('{class}'=>$model)), 'session');                        
+            return '';
+        }
 		if($pagination){			
 			$currentPage = A::app()->getRequest()->getQuery('page', 'integer', 1);
 			$totalRecords = $objModel->count($whereClause);			
@@ -340,6 +349,9 @@ class CGridView
 							$source = isset($val['source']) ? $val['source'] : '';							
 							$output .= isset($source[$fieldValue]) ? $source[$fieldValue] : '';	
                             break;
+						case 'index':
+                            $output .= ($i+1).'.';
+                            break;
 						case 'image':
 							$imagePath = isset($val['imagePath']) ? $val['imagePath'] : '';
 							$defaultImage = isset($val['defaultImage']) ? $val['defaultImage'] : '';
@@ -362,11 +374,16 @@ class CGridView
                                 }
                             }
                             $fieldValue = (isset($records[$i][$key])) ? $records[$i][$key] : ''; /* $key */                                                        
-							$linkText = isset($val['linkText']) ? $val['linkText'] : $title;
+							if(is_array($definedValues) && isset($definedValues[$fieldValue])){
+								$linkText = $definedValues[$fieldValue];
+                            }else{
+                                $linkText = isset($val['linkText']) ? $val['linkText'] : $title;    
+                            }                            
 							$output .= CHtml::link($linkText, $linkUrl, $htmlOptions);
 							break;
 						case 'label':
 						default:
+                            if(isset($val['data']) && $val['data'] != '') $fieldValue = $val['data'];
                             $stripTags = isset($val['stripTags']) ? (bool)$val['stripTags'] : false;
                             if($stripTags) $fieldValue = strip_tags($fieldValue);
                             

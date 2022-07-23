@@ -21,7 +21,7 @@ Step 2. Uploading Files.
    Upload this directory (all files and sub-directories it includes) to your
    document root (public_html, www, httpdocs etc.) or to your "directy cmf website"
    directory using FTP. Pay attention to DON'T use the capital letters in the name
-   of the directories (for Linux users).
+   of the directories (for Linux users). 
 
    public_html/
    or

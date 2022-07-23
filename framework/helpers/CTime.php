@@ -54,7 +54,7 @@ class CTime
      * 	@param string $units
      * 	@return long
      */
-    function getTimeDiff($endTime, $startTime, $units = 'second')
+    public static function getTimeDiff($endTime, $startTime, $units = 'second')
     {
         $difference = strtotime($endTime) - strtotime($startTime);
         if($units == 'day') return $difference / 86400;
@@ -71,7 +71,7 @@ class CTime
      * 	@param string $date
      * 	@return array
      */
-    function dateParseFromFormat($format, $date)
+    public static function dateParseFromFormat($format, $date)
     {
 		if(function_exists('date_parse_from_format')){
 			return date_parse_from_format($format, $date);

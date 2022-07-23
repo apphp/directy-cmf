@@ -118,7 +118,7 @@ class FrontendMenusController extends CController
 		if(A::app()->getRequest()->isPostRequest()){
 			$this->_view->menuType = A::app()->getRequest()->getPost('menu_type');            
         }
-        if(A::app()->getRequest()->getPost('APPHP_FORM_ACT') == 'change'){
+		if(A::app()->getRequest()->getPost('APPHP_FORM_ACT') == 'change'){
 			A::app()->getRequest()->setPost('link_url', '');
 			A::app()->getRequest()->setPost('link_target', '');
 			A::app()->getRequest()->setPost('module_code', '');
@@ -128,6 +128,8 @@ class FrontendMenusController extends CController
 		$this->_view->dialogTitle = $dialog['title'];
 		$this->_view->dialogContent = $dialog['content'];
 
+        $sortOrder = FrontendMenus::model()->count();
+        $this->_view->sortOrder = ($sortOrder < 999) ? $sortOrder + 1 : 999;        		        
     	$this->_view->render('frontendMenus/add');
     }    
   
@@ -149,7 +151,7 @@ class FrontendMenusController extends CController
 		$menu = FrontendMenus::model()->findByPk($id);
         if(!empty($menu)){
 			$this->_view->moduleCode = $menu->module_code;
-			$this->_view->menuType = $menu->menu_type;
+			$this->_view->menuType =	$menu->menu_type;
         	$parentMenu = FrontendMenus::model()->findbyPk($menu->parent_id);
         	if(!empty($parentMenu)){
 				$this->_view->parentName = $parentMenu->menu_name;
@@ -288,7 +290,7 @@ class FrontendMenusController extends CController
     {
 		$result = array();
         if(Modules::model()->exists("code = 'cms' AND is_installed = 1")){            
-			$pages = Pages::model()->findAll('publish_status = 1'); 
+			$pages = Pages::model()->findAll(array('condition'=>'publish_status = 1', 'order'=>'sort_order ASC')); 
 			foreach($pages as $key => $val){
 				$result[$val['id']] = array('id'=>$val['id'], 'link'=>'pages/view/id/'.$val['id'], 'title'=>$val['page_header']);
 			}

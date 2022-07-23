@@ -66,15 +66,15 @@ class FrontendMenus extends CActiveRecord
 	{
 		$this->_isError = false;
 		// delete menu names from translation table
-		if(!$this->_db->delete($this->_tableTranslation, 'menu_id = \''.$id.'\'')){
+		if(!$this->_db->delete($this->_tableTranslation, 'menu_id = :menu_id', array(':menu_id'=>$id))){
 			$this->_isError = true;
 		}
 		
 		// delete sub-menus 
-		if(!$this->_db->delete($this->_tableTranslation, 'WHERE menu_id IN (SELECT id FROM '.CConfig::get('db.prefix').$this->_table.' WHERE parent_id = \''.$id.'\')')){
+		if(!$this->_db->delete($this->_tableTranslation, 'WHERE menu_id IN (SELECT id FROM '.CConfig::get('db.prefix').$this->_table.' WHERE parent_id = :parent_id)', array(':parent_id'=>$id))){
 			$this->_isError = true;
 		}else{
-			if(!$this->_db->delete($this->_table, 'parent_id = \''.$id.'\'')){
+			if(!$this->_db->delete($this->_table, 'parent_id = :parent_id', array(':parent_id'=>$id))){
 				$this->_isError = true;
 			}
 		}

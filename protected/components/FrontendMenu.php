@@ -18,16 +18,31 @@ class FrontendMenu extends CComponent
 	 * Returns array of the menu items with links to published pages sorted by sort_order
 	 * @param string $placement left|right|top|bottom|hidden
 	 * @param string $activeMenu
-	 * @param array $params: "separator", "menuClass", "subMenuClass", "dropdownItemClass", "drawMenuCaption"
+	 * @param array $params: "separator", "menuId", "menuClass", "subMenuClass", "dropdownItemClass", "drawMenuCaption", "activeItemClass"
+	 * Ex.:
+	 * <ul id="menuId" class="menuClass">
+	 *      <li>Link</li>
+	 *      <li class="dropdownItemClass">
+	 *          <a class="">Link</a>
+	 *          <ul class="subMenuClass">
+	 *              <li>Link</li>
+	 *              <li>Link</li>
+	 *              <li>Link</li>
+	 *          </ul>
+	 *      </li>
+	 *      <li>Link</li>
+	 * </ul>
 	 * @return HTML code
 	 */
 	private static function _getMenu($placement, $activeMenu = '', $params = array())
 	{
 		$output = '';
         $separator = isset($params['separator']) ? $params['separator'] : '';
+        $menuId = isset($params['menuId']) ? $params['menuId'] : '';
         $menuClass = isset($params['menuClass']) ? $params['menuClass'] : '';
         $subMenuClass = isset($params['subMenuClass']) ? $params['subMenuClass'] : '';
         $dropdownItemClass = isset($params['dropdownItemClass']) ? $params['dropdownItemClass'] : '';
+        $activeItemClass = isset($params['activeItemClass']) ? $params['activeItemClass'] : 'active';
         $drawMenuCaption = isset($params['drawMenuCaption']) ? (bool)$params['drawMenuCaption'] : true;
 
 		$items = array();
@@ -66,10 +81,11 @@ class FrontendMenu extends CComponent
 						'items'		=> $items,
 						'selected'	=> $activeMenu,
 						'separator'	=> $separator,
-						'id'		=> 'side-menu',
+						'id'		=> $menuId ? $menuId : 'side-menu',
                         'class'     => $menuClass,
                         'subMenuClass' => $subMenuClass,
                         'dropdownItemClass' => $dropdownItemClass,
+                        'activeItemClass' => $activeItemClass,
 						'return'	=> true
 					));											
 				}				
@@ -81,10 +97,11 @@ class FrontendMenu extends CComponent
 					'items'		=> $items,
 					'selected'	=> $activeMenu,
 					'separator'	=> $separator,
-					'id'		=> $placement.'-menu',
+					'id'		=> $menuId ? $menuId : $placement.'-menu',
                     'class'     => $menuClass,
                     'subMenuClass' => $subMenuClass,
                     'dropdownItemClass' => $dropdownItemClass,
+                    'activeItemClass' => $activeItemClass,
 					'return'	=> true
 				));
 			}
@@ -97,6 +114,7 @@ class FrontendMenu extends CComponent
 	 * @param string $placement left|right|top|bottom|hidden
 	 * @param string $activeMenu
 	 * @param array $params
+	 * @SEE self::_getMenu() 
 	 * @return HTML code
 	 */
 	public static function draw($placement, $activeMenu = '', $params = array())

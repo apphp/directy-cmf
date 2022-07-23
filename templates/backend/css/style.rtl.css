@@ -41,6 +41,10 @@ h1, h2, h3 { direction: rtl}
 #content .bloc .title .close{ float:left; margin-left:-1px; margin-right:8px; }
 #content .bloc .title .back-link { float:left; }
 
+#content .bloc .sub-title { direction: rtl; }
+#content .bloc .sub-title a.sub-tab.active { margin-left:10px; }
+#content .bloc .sub-title .back-link { float:left; }
+
 /* SHORTCUTS
 ---------------------------------------------------------- */
 #content .bloc .shortcut{ float:right; }
@@ -130,6 +134,7 @@ table tbody tr td.actions img{ margin-left:5px; padding-right:0px; }
 #content div.filtering-wrapper div.buttons-wrapper{ float:left; text-align:left; }
 #content div.filtering-wrapper div.buttons-wrapper button[type="submit"],
 #content div.filtering-wrapper div.buttons-wrapper input[type="submit"]{ float:left; }
+#content div.filtering-wrapper input { margin-left:7px; }
 
 /* POPUP DIALOG
 ---------------------------------------------------------- */
@@ -155,7 +160,7 @@ table tbody tr td.actions img{ margin-left:5px; padding-right:0px; }
 
 /* MODULES SETTINGS
 ---------------------------------------------------------- */
-#tblModulesSettings .slideBox { margin:0px 0px 0px 6px; float:left; }
+#tblModulesSettings .slideBox { margin:0px 0px 0px 6px !important; float:left !important; }
 #tblModulesSettings .slideBox:before { content:'OFF'; font:12px/26px Arial, sans-serif; color: #880000; position: absolute; left: 7px; right: auto; top:0px; z-index: 0; font-weight: bold; text-shadow: 1px 1px 0px rgba(255,255,255,.15); }
 #tblModulesSettings .slideBox:after { content:'ON'; font:12px/26px Arial, sans-serif; color: #008800; position: absolute; right: 8px; left:auto; top:0px; z-index: 0; font-weight: bold; }
 #tblModulesSettings label.description { float:right; margin-right:10px; margin-left:auto; }
@@ -166,10 +171,10 @@ table tbody tr td.actions img{ margin-left:5px; padding-right:0px; }
 /* LOGIN
 ---------------------------------------------------------- */
 #content.login img { float:right; }
-#content.login div.checkboxes-wrapper{ width:229px; float:right; }
-#content.login div.checkboxes-wrapper input[type=checkbox] { float:right; }
+#content.login div.checkboxes-wrapper{ width:229px; float:right; margin-right:-90px; }
+#content.login div.checkboxes-wrapper input[type=checkbox] { float:right;  }
 #content.login div.checkboxes-wrapper label{ float:right; }
-#content.login div.buttons-wrapper{ float:left; text-align:left; }
+#content.login div.buttons-wrapper{ float:right; text-align:left; margin-top:30px; }
 
 /* PROFILE DROPDOWN 
 ---------------------------------------------------------- */

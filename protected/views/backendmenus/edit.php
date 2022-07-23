@@ -39,7 +39,6 @@
 				'autoGenerateId'=>true
 			),
 			'fields'=>array(
-				'id'          => array('type'=>'hidden'),
 				'url'		  => array('type'=>'label', 'title'=>A::t('app', 'URL')),
 				'parent_name' => array('type'=>'label', 'title'=>A::t('app', 'Parent'), 'definedValues'=>array(''=>$parentName)),
 				'is_system'   => array('type'=>'checkbox', 'title'=>A::t('app', 'System'), 'htmlOptions'=>array('disabled'=>'disabled')),

@@ -82,7 +82,7 @@ class Bootstrap extends CComponent
 	 */	
 	public function setDefaultLanguage($force = false)
 	{
-        if(A::app()->getLanguage() == '' || $force){
+        if(A::app()->getLanguage('', false) == '' || $force){
             if($defaultLang = Languages::model()->find('is_default = 1')){
                 $params = array(
                     'locale' => $defaultLang->lc_time_name,

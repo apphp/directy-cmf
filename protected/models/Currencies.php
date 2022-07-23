@@ -97,7 +97,7 @@ class Currencies extends CActiveRecord
 		
 		// if this currency is default - remove default flag in all other currencies
 		if($this->is_default){
-        	if(!$this->_db->update($this->_table, array('is_default'=>0), 'id != '.$id)){
+            if(!$this->_db->update($this->_table, array('is_default'=>0), 'id != :id', array(':id'=>(int)$id))){    
         		$this->_isError = true;
         	}
 		}		

@@ -65,7 +65,7 @@ class States extends CActiveRecord
 	{
 		$this->_isError = false;
 		// delete state names from translation table
-		if(false === $this->_db->delete($this->_tableTranslation, 'state_id="'.$id.'"')){
+		if(false === $this->_db->delete($this->_tableTranslation, 'state_id = :state_id', array(':state_id'=>$id))){
 			$this->_isError = true;
 		}
 	}

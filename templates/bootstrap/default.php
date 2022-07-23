@@ -27,10 +27,7 @@
             padding-top: 60px;
             padding-bottom: 40px;
         }
-    </style>
-    
-	<?php include("../../../inc/demo.topbar.inc.php"); ?>
-	<?php draw_demo_bar_top(); ?>
+    </style>    
 </head>
 <body>
 
@@ -52,7 +49,7 @@
             
             <?php echo FrontendMenu::draw(
                     'top',
-                    $this->activeMenu,
+                    $this->_activeMenu,
                     array('menuClass'=>'nav', 'subMenuClass'=>'dropdown-menu', 'dropdownItemClass'=>'dropdown')
                 );
             ?>
@@ -77,7 +74,7 @@
         </div>
         <div class="span3">          
             <h2>Menu</h2>  
-            <?php echo FrontendMenu::draw('right', $this->activeMenu); ?>              
+            <?php echo FrontendMenu::draw('right', $this->_activeMenu); ?>              
         </div>
       </div>
       
@@ -105,29 +102,18 @@
 
 
     <?php //echo CHtml::scriptFile('templates/bootstrap/js/jquery.js'); ?>
-    <?php echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-transition.js'); ?>
-    <?php echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-alert.js'); ?>
-    <?php echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-modal.js'); ?>
-    <?php echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-dropdown.js'); ?>
-    <?php echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-scrollspy.js'); ?>
-    <?php echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-tab.js'); ?>
-    <?php echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-tooltip.js'); ?>
-    <?php echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-popover.js'); ?>
-    <?php echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-button.js'); ?>
-    <?php echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-collapse.js'); ?>
-    <?php echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-carousel.js'); ?>
-    <?php echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-typeahead.js'); ?>
-
-<?php
-	draw_demo_bar_bottom(
-		array(
-            'Back To Site'  => 'http://www.apphp.com/php-directy-cmf/index.php',
-            'Buy Now'  => 'http://www.apphp.com/php-directy-cmf/index.php'
-        ),
-		Website::stylesChanger(),
-		true
-	);
-?>
+    <?php //echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-transition.js'); ?>
+    <?php //echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-alert.js'); ?>
+    <?php //echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-modal.js'); ?>
+    <?php //echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-dropdown.js'); ?>
+    <?php //echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-scrollspy.js'); ?>
+    <?php //echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-tab.js'); ?>
+    <?php //echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-tooltip.js'); ?>
+    <?php //echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-popover.js'); ?>
+    <?php //echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-button.js'); ?>
+    <?php //echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-collapse.js'); ?>
+    <?php //echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-carousel.js'); ?>
+    <?php //echo CHtml::scriptFile('templates/bootstrap/js/bootstrap-typeahead.js'); ?>
     
 </body>
 </html>

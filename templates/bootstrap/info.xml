@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<install version="1.0" type="template">
+    <name>Bootstrap Template</name>
+    <creationDate>08/05/2013</creationDate>
+    <lastChangedDate>24/11/2014</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail></authorEmail>
+    <authorUrl></authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <version>1.0.1</version>
+    <description>ApPHP Directy CMF Bootstrap Template</description>
+    <layout>2 Column Static Layout</layout>
+    <direction>Left-to-Right/Right-to-Left</direction>
+    <icon>images/template_icon.png</icon>
+    <menus>
+        <menu>Top</menu>
+        <menu>Right</menu>
+        <menu>Bottom</menu>
+    </menus>    
+    <files>        
+        <images>
+            <filename>template_icon.png</filename>
+            <filename>glyphicons-halflings-white.png</filename>
+            <filename>glyphicons-halflings.png</filename>
+            <filename>bg_footer.gif</filename>
+        </images>    
+        <css>
+            <filename>bootstrap.csss</filename>
+        </css>
+        <js>
+            <filename>bootstrap.js</filename>
+        </js>
+        <filename>default.php</filename>
+        <filename>info.xml</filename>
+    </files>
+</install>

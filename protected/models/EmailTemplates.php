@@ -71,7 +71,7 @@ class EmailTemplates extends CActiveRecord
 	{
 		$this->_isError = false;
 		// delete records from translation table
-		if(false === $this->_db->delete($this->_tableTranslation, 'template_code="'.$this->code.'"')){
+		if(false === $this->_db->delete($this->_tableTranslation, 'template_code = :template_code', array(':template_code'=>$this->code))){
 			$this->_isError = true;
 		}
 	}
