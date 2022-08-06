@@ -2,18 +2,25 @@
 /**
  * FrontendMenu - component for building site menu dynamically
  *
- * PUBLIC:                  PRIVATE
+ * PUBLIC (static):         PRIVATE (static):
  * -----------              ------------------
- *
- * STATIC
- * -------------------------------------------
- * draw						_getMenu
- * 							
+ * init						_getMenu
+ * draw
  *
  */
 
 class FrontendMenu extends CComponent
 {
+
+	/**
+     *	Returns the instance of object
+     *	@return current class
+     */
+	public static function init()
+	{
+		return parent::init(__CLASS__);
+	}
+
 	/**
 	 * Returns array of the menu items with links to published pages sorted by sort_order
 	 * @param string $placement left|right|top|bottom|hidden
@@ -46,7 +53,7 @@ class FrontendMenu extends CComponent
         $drawMenuCaption = isset($params['drawMenuCaption']) ? (bool)$params['drawMenuCaption'] : true;
 
 		$items = array();
-        $menuItems = FrontendMenus::model()->findAll(array('condition'=>'placement = :placement AND parent_id=0', 'order'=>'sort_order ASC'), array(':placement'=>$placement));
+        $menuItems = FrontendMenus::model()->findAll(array('condition'=>'placement = :placement AND parent_id = 0 AND is_active = 1', 'order'=>'sort_order ASC'), array(':placement'=>$placement));
         if(is_array($menuItems)){
           	foreach($menuItems as $item){
 				if($placement == 'left' || $placement == 'right') $items = array();
@@ -56,7 +63,7 @@ class FrontendMenu extends CComponent
 				}else{
 					if($item['access_level'] == 'registered' && !CAuth::isLoggedIn()) continue;
 					$subItems = '';
-					$subMenuItems = FrontendMenus::model()->findAll(array('condition'=>'parent_id = :parent_id', 'order'=>'sort_order ASC'), array(':parent_id'=>$item['id']));
+					$subMenuItems = FrontendMenus::model()->findAll(array('condition'=>'parent_id = :parent_id AND is_active = 1', 'order'=>'sort_order ASC'), array(':parent_id'=>$item['id']));
 					if(is_array($subMenuItems)){
 						foreach($subMenuItems as $subMenuItem){
 							if($subMenuItem['access_level'] == 'registered' && !CAuth::isLoggedIn()) continue;

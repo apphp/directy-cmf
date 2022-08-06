@@ -2,16 +2,16 @@
 /**
  * FrontendMenus controller
  *
- * PUBLIC:                   PRIVATE
- * -----------               ------------------
- * __construct               _getPlacementsList
- * indexAction				 _getAccessLevelsList
- * manageAction				 _getLinkTargetsList
- * addAction                 _getMenuTypesList 
- * editAction                _getPagesLinks
- * deleteAction              _getModulesLinks
- *                           _getModulesBlock
- *                           _getDialogContent 
+ * PUBLIC:                 	PRIVATE:
+ * ---------------         	---------------
+ * __construct              _getPlacementsList
+ * indexAction				_getAccessLevelsList
+ * manageAction				_getLinkTargetsList
+ * changeStatusAction		_getMenuTypesList 	
+ * addAction         		_getPagesLinks
+ * editAction               _getModulesLinks
+ * deleteAction             _getModulesBlock
+ *                          _getDialogContent 
  *
  */
 
@@ -24,10 +24,10 @@ class FrontendMenusController extends CController
 	{
         parent::__construct();
         
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
         CAuth::handleLogin('backend/login');
         
-        // block access if admin has no active privilege to view backend menu
+        // block access if admin has no active privilege to access frontend menu
         if(!Admins::hasPrivilege('frontend_menu', array('view', 'edit'))){
         	$this->redirect('backend/index');
         }
@@ -69,6 +69,9 @@ class FrontendMenusController extends CController
      */
     public function manageAction($pid = 0, $msg = '')
     {
+	    // block access if admin has no active privilege to manage backend menus
+		Website::prepareBackendAction('view', 'frontend_menu', 'backend/index');
+
 		$this->_view->parentId = 0;
 		$menu = FrontendMenus::model()->findByPk((int)$pid);
 		if(!empty($menu)){
@@ -77,6 +80,9 @@ class FrontendMenusController extends CController
 			$this->_view->menuType =	$menu->menu_type;
 		}
 
+        $msg = A::app()->getSession()->getFlash('message');
+		$messageType = 'success';
+
 	    switch($msg){
         	case 'added': 
 				$message = A::t('core', 'The adding operation has been successfully completed!');
@@ -84,26 +90,60 @@ class FrontendMenusController extends CController
         	case 'updated': 
 				$message = A::t('core', 'The updating operation has been successfully completed!');
 				break;						
+            case 'changed':
+                $message = A::t('app', 'Status has been successfully changed!');
+                break;
+            case 'change-error':
+				$message = (APPHP_MODE == 'demo') ? A::t('core', 'This operation is blocked in Demo Mode!') : A::t('app', 'Status changing error');
+				$messageType = (APPHP_MODE == 'demo') ? 'warning' : 'error';
+                break;
 			default:
 				$message = '';						
         }
 		
         if(!empty($message)){
-    		$this->_view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
+    		$this->_view->actionMessage = CWidget::create('CMessage', array($messageType, $message, array('button'=>true)));
     	}
 		$this->_view->render('frontendMenus/manage');	   	
     }
     
+    /**
+     * Change status menu action handler
+     * @param int $id the menu ID
+     * @param int $pid the ID of the parent menu, if $pid == 0 views up level menu items.
+     */
+    public function changeStatusAction($id, $pid = 0)
+    {
+		// block access if admin has no active privilege to edit frontend menus
+		Website::prepareBackendAction('edit', 'frontend_menu', 'frontendMenus/manage');		
+		
+		$parentMenuPart = '';
+
+		$menu = FrontendMenus::model()->findbyPk($id);
+		if(!empty($menu)){
+			if(FrontendMenus::model()->updateByPk($id, array('is_active'=>($menu->is_active == 1 ? '0' : '1')))){
+				A::app()->getSession()->setFlash('message', 'changed');
+			}else{
+				A::app()->getSession()->setFlash('message', 'change-error');
+			}
+
+			 
+			if($parentMenu = FrontendMenus::model()->findbyPk($pid)){
+				$parentMenuPart = '/pid/'.(int)$pid;
+			}
+		}
+		
+        $this->redirect('frontendMenus/manage'.$parentMenuPart);        
+    }
+
     /**
      * Add new menu action handler
 	 * @param int $pid the ID of the parent menu, if $pid == 0 views up level menu items.
      */
     public function addAction($pid = 0)
     {
-        // block access if admin has no active privilege to add menus
-        if(!Admins::hasPrivilege('frontend_menu', 'edit')){
-        	$this->redirect('frontendMenus/manage');
-        }
+		// block access if admin has no active privilege to add frontend menus
+		Website::prepareBackendAction('edit', 'frontend_menu', 'frontendMenus/manage');		
 
 		$this->_view->parentId = 0;
 		$this->_view->parentName = A::t('app', 'Top Level Menu');
@@ -139,19 +179,19 @@ class FrontendMenusController extends CController
      */
     public function editAction($id = 0)
     {
-        // block access if admin has no active privilege to edit menus
-        if(!Admins::hasPrivilege('frontend_menu', 'edit')){
-        	$this->redirect('frontendMenus/manage');
-        }
+		// block access if admin has no active privilege to edit frontend menus
+		Website::prepareBackendAction('edit', 'frontend_menu', 'frontendMenus/manage');		
 		
 		$this->_view->parentId = 0;
 		$this->_view->parentName = A::t('app', 'Top Level Menu');
 		$this->_view->moduleCode = '';
 		$this->_view->menuType = '';
+		$this->_view->isAactive = '';
 		$menu = FrontendMenus::model()->findByPk($id);
         if(!empty($menu)){
 			$this->_view->moduleCode = $menu->module_code;
-			$this->_view->menuType =	$menu->menu_type;
+			$this->_view->menuType = $menu->menu_type;
+			$this->_view->isAactive = $menu->is_active;
         	$parentMenu = FrontendMenus::model()->findbyPk($menu->parent_id);
         	if(!empty($parentMenu)){
 				$this->_view->parentName = $parentMenu->menu_name;
@@ -185,17 +225,18 @@ class FrontendMenusController extends CController
      */
     public function deleteAction($id = 0, $pid = 0)
     {
+		// block access if admin has no active privilege to delete frontend menus
+		Website::prepareBackendAction('edit', 'frontend_menu', 'frontendMenus/manage');		
+
     	$msg = '';
     	$msgType = '';
     
 		$menu = FrontendMenus::model()->findByPk($id);
 		if(!$menu){
 			$this->redirect('frontendMenus/manage');
-		}		
-        // block access if admin has no active privilege to delete menus
-        if(!Admins::hasPrivilege('frontend_menu', 'edit')){
-        	$this->redirect('frontendMenus/manage');
-        }else if($menu->delete()){
+		}
+		
+		if($menu->delete()){
 			$msg = A::t('app', 'Delete Success Message');
 			$msgType = 'success';	
 		}else{
@@ -203,15 +244,24 @@ class FrontendMenusController extends CController
 				$msg = CDatabase::init()->getErrorMessage();
 				$msgType = 'warning';	
 		   	}else{
-				$msg = A::t('app', 'Delete Error Message');
+				$msg = $menu->getError() ? $menu->getErrorMessage() : A::t('app', 'Delete Error Message');
 				$msgType = 'error';
 		   	}			
 		}
+		
 		if(!empty($msg)){
-			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
+			$this->_view->actionMessage = CWidget::create(
+				'CMessage', array($msgType, $msg, array('button'=>true))
+			);
 			$this->_view->parentId = $pid;
 		}
-		$this->_view->render('frontendMenus/manage');
+		
+		// block access if admin has no active privilege to view frontend menus
+		if(Admins::hasPrivilege('frontend_menu', array('view'))){
+			$this->_view->render('frontendMenus/manage');
+		}else{
+			$this->redirect('frontendMenus/manage');
+		}
     }
 
     /**

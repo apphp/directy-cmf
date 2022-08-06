@@ -27,8 +27,9 @@
                 'autoGenerateId'=>true
             ),
             'fields'=>array(
-                'name'       => array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'50')),
-                'description'=> array('type'=>'textarea', 'title'=>A::t('app', 'Description'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'255')),
+                'code' 		  => array('type'=>'label', 'title'=>A::t('app', 'Code')),
+                'name'        => array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'unique'=>true), 'htmlOptions'=>array('maxlength'=>'50')),
+                'description' => array('type'=>'textarea', 'title'=>A::t('app', 'Description'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'255')),
             ),
             'buttons' => array(
                 'submitUpdateClose' => array('type'=>'submit', 'value'=>A::t('app', 'Update & Close'), 'htmlOptions'=>array('name'=>'btnUpdateClose')),

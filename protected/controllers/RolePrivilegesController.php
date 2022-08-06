@@ -1,16 +1,16 @@
 <?php
 /**
- * Privileges controller
+ * RolePrivileges controller
  *
- * PUBLIC:                  PRIVATE
- * -----------              ------------------
+ * PUBLIC:                 	PRIVATE:
+ * ---------------         	---------------
  * __construct              
  * indexAction
  * manageAction
  *
  */
 
-class PrivilegesController extends CController
+class RolePrivilegesController extends CController
 {
     /**
 	 * Class default constructor
@@ -19,7 +19,7 @@ class PrivilegesController extends CController
 	{
         parent::__construct();
         
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 			
 		// allow access only to site owner 
@@ -68,7 +68,7 @@ class PrivilegesController extends CController
 				$this->_view->actionMessage = CWidget::create('CMessage', array('warning', A::t('core', 'This operation is blocked in Demo Mode!'), array('button'=>true)));
 		   	}else{
 				// get current privileges from database			
-                $privileges = Privileges::model()->findAll(
+                $privileges = RolePrivileges::model()->findAll(
 					array(
 						'condition'=>'role_id='.$this->_view->id,
 						'order'=>'module_code ASC, privilege_category ASC',
@@ -81,7 +81,7 @@ class PrivilegesController extends CController
 					if($val['privilege_category'] != '' && $val['privilege_code'] != ''){					
 						$activity = $cRequest->getPost($val['privilege_category'].'#'.$val['privilege_code']);
 						if($val['is_active'] != $activity){
-							Privileges::model()->updatePrivilege($roleID, $val['privilege_id'], $activity);
+							RolePrivileges::model()->updatePrivilege($roleID, $val['privilege_id'], $activity);
 						}					
 					}
 				}
@@ -89,7 +89,7 @@ class PrivilegesController extends CController
 			}			
 		}
 
-		$this->_view->privileges = Privileges::model()->findAll(
+		$this->_view->privileges = RolePrivileges::model()->findAll(
 			array(
 				'condition'=>'role_id='.$this->_view->id,
 				'order'=>'module_code ASC, privilege_category ASC',
@@ -97,7 +97,7 @@ class PrivilegesController extends CController
 			)			
 		);
 	
-		$this->_view->render('privileges/manage');
+		$this->_view->render('rolePrivileges/manage');
 	}
 	
 }

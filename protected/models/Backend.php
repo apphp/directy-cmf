@@ -2,8 +2,8 @@
 /**
  * Backend model
  *
- * PUBLIC:                PROTECTED               PRIVATE
- * ---------------        ---------------         ---------------
+ * PUBLIC:                 	PROTECTED:                 	PRIVATE:
+ * ---------------         	---------------            	---------------
  * __construct
  *
  */

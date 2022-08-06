@@ -2,8 +2,8 @@
 /**
  * BackendMenus controller
  *
- * PUBLIC:                  PRIVATE
- * -----------              ------------------
+ * PUBLIC:                 	PRIVATE:
+ * ---------------         	---------------
  * __construct              
  * indexAction
  * manageAction
@@ -20,10 +20,10 @@ class BackendMenusController extends CController
 	{
         parent::__construct();
         
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');			
 		        
-        // block access if admin has no active privilege to view backend menu
+        // block access if admin has no active privileges to access backend menus
         if(!Admins::hasPrivilege('backend_menu', array('view', 'edit'))){
         	$this->redirect('backend/index');
         }
@@ -52,9 +52,12 @@ class BackendMenusController extends CController
 	 */
 	public function manageAction($pid = 0, $msg = '')
 	{
+	    // block access if admin has no active privilege to manage backend menus
+		Website::prepareBackendAction('view', 'backend_menu', 'backend/index');
+
 		$this->_view->parentId = 0;
 		$this->_view->parentName = '';
-		$this->_view->parentIcon = 'no-image.png';
+		$this->_view->parentIcon = 'no_image.png';
 		$parentMenu = BackendMenus::model()->findByPk((int)$pid);
 		if(!empty($parentMenu)){
 			$this->_view->parentId = (int)$pid;
@@ -82,13 +85,12 @@ class BackendMenusController extends CController
 	 */
 	public function editAction($id = 0, $pid = 0, $icon = '')
 	{
-	    // block access if admin has no active privilege to edit backend menu
-     	if(!Admins::hasPrivilege('backend_menu', 'edit')){
-     		$this->redirect('backend/index');
-     	}
+	    // block access if admin has no active privilege to edit backend menus
+		Website::prepareBackendAction('edit', 'backend_menu', 'backendMenus/manage');
+
 		$this->_view->parentId = 0;
 		$this->_view->parentName = A::t('app', 'Top Level Menu');
-		$menu = BackendMenus::model()->findbyPk((int)$id);
+		$menu = BackendMenus::model()->findbyPk($id);
     	if(!$menu){
 	  		$this->redirect('backendMenus/manage');
     	}
@@ -123,7 +125,7 @@ class BackendMenusController extends CController
         }
 
         if(!empty($menu)){
-        	$parentMenu = BackendMenus::model()->findbyPk((int)$menu->parent_id);
+        	$parentMenu = BackendMenus::model()->findbyPk($menu->parent_id);
         	if(!empty($parentMenu)){
 				$this->_view->parentId = $parentMenu->id;
 				$this->_view->parentName = $parentMenu->menu_name;

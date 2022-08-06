@@ -2,8 +2,8 @@
 /**
  * Cron controller
  *
- * PUBLIC:                 PRIVATE
- * -----------             ------------------
+ * PUBLIC:                 	PRIVATE:
+ * ---------------         	---------------
  * indexAction             
  * runAction
  *

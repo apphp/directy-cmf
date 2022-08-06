@@ -3,7 +3,7 @@
 ?>
 
 <?php if(A::app()->view->getTemplate() != 'backend'){ ?>
-<h3 class="title"><?php echo A::t('app', 'Common Error'); ?></h3>
+	<h3 class="title"><?php echo A::t('app', 'Common Error'); ?></h3>
 <?php } ?>
 
 <div class="block-body">                       

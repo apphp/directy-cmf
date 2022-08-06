@@ -2,16 +2,14 @@
 /**
  * Accounts model
  *
- * PUBLIC:                 PROTECTED                  PRIVATE
- * ---------------         ---------------            ---------------
- * __construct
- * model
+ * PUBLIC:                 	PROTECTED:                 	PRIVATE:
+ * ---------------         	---------------            	---------------
+ * __construct											_selfModel (static)
+ * __callStatic											_parentModel (static)
+ * model (static)
  * login
+ * getPasswordSalt
  * getErrorDescription
- * 
- * STATIC:
- * ------------------------------------------------------------------
- * model
  *
  */
 
@@ -23,6 +21,8 @@ class Accounts extends CActiveRecord
     /** @var bool */
     private $_isError = false;    
     /** @var string */    
+    private $_passwordSalt = '';
+    /** @var string */    
     private $_errorDescription = '';
 
     /**
@@ -33,59 +33,110 @@ class Accounts extends CActiveRecord
         parent::__construct();
     }
 
-    /**
-     * Returns the static model of the specified AR class
-     */
-    public static function model($className = __CLASS__)
-    {
-        return parent::model($className);
-    }  
+	/**
+	 * Triggered when invoking inaccessible methods in an object context
+	 * We use this method to avoid calling model($className = __CLASS__) in derived class
+	 * @param string $method
+	 * @param array $args
+	 * @return mixed
+	 */
+	public static function __callStatic($method, $args)
+	{
+        if(strtolower($method) == 'model'){
+            if(count($args) == 0){
+				return self::_selfModel();
+			}else{
+				return self::_parentModel($args[0]);
+            }
+		}		
+	}
     
     /**
      * Account login
      * @param string $username
      * @param string $password
      * @param string $role
+     * @param bool $checkRememberMe
+     * @param bool $saveTokenExpires
      */
-    public function login($username, $password, $role = '')
+    public function login($username, $password, $role = '', $checkRememberMe = false, $saveTokenExpires = false)
     {
         $this->_db->cacheOff();
-        if($result = $this->find(
-            ($role != '' ? "role = :role AND " : '').' username = :username AND password = :password',
-            array(':username' => $username, ':password' => ((CConfig::get('password.encryption')) ? CHash::create(CConfig::get('password.encryptAlgorithm'), $password, CConfig::get('password.hashKey')) : $password), ':role' => $role)            
-        )){
-            if($result->is_active){
-                $session = A::app()->getSession();
-                $session->set('loggedIn', true);
-                $session->set('loggedId', $result->id);
-                $session->set('loggedName', $result->username);
-                $session->set('loggedEmail', $result->email);
-                $session->set('loggedLastVisit', $result->last_visited_at);
-                $session->set('loggedLanguage', ($result->language_code ? $result->language_code : Languages::getDefaultLanguage()));
-                $session->set('loggedRole', $result->role);
-                          
-                // set current language
-                if($resultLang = Languages::model()->find('code = :code AND is_active = 1', array(':code'=>$result->language_code))){
-                    $params = array(
-                        'locale' => $resultLang->lc_time_name,
-                        'direction' => $resultLang->direction
-                    );
-                    A::app()->setLanguage($result->language_code, $params);
-                }
+		
+		if(!empty($role)){
+			$account = $this->find('role = :role AND username = :username', array(':username' => $username, ':role' => $role));
+		}else{
+			$account = $this->find('username = :username', array(':username' => $username));
+		}
 
-                // update account's last visit time
-                $this->_db->update(
-                    $this->_table,
-                    array(
-                        'last_visited_at' => LocalTime::currentDateTime(),
-                        'last_visited_ip' => A::app()->getRequest()->getUserHostAddress()
-                    ),
-                    'id = :id',
-                    array(':id'=>(int)CAuth::getLoggedId())
-                );
-                return true;
+        if($account){
+            if($account->is_active){
+				
+				// prepare password for check
+				if($checkRememberMe){
+					// check if token is not expired
+					if($account->token_expires_at != '' && time() > $account->token_expires_at){
+						$savedPassword = true;
+						$checkPassword = false;
+						
+						// update token expires date in account record
+						$account->token_expires_at = '';
+						$account->save();						
+					}else{
+						if(CConfig::get('password.encryption')){
+							// we use ID + username + salt + HTTP_USER_AGENT
+							$checkSalt = CConfig::get('password.encryptSalt') ? $account->salt : '';
+							$httpUserAgent = A::app()->getRequest()->getUserAgent();
+							$checkPassword = CHash::create(CConfig::get('password.encryptAlgorithm'), $account->id.$account->username.$checkSalt.$httpUserAgent);
+						}else{
+							$checkPassword = $password;
+						}
+						$savedPassword = $password;						
+					}					
+				}else{					
+					if(CConfig::get('password.encryption')){
+						$checkSalt = CConfig::get('password.encryptSalt') ? $account->salt : '';
+						$checkPassword = CHash::create(CConfig::get('password.encryptAlgorithm'), $password, $checkSalt);
+					}else{
+						$checkPassword = $password;
+					}
+					$savedPassword = $account->password;
+				}
+				
+				if(CHash::equals($savedPassword, $checkPassword)){
+					$session = A::app()->getSession();
+					$session->set('loggedIn', true);
+					$session->set('loggedId', $account->id);
+					$session->set('loggedName', $account->username);
+					$session->set('loggedEmail', $account->email);
+					$session->set('loggedLastVisit', $account->last_visited_at);
+					$session->set('loggedLanguage', ($account->language_code ? $account->language_code : Languages::getDefaultLanguage()));
+					$session->set('loggedRole', $account->role);
+							  
+					// we don't want to save this data in session - just in this object to minimum use
+					$this->_passwordSalt = $account->salt;
+
+					// set current language
+					if($accountLang = Languages::model()->find('code = :code AND is_active = 1', array(':code'=>$account->language_code))){
+						$params = array(
+							'locale' => $accountLang->lc_time_name,
+							'direction' => $accountLang->direction
+						);
+						A::app()->setLanguage($account->language_code, $params);
+					}
+	
+					// update last visited and token expires dates in account record
+					$account->last_visited_at = LocalTime::currentDateTime();
+					$account->last_visited_ip = A::app()->getRequest()->getUserHostAddress();
+					$account->token_expires_at = ($saveTokenExpires ? (time() + 3600 * 24 * 14) : '');
+					$account->save();						
+
+					return true;
+				}else{
+					$this->_errorDescription = A::t('app', 'Login Error Message');
+				}			
             }else{
-                if($result->registration_code != ''){
+                if($account->registration_code != ''){
                     $this->_errorDescription = A::t('app', 'Login Not Approval Message');
                 }else{
                     $this->_errorDescription = A::t('app', 'Login Inactive Message');
@@ -94,9 +145,19 @@ class Accounts extends CActiveRecord
         }else{
             $this->_errorDescription = strip_tags(A::t('app', 'Login Error Message'));            
         }
+		
         return false;        
     } 
     
+	/** 
+	 * Returns account password salt
+	 * @return boolean
+	 */
+	public function getPasswordSalt()
+	{
+		return $this->_passwordSalt;
+	}
+
 	/** 
 	 * Returns error description
 	 * @return boolean
@@ -106,4 +167,21 @@ class Accounts extends CActiveRecord
 		return $this->_errorDescription;
 	}
 
+    /**
+     * Returns the static model of the specified AR class
+     */
+    public static function _selfModel()
+    {
+        return parent::model(__CLASS__);
+    }
+
+	/**
+	 * Returns the static model of the specified AR class
+	 * @param string $className
+	 */
+	private static function _parentModel($className = __CLASS__)
+	{
+		return parent::model($className);
+    }
+	
 }

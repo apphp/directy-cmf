@@ -3,7 +3,7 @@
 return array(
     // application data
     'name' => 'ApPHP Directy CMF',
-    'version' => '2.4.9',
+    'version' => '2.5.3',
     
     // installation settings
     'installationKey' => '<INSTALLATION_KEY>',
@@ -12,8 +12,9 @@ return array(
     // md5, sha1, sha256, whirlpool, etc
 	'password' => array(
         'encryption' => true,
-        'encryptAlgorithm' => 'sha256', 
-        'hashKey' => 'apphp_directy_cmf',    
+        'encryptAlgorithm' => 'sha256',
+		'encryptSalt' => true,
+		'hashKey' => 'apphp_directy_cmf',    
     ),
     
     // default email settings
@@ -32,7 +33,7 @@ return array(
         ),
     ),
     
-    // validation
+    // validations
    	'validation' => array(
         'csrf' => true,
         'bruteforce' => array('enable' => true, 'badLogins' => 5, 'redirectDelay' => 3),
@@ -40,8 +41,9 @@ return array(
 
     // session settings
     'session' => array(
-        'customStorage' => false, /* true value means to use a custom storage */
-        'cacheLimiter' => '' /* private,must-revalidate */
+        'customStorage' => false,	/* true value means use a custom storage (database), false - standard storage */
+        'cacheLimiter' => '',		/* to prevent 'Web Page expired' message for POST request use "private,must-revalidate" */
+        'lifetime' => 24,			/* session timeout in minutes, default: 24 min = 1440 sec */
     ),
     
     // cookies settings
@@ -57,6 +59,11 @@ return array(
         'path' => 'protected/tmp/cache/'
     ),
 
+    // RSS Feed settings 
+    'rss' => array(
+        'path' => 'feeds/'
+    ),
+
     // datetime settings
     'defaultTimeZone' => 'UTC',
     
@@ -70,8 +77,14 @@ return array(
         'BackendMenu' => array('enable' => true, 'class' => 'BackendMenu'),
         'Bootstrap' => array('enable' => true, 'class' => 'Bootstrap'),
         'FrontendMenu' => array('enable' => true, 'class' => 'FrontendMenu'),               
-        'LocalTime' => array('enable' => true, 'class' => 'LocalTime'),               
-        'Website' => array('enable' => true, 'class' => 'Website'),        
+        'LocalTime' => array('enable' => true, 'class' => 'LocalTime'),
+		'SearchForm' => array('enable' => true, 'class' => 'SearchForm'),
+        'Website' => array('enable' => true, 'class' => 'Website'),
+    ),
+
+    // application helpers
+    'helpers' => array(
+        //'helper' => array('enable' => true, 'class' => 'Helper'),
     ),
 
     // application modules

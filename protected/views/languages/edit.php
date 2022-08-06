@@ -39,9 +39,9 @@
 					'type'          => 'imageupload',
 					'title'         => A::t('app', 'Icon Image Label'),
 					'validation'    => array('required'=>false, 'type'=>'image', 'maxSize'=>'100k', 'targetPath'=>'images/flags/', 'mimeType'=>'image/jpeg, image/png, image/gif, image/jpg', 'fileName'=>''),
-					'imageOptions'  => array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'imagePath'=>'images/flags/', 'imageClass'=>'icon'),
+					'imageOptions'  => array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'imageClass'=>'icon'),
 					'deleteOptions' => array('showLink'=>true, 'linkUrl'=>'languages/edit/id/'.$language->id.'/icon/delete', 'linkText'=>A::t('app', 'Delete')),
-					'fileOptions'   => array('showAlways'=>false, 'class'=>'file', 'size'=>'25')
+					'fileOptions'   => array('showAlways'=>false, 'class'=>'file', 'size'=>'25', 'filePath'=>'images/flags/')
 				),
 				'sort_order' =>array('type'=>'textbox', 'title'=>A::t('app', 'Order'), 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'2', 'class'=>'small')),
 				'used_on' 	 =>array('type'=>'select', 'title'=>A::t('app', 'Used On'), 'data'=>$usedOnList, 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($usedOnList))),

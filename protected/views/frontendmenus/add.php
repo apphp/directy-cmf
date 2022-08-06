@@ -46,6 +46,7 @@
 
 		$fields['parent_id']  = array('type'=>'data', 'default'=>$parentId);
 		$fields['sort_order'] = array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'tooltip'=>'', 'default'=>$sortOrder, 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'3', 'class'=>'small'));
+		$fields['is_active']  = array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>true, 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>array());
 		
 		if($parentId){
 			$fields['placement'] = array('type'=>'data', 'default'=>'');

@@ -33,7 +33,7 @@
 	        	'separatorDashboard' =>array(
 	                'separatorInfo' => array('legend'=>A::t('app', 'Dashboard Settings')),
                     'dashboardHotkeys'=>array('type'=>'checkbox', 'viewType'=>'custom', 'title'=>A::t('app', 'Dashboard (hotkeys)'), 'tooltip'=>A::t('app', 'Dashboard (hotkeys) Tooltip'), 'mandatoryStar'=>false, 'value'=>'1', 'checked'=>($settings->dashboard_hotkeys ? true : false), 'htmlOptions'=>array()),
-                    'dashboardNews'=>array('type'=>'checkbox', 'viewType'=>'custom', 'title'=>A::t('app', 'Dashboard News'), 'tooltip'=>A::t('app', 'Dashboard News Tooltip'), 'mandatoryStar'=>false, 'value'=>'1', 'checked'=>($settings->dashboard_news ? true : false), 'htmlOptions'=>array()),
+                    'dashboardNotifications'=>array('type'=>'checkbox', 'viewType'=>'custom', 'title'=>A::t('app', 'Dashboard Notifications'), 'tooltip'=>A::t('app', 'Dashboard Notifications Tooltip'), 'mandatoryStar'=>false, 'value'=>'1', 'checked'=>($settings->dashboard_notifications ? true : false), 'htmlOptions'=>array()),
                     'dashboardStatistics'=>array('type'=>'checkbox', 'viewType'=>'custom', 'title'=>A::t('app', 'Dashboard Statistics'), 'tooltip'=>A::t('app', 'Dashboard Statistics Tooltip'), 'mandatoryStar'=>false, 'value'=>'1', 'checked'=>($settings->dashboard_statistics ? true : false), 'htmlOptions'=>array()),
                 ),
 	        	'separatorOffline' =>array(
@@ -48,6 +48,13 @@
 	        	'separatorRss' =>array(
 	                'separatorInfo' => array('legend'=>A::t('app', 'RSS Settings')),
                     'rssFeedType' => array('type'=>'select', 'value'=>$settings->rss_feed_type, 'title'=>A::t('app', 'RSS Feed Type'), 'tooltip'=>A::t('app', 'RSS Feed Type Tooltip'), 'data'=>$rssFeedTypesList),
+					'rssItemsPerFeed' => array('type'=>'select', 'value'=>$settings->rss_items_per_feed, 'title'=>A::t('app', 'RSS Feed Items'), 'tooltip'=>A::t('app', 'RSS Feed Items Default Number Tooltip'), 'data'=>$rssItemsPerFeed),
+                    'rssFeadPath' => array('type'=>'label', 'title'=>A::t('app', 'RSS Fead Path'), 'tooltip'=>A::t('app', 'RSS Feed Path Tooltip'), 'value'=>$rssFeedPath, 'definedValues'=>array(), 'format'=>''),
+                ),
+	        	'separatorSearch' =>array(
+	                'separatorInfo' => array('legend'=>A::t('app', 'Search Settings')),
+                    'searchItemsPerPage' => array('type'=>'select', 'value'=>$settings->search_items_per_page, 'title'=>A::t('app', 'Search Results Page Size'), 'tooltip'=>A::t('app', 'Items Count On Search Result Page Tooltip'), 'data'=>$searchItemsPerPage),
+                    'searchIsHighlighted' => array('type'=>'checkbox', 'viewType'=>'custom', 'title'=>A::t('app', 'Highlight Results'), 'tooltip'=>A::t('app', 'Highlight Search Results Tooltip'), 'mandatoryStar'=>false, 'value'=>$settings->search_is_highlighted, 'checked'=>($settings->search_is_highlighted ? true : false), 'htmlOptions'=>array()),
                 ),
 	        	'separatorCache' =>array(
 	                'separatorInfo' => array('legend'=>A::t('app', 'Cache Settings')),

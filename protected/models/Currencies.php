@@ -2,16 +2,13 @@
 /**
  * Currencies model
  *
- * PUBLIC:                 PROTECTED                  PRIVATE
- * ---------------         ---------------            ---------------
- * __construct             _beforeSave
- * getError                _afterSave
- * getDefaultCurrency      _customFields
+ * PUBLIC:                 	PROTECTED:                 	PRIVATE:
+ * ---------------         	---------------            	---------------
+ * __construct             	_beforeSave
+ * model (static)		   	_afterSave
+ * getError                	_customFields 
+ * getDefaultCurrency      
  * getDefaultCurrencyInfo
- *
- * STATIC:
- * ------------------------------------------
- * model
  *
  */
 
@@ -31,13 +28,13 @@ class Currencies extends CActiveRecord
         parent::__construct();
     }
 
-	/**
-	 * Returns the static model of the specified AR class
-	 */
-	public static function model($className = __CLASS__)
-	{
-		return parent::model($className);
-	}
+    /**
+     * Returns the static model of the specified AR class
+     */
+    public static function model()
+    {
+        return parent::model(__CLASS__);
+    }
 
   	/**
 	 * Draws currencies selector

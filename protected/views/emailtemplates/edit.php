@@ -31,14 +31,14 @@
 			'requiredFieldsAlert'=>true,
 			'fields'=>array(
 				'code'        => array('type'=>'label', 'title'=>A::t('app', 'Code'), 'default'=>'', 'tooltip'=>'', 'definedValues'=>'', 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false),
-				'module_code' => array('type'=>'label', 'title'=>A::t('app', 'Module'), 'default'=>'', 'tooltip'=>'', 'definedValues'=>'', 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false),
+				'module_code' => array('type'=>'label', 'title'=>A::t('app', 'Module'), 'default'=>'', 'tooltip'=>'', 'definedValues'=>array(''=>A::t('app', 'system')), 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false),
 				'is_system'   => array('type'=>'label',  'title'=>A::t('app', 'System Template'), 'default'=>'', 'tooltip'=>'', 'definedValues'=>array('0'=>A::t('app', 'No'), '1'=>A::t('app', 'Yes')), 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false),
 			),
 			'translationInfo' => array('relation'=>array('code', 'template_code'), 'languages'=>Languages::model()->findAll('is_active = 1')),
 			'translationFields' => array(
-                'template_name' => array('type'=>'textbox', 'title'=>A::t('app', 'Template Name'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>125), 'htmlOptions'=>array('maxLength'=>'125', 'class'=>'middle')),
-                'template_subject' => array('type'=>'textbox', 'title'=>A::t('app', 'Template Subject'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'text', 'maxLength'=>125), 'htmlOptions'=>array('maxLength'=>'125', 'class'=>'large')),
-                'template_content' => array('type'=>'textarea', 'title'=>A::t('app', 'Template Content'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>5000), 'htmlOptions'=>array('maxLength'=>'5000', 'class'=>'full')),
+                'template_name' 	=> array('type'=>'textbox', 'title'=>A::t('app', 'Template Name'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>125), 'htmlOptions'=>array('maxLength'=>'125', 'class'=>'middle')),
+                'template_subject' 	=> array('type'=>'textbox', 'title'=>A::t('app', 'Template Subject'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'text', 'maxLength'=>125), 'htmlOptions'=>array('maxLength'=>'125', 'class'=>'large')),
+                'template_content' 	=> array('type'=>'textarea', 'title'=>A::t('app', 'Template Content'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>5000), 'htmlOptions'=>array('maxLength'=>'5000', 'class'=>'full')),
 			),
 			'buttons'=>array(
                 'submit' => array('type'=>'submit', 'value'=>A::t('app', 'Create'), 'htmlOptions'=>array('name'=>'')),

@@ -2,15 +2,12 @@
 /**
  * EmailTemplates model
  *
- * PUBLIC:                 PROTECTED                  PRIVATE
- * ---------------         ---------------            ---------------
- * __construct             _relations
- * getError                _afterDelete
+ * PUBLIC:                 	PROTECTED:                 	PRIVATE:
+ * ---------------         	---------------            	---------------
+ * __construct             	_relations
+ * model (model)           	_afterDelete
+ * getError                
  * getTemplate
- *
- * STATIC:
- * ------------------------------------------
- * model
  *
  */
 
@@ -34,13 +31,13 @@ class EmailTemplates extends CActiveRecord
         parent::__construct();
     }
 
-	/**
-	 * Returns the static model of the specified AR class
-	 */
-   	public static function model($className = __CLASS__)
-   	{
-		return parent::model($className);
-   	}
+    /**
+     * Returns the static model of the specified AR class
+     */
+    public static function model()
+    {
+        return parent::model(__CLASS__);
+    }
     	
 	/**
      * Defines relations between different tables in database and current $_table

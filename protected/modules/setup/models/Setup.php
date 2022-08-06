@@ -2,8 +2,8 @@
 /**
  * Setup model
  *
- * PUBLIC:                PROTECTED               PRIVATE
- * ---------------        ---------------         ---------------
+ * PUBLIC:                 	PROTECTED:                 	PRIVATE:
+ * ---------------         	---------------				---------------
  * __construct
  * doBeginTransaction
  * doRollBack

@@ -2,13 +2,13 @@
 /**
  * Vocabulary controller
  *
- * PUBLIC:                 PRIVATE
- * -----------             ------------------
- * __construct             _getMessagesFileContent
- * indexAction			   _saveMessagesFileContent
- * manageAction			   _getPredefinedLanguages 
- * updateAction			   _validate			   
- * importAction			   _getFilesList
+ * PUBLIC:                 	PRIVATE:
+ * ---------------         	---------------
+ * __construct             	_getMessagesFileContent
+ * indexAction			   	_saveMessagesFileContent
+ * manageAction			   	_getPredefinedLanguages 
+ * updateAction			   	_validate			   
+ * importAction			   	_getFilesList
  * 
  */
 
@@ -24,10 +24,10 @@ class VocabularyController extends CController
 	{
         parent::__construct();
 
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to view vocabulary
+		// block access if admin has no active privilege to access vocabulary
 		if(!Admins::hasPrivilege('vocabulary', array('view', 'edit'))){
 			$this->redirect('backend/index');
 		}
@@ -64,6 +64,9 @@ class VocabularyController extends CController
      */
 	public function manageAction()
 	{
+		// block access if admin has no active privilege to manage vocabulary
+        Website::prepareBackendAction('view', 'vocabulary', 'backend/index');
+
 	    $cRequest = A::app()->getRequest();
 
     	if(in_array($cRequest->getPost('act'), array('changeLang', 'changeFile'))){
@@ -96,9 +99,7 @@ class VocabularyController extends CController
 	public function updateAction()
 	{		
 		// block access if admin has no active privilege to edit vocabulary
-     	if(!Admins::hasPrivilege('vocabulary', 'edit')){
-     		$this->redirect('backend/index');
-     	}
+		Website::prepareBackendAction('edit', 'vocabulary', 'vocabulary/manage');
      	
 		$cRequest = A::app()->getRequest();
     	$msg = '';
@@ -164,10 +165,8 @@ class VocabularyController extends CController
 	 */
 	public function importAction($lang = '')
 	{
-		// block access if admin has no active privilege to edit vocabulary
-     	if(!Admins::hasPrivilege('vocabulary', 'edit')){
-     		$this->redirect('backend/index');
-     	}
+		// block access if admin has no active privilege to import vocabulary
+		Website::prepareBackendAction('edit', 'vocabulary', 'vocabulary/manage');
      	
 		$msg = '';
     	$msgType = '';

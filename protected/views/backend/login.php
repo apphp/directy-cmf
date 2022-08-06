@@ -35,7 +35,7 @@
 				),
 				'fields'=>array(
 					'act'     =>array('type'=>'hidden', 'value'=>'send'),
-					'username'=>array('type'=>'textbox', 'value'=>$username, 'title'=>'', 'mandatoryStar'=>false, 'htmlOptions'=>array('class'=>'', 'placeholder'=>A::t('app', 'Username'), 'maxlength'=>'32', 'autocomplete'=>'off')),
+					'username'=>array('type'=>'textbox', 'value'=>$username, 'title'=>'', 'mandatoryStar'=>false, 'htmlOptions'=>array('class'=>'', 'placeholder'=>A::t('app', 'Username'), 'maxlength'=>'32', 'autocomplete'=>'off', 'autofocus'=>true)),
 					'password'=>array('type'=>'password', 'value'=>$password, 'title'=>'', 'mandatoryStar'=>false, 'htmlOptions'=>array('class'=>'', 'placeholder'=>A::t('app', 'Password'), 'maxLength'=>'20')),
 				),
 				'checkboxes'=>array(

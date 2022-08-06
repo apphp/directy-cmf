@@ -2,8 +2,9 @@
 /**
  * Website - component for working with website
  *
- * PUBLIC:                  PRIVATE
+ * PUBLIC (static):         PRIVATE:
  * -----------              ------------------
+ * init
  * setBackend
  * setFrontend
  * setDefaultLanguage
@@ -12,11 +13,21 @@
  * sendEmailByTemplate
  * prepareBackendAction
  * prepareLinkByFormat
- * convertToObject
+ * getDefaultPage
  * 
  */
+
 class Website extends CComponent
 {
+
+	/**
+     *	Returns the instance of object
+     *	@return current class
+     */
+	public static function init()
+	{
+		return parent::init(__CLASS__);
+	}
 
 	/**
 	 * Sets site to backend mode
@@ -91,6 +102,9 @@ class Website extends CComponent
 			A::app()->view->siteTitle = $siteInfo->header;
 			A::app()->view->siteSlogan = $siteInfo->slogan;
 			A::app()->view->siteFooter = $siteInfo->footer;
+
+			// set default page URL
+			A::app()->view->defaultPage = CConfig::get('defaultController').'/'.CConfig::get('defaultAction');
 		}
     }
     
@@ -100,89 +114,112 @@ class Website extends CComponent
 	 * @param string $templateCode
 	 * @param string $templateLang
 	 * @param array $params
+	 * @return bool
 	 */
     public static function sendEmailByTemplate($emailTo, $templateCode, $templateLang = '', $params = array())
     {
         $template = EmailTemplates::model()->getTemplate($templateCode, $templateLang);
-        $templateContent = isset($template['template_content']) ? $template['template_content'] : '';
         $templateSubject = isset($template['template_subject']) ? $template['template_subject'] : '';
+        $templateContent = isset($template['template_content']) ? $template['template_content'] : '';
+		$result = false;
+		
+		if(!empty($template)){
+			// set base variables if not defined        
+			if(!isset($params['{SITE_URL}'])) $params['{SITE_URL}'] = A::app()->getRequest()->getBaseUrl();
+			if(!isset($params['{WEB_SITE}'])) $params['{WEB_SITE}'] = CConfig::get('name');
+			if(!isset($params['{YEAR}'])) $params['{YEAR}'] = LocalTime::currentDate('Y');
+	
+			$arrKeys = array();
+			$arrValues = array();        
+			foreach($params as $key => $val){
+				$arrKeys[] = $key;
+				$arrValues[] = $val;
+			}
+			$templateContent = str_ireplace($arrKeys, $arrValues, $templateContent);
+			
+			$settings = Bootstrap::init()->getSettings();
+			CMailer::config(array(
+				'mailer'=>$settings->mailer,
+				'smtp_auth'=>$settings->smtp_auth,
+				'smtp_secure'=>$settings->smtp_secure,
+				'smtp_host'=>$settings->smtp_host,
+				'smtp_port'=>$settings->smtp_port,
+				'smtp_username'=>$settings->smtp_username,
+				'smtp_password'=>CHash::decrypt($settings->smtp_password, CConfig::get('password.hashKey')),
+			));
+			
+			$result = CMailer::send($emailTo, $templateSubject, $templateContent, array('from'=>$settings->general_email));
+			if(CMailer::getError()) CDebug::addMessage('errors', 'sending-restore-email', CMailer::getError());			
+		}        
         
-        // set base variables if not defined        
-        if(!isset($params['{SITE_URL}'])) $params['{SITE_URL}'] = A::app()->getRequest()->getBaseUrl();
-        if(!isset($params['{WEB_SITE}'])) $params['{WEB_SITE}'] = CConfig::get('name');
-        if(!isset($params['{YEAR}'])) $params['{YEAR}'] = LocalTime::currentDate('Y');
-
-        $arrKeys = array();
-        $arrValues = array();        
-        foreach($params as $key => $val){
-            $arrKeys[] = $key;
-            $arrValues[] = $val;
-        }
-        $templateContent = str_ireplace($arrKeys, $arrValues, $templateContent);
-        
-        $settings = Bootstrap::init()->getSettings();
-        CMailer::config(array(
-            'mailer'=>$settings->mailer,
-            'smtp_auth'=>$settings->smtp_auth,
-            'smtp_secure'=>$settings->smtp_secure,
-            'smtp_host'=>$settings->smtp_host,
-            'smtp_port'=>$settings->smtp_port,
-            'smtp_username'=>$settings->smtp_username,
-            'smtp_password'=>CHash::decrypt($settings->smtp_password, CConfig::get('password.hashKey')),
-        ));
-        
-        $result = CMailer::send($emailTo, $templateSubject, $templateContent, array('from'=>$settings->general_email));
-        if(CMailer::getError()) CDebug::addMessage('errors', 'sending-restore-email', CMailer::getError());
-        return $result;
+		return $result;
     }
 
     /**
      * Prepares backend action operations
-     * @param string $mode
+     * @param mixed $actions
      * @param string $privilegeCategory
      * @param string $redirectPath
      */
-    public static function prepareBackendAction($action = '', $privilegeCategory = '', $redirectPath = '')
+    public static function prepareBackendAction($actions = '', $privilegeCategory = '', $redirectPath = 'backend/dashboard')
     {
         $baseUrl = A::app()->getRequest()->getBaseUrl();
 
-        // block access to this action for not-logged users
+        // block access to this action to non-logged users
         CAuth::handleLogin('backend/login');
 
         // block access if admin has no privileges to view modules
         if(!Admins::hasPrivilege('modules', 'view')){
-            header('location: '.$baseUrl.'backend/dashboard');
+            header('location: '.$baseUrl.'error/index/code/no-privileges');
             exit;        
         }
+		
+		// Cast actions to array
+		if(!is_array($actions)){
+			$actions = (array)$actions;
+		}
 
-        if(in_array($action, array('add', 'insert', 'edit', 'update', 'delete'))){
-            // block access if admin has no privileges to add/edit modules
-            if(!Admins::hasPrivilege('modules', 'edit')){
-                header('location: '.$baseUrl.'backend/dashboard');
-                exit;        
-            }
-        }
-        if(in_array($action, array('add', 'insert'))){
-            // block access if admin has no privileges to add records
-            if(!Admins::hasPrivilege($privilegeCategory, 'add')){
-                header('location: '.$baseUrl.$redirectPath);
-                exit;        
-            }
-        }
-        if(in_array($action, array('edit', 'update'))){
-            // block access if admin has no privileges to edit records
-            if(!Admins::hasPrivilege($privilegeCategory, 'edit')){
-                header('location: '.$baseUrl.$redirectPath);
-                exit;        
-            }
-        }
-        if(in_array($action, array('delete'))){
-            // block access if admin has no privileges to delete records
-            if(!Admins::hasPrivilege($privilegeCategory, 'delete')){
-                header('location: '.$baseUrl.$redirectPath);
-                exit;        
-            }
-        }
+		foreach($actions as $action){			
+			if(in_array($action, array('add', 'insert', 'edit', 'update', 'delete'))){
+				// block access if admin has no privileges to add/edit modules
+				if(!Admins::hasPrivilege('modules', 'edit')){
+					header('location: '.$baseUrl.'error/index/code/no-privileges');
+					exit;        
+				}
+			}
+			
+			if(in_array($action, array('view'))){
+				// block access if admin has no privileges to delete records
+				if(!Admins::hasPrivilege($privilegeCategory, 'view')){
+					header('location: '.$baseUrl.$redirectPath);
+					exit;        
+				}
+			}
+	
+			if(in_array($action, array('add', 'insert'))){
+				// block access if admin has no privileges to add records
+				if(!Admins::hasPrivilege($privilegeCategory, 'add')){
+					header('location: '.$baseUrl.$redirectPath);
+					exit;        
+				}
+			}
+			
+			if(in_array($action, array('edit', 'update'))){
+				// block access if admin has no privileges to edit records
+				if(!Admins::hasPrivilege($privilegeCategory, 'edit')){
+					header('location: '.$baseUrl.$redirectPath);
+					exit;        
+				}
+			}
+			
+			if(in_array($action, array('delete'))){
+				// block access if admin has no privileges to delete records
+				if(!Admins::hasPrivilege($privilegeCategory, 'delete')){
+					header('location: '.$baseUrl.$redirectPath);
+					exit;        
+				}
+			}
+		}		
         
         // set backend mode
         Website::setBackend();        
@@ -200,13 +237,28 @@ class Website extends CComponent
         $formats = explode(',', ModulesSettings::model()->param($module, $propertyKey, 'source'));
         $linkFormat = ModulesSettings::model()->param($module, $propertyKey);
         $link = '';
-        foreach($formats as $key => $val){
+        
+		foreach($formats as $key => $val){
             if($val == $linkFormat){
                 $link = str_replace(array('/ID', '/Name'), array('/'.$id, '/'.CString::seoString($name)), $linkFormat);
                 break;
             }
         }
+		
         return $link;
     }
+	
+    /**
+     * Returns default page
+     * @param string $page
+     */
+    public static function getDefaultPage()
+    {
+		$defaultController = CConfig::get('defaultController');
+		$defaultAction = CConfig::get('defaultAction');
+		$defaultPage = (!empty($defaultController) && !empty($defaultAction)) ? $defaultController.'/'.$defaultAction : '';
+		
+		return $defaultPage;
+	} 	
    
 }

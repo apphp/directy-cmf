@@ -2,21 +2,27 @@
 /**
  * LocalTime - component for working with local date and time
  *
- * PUBLIC:                  PRIVATE
+ * PUBLIC (static):         PRIVATE:
  * -----------              ------------------
- *
- * STATIC
- * -------------------------------------------
+ * init
  * currentTime
  * currentDate
  * currentDateTime
- * 							
  *
  */
 
 class LocalTime extends CComponent
 {
     
+	/**
+     *	Returns the instance of object
+     *	@return current class
+     */
+	public static function init()
+	{
+		return parent::init(__CLASS__);
+	}
+
     /**
      * Returns current time in a given format
      * @param $format

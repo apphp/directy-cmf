@@ -2,18 +2,19 @@
 /**
  * Admins model
  *
- * PUBLIC:                 PROTECTED                  PRIVATE
- * ---------------         ---------------            ---------------
- * __construct             _relations                 _loadPrivileges
- * model                   _customFields
- * login                   _afterSave               
+ * PUBLIC:                 	PROTECTED:                 	PRIVATE:
+ * ---------------         	---------------            	---------------
+ * __construct             	_relations                 	_loadPrivileges (static)
+ * model (static)          	_customFields
+ * login                   	_afterSave
+ * getPasswordSalt
  * getErrorDescription
- * hasPrivilege            
- * hasPrivilegeByCollect
- * hasPrivilegeByDb
- * privilegeExists 
- * privilegeExistsByCollect
- * privilegeExistsByDb
+ * hasPrivilege (static)
+ * hasPrivilegeByCollect (static)
+ * hasPrivilegeByDb (static)
+ * privilegeExists (static)
+ * privilegeExistsByCollect (static)
+ * privilegeExistsByDb (static)
  *
  */
 
@@ -26,6 +27,8 @@ class Admins extends CActiveRecord
 	/** @var array */    
 	private static $_arrAdminPrivileges = array();
     /** @var string */    
+    private $_passwordSalt = '';
+    /** @var string */    
     private $_errorDescription = '';
 
 
@@ -37,13 +40,13 @@ class Admins extends CActiveRecord
         parent::__construct();
     }
 
-	/**
-	 * Returns the static model of the specified AR class
-	 */
-   	public static function model($className = __CLASS__)
-   	{
-		return parent::model($className);
-   	}
+    /**
+     * Returns the static model of the specified AR class
+     */
+    public static function model()
+    {
+        return parent::model(__CLASS__);
+    }
 	
 	/**
      * Used to define custom fields
@@ -110,45 +113,109 @@ class Admins extends CActiveRecord
      * Admin login
      * @param string $username
      * @param string $password
+     * @param bool $checkRememberMe
+     * @param bool $saveTokenExpires
+     * @retun bool
      */
-    public function login($username, $password)
+    public function login($username, $password, $checkRememberMe = false, $saveTokenExpires = false)
     {
         $this->_db->cacheOff();
-        if($result = $this->find(
-            'username = :username AND password = :password',
-            array(':username' => $username, ':password' => ((CConfig::get('password.encryption')) ? CHash::create(CConfig::get('password.encryptAlgorithm'), $password, CConfig::get('password.hashKey')) : $password))            
-        )){
-            if($result->is_active){
-                $session = A::app()->getSession();
-                $session->set('loggedIn', true);
-                $session->set('loggedId', $result->id);
-                $session->set('loggedName', ($result->display_name ? $result->display_name : $result->username));
-                $session->set('loggedAvatar', ($result->avatar ? $result->avatar : 'no_image.png'));
-                $session->set('loggedEmail', $result->email);
-                $session->set('loggedLastVisit', $result->last_visited_at);
-                $session->set('loggedLanguage', ($result->language_code ? $result->language_code : Languages::getDefaultLanguage()));
-                $session->set('loggedRole', $result->role);
-                
-                // set current language
-                if($resultLang = Languages::model()->find('code = :code AND is_active = 1', array(':code'=>$result->language_code))){
-                    $params = array(
-                        'locale' => $resultLang->lc_time_name,
-                        'direction' => $resultLang->direction
-                    );
-                    A::app()->setLanguage($result->language_code, $params);
-                }
-    
-                // update admin's last visit time
-                $this->_db->update($this->_table, array('last_visited_at' => LocalTime::currentDateTime()), 'id = :id', array(':id'=>(int)CAuth::getLoggedId()));
-                return true;
-            }else{
-                $this->_errorDescription = A::t('app', 'Login Inactive Message');            
-            }
+
+		$admin = $this->find('username = :username', array(':username' => $username));
+        
+		if($admin){
+            
+			$isBanned = BanLists::model()->count(
+				"item_type = 'email' AND item_value = :item_value AND is_active = 1 AND (expires_at > :expires_at OR expires_at = '0000-00-00 00:00:00')",
+				array(':item_value' => $admin->email, ':expires_at' => LocalTime::currentDateTime())
+			);		
+
+			if($isBanned){
+				$this->_errorDescription = A::t('app', 'This email is banned.');
+			}else{
+				if($admin->is_active){					
+					// prepare password for check
+					if($checkRememberMe){
+						// check if token is not expired
+						if($admin->token_expires_at != '' && time() > $admin->token_expires_at){
+							$savedPassword = true;
+							$checkPassword = false;
+							
+							// update token expires date in admin record
+							$admin->token_expires_at = '';
+							$admin->save();						
+						}else{
+							if(CConfig::get('password.encryption')){
+								// we use ID + username + salt + HTTP_USER_AGENT
+								$checkSalt = CConfig::get('password.encryptSalt') ? $admin->salt : '';
+								$httpUserAgent = A::app()->getRequest()->getUserAgent();
+								$checkPassword = CHash::create(CConfig::get('password.encryptAlgorithm'), $admin->id.$admin->username.$checkSalt.$httpUserAgent);
+							}else{
+								$checkPassword = $password;
+							}
+							$savedPassword = $password;						
+						}					
+					}else{					
+						if(CConfig::get('password.encryption')){
+							$checkSalt = CConfig::get('password.encryptSalt') ? $admin->salt : '';
+							$checkPassword = CHash::create(CConfig::get('password.encryptAlgorithm'), $password, $checkSalt);
+						}else{
+							$checkPassword = $password;
+						}
+						$savedPassword = $admin->password;
+					}
+					
+					if(CHash::equals($savedPassword, $checkPassword)){
+						$session = A::app()->getSession();
+						$session->set('loggedIn', true);
+						$session->set('loggedId', $admin->id);
+						$session->set('loggedName', ($admin->display_name ? $admin->display_name : $admin->username));
+						$session->set('loggedAvatar', ($admin->avatar ? $admin->avatar : 'no_image.png'));
+						$session->set('loggedEmail', $admin->email);
+						$session->set('loggedLastVisit', $admin->last_visited_at);
+						$session->set('loggedLanguage', ($admin->language_code ? $admin->language_code : Languages::getDefaultLanguage()));
+						$session->set('loggedRole', $admin->role);
+						
+						// we don't want to save this data in session - just in this object to minimum use
+						$this->_passwordSalt = $admin->salt;
+						
+						// set current language
+						if($adminLang = Languages::model()->find('code = :code AND is_active = 1', array(':code'=>$admin->language_code))){
+							$params = array(
+								'locale' => $adminLang->lc_time_name,
+								'direction' => $adminLang->direction
+							);
+							A::app()->setLanguage($admin->language_code, $params);
+						}
+			
+						// update last visited and token expires dates in admin record
+						$admin->last_visited_at = LocalTime::currentDateTime();
+						$admin->token_expires_at = ($saveTokenExpires ? (time() + 3600 * 24 * 14) : '');
+						$admin->save();						
+						
+						return true;
+					}else{
+						$this->_errorDescription = A::t('app', 'Login Error Message');
+					}			
+				}else{
+					$this->_errorDescription = A::t('app', 'Login Inactive Message');            
+				}				
+			}
         }else{
-            $this->_errorDescription = A::t('app', 'Login Error Message');            
+            $this->_errorDescription = A::t('app', 'Login Error Message');
         }
-        return false;        
-    }       
+        
+		return false;        
+    }
+	
+	/** 
+	 * Returns admin password salt
+	 * @return boolean
+	 */
+	public function getPasswordSalt()
+	{
+		return $this->_passwordSalt;
+	}
  
 	/** 
 	 * Returns error description
@@ -196,7 +263,7 @@ class Admins extends CActiveRecord
 	 */
 	public static function privilegeExistsByDb($privilegeCategory = '', $privilegeCode = '')
 	{
-		if($result = Privileges::model()->find(
+		if($result = RolePrivileges::model()->find(
 		    CConfig::get('db.prefix').'privileges.category = :privilege_category AND
 		  '.CConfig::get('db.prefix').'privileges.code = :privilege_code', 
 			array(':privilege_category'=>$privilegeCategory, ':privilege_code'=>$privilegeCode)
@@ -271,7 +338,7 @@ class Admins extends CActiveRecord
 			$privilegeCodeString = '"'.$privilegeCode.'"';
 		}
 		
-		if($privilege = Privileges::model()->find(
+		if($privilege = RolePrivileges::model()->find(
 			CConfig::get('db.prefix').'roles.code = :role_code AND
 		  '.CConfig::get('db.prefix').'privileges.category = :privilege_category AND
 		  '.CConfig::get('db.prefix').'privileges.code IN('.$privilegeCodeString.')', 
@@ -289,7 +356,7 @@ class Admins extends CActiveRecord
 	private static function _loadPrivileges()
 	{
 		$adminRole = CAuth::getLoggedRole();
-		$privileges = Privileges::model()->findAll(
+		$privileges = RolePrivileges::model()->findAll(
 			CConfig::get('db.prefix').'roles.code = :role_code', 
 			array(':role_code'=>$adminRole)				
 		);

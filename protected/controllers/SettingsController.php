@@ -2,8 +2,8 @@
 /**
  * Settings controller
  *
- * PUBLIC:                  PRIVATE
- * -----------              ------------------
+ * PUBLIC:                 	PRIVATE:
+ * ---------------         	---------------
  * __construct              _prepareTab
  * indexAction			   	_checkAlexaRank
  * generalAction			_checkGoogleRank
@@ -35,13 +35,13 @@ class SettingsController extends CController
 	{
         parent::__construct();
         
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');		
 	        
-        // block access if admin has no active privilege to view site settings
-        if(!Admins::hasPrivilege('site_settings', 'view')){
-        	$this->redirect('backend/index');
-        }
+		// block access if admin has no active privileges to access site settings
+		if(!Admins::hasPrivilege('site_settings', 'view')){
+			$this->redirect('backend/index');
+		}
 		
         // set meta tags according to active language
     	Website::setMetaTags(array('title'=>A::t('app', 'Site Settings')));
@@ -122,6 +122,48 @@ class SettingsController extends CController
 			'rss2'=>A::t('app', 'RSS 2.0'), 
 			'atom'=>A::t('app', 'Atom')
     	);
+    	$this->_view->rssItemsPerFeed = array(
+			'1'=>'1',
+			'2'=>'2',
+			'3'=>'3',
+			'4'=>'4', 
+			'5'=>'5',
+			'6'=>'6',
+			'7'=>'7',
+			'8'=>'8',
+			'9'=>'9', 
+			'10'=>'10',
+			'12'=>'12',
+			'15'=>'15',
+			'20'=>'20',
+			'25'=>'25', 
+    	);
+		$this->_view->searchItemsPerPage = array(
+			'1'=>'1',
+			'2'=>'2',
+			'3'=>'3',
+			'4'=>'4', 
+			'5'=>'5',
+			'6'=>'6',
+			'7'=>'7',
+			'8'=>'8',
+			'9'=>'9', 
+			'10'=>'10',
+			'12'=>'12',
+			'15'=>'15',
+			'20'=>'20',
+			'25'=>'25',
+			'30'=>'30',
+			'40'=>'40',
+			'50'=>'50',
+			'75'=>'75',
+			'100'=>'100',
+			'150'=>'150',
+			'250'=>'250',
+			'500'=>'500',
+			'750'=>'750',
+			'999'=>'999', 
+		);
         $this->_view->sslModesList = array(
             '0'=>A::t('app', 'No'),
             '1'=>A::t('app', 'Entire Site'), 
@@ -134,8 +176,16 @@ class SettingsController extends CController
         $this->_view->cacheEnable = CConfig::get('cache.enable');
         $this->_view->cacheLifetime = CConfig::get('cache.lifetime');
         $this->_view->cachePath = CConfig::get('cache.path');
+		
+		$this->_view->rssFeedPath = CConfig::get('rss.path');
 
         if($this->_cRequest->getQuery('task') == 'clearCache'){
+
+     		// block access if admin has no active privilege to edit site settings
+     		if(!Admins::hasPrivilege('site_settings', 'edit')){
+     			$this->redirect('backend/index');
+     		}
+
             if(APPHP_MODE == 'demo'){
                 $this->_msg = A::t('core', 'This operation is blocked in Demo Mode!');
                 $this->_errorType = 'warning';
@@ -161,17 +211,22 @@ class SettingsController extends CController
 		    $this->_settings->offline_message = $this->_cRequest->getPost('offlineMsg');
             $this->_settings->ssl_mode = $this->_cRequest->getPost('sslMode');
 		    $this->_settings->rss_feed_type = $this->_cRequest->getPost('rssFeedType');
+			$this->_settings->rss_items_per_feed = $this->_cRequest->getPost('rssItemsPerFeed');			
+			$this->_settings->search_items_per_page = (int)$this->_cRequest->getPost('searchItemsPerPage');
+			$this->_settings->search_is_highlighted = (int)$this->_cRequest->getPost('searchIsHighlighted');			
             $this->_settings->dashboard_hotkeys = (int)$this->_cRequest->getPost('dashboardHotkeys');
-            $this->_settings->dashboard_news = (int)$this->_cRequest->getPost('dashboardNews');
+            $this->_settings->dashboard_notifications = (int)$this->_cRequest->getPost('dashboardNotifications');
             $this->_settings->dashboard_statistics = (int)$this->_cRequest->getPost('dashboardStatistics');
 		    
 			$result = CWidget::create('CFormValidation', array(
 				'fields'=>array(
-                	'isOffline'  =>array('title'=>A::t('app', 'Site Offline'), 'validation'=>array('type'=>'set', 'source'=>array(0,1))),
-					'offlineMsg' =>array('title'=>A::t('app', 'Offline Message'), 'validation'=>array('type'=>'any', 'maxLength'=>255)),
-					'sslMode'    =>array('title'=>A::t('app', 'Force SSL Mode'), 'validation'=>array('type'=>'set', 'source'=>array_keys($this->_view->sslModesList))),
-                	'rssFeedType'=>array('title'=>A::t('app', 'RSS Feed Type'), 'validation'=>array('type'=>'set', 'source'=>array_keys($this->_view->rssFeedTypesList))),
-                	'cacheAllowed' =>array('title'=>A::t('app', 'Cache'), 'validation'=>array('type'=>'set', 'source'=>array(0,1))),
+                	'isOffline'  		=> array('title'=>A::t('app', 'Site Offline'), 'validation'=>array('type'=>'set', 'source'=>array(0,1))),
+					'offlineMsg' 		=> array('title'=>A::t('app', 'Offline Message'), 'validation'=>array('type'=>'any', 'maxLength'=>255)),
+					'sslMode'    		=> array('title'=>A::t('app', 'Force SSL Mode'), 'validation'=>array('type'=>'set', 'source'=>array_keys($this->_view->sslModesList))),
+                	'rssFeedType'		=> array('title'=>A::t('app', 'RSS Feed Type'), 'validation'=>array('type'=>'set', 'source'=>array_keys($this->_view->rssFeedTypesList))),
+                	'rssItemsPerFeed'	=> array('title'=>A::t('app', 'RSS Feed Items'), 'validation'=>array('type'=>'set', 'source'=>array_keys($this->_view->rssItemsPerFeed))),
+					'searchItemsPerPage'=> array('title'=>A::t('app', 'Search Results Page Size'), 'validation'=>array('type'=>'set', 'source'=>array_keys($this->_view->searchItemsPerPage))),
+                	'cacheAllowed' 		=> array('title'=>A::t('app', 'Cache'), 'validation'=>array('type'=>'set', 'source'=>array(0,1))),
 				),
 		    ));
 		    if($result['error']){
@@ -193,12 +248,13 @@ class SettingsController extends CController
 					}
 				}
 		    }
-    	}    	
+    	}
+		
         if(!empty($this->_msg)){
             $this->_view->actionMessage = CWidget::create('CMessage', array($this->_errorType, $this->_msg, array('button'=>true)));
         }
-   		$this->_view->settings = $this->_settings;
-        
+   		
+		$this->_view->settings = $this->_settings;        
     	$this->_view->tabs = $this->_prepareTab('general');		
     	$this->_view->render('settings/general');		
     }
@@ -279,6 +335,12 @@ class SettingsController extends CController
     	}else{	
     		// view the settings        	
 	    	if($this->_cRequest->getPost('act') == 'changeLang'){
+				
+				// block access if admin has no active privilege to edit site settings
+				if(!Admins::hasPrivilege('site_settings', 'edit')){
+					$this->redirect('backend/index');
+				}
+				
 	    		// language changed
 	    		$selectedLanguage = $this->_cRequest->getPost('selectedLanguage');
 	    	}else{
@@ -327,7 +389,7 @@ class SettingsController extends CController
 			'european'=>A::t('app', 'European Number Format'),			
 		);
         
-        $this->_view->utcTime = A::t('app', 'UTC time is').' '.date("Y-m-d H:i:s", gmmktime());
+        $this->_view->utcTime = A::t('app', 'UTC time is').' '.gmdate('Y-m-d H:i:s', time()+date('Z'));
     	
     	if($this->_cRequest->getPost('act') != ''){
 			// settings form submit or select box change
@@ -349,6 +411,7 @@ class SettingsController extends CController
 			$this->_errorType = 'warning';
 			$this->_view->actionMessage = CWidget::create('CMessage', array($this->_errorType, $this->_msg, array('button'=>true)));							
 		}else if($this->_cRequest->getPost('act') == 'send'){							     		
+
      		// block access if admin has no active privilege to edit site settings
      		if(!Admins::hasPrivilege('site_settings', 'edit')){
      			$this->redirect('backend/index');
@@ -529,6 +592,9 @@ class SettingsController extends CController
 						}
 					}
 				}
+
+				// always clear password field after form submission
+				$this->_view->smtpPassword = '';
 			}
 			if(!empty($this->_msg)){
 				$this->_view->actionMessage = CWidget::create('CMessage', array($this->_errorType, $this->_msg, array('button'=>true)));

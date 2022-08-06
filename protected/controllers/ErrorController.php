@@ -2,8 +2,8 @@
 /**
  * Error controller
  *
- * PUBLIC:                 PRIVATE
- * -----------             ------------------
+ * PUBLIC:                 	PRIVATE:
+ * ---------------         	---------------
  * indexAction
  *
  */
@@ -18,6 +18,8 @@ class ErrorController extends CController
 	{
         if(in_array($code, array('404', '500'))){
             $redirectCode = $code;
+        }else if(strtolower($code) == 'no-privileges'){
+			$redirectCode = 'noprivileges';
         }else{
             $redirectCode = 'index';
         }
@@ -29,6 +31,12 @@ class ErrorController extends CController
             // set frontend mode
             Website::setFrontend();
         }
+
+		// display error description
+		$this->_view->errorDescription = '';
+		if(APPHP_MODE == 'debug'){
+			$this->_view->errorDescription = A::app()->getSession()->getFlash('error500');
+		}
 
         $this->_view->render('error/'.$redirectCode);
     }

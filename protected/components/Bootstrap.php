@@ -2,19 +2,16 @@
 /**
  * Bootstrap - bootstrap component class for application
  *
- * PUBLIC:                  PRIVATE
+ * PUBLIC:         			PRIVATE:
  * -----------              ------------------
  * __construct
+ * init (static)
  * setTimeZone
  * setWebsiteInfo
  * setDefaultLanguage
  * setDefaultCurrency
  * setSslMode
  * getSettings
- *
- * STATIC
- * -------------------------------------------
- * init
  *
  */
 
@@ -53,6 +50,15 @@ class Bootstrap extends CComponent
 		
 		// un-comment if 'non-batch' cron job type is used
 		// Cron::run();
+	}
+
+	/**
+     *	Returns the instance of object
+     *	@return current class
+     */
+	public static function init()
+	{
+		return parent::init(__CLASS__);
 	}
 
 	/**
@@ -147,14 +153,5 @@ class Bootstrap extends CComponent
             return $this->_settings;
         }
     }   
-
-	/**
-     *	Returns the instance of object
-     *	@return Bootstrap class
-     */
-	public static function init()
-	{
-		return parent::init(__CLASS__);
-	}    
 
 }

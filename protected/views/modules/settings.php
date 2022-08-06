@@ -21,10 +21,10 @@
 		if(is_array($moduleSettings) && count($moduleSettings) > 0){
 			// open form
 			$formName = 'frmModuleSettingsEdit';
-			echo CHtml::openForm('modules/settings', 'post', array('name'=>$formName, 'autoGenerateId'=>true));
+			echo CHtml::openForm('modules/settings/code/'.$module->code, 'post', array('name'=>$formName, 'autoGenerateId'=>true));
 			
 			// required fields alert
-			if(Admins::hasPrivilege('modules', 'edit')) echo CHtml::tag('span', array('class'=>'required-fields-alert'), A::t('core','Items marked with an asterisk (*) are required'), true);
+			if(Admins::hasPrivilege('modules', 'edit_management')) echo CHtml::tag('span', array('class'=>'required-fields-alert'), A::t('core','Items marked with an asterisk (*) are required'), true);
 			
 			// hidden fields
 			echo CHtml::hiddenField('act', 'send');
@@ -67,7 +67,7 @@
 						A::app()->getClientScript()->registerScript($formName, 'document.forms["'.$formName.'"].'.$fieldName.'.focus();', 2);
 					}
 
-					if(!Admins::hasPrivilege('modules', 'edit')) $setting['property_type'] = 'readonly';
+					if(!Admins::hasPrivilege('modules', 'edit_management')) $setting['property_type'] = 'readonly';
 					switch($setting['property_type']){
 						case 'text': 
 							echo CHtml::textArea($fieldName, $fieldValue, array('maxlength'=>'1000'));
@@ -121,7 +121,7 @@
 			</tbody>
 			</table>
 			
-			<?php if(Admins::hasPrivilege('modules', 'edit')){ ?>
+			<?php if(Admins::hasPrivilege('modules', 'edit_management')){ ?>
 			<div class="buttons-wrapper">
 				<input value="<?php echo A::t('app', 'Update'); ?>" type="submit">
 				<input class="button white" onclick="$(location).attr('href','modules/<?php echo ($module->is_system ? 'system' : 'application');?>');" value="<?php echo A::t('app', 'Cancel'); ?>" type="button">

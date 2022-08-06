@@ -21,7 +21,7 @@
 			<th class="left"><?php echo A::t('app', 'Description'); ?></th>
 			<th class="center" style="width:80px;"><?php echo A::t('app', 'Version'); ?></th>
 			<th class="center" style="width:80px;"><?php echo A::t('app', 'Status'); ?></th>
-			<?php if(Admins::hasPrivilege('modules', 'edit')){ ?>
+			<?php if(Admins::hasPrivilege('modules', 'edit_management')){ ?>
 			<th class="actions"><?php echo A::t('app', 'Actions'); ?></th>
 			<?php } ?>
 		</tr>
@@ -32,12 +32,12 @@
 				foreach($modulesList as $module){
 					echo '<tr>';
 					echo '<td class="left" width="36px"><img src="images/modules/'.$module['code'].'/'.$module['icon'].'" alt="icon" style="height:24px;margin-top:1px;" /></td>';
-					echo '<td class="left">'.((Admins::hasPrivilege('modules', 'edit')) ? '<a href="modules/settings/code/'.$module['code'].'">'.A::t($module['code'], $module['name']).'</a>' : A::t($module['code'], $module['name'])).'</td>';
+					echo '<td class="left">'.((Admins::hasPrivilege('modules', 'edit_management')) ? '<a href="modules/settings/code/'.$module['code'].'">'.A::t($module['code'], $module['name']).'</a>' : A::t($module['code'], $module['name'])).'</td>';
                     echo '<td class="left">'.A::t($module['code'], $module['description']).'</td>';
 					echo '<td class="center">'.$module['version'].'</td>';
 					echo '<td class="center"><img src="templates/backend/images/enabled.png" title="'.A::t('app', 'Enabled').'" class="tooltip-link" alt="tooltip" height="16px" /></td>';
 					
-					if(Admins::hasPrivilege('modules', 'edit')){
+					if(Admins::hasPrivilege('modules', 'edit_management')){
                         $moduleVersion = $allModulesList[$module['code']]['version'];
 						echo '<td class="actions">';
                         if(!empty($moduleVersion) && $module['version'] < $moduleVersion) echo '<a href="modules/update/code/'.$module['code'].'" class="tooltip-link" title="'.A::t('app', 'Update to version {version}', array('{version}'=>$moduleVersion)).'"><img src="templates/backend/images/update.png" alt="update"></a>';
@@ -57,7 +57,7 @@
 						<td class="center">'.$module['version'].'</td>
 						<td class="center"><img src="templates/backend/images/disabled.png" title="'.A::t('app', 'Disabled').'" class="tooltip-link" alt="tooltip" height="16px" /></td>';
 					
-					if(Admins::hasPrivilege('modules', 'edit')){
+					if(Admins::hasPrivilege('modules', 'edit_management')){
 						echo '<td class="actions"><a href="modules/install/code/'.$code.'">'.A::t('app', 'Install').'</a></td>';
 					}
 					echo '</tr>';

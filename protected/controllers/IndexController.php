@@ -2,8 +2,8 @@
 /**
  * Index controller
  *
- * PUBLIC:                  PRIVATE
- * -----------              ------------------
+ * PUBLIC:                 	PRIVATE:
+ * ---------------         	---------------
  * __construct
  * indexAction
  *
@@ -30,11 +30,6 @@ class IndexController extends CController
         $this->_view->title = '';
         $this->_view->text = '';
 
-        // check if CMS module installed and redirect to view pages
-        if(Modules::model()->exists("code = 'cms' AND is_installed = 1")){        
-            $this->redirect('pages/view');
-        }else{
-            $this->_view->render('index/index');	
-        }
+		$this->_view->render('index/index');	
 	}	
 }

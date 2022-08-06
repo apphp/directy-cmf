@@ -2,9 +2,10 @@
 DROP TABLE IF EXISTS `<DB_PREFIX>admins`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>admins` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(25) CHARACTER SET latin1 NOT NULL,
+  `username` varchar(25) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `password` varchar(64) CHARACTER SET latin1 NOT NULL,
-  `salt` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `salt` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `token_expires_at` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `display_name` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `first_name` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `last_name` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
@@ -12,7 +13,8 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>admins` (
   `birth_date` date NOT NULL DEFAULT '0000-00-00',
   `language_code` varchar(2) CHARACTER SET latin1 NOT NULL DEFAULT '',
   `avatar` varchar(125) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `role` enum('owner','mainadmin','admin') CHARACTER SET latin1 NOT NULL DEFAULT 'admin',
+  `personal_info` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `role` varchar(20) CHARACTER SET latin1 NOT NULL DEFAULT 'admin' COMMENT '''owner'',''mainadmin'',''admin'' or other',
   `created_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `last_visited_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -20,8 +22,8 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>admins` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
 
-INSERT INTO `<DB_PREFIX>admins` (`id`, `username`, `password`, `salt`, `display_name`, `first_name`, `last_name`, `email`, `birth_date`, `language_code`, `avatar`, `role`, `created_at`, `updated_at`, `last_visited_at`, `is_active`) VALUES
-(1, '<USERNAME>', '<PASSWORD>', '', '', '', '', '<EMAIL>', '0000-00-00', 'en', '', 'owner', '<CREATED_AT>', '0000-00-00 00:00:00', '0000-00-00 00:00:00', 1);
+INSERT INTO `<DB_PREFIX>admins` (`id`, `username`, `password`, `salt`, `token_expires_at`, `display_name`, `first_name`, `last_name`, `email`, `birth_date`, `language_code`, `avatar`, `personal_info`, `role`, `created_at`, `updated_at`, `last_visited_at`, `is_active`) VALUES
+(1, '<USERNAME>', '<PASSWORD>', '<SALT>', '', '', '', '', '<EMAIL>', '0000-00-00', 'en', '', '', 'owner', '<CREATED_AT>', '0000-00-00 00:00:00', '0000-00-00 00:00:00', 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>accounts`;
@@ -30,6 +32,8 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>accounts` (
   `role` varchar(20) CHARACTER SET latin1 NOT NULL DEFAULT '' COMMENT 'defined for each module separately',
   `username` varchar(25) CHARACTER SET latin1 NOT NULL,
   `password` varchar(64) CHARACTER SET latin1 NOT NULL,
+  `salt` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `token_expires_at` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `email` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `language_code` varchar(2) CHARACTER SET latin1 NOT NULL DEFAULT 'en',
   `created_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -90,11 +94,13 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>settings` (
   `wysiwyg_type` enum('none','tinymce') CHARACTER SET latin1 NOT NULL DEFAULT 'none',
   `rss_feed` tinyint(1) NOT NULL DEFAULT '1',
   `rss_feed_type` enum('rss1','rss2','atom') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'rss1',
-  `rss_last_ids` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `rss_items_per_feed` tinyint(3) unsigned NOT NULL DEFAULT '10',
+  `search_items_per_page` tinyint(3) unsigned NOT NULL DEFAULT '20',
+  `search_is_highlighted` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `is_offline` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `offline_message` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dashboard_hotkeys` tinyint(1) unsigned NOT NULL DEFAULT '1',
-  `dashboard_news` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `dashboard_notifications` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `dashboard_statistics` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `google_rank` varchar(2) CHARACTER SET latin1 NOT NULL,
   `alexa_rank` varchar(12) CHARACTER SET latin1 NOT NULL,
@@ -105,8 +111,8 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>settings` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `<DB_PREFIX>settings` (`id`, `template`, `ssl_mode`, `date_format`, `time_format`, `datetime_format`, `time_zone`, `daylight_saving`, `week_startday`, `number_format`, `general_email`, `general_email_name`, `mailer`, `smtp_auth`, `smtp_secure`, `smtp_host`, `smtp_port`, `smtp_username`, `smtp_password`, `wysiwyg_type`, `rss_feed`, `rss_feed_type`, `rss_last_ids`, `is_offline`, `offline_message`, `dashboard_hotkeys`, `dashboard_news`, `dashboard_statistics`, `google_rank`, `alexa_rank`, `cron_type`, `cron_run_last_time`, `cron_run_period`, `cron_run_period_value`) VALUES
-(1, 'default', 0, 'F d Y', 'H:i:s', 'Y-m-d H:i:s', 'UTC', 1, 1, 'american', 'info@email.me', '', 'phpMail', 1, 'ssl', '', '', '', '', 'none', 1, 'rss2', '', 0, 'Our website is currently offline for maintenance. Please visit us later.', 1, 1, 1, '', '', 'non-batch', '0000-00-00 00:00:00', 'minute', 1);
+INSERT INTO `<DB_PREFIX>settings` (`id`, `template`, `ssl_mode`, `date_format`, `time_format`, `datetime_format`, `time_zone`, `daylight_saving`, `week_startday`, `number_format`, `general_email`, `general_email_name`, `mailer`, `smtp_auth`, `smtp_secure`, `smtp_host`, `smtp_port`, `smtp_username`, `smtp_password`, `wysiwyg_type`, `rss_feed`, `rss_feed_type`, `rss_items_per_feed`, `search_items_per_page`, `search_is_highlighted`, `is_offline`, `offline_message`, `dashboard_hotkeys`, `dashboard_notifications`, `dashboard_statistics`, `google_rank`, `alexa_rank`, `cron_type`, `cron_run_last_time`, `cron_run_period`, `cron_run_period_value`) VALUES
+(1, 'default', 0, 'F d Y', 'H:i:s', 'Y-m-d H:i:s', 'UTC', 1, 1, 'american', 'info@email.me', '', 'phpMail', 1, 'ssl', '', '', '', '', 'none', 1, 'rss2', 10, 20, 1, 0, 'Our website is currently offline for maintenance. Please visit us later.', 1, 1, 1, '', '', 'non-batch', '0000-00-00 00:00:00', 'minute', 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>site_info`;
@@ -157,6 +163,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>module_settings` (
   `description` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `property_type` enum('string','email','numeric','float','positive float','unsigned float','integer','positive integer','unsigned integer','enum','range','bool','html size','text','code','label') CHARACTER SET latin1 NOT NULL,
   `property_source` varchar(255) CHARACTER SET latin1 NOT NULL COMMENT 'for ''enum'' and ''range'' property types',
+  `property_length` varchar(3) CHARACTER SET latin1 NOT NULL DEFAULT '' COMMENT 'for ''string'' and ''text'' property types',
   `is_required` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `code_key_value` (`module_code`,`property_key`,`property_value`),
@@ -925,14 +932,15 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>roles` (
   `code` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `description` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `is_system` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4 ;
 
-INSERT INTO `<DB_PREFIX>roles` (`id`, `code`, `name`, `description`) VALUES
-(1, 'owner', 'Site Owner', 'Site Owner is the owner of the site, who has all privileges and could not be removed.\r\n'),
-(2, 'mainadmin', 'Main Admin', 'The "Main Administrator" user has top privileges like Site Owner and may be removed only by him.'),
-(3, 'admin', 'Simple Admin', 'The "Simple Admin" is required to assist the Main Admins, has different privileges and may be created by Site Owner or Main Admins.');
+INSERT INTO `<DB_PREFIX>roles` (`id`, `code`, `name`, `description`, `is_system`) VALUES
+(1, 'owner', 'Site Owner', 'Site Owner is the owner of the site, who has all privileges and could not be removed.\r\n', 1),
+(2, 'mainadmin', 'Main Admin', 'The "Main Administrator" user has top privileges like Site Owner and may be removed only by him.', 1),
+(3, 'admin', 'Simple Admin', 'The "Simple Admin" is required to assist the Main Admins, has different privileges and may be created by Site Owner or Main Admins.', 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>privileges`;
@@ -945,7 +953,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>privileges` (
   `description` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=19 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=23 ;
 
 INSERT INTO `<DB_PREFIX>privileges` (`id`, `module_code`, `category`, `code`, `name`, `description`) VALUES
 (1, '', 'site_settings', 'view', 'View Site Settings', 'View settings of the site'),
@@ -960,22 +968,26 @@ INSERT INTO `<DB_PREFIX>privileges` (`id`, `module_code`, `category`, `code`, `n
 (10, '', 'currencies', 'edit', 'Edit Currencies', 'Edit currencies used on the site'),
 (11, '', 'email_templates', 'view', 'View Email Templates', 'View Email Templates of the site'),
 (12, '', 'email_templates', 'edit', 'Edit Email Templates', 'Edit Email Templates of the site'),
-(13, '', 'languages', 'view', 'View Languages', 'View languages installed on the site'),
-(14, '', 'languages', 'edit', 'Edit Languages', 'Edit languages installed on the site'),
-(15, '', 'vocabulary', 'view', 'View Vocabulary', 'View vocabulary of the site'),
-(16, '', 'vocabulary', 'edit', 'Edit Vocabulary', 'Edit vocabulary of the site'),
-(17, '', 'modules', 'view', 'View Modules', 'View modules settings and management pages'),
-(18, '', 'modules', 'edit', 'Edit Modules', 'Edit, manage, install, update and uninstall modules');
+(13, '', 'ban_lists', 'view', 'View Ban Lists', 'View Ban Lists of the site'),
+(14, '', 'ban_lists', 'edit', 'Edit Ban Lists', 'Edit Ban Lists of the site'),
+(15, '', 'languages', 'view', 'View Languages', 'View languages installed on the site'),
+(16, '', 'languages', 'edit', 'Edit Languages', 'Edit languages installed on the site'),
+(17, '', 'vocabulary', 'view', 'View Vocabulary', 'View vocabulary of the site'),
+(18, '', 'vocabulary', 'edit', 'Edit Vocabulary', 'Edit vocabulary of the site'),
+(19, '', 'modules', 'view', 'View Modules', 'View modules settings and management pages'),
+(20, '', 'modules', 'edit', 'Edit Modules', 'Edit, manage, install, uninstall and update modules and module pages'),
+(21, '', 'modules', 'view_management', 'View Modules Management', 'View modules management page'),
+(22, '', 'modules', 'edit_management', 'Edit Modules Management', 'Edit on modules management page');
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>role_privileges`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>role_privileges` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `role_id` int(5) NOT NULL,
-  `privilege_id` int(5) NOT NULL,
+  `role_id` int(5) NOT NULL DEFAULT '0',
+  `privilege_id` int(5) NOT NULL DEFAULT '0',
   `is_active` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=55 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=67 ;
 
 INSERT INTO `<DB_PREFIX>role_privileges` (`id`, `role_id`, `privilege_id`, `is_active`) VALUES
 (1, 1, 1, 1),
@@ -996,42 +1008,54 @@ INSERT INTO `<DB_PREFIX>role_privileges` (`id`, `role_id`, `privilege_id`, `is_a
 (16, 1, 16, 1),
 (17, 1, 17, 1),
 (18, 1, 18, 1),
-(19, 2, 1, 1),
-(20, 2, 2, 1),
-(21, 2, 3, 1),
-(22, 2, 4, 1),
-(23, 2, 5, 1),
-(24, 2, 6, 1),
-(25, 2, 7, 1),
-(26, 2, 8, 1),
-(27, 2, 9, 1),
-(28, 2, 10, 1),
-(29, 2, 11, 1),
-(30, 2, 12, 1),
-(31, 2, 13, 1),
-(32, 2, 14, 1),
-(33, 2, 15, 1),
-(34, 2, 16, 1),
-(35, 2, 17, 1),
-(36, 2, 18, 1),
-(37, 3, 1, 1),
-(38, 3, 2, 1),
-(39, 3, 3, 0),
-(40, 3, 4, 0),
-(41, 3, 5, 0),
-(42, 3, 6, 0),
-(43, 3, 7, 1),
-(44, 3, 8, 0),
-(45, 3, 9, 1),
-(46, 3, 10, 0),
-(47, 3, 11, 0),
-(48, 3, 12, 0),
-(49, 3, 13, 0),
-(50, 3, 14, 0),
-(51, 3, 15, 1),
-(52, 3, 16, 0),
-(53, 3, 17, 1),
-(54, 3, 18, 0);
+(19, 1, 19, 1),
+(20, 1, 20, 1),
+(21, 1, 21, 1),
+(22, 1, 22, 1),
+(23, 2, 1, 1),
+(24, 2, 2, 1),
+(25, 2, 3, 1),
+(26, 2, 4, 1),
+(27, 2, 5, 1),
+(28, 2, 6, 1),
+(29, 2, 7, 1),
+(30, 2, 8, 1),
+(31, 2, 9, 1),
+(32, 2, 10, 1),
+(33, 2, 11, 1),
+(34, 2, 12, 1),
+(35, 2, 13, 1),
+(36, 2, 14, 1),
+(37, 2, 15, 1),
+(38, 2, 16, 1),
+(39, 2, 17, 1),
+(40, 2, 18, 1),
+(41, 2, 19, 1),
+(42, 2, 20, 1),
+(43, 2, 21, 1),
+(44, 2, 22, 1),
+(45, 3, 1, 1),
+(46, 3, 2, 1),
+(47, 3, 3, 0),
+(48, 3, 4, 0),
+(49, 3, 5, 0),
+(50, 3, 6, 0),
+(51, 3, 7, 1),
+(52, 3, 8, 0),
+(53, 3, 9, 1),
+(54, 3, 10, 0),
+(55, 3, 11, 0),
+(56, 3, 12, 0),
+(57, 3, 13, 0),
+(58, 3, 14, 0),
+(59, 3, 15, 1),
+(60, 3, 16, 0),
+(61, 3, 17, 1),
+(62, 3, 18, 0),
+(63, 3, 19, 1),
+(64, 3, 20, 0),
+(65, 3, 21, 1),
+(66, 3, 22, 0);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>backend_menus`;
@@ -1045,7 +1069,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>backend_menus` (
   `is_visible` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `sort_order` smallint(6) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=19 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=20 ;
 
 INSERT INTO `<DB_PREFIX>backend_menus` (`id`, `parent_id`, `url`, `module_code`, `icon`, `is_system`, `is_visible`, `sort_order`) VALUES
 (1, 0, '', '', 'dashboard.png',  1, 1, 1),
@@ -1059,13 +1083,14 @@ INSERT INTO `<DB_PREFIX>backend_menus` (`id`, `parent_id`, `url`, `module_code`,
 (9, 1, 'locations/', '', '', 1, 1, 5),
 (10, 1, 'currencies/', '', '', 1, 1, 6),
 (11, 1, 'emailTemplates/', '', '', 1, 1, 7),
-(12, 1, 'index/', '', '', 1, 1, 8),
-(13, 2, 'admins/', '', '', 1, 1, 1),
-(14, 2, 'roles/', '', '', 1, 1, 2),
-(15, 2, 'admins/myAccount', '', '', 1, 1, 3),
-(16, 3, 'languages/', '', '', 1, 1, 1),
-(17, 3, 'vocabulary/', '', '', 1, 1, 2),
-(18, 4, 'modules/', '', '', 1, 1, 1);
+(12, 1, 'banLists/', '', '', 1, 1, 8),
+(13, 1, 'index/', '', '', 1, 1, 9),
+(14, 2, 'admins/', '', '', 1, 1, 1),
+(15, 2, 'roles/', '', '', 1, 1, 2),
+(16, 2, 'admins/myAccount', '', '', 1, 1, 3),
+(17, 3, 'languages/', '', '', 1, 1, 1),
+(18, 3, 'vocabulary/', '', '', 1, 1, 2),
+(19, 4, 'modules/', '', '', 1, 1, 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>backend_menu_translations`;
@@ -1089,13 +1114,14 @@ INSERT INTO `<DB_PREFIX>backend_menu_translations` (`id`, `menu_id`, `language_c
 (9, 9, 'en', 'Locations'),
 (10, 10, 'en', 'Currencies'),
 (11, 11, 'en', 'Email Templates'),
-(12, 12, 'en', 'Preview'),
-(13, 13, 'en', 'Admins'),
+(12, 12, 'en', 'Ban Lists'),
+(13, 13, 'en', 'Preview'),
 (14, 14, 'en', 'Roles & Privileges'),
-(15, 15, 'en', 'My Account'),
-(16, 16, 'en', 'Languages'),
-(17, 17, 'en', 'Vocabulary'),
-(18, 18, 'en', 'Modules Management');
+(15, 15, 'en', 'Admins'),
+(16, 16, 'en', 'My Account'),
+(17, 17, 'en', 'Languages'),
+(18, 18, 'en', 'Vocabulary'),
+(19, 19, 'en', 'Modules Management');
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>frontend_menus`;
@@ -1109,13 +1135,14 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>frontend_menus` (
   `placement` enum('','left','top','right','bottom','hidden') CHARACTER SET latin1 NOT NULL,
   `sort_order` smallint(6) DEFAULT '0',
   `access_level` enum('public','registered') CHARACTER SET latin1 NOT NULL DEFAULT 'public',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `placement` (`placement`),
   KEY `access_level` (`access_level`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2;
 
-INSERT INTO `<DB_PREFIX>frontend_menus` (`id`, `parent_id`, `menu_type`, `module_code`, `link_url`, `link_target`, `placement`, `sort_order`, `access_level`) VALUES
-(1, 0, 'pagelink', '', 'index/index', '', 'top', 1, 'public');
+INSERT INTO `<DB_PREFIX>frontend_menus` (`id`, `parent_id`, `menu_type`, `module_code`, `link_url`, `link_target`, `placement`, `sort_order`, `access_level`, `is_active`) VALUES
+(1, 0, 'pagelink', '', 'index/index', '', 'top', 1, 'public', 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>frontend_menu_translations`;
@@ -1140,7 +1167,10 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>email_templates` (
   `module_code` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `is_system` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2;
+
+INSERT INTO `<DB_PREFIX>email_templates` (`id`, `code`, `module_code`, `is_system`) VALUES
+(NULL, 'bo_admin_account_created_by_owner', '', 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>email_template_translations`;
@@ -1152,7 +1182,9 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>email_template_translations` (
   `template_subject` varchar(125) COLLATE utf8_unicode_ci NOT NULL,
   `template_content` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2;
+
+INSERT INTO `<DB_PREFIX>email_template_translations` (`id`, `template_code`, `language_code`, `template_name`, `template_subject`, `template_content`) SELECT NULL, 'bo_admin_account_created_by_owner', code, 'New admin account created (by site owner)', 'Your account has been created by site administrator', 'Dear <b>{FIRST_NAME} {LAST_NAME}!</b>\r\n\r\nThe {WEB_SITE} administrator has created a new account for you.\r\n\r\nPlease keep this email for your records, as it contains an important information that you may need, should you ever encounter problems or forget your password.\r\n\r\nYour login: {USERNAME}\r\nYour password: {PASSWORD}\r\n\r\nYou will need to visit {WEB_SITE} website and reset the temporary password to a permanent password. Please follow the link below to log into your account: <a href={SITE_URL}backend/login>Login</a>.\r\n\r\nEnjoy!\r\n-\r\nSincerely, \r\nAdministration' FROM `<DB_PREFIX>languages`;
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>sessions`;
@@ -1162,3 +1194,73 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>sessions` (
   `session_data` text NOT NULL,
   UNIQUE KEY `session_id` (`session_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>rss_channels`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>rss_channels` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `mode_code` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `channel_code` varchar(125) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `channel_name` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `channel_description` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `last_items` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `items_count` tinyint(1) NOT NULL DEFAULT '10',
+  `updated_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>search_categories`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>search_categories` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `module_code` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `category_code` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `category_name` varchar(60) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `callback_class` varchar(80) CHARACTER SET latin1 NOT NULL DEFAULT '',
+  `callback_method` varchar(125) CHARACTER SET latin1 NOT NULL DEFAULT '',
+  `items_count` tinyint(1) NOT NULL DEFAULT '20',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `category_code` (`category_code`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>search_words`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>search_words` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `word_text` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `word_count` int(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `word_text` (`word_text`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>ban_lists`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>ban_lists` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `item_type` enum('ip','email','username') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ip',
+  `item_value` varchar(100) CHARACTER SET latin1 NOT NULL,
+  `reason` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `started_at` date NOT NULL DEFAULT '0000-00-00',
+  `expires_at` date NOT NULL DEFAULT '0000-00-00',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `ban_item_type` (`item_type`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>system_notifications`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>system_notifications` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `module_code` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `minimal_role` varchar(20) CHARACTER SET latin1 NOT NULL DEFAULT 'admin' COMMENT 'minimal role to read notification',
+  `type` enum('info','success','warning','error') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'info',
+  `title` varchar(125) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `content` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `created_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  KEY `module_code` (`module_code`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+
+ALTER TABLE  `<DB_PREFIX>admins` CHANGE  `role`  `role` VARCHAR( 20 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT  'admin' COMMENT  '''owner'',''mainadmin'',''admin'' or other'

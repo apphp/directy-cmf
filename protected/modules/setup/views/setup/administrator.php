@@ -17,9 +17,9 @@
         ),
         'fields'=>array(
             'act'=>array('type'=>'hidden', 'value'=>'send'),            
-            'email'=>array('type'=>'textbox', 'value'=>$email, 'title'=>A::t('setup', 'Email'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxLength'=>'100', 'autocomplete'=>'off')),
             'username'=>array('type'=>'textbox', 'value'=>$username, 'title'=>A::t('setup', 'Username'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'32', 'autocomplete'=>'off')),
             'password'=>array('type'=>'password', 'value'=>$password, 'title'=>A::t('setup', 'Password'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'20', 'autocomplete'=>'off')),
+            'email'=>array('type'=>'textbox', 'value'=>$email, 'title'=>A::t('setup', 'Email'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxLength'=>'100', 'autocomplete'=>'off')),
         ),
         'buttons'=>array(
             'back'=>array('type'=>'button', 'value'=>A::t('setup', 'Previous'), 'htmlOptions'=>array('name'=>'', 'onclick'=>"$(location).attr('href','setup/database');")),

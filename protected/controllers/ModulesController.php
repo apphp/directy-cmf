@@ -2,20 +2,20 @@
 /**
  * Modules controller
  *
- * PUBLIC:                  	PRIVATE
- * -----------              	------------------
- * __construct              	_getSystemModules
- * indexAction			   	    _getApplicationModules
- * systemAction                 _getNotInstalledModules
- * applicationAction            _getModules
- * editAction				    _prepareTab 
- * installAction                _prepareSettingsTab
- * updateAction                 _readModuleXml 
- * uninstallAction              _runSqlFile 
- * settingsAction               _processInfoXml 
- *                              _getSubDirectories
- *                              _copyFile
- *                              _deleteFile  
+ * PUBLIC:                 	PRIVATE:
+ * ---------------         	---------------
+ * __construct              _getSystemModules
+ * indexAction			   	_getApplicationModules
+ * systemAction             _getNotInstalledModules
+ * applicationAction        _getModules
+ * editAction				_prepareTab 
+ * installAction            _prepareSettingsTab
+ * updateAction             _readModuleXml 
+ * uninstallAction          _runSqlFile 
+ * settingsAction           _processInfoXml 
+ *                          _getSubDirectories
+ *                          _copyFile
+ *                          _deleteFile  
  */
 
 class ModulesController extends CController
@@ -28,11 +28,11 @@ class ModulesController extends CController
 	{
         parent::__construct();
 
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to view modules
-		if(!Admins::hasPrivilege('modules', 'view')){
+		// block access if admin has no active privilege to view modules and modules management pages
+		if(!Admins::hasPrivilege('modules', 'view') && !Admins::hasPrivilege('modules', 'view_management')){
 			$this->redirect('backend/index');
 		}
 		
@@ -60,6 +60,11 @@ class ModulesController extends CController
      */
 	public function systemAction($msg = '')
 	{
+		// block access if admin has no active privilege to view modules management page
+     	if(!Admins::hasPrivilege('modules', 'view_management')){
+     		$this->redirect('backend/index');
+     	}
+
 		$this->_view->modulesList = $this->_getSystemModules();		
         $this->_view->notInstalledModulesList = $this->_getNotInstalledModules('system');
         $this->_view->allModulesList = $this->_getModules('application');
@@ -77,6 +82,11 @@ class ModulesController extends CController
      */
 	public function applicationAction($msg = '')
 	{
+		// block access if admin has no active privilege to view modules management page
+     	if(!Admins::hasPrivilege('modules', 'view_management')){
+     		$this->redirect('backend/index');
+     	}
+
 		$this->_view->modulesList = $this->_getApplicationModules();		
         $this->_view->notInstalledModulesList = $this->_getNotInstalledModules('application');
         $this->_view->allModulesList = $this->_getModules('application');
@@ -94,8 +104,8 @@ class ModulesController extends CController
      */
 	public function editAction($id = 0)
 	{	
-		// block access if admin has no active privilege to edit modules
-     	if(!Admins::hasPrivilege('modules', 'edit')){
+		// block access if admin has no active privilege to edit on modules management page
+     	if(Admins::hasPrivilege('modules', 'view_management') && !Admins::hasPrivilege('modules', 'edit_management')){
      		$this->redirect('backend/index');
      	}
      	
@@ -138,11 +148,14 @@ class ModulesController extends CController
 					$valuesArray[$setting['id']] = $cRequest->getPost('value_'.$setting['id']);
 				
 					// array of fields for form validation
-					// todo: validate each value according to its type (property_type)
+					// TODO: validate each value according to its type (property_type)
 					$validationType = 'any';
 					$validationSource = '';
-					$min = $max = '';
-					$maxLength = 1000;
+					$min = '';
+					$max = '';
+					$maxLength = 255;
+					$propertyLength = isset($setting['property_length']) ? $setting['property_length'] : '';
+					
 					switch($setting['property_type']){
 						case 'enum': 
 							$validationType = 'set';
@@ -171,10 +184,14 @@ class ModulesController extends CController
 						case 'label':
 							unset($valuesArray[$setting['id']]);
 							break;
-						case 'string':	 
-						case 'text': 
+						case 'string':
+						case 'text':
 						default:	 
 							$validationType = 'any';
+							if(!empty($propertyLength) && $propertyLength < 255){
+								$maxLength = $propertyLength;
+							}
+							break;
 					}					
 					$fields['value_'.$setting['id']] = array('title'=>$setting['name'], 'validation'=>array('required'=>$setting['is_required'], 'type'=>$validationType, 'minValue'=>$min, 'maxValue'=>$max, 'source'=>$validationSource, 'maxLength'=>$maxLength));
 				}
@@ -224,8 +241,8 @@ class ModulesController extends CController
 	 */
 	public function installAction($code = '')
 	{
-		// block access if admin has no active privilege to edit modules
-     	if(!Admins::hasPrivilege('modules', 'edit')){
+		// block access if admin has no active privilege to edit on modules management page
+     	if(Admins::hasPrivilege('modules', 'view_management') && !Admins::hasPrivilege('modules', 'edit_management')){
      		$this->redirect('backend/index');
      	}
 		
@@ -296,8 +313,8 @@ class ModulesController extends CController
 	 */
 	public function updateAction($code = '')
 	{
-		// block access if admin has no active privilege to edit modules
-     	if(!Admins::hasPrivilege('modules', 'edit')){
+		// block access if admin has no active privilege to edit on modules management page
+     	if(Admins::hasPrivilege('modules', 'view_management') && !Admins::hasPrivilege('modules', 'edit_management')){
      		$this->redirect('backend/index');
      	}
 		
@@ -388,8 +405,8 @@ class ModulesController extends CController
 	 */
 	public function uninstallAction($id = 0)
 	{
-		// block access if admin has no active privilege to edit modules
-     	if(!Admins::hasPrivilege('modules', 'edit')){
+		// block access if admin has no active privilege to edit on modules management page
+     	if(Admins::hasPrivilege('modules', 'view_management') && !Admins::hasPrivilege('modules', 'edit_management')){
      		$this->redirect('backend/index');
      	}
 		
@@ -661,7 +678,7 @@ class ModulesController extends CController
 	}
 
 	/**
-	 * Prepare module settings tab
+	 * Prepare separate module settings tab
 	 * @param string $code the module code
 	 */
     private function _prepareSettingsTab($code = '')

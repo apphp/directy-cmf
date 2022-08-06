@@ -2,10 +2,10 @@
 /**
  * SetupController
  *
- * PUBLIC:                   PRIVATE
- * -----------               ------------------
- * __construct               _checkModRewrite   	
- * indexAction               _checkPdoExtension
+ * PUBLIC:                  PRIVATE:
+ * -----------         		------------------
+ * __construct            	_checkModRewrite   	
+ * indexAction              _checkPdoExtension
  * requirementsAction
  * databaseAction
  * administratorAction
@@ -113,6 +113,7 @@ class SetupController extends CController
         }
         
         $this->_view->notifyMessage = '';
+        $this->_view->isCriticalError = false;
         
         ob_start();        
         if(function_exists('phpinfo')) @phpinfo(-1);
@@ -130,19 +131,27 @@ class SetupController extends CController
             }
         }
         
-        // check all required settings
-        if(version_compare(phpversion(), '5.1.0', '<')){	
-            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'This program requires at least <b>PHP version 5.1.0</b> installed. You cannot proceed current installation.'));	
-        }else if(!is_writable(APPHP_PATH.'/protected/config/')){
-            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/protected/config/</b> is not writable! You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));	
-        }else if(!is_writable(APPHP_PATH.'/images/modules/')){
-            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/images/modules/</b> is not writable! You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));	
-        }else if(!$this->_checkModRewrite()){
-            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'This program requires "<b>mod_rewrite</b>" allowed. You cannot proceed current installation.'));	
-        }else if($this->_pdoExtensionRequired && !$this->_checkPdoExtension($phpinfo)){
-            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'This program requires "<b>PDO</b>" extension enabled. You cannot proceed current installation.'));
-        }
+        // check all required settings        
+        $pdoExtension = $this->_checkPdoExtension($phpinfo);
+        $modeRewrite = $this->_checkModRewrite();
         
+        if(version_compare(phpversion(), '5.2.3', '<')){	
+            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'This program requires at least <b>PHP version 5.2.3</b> installed. You cannot proceed current installation.'));
+            $this->_view->isCriticalError = true;
+        }else if(!is_writable(APPHP_PATH.'/protected/config/')){
+            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/protected/config/</b> is not writable! You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));
+            $this->_view->isCriticalError = true;
+        }else if(!is_writable(APPHP_PATH.'/images/modules/')){
+            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/images/modules/</b> is not writable! You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));
+            $this->_view->isCriticalError = true;
+        }else if(!$modeRewrite){
+            $this->_view->notifyMessage = CWidget::create('CMessage', array('warning', 'This program requires "<b>mod_rewrite</b>" module to use friendly URLs, but it is not enabled or its status unknown. You may proceed current installation on yuor own risk.'));
+            $this->_view->isCriticalError = false;
+        }else if($this->_pdoExtensionRequired && !$pdoExtension){
+            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'This program requires "<b>PDO</b>" extension enabled. You cannot proceed current installation.'));
+            $this->_view->isCriticalError = true;
+        }
+
         $this->_view->phpVersion = function_exists('phpversion') ? '<span class="found">'.phpversion().'</span>' : '<span class="unknown">Unknown</span>';
         $this->_view->system = isset($phpinfo['phpinfo']['System']) ? '<span class="found">'.$phpinfo['phpinfo']['System'].'</span>' : '<span class="unknown">Unknown</span>';
         $this->_view->systemArchitecture = isset($phpinfo['phpinfo']['Architecture']) ? '<span class="found">'.$phpinfo['phpinfo']['Architecture'].'</span>' : '<span class="unknown">Unknown</span>';
@@ -151,8 +160,8 @@ class SetupController extends CController
         $this->_view->vdSupport = isset($phpinfo['phpinfo']['Virtual Directory Support']) ? $phpinfo['phpinfo']['Virtual Directory Support'] : 'Unknown';
         $this->_view->vdSupport = ($this->_view->vdSupport == 'enabled') ? '<span class="found">'.$this->_view->vdSupport.'</span>' : '<span class="disabled">'.$this->_view->vdSupport.'</span>';
 
-        $this->_view->pdoExtension = '<span class="found">enabled</span>';            
-        $this->_view->modeRewrite = '<span class="found">enabled</span>';
+        $this->_view->pdoExtension = $pdoExtension ? '<span class="found">enabled</span>' : '<span class="disabled">disabled</span>';
+        $this->_view->modeRewrite = $modeRewrite ? '<span class="found">enabled</span>' : '<span class="disabled">disabled</span>';
         
         $phpCoreIndex = ((version_compare(phpversion(), '5.3.0', '<'))) ? 'PHP Core' : 'Core';
         $this->_view->aspTags   = isset($phpinfo[$phpCoreIndex]) ? '<span class="found">'.$phpinfo[$phpCoreIndex]['asp_tags'][0].'</span>' : '<span class="unknown">Unknown</span>';
@@ -169,7 +178,7 @@ class SetupController extends CController
         $this->_view->smtp = (ini_get("SMTP") != '') ? '<span class="found">'.ini_get('SMTP').'</span>' : '<span class="unknown">Unknown</span>';
         $this->_view->smtpPort = (ini_get('smtp_port') != '') ? '<span class="found">'.ini_get('smtp_port').'</span>' : '<span class="unknown">Unknown</span>';
 
-        if(!$this->_view->notifyMessage) $this->_cSession->set('step', 2);
+        if(!$this->_view->isCriticalError) $this->_cSession->set('step', 2);
         
         $this->_view->setMetaTags('title', A::t('setup', 'Check Application Requirements | Setup Wizard'));
         $this->_view->render('setup/requirements');
@@ -341,13 +350,15 @@ class SetupController extends CController
             }else{
                 $encryption = isset($this->_configMain['password']['encryption']) ? $this->_configMain['password']['encryption'] : false;
                 $encryptAlgorithm = isset($this->_configMain['password']['encryptAlgorithm']) ? $this->_configMain['password']['encryptAlgorithm'] : '';
-                $hashKey = isset($this->_configMain['password']['hashKey']) ? $this->_configMain['password']['hashKey'] : '';
+                $encryptSalt = isset($this->_configMain['password']['encryptSalt']) ? (bool)$this->_configMain['password']['encryptSalt'] : false;
+				$salt = ($encryption && $encryptSalt) ? CHash::salt() : '';
                 $components = isset($this->_configMain['components']) ? $this->_configMain['components'] : '';
         
                 // replace placeholders
                 $sqlDump = str_ireplace('<DB_PREFIX>', $this->_cSession->get('dbPrefix'), $sqlDump);
                 $sqlDump = str_ireplace('<USERNAME>', $this->_cSession->get('username'), $sqlDump);
-                $sqlDump = str_ireplace('<PASSWORD>', (($encryption) ? CHash::create($encryptAlgorithm, $this->_cSession->get('password'), $hashKey) : $this->_cSession->get('password')), $sqlDump);
+				$sqlDump = str_ireplace('<SALT>', $salt, $sqlDump);
+				$sqlDump = str_ireplace('<PASSWORD>', (($encryption) ? CHash::create($encryptAlgorithm, $this->_cSession->get('password'), $salt) : $this->_cSession->get('password')), $sqlDump);
                 $sqlDump = str_ireplace('<EMAIL>', $this->_cSession->get('email'), $sqlDump);
                 $sqlDump = str_ireplace('<CREATED_AT>', date('Y-m-d H:i:s', time() + (date('I', time()) ? 3600 : 0)), $sqlDump);
                 
@@ -410,6 +421,7 @@ class SetupController extends CController
                                                             foreach($destPaths as $destPath){
                                                                 $dest = APPHP_PATH.'/'.trim($destPath, '/').'/';
                                                                 foreach($folder->children() as $file){
+                                                                    // if($file->count()){ $file->count() is not supported in PHP prior to 5.3.0 
                                                                     if(count($file->children())){
                                                                         $destSubPath = $file->getName().'/';
                                                                         if(basename($destPath) != trim($destSubPath, '/')) continue;

@@ -2,8 +2,8 @@
 /**
  * Locations controller
  *
- * PUBLIC:                  PRIVATE
- * -----------              ------------------
+ * PUBLIC:                 	PRIVATE:
+ * ---------------         	---------------
  * __construct              
  * indexAction
  * manageAction
@@ -42,10 +42,10 @@ class LocationsController extends CController
      */
 	public function manageAction($msg = '')
 	{			
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 
-		// block access if admin has no active privilege to view locations
+		// block access if admin has no active privilege to manage locations
 		if(!Admins::hasPrivilege('locations', array('view', 'edit'))){
 			$this->redirect('backend/index');
 		}
@@ -76,13 +76,11 @@ class LocationsController extends CController
      */
 	public function addAction()
 	{		
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to edit locations
-     	if(!Admins::hasPrivilege('locations', 'edit')){
-     		$this->redirect('backend/index');
-     	}
+		// block access if admin has no active privilege to add locations
+        Website::prepareBackendAction('edit', 'locations', 'locations/manage');
      	
         // set meta tags according to active language
     	Website::setMetaTags(array('title'=>A::t('app', 'Add Locations')));
@@ -98,13 +96,11 @@ class LocationsController extends CController
 	 */
 	public function editAction($id = 0)
 	{		
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
 		// block access if admin has no active privilege to edit locations
-     	if(!Admins::hasPrivilege('locations', 'edit')){
-     		$this->redirect('backend/index');
-     	}
+        Website::prepareBackendAction('edit', 'locations', 'locations/manage');
 		
      	$country = Countries::model()->findByPk((int)$id);
 		if(!$country){
@@ -126,13 +122,11 @@ class LocationsController extends CController
 	 */
 	public function deleteAction($id = 0)
 	{
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 
-		// block access if admin has no active privilege to edit locations
-     	if(!Admins::hasPrivilege('locations', 'edit')){
-     		$this->redirect('backend/index');
-     	}
+		// block access if admin has no active privilege to delete locations
+        Website::prepareBackendAction('edit', 'locations', 'locations/manage');
      	
 		$country = Countries::model()->findByPk((int)$id);
 		if(!$country){
@@ -168,10 +162,18 @@ class LocationsController extends CController
 				$msgType = 'error';
 		   	}			
 		}
+		
 		if(!empty($msg)){
 			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
 		}
-		$this->_view->render('locations/manage');
+		
+		// block access if admin has no active privilege to view locations
+		if(Admins::hasPrivilege('locations', array('view'))){
+			$this->_view->render('locations/manage');
+		}else{
+			$this->redirect('locations/manage');
+		}		
+		
 	}
 
 	/**

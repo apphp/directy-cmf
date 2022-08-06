@@ -5,8 +5,8 @@ ALTER TABLE  `<DB_PREFIX>settings` ADD  `general_email_name` VARCHAR( 50 ) CHARA
 ALTER TABLE  `<DB_PREFIX>settings` CHANGE  `caching_allowed`  `cache_allowed` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '0';
 ALTER TABLE  `<DB_PREFIX>settings` DROP  `cache_allowed`, DROP  `cache_lifetime`;
 ALTER TABLE  `<DB_PREFIX>settings` ADD  `dashboard_hotkeys` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '1' AFTER  `offline_message`;
-ALTER TABLE  `<DB_PREFIX>settings` ADD  `dashboard_news` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '1' AFTER  `dashboard_hotkeys`;
-ALTER TABLE  `<DB_PREFIX>settings` ADD  `dashboard_statistics` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '1' AFTER  `dashboard_news`;
+ALTER TABLE  `<DB_PREFIX>settings` ADD  `dashboard_notifications` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '1' AFTER  `dashboard_hotkeys`;
+ALTER TABLE  `<DB_PREFIX>settings` ADD  `dashboard_statistics` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '1' AFTER  `dashboard_notifications`;
 
 
 UPDATE  `<DB_PREFIX>privileges` SET  `description` =  'Edit, manage, install, update and uninstall modules' WHERE `category` = 'modules' AND `code` = 'edit';
@@ -98,4 +98,59 @@ INSERT INTO `<DB_PREFIX>privileges` (`id`, `module_code`, `category`, `code`, `n
 INSERT INTO `<DB_PREFIX>role_privileges` (`id`, `role_id`, `privilege_id`, `is_active`) VALUES (NULL, 1, (SELECT MAX(id) FROM `<DB_PREFIX>privileges`), 1);
 INSERT INTO `<DB_PREFIX>role_privileges` (`id`, `role_id`, `privilege_id`, `is_active`) VALUES (NULL, 2, (SELECT MAX(id) FROM `<DB_PREFIX>privileges`), 1);
 INSERT INTO `<DB_PREFIX>role_privileges` (`id`, `role_id`, `privilege_id`, `is_active`) VALUES (NULL, 3, (SELECT MAX(id) FROM `<DB_PREFIX>privileges`), 0);
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>rss_channels`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>rss_channels` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `channel_code` varchar(125) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `channel_name` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `last_items` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `items_count` tinyint(1) NOT NULL DEFAULT '10',
+  `updated_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>search_categories`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>search_categories` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `module_code` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `category_code` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `category_name` varchar(60) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `callback_class` varchar(80) CHARACTER SET latin1 NOT NULL DEFAULT '',
+  `callback_method` varchar(125) CHARACTER SET latin1 NOT NULL DEFAULT '',
+  `items_count` tinyint(1) NOT NULL DEFAULT '20',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `category_code` (`category_code`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>search_words`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>search_words` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `word_text` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `word_count` int(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `word_text` (`word_text`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>ban_lists`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>ban_lists` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `item_type` enum('ip','email','username') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ip',
+  `item_value` varchar(100) CHARACTER SET latin1 NOT NULL,
+  `reason` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `started_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `expires_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `ban_item_type` (`item_type`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+
+ALTER TABLE  `<DB_PREFIX>accounts` ADD  `salt` VARCHAR( 50 ) NOT NULL DEFAULT  '' AFTER  `username`;
+ALTER TABLE  `<DB_PREFIX>accounts` ADD  `token_expires_at` VARCHAR( 20 ) NOT NULL DEFAULT  '' AFTER  `salt`;
 

@@ -2,12 +2,10 @@
 /**
  * BackendMenu - component for building backend menu dynamically
  *
- * PUBLIC:                  PRIVATE
+ * PUBLIC (static):			PRIVATE (static):
  * -----------              ------------------
- *
- * STATIC
- * -------------------------------------------
- * drawSideMenu			    _getMenu 
+ * init						_getMenu 
+ * drawSideMenu			    
  * drawProfileMenu
  * 							
  *
@@ -15,6 +13,16 @@
 
 class BackendMenu extends CComponent
 {
+
+	/**
+     *	Returns the instance of object
+     *	@return current class
+     */
+	public static function init()
+	{
+		return parent::init(__CLASS__);
+	}
+
 	/**
 	 * Returns array of the visible menu items sorted by sort_order
 	 * @param int $parentId The id of the parent menu. 
@@ -28,7 +36,7 @@ class BackendMenu extends CComponent
 			foreach($menuItems as $item){
 				
 				// draw modules management and modules menu
-				if($item['icon'] == 'modules.png' && !Admins::hasPrivilege('modules', 'view')) continue;
+				if($item['icon'] == 'modules.png' && !Admins::hasPrivilege('modules', 'view') && !Admins::hasPrivilege('modules', 'view_management')) continue;
 				if($item['module_code'] != '' && !Admins::hasPrivilege('modules', 'view')) continue;				
 				
 				$subItems = ($parentId == 0 ? self::_getMenu($item['id']) : '') ;
@@ -37,40 +45,50 @@ class BackendMenu extends CComponent
 
 				$imagePath = (preg_match('/\//', $item['icon'])) ? '' : 'templates/backend/images/icons/';
 				$image = ($item['icon'] == '' ? '' : '<img src="'.$imagePath.$item['icon'].'" alt="icon" class="'.($parentId ? 'sub-' : '').'menu-icon" />'); 				
+				$target = '';
 				$show = true;
 
-				// check if admin has privileges to access specific menus items
-				switch($item['url']){
-					case 'settings/':
-						if(!Admins::hasPrivilege('site_settings', 'view')) $show = false; break;
-					case 'backendMenus/':
-						if(!Admins::hasPrivilege('backend_menu', 'view')) $show = false; break;
-					case 'frontendMenus/':
-						if(!Admins::hasPrivilege('frontend_menu', 'view')) $show = false; break;
-					case 'locations/':
-						if(!Admins::hasPrivilege('locations', 'view')) $show = false; break;
-					case 'currencies/':
-						if(!Admins::hasPrivilege('currencies', 'view')) $show = false; break;
-					case 'emailTemplates/':
-						if(!Admins::hasPrivilege('email_templates', 'view')) $show = false; break;
-					case 'admins/':
-						if(!CAuth::isLoggedInAs('owner','mainadmin')) $show = false; break;
-					case 'roles/':
-						if(!CAuth::isLoggedInAs('owner','mainadmin')) $show = false; break;					
-					case 'languages/':
-						if(!Admins::hasPrivilege('languages', 'view')) $show = false; break;					
-					case 'vocabulary/':
-						if(!Admins::hasPrivilege('vocabulary', 'view')) $show = false; break;					
-					case 'modules/':
-						if(!Admins::hasPrivilege('modules', 'view')) $show = false; break;					
+				// preview link
+				if($item['url'] == 'index/'){
+					$item['url'] = Website::getDefaultPage();
+					$target = '_blank';
+				}else{					
+					// check other links - if admin has privileges to access specific menus items
+					switch($item['url']){
+						case 'settings/':
+							if(!Admins::hasPrivilege('site_settings', 'view')) $show = false; break;
+						case 'backendMenus/':
+							if(!Admins::hasPrivilege('backend_menu', 'view')) $show = false; break;
+						case 'frontendMenus/':
+							if(!Admins::hasPrivilege('frontend_menu', 'view')) $show = false; break;
+						case 'locations/':
+							if(!Admins::hasPrivilege('locations', 'view')) $show = false; break;
+						case 'currencies/':
+							if(!Admins::hasPrivilege('currencies', 'view')) $show = false; break;
+						case 'emailTemplates/':
+							if(!Admins::hasPrivilege('email_templates', 'view')) $show = false; break;
+						case 'banLists/':
+							if(!Admins::hasPrivilege('ban_lists', 'view')) $show = false; break;
+						case 'admins/':
+							if(!CAuth::isLoggedInAs('owner','mainadmin')) $show = false; break;
+						case 'roles/':
+							if(!CAuth::isLoggedInAs('owner','mainadmin')) $show = false; break;					
+						case 'languages/':
+							if(!Admins::hasPrivilege('languages', 'view')) $show = false; break;					
+						case 'vocabulary/':
+							if(!Admins::hasPrivilege('vocabulary', 'view')) $show = false; break;					
+						case 'modules/':
+							if(!Admins::hasPrivilege('modules', 'view_management')) $show = false; break;
+					}
 				}
 				
 				if($show){
 					$items[$i] = array(
-						'label' => $image.$item['menu_name'],
-						'url' 	=> empty($item['url']) ? 'javascript:void(0)' : $item['url'],
-						'id' 	=> 'menu-'.$parentId.$i,
-						'items' => $subItems,
+						'label'  => $image.$item['menu_name'],
+						'url' 	 => empty($item['url']) ? 'javascript:void(0)' : $item['url'],
+						'id' 	 => 'menu-'.$parentId.$i,
+						'target' => $target, 
+						'items'  => $subItems,
 					);					
 				}
 				
@@ -79,10 +97,14 @@ class BackendMenu extends CComponent
 					$modules = Modules::model()->findAll('is_installed = 1');
 					if(is_array($modules)){
 						foreach($modules as $module){
-							$items[] = array(
-								'label' => '<img src="images/modules/'.$module['code'].'/'.$module['icon'].'" class="sub-menu-icon" />'.$module['name'],
-								'url' 	=> 'modules/settings/code/'.$module['code']
-							);
+							if(Admins::privilegeExists($module['code'], 'view') && !Admins::hasPrivilege($module['code'], 'view')){
+								// do nothing - don't show this module in menu (only for modules which has "view" privilege)
+							}else{
+								$items[] = array(
+									'label' => '<img src="images/modules/'.$module['code'].'/'.$module['icon'].'" class="sub-menu-icon" />'.$module['name'],
+									'url' 	=> 'modules/settings/code/'.$module['code']
+								);								
+							}
 						}
 					}						
 				}			
@@ -124,6 +146,8 @@ class BackendMenu extends CComponent
         $output .= CHtml::tag('li', array('class'=>($activeMenu == 'settings/' ? 'active' : '')), CHtml::link('<i class="icon-settings"></i>'.A::t('app', 'Settings'), 'settings/general'));
         $output .= CHtml::tag('li', array('class'=>($activeMenu == 'admins/myAccount' ? 'active' : '')), CHtml::link('<i class="icon-account"></i>'.A::t('app', 'My Account'), 'admins/myAccount'));
         //$output .= CHtml::tag('li', array(), CHtml::link('<i class="icon-logout"></i>'.A::t('app', 'Logout'), 'backend/logout'));
+		$output .= CHtml::tag('li', array('class'=>''), CHtml::link('<i class="icon-preview"></i>'.A::t('app', 'Preview'), Website::getDefaultPage(), array('target'=>'_blank')));
+		
         $output .= CHtml::closeTag('ul');
         $output .= CHtml::closeTag('div');
         

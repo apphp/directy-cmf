@@ -2,10 +2,10 @@
 /**
  * Languages controller
  *
- * PUBLIC:                  	PRIVATE
- * -----------              	------------------
- * __construct              	_getDirectonsList
- * indexAction				    _getUsedOnList
+ * PUBLIC:                 	PRIVATE:
+ * ---------------         	---------------
+ * __construct              _getDirectonsList
+ * indexAction				_getUsedOnList
  * changeAction				
  * manageAction				
  * addAction
@@ -58,7 +58,8 @@ class LanguagesController extends CController
             );
             A::app()->setLanguage($lang, $params);
         }
-        $this->redirect('index/index');
+		
+        $this->redirect(Website::getDefaultPage());
     }
 
     /**
@@ -67,10 +68,10 @@ class LanguagesController extends CController
      */
 	public function manageAction($msg = '')
 	{
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to view languages
+		// block access if admin has no active privilege to manage languages
         if(!Admins::hasPrivilege('languages', array('view', 'edit'))){
         	$this->redirect('backend/index');
         }
@@ -97,13 +98,11 @@ class LanguagesController extends CController
 	 */
 	public function addAction()
 	{
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to edit languages
-		if(!Admins::hasPrivilege('languages', 'edit')){
-			$this->redirect('backend/index');
-		}
+		// block access if admin has no active privilege to add languages
+        Website::prepareBackendAction('edit', 'languages', 'languages/manage');
 		
 		$this->_view->localesList = A::app()->getLocalTime()->getLocales();		
 		$this->_view->directionsList = $this->_getDirectonsList();		
@@ -121,13 +120,11 @@ class LanguagesController extends CController
 	 */
 	public function editAction($id = 0, $icon = '')
 	{
-		// block access to this controller for not-logged users
+		// block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
 		// block access if admin has no active privilege to edit languages
-		if(!Admins::hasPrivilege('languages', 'edit')){
-			$this->redirect('backend/index');
-		}
+        Website::prepareBackendAction('edit', 'languages', 'languages/manage');
 		
 		$language = Languages::model()->findByPk($id);
 		if(!$language){
@@ -167,13 +164,11 @@ class LanguagesController extends CController
 	 */
 	public function deleteAction($id = 0)
 	{
-		// block access to this action for not-logged users
+		// block access to this action to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to edit languages
-		if(!Admins::hasPrivilege('languages', 'edit')){
-			$this->redirect('backend/index');
-		}
+		// block access if admin has no active privilege to delete languages
+        Website::prepareBackendAction('edit', 'languages', 'languages/manage');
 		
 		$msg = '';
 		$msgType = '';
@@ -215,10 +210,17 @@ class LanguagesController extends CController
 				$msgType = 'error';
 		   	}			
 		}
+		
 		if(!empty($msg)){
 			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
-		}	
-		$this->_view->render('languages/manage');
+		}		
+		
+		// block access if admin has no active privilege to view currencies		
+		if(Admins::hasPrivilege('languages', array('view'))){
+			$this->_view->render('languages/manage');
+		}else{
+			$this->redirect('languages/manage');
+		}		
 	}
 
 	/**

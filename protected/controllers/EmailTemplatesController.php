@@ -2,8 +2,8 @@
 /**
  * EmailTemplates controller
  *
- * PUBLIC:                  PRIVATE
- * -----------              ------------------
+ * PUBLIC:                 	PRIVATE:
+ * ---------------         	---------------
  * __construct              
  * indexAction
  * manageAction
@@ -23,10 +23,10 @@ class EmailTemplatesController extends CController
 	{
         parent::__construct();
 
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to view locations
+		// block access if admin has no active privilege to access email templates
 		if(!Admins::hasPrivilege('email_templates', array('view', 'edit'))){
 			$this->redirect('backend/index');
 		}
@@ -37,13 +37,15 @@ class EmailTemplatesController extends CController
         Website::setBackend();
         
         // prepare modules distinct names
-        $result = EmailTemplates::model()->findAll(array('group'=>CConfig::get('db.prefix').'email_templates.id'));
-        $modules = array(''=>'');
+		$result = EmailTemplates::model()->distinct('module_code');
+        $modules = array('' => '');
         if(is_array($result)){
             foreach($result as $key => $val){
                 $modules[$val['module_code']] = $val['module_code'];
             }
         }
+		asort($modules);
+
         $this->_view->modules = $modules;
         $this->_view->actionMessage = '';
         $this->_view->errorField = '';
@@ -63,6 +65,9 @@ class EmailTemplatesController extends CController
      */
 	public function manageAction($msg = '')
 	{			
+		// block access if admin has no active privilege to manage email templates
+        Website::prepareBackendAction('view', 'email_templates', 'backend/index');
+
 		switch($msg){
 			case 'added':
 				$message = A::t('core', 'The adding operation has been successfully completed!');
@@ -85,10 +90,8 @@ class EmailTemplatesController extends CController
      */
 	public function addAction()
 	{		
-		// block access if admin has no active privilege to edit locations
-     	if(!Admins::hasPrivilege('email_templates', 'edit')){
-     		$this->redirect('backend/index');
-     	}
+		// block access if admin has no active privilege to add email templates
+        Website::prepareBackendAction('edit', 'email_templates', 'emailTemplates/manage');
      	
 		$this->_view->render('emailTemplates/add');        
 	}
@@ -99,10 +102,8 @@ class EmailTemplatesController extends CController
 	 */
 	public function editAction($id = 0)
 	{		
-		// block access if admin has no active privilege to edit locations
-     	if(!Admins::hasPrivilege('email_templates', 'edit')){
-     		$this->redirect('backend/index');
-     	}
+		// block access if admin has no active privilege to edit email templates
+        Website::prepareBackendAction('edit', 'email_templates', 'emailTemplates/manage');
 		
      	$template = EmailTemplates::model()->findByPk((int)$id);
 		if(!$template){
@@ -119,10 +120,8 @@ class EmailTemplatesController extends CController
 	 */
 	public function deleteAction($id = 0)
 	{
-		// block access if admin has no active privilege to edit locations
-     	if(!Admins::hasPrivilege('email_templates', 'edit')){
-     		$this->redirect('backend/index');
-     	}
+		// block access if admin has no active privilege to delete email templates
+        Website::prepareBackendAction('edit', 'email_templates', 'emailTemplates/manage');
      	
      	$template = EmailTemplates::model()->findByPk((int)$id);
 		if(!$template){
@@ -153,11 +152,17 @@ class EmailTemplatesController extends CController
 				$msgType = 'error';
 		   	}			
 		}
+
 		if(!empty($msg)){
 			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
 		}
         
-		$this->_view->render('emailTemplates/manage');
+		// block access if admin has no active privilege to view email templates
+		if(Admins::hasPrivilege('email_templates', array('view'))){
+			$this->_view->render('emailTemplates/manage');
+		}else{
+			$this->redirect('emailTemplates/manage');
+		}		
 	}
     
 }

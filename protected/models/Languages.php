@@ -2,18 +2,13 @@
 /**
  * Languages model
  *
- * PUBLIC:                PROTECTED               PRIVATE
- * ---------------        ---------------         ---------------
- * __construct            _beforeDelete
- * getError               _beforeSave
- * getDefaultLanguage     _afterSave
- *                        _afterDelete
- * 
- *
- * STATIC:
- * ------------------------------------------
- * model
- * drawSelector
+ * PUBLIC:                 	PROTECTED:                 	PRIVATE:
+ * ---------------         	---------------            	---------------
+ * __construct            	_beforeDelete
+ * model (static)         	_beforeSave
+ * drawSelector (static)  	_afterSave
+ * getError               	_afterDelete 
+ * getDefaultLanguage     
  *
  */
 
@@ -33,13 +28,13 @@ class Languages extends CActiveRecord
         parent::__construct();
     }
 
-	/**
-	 * Returns the static model of the specified AR class
-	 */
-	public static function model($className = __CLASS__)
-	{
-		return parent::model($className);
-	}
+    /**
+     * Returns the static model of the specified AR class
+     */
+    public static function model()
+    {
+        return parent::model(__CLASS__);
+    }
 
   	/**
 	 * Draws language selector

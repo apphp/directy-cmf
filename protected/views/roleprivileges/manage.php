@@ -33,7 +33,7 @@
 		}
 
         echo CHtml::openTag('div', array('id'=>'privilegesSettings'));
-		echo CHtml::openForm('privileges/manage/role/'.$id, 'post', array('name'=>'frmPrivileges'));
+		echo CHtml::openForm('rolePrivileges/manage/role/'.$id, 'post', array('name'=>'frmPrivileges'));
 		echo '<input type="hidden" name="act" value="send" />'.$nl;
 
 		echo $buttons;

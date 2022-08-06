@@ -2,18 +2,15 @@
 /**
  * ModulesSettings model
  *
- * PUBLIC:                PROTECTED               PRIVATE
- * ---------------        ---------------         ---------------
- * __construct                                    _loadSettings 
+ * PUBLIC:                 	PROTECTED:                 	PRIVATE:
+ * ---------------         	---------------            	---------------
+ * __construct                                    	  	_loadSettings 
+ * model (static)
+ * param (static)
+ * get (static)
  * update
  * getSettings
  * getShortcodes
- *
- * STATIC:
- * ------------------------------------------
- * model
- * param
- * get
  *
  */
 
@@ -34,13 +31,13 @@ class ModulesSettings extends CActiveRecord
 		$this->_loadSettings();
     }
 
-	/**
-	 * Returns the static model of the specified AR class
-	 */
-   	public static function model($className = __CLASS__)
-   	{
-		return parent::model($className);
-   	}
+    /**
+     * Returns the static model of the specified AR class
+     */
+    public static function model()
+    {
+        return parent::model(__CLASS__);
+    }
     
 	/**
 	 * Updates all settings for given module

@@ -2,13 +2,11 @@
 /**
  * Roles model
  *
- * PUBLIC:                 PROTECTED                  PRIVATE
- * ---------------         ---------------            ---------------
- * __construct             _relations
- *
- * STATIC:
- * ------------------------------------------
- * model
+ * PUBLIC:                 	PROTECTED:                 	PRIVATE:
+ * ---------------         	---------------            	---------------
+ * __construct             	_relations
+ * model (static)			_afterSave
+ * 							_afterDelete
  *
  */
 
@@ -26,13 +24,13 @@ class Roles extends CActiveRecord
         parent::__construct();
     }
 
-	/**
-	 * Returns the static model of the specified AR class
-	 */
-   	public static function model($className = __CLASS__)
-   	{
-		return parent::model($className);
-   	}
+    /**
+     * Returns the static model of the specified AR class
+     */
+    public static function model()
+    {
+        return parent::model(__CLASS__);
+    }
     	
 	/**
      * Defines relations between different tables in database and current $_table
@@ -42,4 +40,34 @@ class Roles extends CActiveRecord
 		return array();
 	}
 
+	/**
+	 * This method is invoked after saving a record successfully
+	 * @param string $id
+	 */
+	protected function _afterSave($id = 0)
+	{
+		$this->_isError = false;
+		
+		$privileges = Privileges::model()->findAll();
+		foreach($privileges as $key => $val){
+			$data = array(
+				'role_id' 		=> $id,
+				'privilege_id' 	=> $val['id'],
+				'is_active' 	=> 1
+			);
+			
+			$privileges = RolePrivileges::model()->addPrivilages($data);
+		}
+	}
+
+	/**
+	 * This method is invoked after deleting a record successfully
+	 * @param int $pk
+	 */
+	protected function _afterDelete($pk = '')
+	{
+		// remove role privileges		
+		RolePrivileges::model()->deleteAll('role_id = :role_id', array(':role_id' => $pk));
+	}
+	
 }

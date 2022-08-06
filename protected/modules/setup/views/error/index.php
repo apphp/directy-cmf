@@ -1,5 +1,5 @@
 <?php
-    $this->_pageTitle = '404 Error';
+    $this->_pageTitle = A::t('app', 'Error 404');
 ?>
 
 <h2><?php echo $header; ?></h2>

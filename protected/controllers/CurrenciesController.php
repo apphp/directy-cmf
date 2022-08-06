@@ -2,8 +2,8 @@
 /**
  * Currencies controller
  *
- * PUBLIC:                  PRIVATE
- * -----------              ------------------
+ * PUBLIC:                 	PRIVATE:
+ * ---------------         	---------------
  * __construct              
  * indexAction
  * changeAction
@@ -59,7 +59,8 @@ class CurrenciesController extends CController
 			$params['rate'] = $result->rate;
 			A::app()->setCurrency($currency_code, $params);
         }
-        $this->redirect('index/index');
+        
+		$this->redirect(Website::getDefaultPage());
     }
     
     /**
@@ -68,10 +69,10 @@ class CurrenciesController extends CController
      */
 	public function manageAction($msg = '')
 	{
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to view currencies
+		// block access if admin has no active privilege to manage currencies
         if(!Admins::hasPrivilege('currencies', array('view', 'edit'))){
         	$this->redirect('backend/index');
         }
@@ -86,6 +87,7 @@ class CurrenciesController extends CController
 			default:
 				$message = '';
 		}
+
 		if(!empty($message)){
             // clean the previous data from session
             A::app()->getSession()->set('currency_code', '');
@@ -100,13 +102,11 @@ class CurrenciesController extends CController
 	 */
 	public function addAction()
 	{
-        // block access to this controller for not-logged users
+        // block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to view currencies
-        if(!Admins::hasPrivilege('currencies', 'edit')){
-        	$this->redirect('backend/index');
-        }
+		// block access if admin has no active privilege to add currencies
+        Website::prepareBackendAction('edit', 'currencies', 'currencies/manage');
 		
         $sortOrder = Currencies::model()->count();
         $this->_view->sortOrder = ($sortOrder < 99) ? $sortOrder + 1 : 99;        		
@@ -119,13 +119,11 @@ class CurrenciesController extends CController
 	 */
 	public function editAction($id = 0)
 	{
-		// block access to this controller for not-logged users
+		// block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to view currencies
-        if(!Admins::hasPrivilege('currencies', 'edit')){
-        	$this->redirect('backend/index');
-        }
+		// block access if admin has no active privilege to edit currencies
+        Website::prepareBackendAction('edit', 'currencies', 'currencies/manage');
 		
 		$currency = Currencies::model()->findByPk($id);
 		if(!$currency){
@@ -142,10 +140,8 @@ class CurrenciesController extends CController
 	 */
 	public function deleteAction($id = 0)
 	{
-		// block access if admin has no active privilege to view currencies
-        if(!Admins::hasPrivilege('currencies', 'edit')){
-        	$this->redirect('backend/index');
-        }
+		// block access if admin has no active privilege to delete currencies
+        Website::prepareBackendAction('edit', 'currencies', 'currencies/manage');
      	
 		$msg = '';
 		$msgType = '';
@@ -172,15 +168,21 @@ class CurrenciesController extends CController
 				$msg = CDatabase::init()->getErrorMessage();
 				$msgType = 'warning';
 		   	}else{
-				$msg = A::t('app', 'Delete Error Message');
+				$msg = $currency->getError() ? $currency->getErrorMessage() : A::t('app', 'Delete Error Message');
 				$msgType = 'error';
 		   	}			
 		}
+		
 		if(!empty($msg)){
 			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
 		}
-		$this->_view->render('currencies/manage');
-	}
-	
+
+		// block access if admin has no active privilege to view currencies		
+		if(Admins::hasPrivilege('currencies', array('view'))){
+			$this->_view->render('currencies/manage');
+		}else{
+			$this->redirect('currencies/manage');
+		}
+	}	
 	
 }

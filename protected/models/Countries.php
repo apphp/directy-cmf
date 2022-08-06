@@ -2,17 +2,13 @@
 /**
  * Countries model
  *
- * PUBLIC:                 PROTECTED                  PRIVATE
- * ---------------         ---------------            ---------------
- * __construct             _relations
- * getError                _beforeDelete
- *                         _beforeSave
- *                         _afterSave
- *                         _afterDelete
- *
- * STATIC:
- * ------------------------------------------
- * model
+ * PUBLIC:                 	PROTECTED:                 	PRIVATE:
+ * ---------------         	---------------            	---------------
+ * __construct             	_relations
+ * model (static)		   	_beforeDelete
+ * getError                	_beforeSave
+ *                         	_afterSave
+ *                         	_afterDelete
  *
  */
 
@@ -37,13 +33,13 @@ class Countries extends CActiveRecord
         parent::__construct();
     }
 
-	/**
-	 * Returns the static model of the specified AR class
-	 */
-   	public static function model($className = __CLASS__)
-   	{
-		return parent::model($className);
-   	}
+    /**
+     * Returns the static model of the specified AR class
+     */
+    public static function model()
+    {
+        return parent::model(__CLASS__);
+    }
     	
 	/**
      * Defines relations between different tables in database and current $_table

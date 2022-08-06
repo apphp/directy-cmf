@@ -1,18 +1,24 @@
 <?php
-    $this->_pageTitle = A::t('app', '500 Error');   
+    $this->_pageTitle = A::t('app', 'Error 500');
 ?>
 
 <?php if(A::app()->view->getTemplate() != 'backend'){ ?>
-<h1 class="title"><?php echo A::t('app', '500 Error'); ?></h1>
+	<h1 class="title"><?php echo A::t('app', 'Error 500'); ?></h1>
 <?php } ?>
 
 <div class="block-body">                       
-    <div id="error-page">
-        <h2 class="error-title"><?php echo A::t('app', '500 Error Title'); ?></h2>
-        <div class="error-description">    
-            <?php echo A::t('app', '500 Error Description'); ?>
-            <br><br>
-            <?php echo A::t('app', '500 Error Troubleshooting'); ?>        
-        </div>
-    </div>    
+	<div id="error-page">
+		<h2 class="error-title"><?php echo A::t('app', 'Error 500 Title'); ?></h2>
+		<div class="error-description">    
+			<?php
+				if(!empty($errorDescription)){
+					echo $errorDescription;
+				}else{
+					echo A::t('app', 'Error 500 Description');
+				}
+			?>				
+			<br><br>
+			<?php echo A::t('app', 'Error 500 Troubleshooting'); ?>        
+		</div>
+	</div>    
 </div>
