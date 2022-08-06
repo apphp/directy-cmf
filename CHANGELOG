@@ -1,6 +1,29 @@
+Version 2.5.3 - 20 May, 2015
+----------------------------
+- New: added table "rss_channels" and changed some RSS settings on General > Site Settings page
+- New: added directory with file mimetype icons in templates/backend/images/
+- New: added possibility to perform search on the whole site or by separate modules
+- New: added new vendor Tags Input (jQuery Plugin)
+- New: added possibility to define 3 types of WYSIWYG: simplest, simple and advanced (default)
+- New: added new feature Ban Lsits that allows to ban by IP, username or email
+- Enh: added field "property_length" for module properties
+- Enh: added field "personal_information" to table "admins"
+- Enh: changed placement for view file of components to protected/views/components/
+- Enh: added autofocus on backend login page
+- Enh: added possibility to activate/deactivate frontend menus
+- Enh: added helpers option to main configuration file
+- Enh: added 'lifetime' parameter for session settings in configuration file
+- Enh: improved description of errors on Error 500 page
+- Enh: improved Remember Me algorithm
+- Enh: added new privileges - View Modules Management and Edit Modules Management
+- Enh: improved Notification Feature on Dashboard
+- Bug: fixed getting wrong UTC time in General > Local Settings
+- Bug: fixed error on missing module in TinyMCE editor
+- Bug: wrong redirect on modules/settings page 
+
+
 Version 2.4.9 - 16 Jan, 2015
 ----------------------------
-
 - Enh: added new parameter in FrontendMenu component
 - Enh: updated setup module to v0.0.9
 - Enh: minor changes in Backend styling
@@ -24,7 +47,7 @@ Version 2.3.2 - 16 Jun, 2014
 - Enh: minor changes in Website component
 - Enh: minor changes on Admin Management page
 - Enh: minor changes on Locations Controller
-- Bug: fixed issue with privilages of Locations Controller
+- Bug: fixed issue with privileges of Locations Controller
 - Bug: fixed issue with losing token for datepicker in jQuery DatePicker
 
 
