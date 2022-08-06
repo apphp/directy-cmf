@@ -6,7 +6,7 @@
  * ApPHP image upload plugin for TinyMCE editor
  * License      : GNU LGPL v.3                                                
  * Copyright    : ApPHP Directy CMF (c) 2013 - 2015, All rights reserved.
- * Last changes : 19.06.2014 
+ * Last changes : 09.04.2015 
 */
 
 /* Available options: "full" or "relative" */ 
@@ -49,6 +49,7 @@ A::init($config)->run();
 $isDemo = false;
 ////////////////////////////////////////////////////////////////////////////////
 
+$privilege_category = CFilter::sanitize('dbfield', A::app()->getSession()->get('privilege_category'));
 
 //!$objLogin->IsLoggedInAs('owner,mainadmin')
 if(!CAuth::isLoggedInAsAdmin()){
@@ -58,7 +59,7 @@ if(!CAuth::isLoggedInAsAdmin()){
     echo A::t('app', 'You are not authorized to view this page');
     echo '</body></html>';
     exit;
-}else if(!Admins::hasPrivilege('pages', array('add', 'edit'))){
+}else if(!Admins::hasPrivilege($privilege_category, array('add', 'edit'))){
     echo '<html>';
     echo '<head><title>Access Error</title></head>';
     echo '<body>';
@@ -72,8 +73,8 @@ if(!CAuth::isLoggedInAsAdmin()){
      * Check image directory and create it if needed
      */
     if(!$isDemo){
-        $salt = CConfig::get('installationKey') ? CConfig::get('installationKey') : 'admins_';
-        $imageDir = 'images/upload/'.md5($salt.$loggedId).'/';
+        $hash = CConfig::get('installationKey') ? CConfig::get('installationKey') : 'admins_';
+        $imageDir = 'images/upload/'.md5($hash.$loggedId).'/';
         if(!is_dir($baseDir.$imageDir)){
             if(!mkdir($baseDir.$imageDir, 0755, true)){
                 A::t('core', 'Failed to create directory {path}.', array('{path}'=>$imageDir));
@@ -91,7 +92,7 @@ if(!CAuth::isLoggedInAsAdmin()){
     $supportedextentions = array('gif', 'png', 'jpeg', 'jpg', 'bmp');
     $filetypes = array ('png' => 'jpg.gif', 'jpeg' => 'jpg.gif', 'bmp' => 'jpg.gif', 'jpg' => 'jpg.gif', 'gif' => 'gif.gif', 'psd' => 'psd.gif');
     $act = isset($_GET['act']) ? filter_var($_GET['act'], FILTER_SANITIZE_STRING) : '';
-    $selFile = isset($_GET['file']) ? $imageDir.str_replace(array('/', '\\', '..'), '', $_GET['file']) : '';
+    $selFile = isset($_GET['file']) ? $imageDir.str_replace(array('/', '\\', '..', '\0', '%00'), '', $_GET['file']) : '';
     $msg = '';
     $getSort = 'date';
     $getOrder = 'desc';
