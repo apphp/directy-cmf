@@ -467,6 +467,7 @@ a.subgrid-link      { text-decoration:none; }
 #left-editpost 		{ width:660px; }
 #left-editpost label { width:110px; }
 #right-editpost 	{ float:left; padding-left:40px; margin-left:20px; border-left-style:none; }
+#right-editpost .slidebox_border{ padding: 35px 0 0 0; }
 
 /* MODULES SETTING
 ---------------------------------------------------------- */
@@ -479,9 +480,9 @@ a.subgrid-link      { text-decoration:none; }
 #tblModulesSettings .slideBox input[type=checkbox]:checked + label { left: 35px; }
 #tblModulesSettings select { margin:0px; max-width:270px; border:0px; box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.3) inset, 0px 1px 0px rgba(255, 255, 255, 0.2); background: none repeat scroll 0% 0% rgb(231, 231, 231); -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; }
 #tblModulesSettings select:focus{ background: none repeat scroll 0% 0% rgb(230, 230, 230); color:#000; background: none repeat scroll 0% 0% rgb(241, 241, 241); } 
-#tblModulesSettings input.spinner { border:0px; width:40px; margin:0px; padding:2px 22px 2px 3px; text-align: right; }
 #tblModulesSettings input[type=text],
 #tblModulesSettings input[type=password]{ display:inline-block; width:210px; margin:0px; }
+#tblModulesSettings input.spinner { border:0px; width:40px; margin:0px; padding:2px 22px 2px 3px; text-align: right; }
 #tblModulesSettings tbody tr:nth-child(2n+1) td { background-color:#ffffff; }
 #tblModulesSettings tbody tr:hover td { color:#353535; background-color:#eaeaea; border-bottom:1px solid #dadada; border-top:1px solid #fff; }
 #tblModulesSettings tbody tr:hover td.property-group { background-color:#ffffff; }
@@ -518,6 +519,7 @@ label.css-radiobutton-label { background-image:url(../images/radiobuttons.png); 
 .wrapper-dropdown .dropdown li i.icon-dashboard { background:url('../images/icons/dashboard-white.png') 0px 0px no-repeat; opacity:0.5; }
 .wrapper-dropdown .dropdown li i.icon-account { background:url('../images/icons/account-white.png') 0px 0px no-repeat; opacity:0.5; }
 .wrapper-dropdown .dropdown li i.icon-settings { background:url('../images/icons/settings-white.png') 0px 0px no-repeat; opacity:0.5; }
+.wrapper-dropdown .dropdown li i.icon-preview { background:url('../images/icons/preview-white.png') 0px 0px no-repeat; opacity:0.5; }
 .wrapper-dropdown .dropdown li i.icon-logout { background:url('../images/icons/logout-white.png') 0px 6px no-repeat; opacity:0.5; height:30px;}
 .wrapper-dropdown .dropdown li:first-of-type a { border-radius: 5px 5px 0 0; }
 .wrapper-dropdown .dropdown li:last-of-type a { border: none;  border-radius: 0 0 5px 5px; }

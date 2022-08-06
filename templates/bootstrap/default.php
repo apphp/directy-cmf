@@ -16,12 +16,15 @@
 
     <?php echo CHtml::cssFile('templates/bootstrap/css/bootstrap.css'); ?>
     <?php echo CHtml::cssFile('templates/bootstrap/css/bootstrap-responsive.css'); ?>
+	<?php echo CHtml::cssFile('templates/bootstrap/css/style.css'); ?>
 
     <!-- jquery files -->
 	<?php //echo CHtml::scriptFile('http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'); ?>
 	<?php //echo CHtml::scriptFile('http://code.jquery.com/ui/1.10.2/jquery-ui.js'); ?>
     <?php echo CHtml::scriptFile('js/vendors/jquery/jquery.js'); ?>
 
+	<!-- template files -->
+	<?php echo CHtml::scriptFile('templates/default/js/main.js'); ?>
     <style type="text/css">
         body {
             padding-top: 60px;
@@ -41,7 +44,7 @@
                     echo CHtml::link(A::t('app', 'Back to Admin Panel'), 'backend/index', array('class'=>'back-to'));
                 }
             ?>
-            <a class="brand" id="logo" href="index/" title="<?php echo $this->siteTitle; ?>"><?php echo $this->siteTitle; ?></a>
+            <a class="brand" id="logo" href="<?php echo $this->defaultPage; ?>" title="<?php echo $this->siteTitle; ?>"><?php echo $this->siteTitle; ?></a>
             <span id="slogan"><?php //echo $this->siteSlogan; ?></span>
 
 
@@ -54,10 +57,17 @@
                 );
             ?>
 
-            
+			<div id="language-selector">
             <?php		
                 echo Languages::drawSelector();
             ?>
+			</div>
+        
+			<div id="top-search">
+			<?php		
+				echo SearchForm::draw();
+			?>
+			</div>
         
           </div><!--/.nav-collapse -->
         </div>

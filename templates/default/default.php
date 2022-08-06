@@ -19,6 +19,8 @@
 	<?php //echo CHtml::scriptFile('http://code.jquery.com/ui/1.10.2/jquery-ui.js'); ?>
     <?php echo CHtml::scriptFile('js/vendors/jquery/jquery.js'); ?>
 
+	<!-- template files -->
+	<?php echo CHtml::scriptFile('templates/default/js/main.js'); ?>
 </head>
 <body>
     <div id="wrapper">

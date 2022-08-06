@@ -32,7 +32,7 @@
 <body>
 <?php
     if(!CAuth::isLoggedInAsAdmin()){            
-        echo '<div class="back-to-site"><a href="index/">'.A::t('app', 'Back to Site').'</a></div>';            
+        echo '<div class="back-to-site"><a href="'.Website::getDefaultPage().'">'.A::t('app', 'Back to Site').'</a></div>';            
         echo A::app()->view->getContent();
     }else{
 ?>         
@@ -40,7 +40,7 @@
     <div id="head">
         <div class="left">
             <?php
-                echo CHtml::link(A::t('app', 'Admin Panel Title'), (CAuth::isLoggedIn() ? 'backend/index' :  'index/index'), array('class'=>'header-title'));
+                echo CHtml::link(A::t('app', 'Admin Panel Title'), (CAuth::isLoggedIn() ? 'backend/index' : Website::getDefaultPage()), array('class'=>'header-title'));
             ?>
         </div>
         <div class="right">

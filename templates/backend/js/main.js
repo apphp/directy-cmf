@@ -1,3 +1,6 @@
+// -------------------------------------------------------
+// Executes when HTML-Document is loaded and DOM is ready
+// -------------------------------------------------------
 $(document).ready(function(){
     
     // TOP MENU DROPDOWN ITEMS
@@ -187,11 +190,17 @@ $(document).ready(function(){
         });
         $('.sortable-content').append('<div style="clear:both"></div>');
     }
-    
 })
+
+
+// -------------------------------------------------------
+// Global Functions
+// -------------------------------------------------------
 
 /**
  * Hides elements from array
+ * @param cName
+ * @param elFind
  */
 function hideElementsFromArray(cName, elFind){
     var cookieArrName = $.cookie(cName).split(',');
@@ -270,6 +279,7 @@ jQuery.cookie = function(name, value, options){
 
 /**
  * Cookie list class
+ * @param cookieName
  */
 var cookieList = function(cookieName) {
     // when the cookie is saved the items will be a comma seperated string
