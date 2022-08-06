@@ -8,18 +8,20 @@
  * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
- * PUBLIC:					PROTECTED:					PRIVATE:		
+ * PUBLIC (static):			PROTECTED:					PRIVATE:		
  * ----------               ----------                  ----------
- *  setCacheFile
- *  getCacheFile
- *  setCacheLifetime
- *  getCacheLifetime
- *  setContent
- *  getContent
+ * setCacheFile
+ * getCacheFile
+ * setCacheLifetime
+ * getCacheLifetime
+ * setContent
+ * getContent
+ * 
  */
 
 class CCache
 {
+	
 	/** The limit in amount of cache files */
 	const CACHE_LIMIT = 100;
     

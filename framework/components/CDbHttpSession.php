@@ -10,15 +10,22 @@
  *
  * PUBLIC:					PROTECTED:					PRIVATE:		
  * ----------               ----------                  ---------- 
- * __construct                                          _startSession 
+ * __construct                                          _startSession
+ * init (static)										_deleteExpiredSessions
  * set
  * get
  * remove
  * isExists
+ * setFlash
+ * getFlash
+ * hasFlash
  * setSessionName
  * getSessionName
+ * setTimeout
  * getTimeout
+ * setSessionPrefix
  * endSession
+ * getCookieMode
  * 
  * openSession
  * closeSession
@@ -26,10 +33,6 @@
  * writeSession
  * destroySession
  * gcSession
- * 
- * STATIC:
- * ---------------------------------------------------------------
- * init
  *
  */	  
 
@@ -40,6 +43,18 @@ class CDbHttpSession extends CComponent
 	protected $_autoStart = true;
 	/** @var string */
 	protected $_defaultSessionName = 'apphp_framework';
+	/** @var string */
+	protected $_defaultSessionPrefix = 'apphp_';	
+	/**
+	 * @var int
+	 * @deprecated since v0.1.0
+	 * 0 - use name prefix, 1 - use session name (default)
+	 */
+	protected $_multiSiteSupportType = 1;
+	/**
+	 * @var mixed
+	 */
+	protected $_prefix = '';
 
     /** @var Database */
     private $_db;	
@@ -61,18 +76,26 @@ class CDbHttpSession extends CComponent
             array($this, 'gcSession')
         );
         
-        $this->setSessionName('apphp_'.CConfig::get('installationKey'));		
+		// The following prevents unexpected effects when using objects as save handlers
+		register_shutdown_function('session_write_close');
+
+		if($this->_multiSiteSupportType){
+			$this->setSessionName('apphp_'.CConfig::get('installationKey'));
+		}else{
+			$this->setSessionPrefix('apphp_'.CConfig::get('installationKey'));		
+		}        
+
 		if($this->_autoStart) $this->_startSession();
 	}
 
     /**
      *	Returns the instance of object
-     *	@return CHttpSession class
+     *	@return current class
      */
 	public static function init()
 	{
 		return parent::init(__CLASS__);
-	}
+	}    
     
 	/**
 	 * Sets session variable 
@@ -117,6 +140,42 @@ class CDbHttpSession extends CComponent
 	}
 
 	/**
+	 * Sets session flash data
+	 * @param string $name
+	 * @param mixed $value
+	 */
+	public function setFlash($name, $value)
+	{
+		$_SESSION[$this->_prefix.'_flash'][$name] = $value;
+	}
+
+	/**
+	 * Returns session flash data
+	 * @param string $name
+	 * @param mixed $default
+	 */
+	public function getFlash($name, $default = '')
+	{
+		if(isset($_SESSION[$this->_prefix.'_flash'][$name])){
+            $result = $_SESSION[$this->_prefix.'_flash'][$name];
+            unset($_SESSION[$this->_prefix.'_flash'][$name]);            
+        }else{
+            $result = $default;
+        }
+        return $result;
+	}
+
+	/**
+	 * Checks if has flash data
+	 * @param string $name
+	 * @return bool
+	 */
+	public function hasFlash($name)
+	{
+		return isset($_SESSION[$this->_prefix.'_flash'][$name]) ? true : false;
+	}
+
+	/**
 	 * Sets session name
 	 * @param string $value
 	 */
@@ -124,6 +183,16 @@ class CDbHttpSession extends CComponent
 	{
 		if(empty($value)) $value = $this->_defaultSessionName;
 		session_name($value);
+	}
+
+	/**
+	 * Sets session name
+	 * @param string $value
+	 */
+	public function setSessionPrefix($value)
+	{
+		if(empty($value)) $value = $this->_defaultSessionPrefix;
+		$this->_prefix = $value;
 	}
 
 	/**
@@ -145,8 +214,22 @@ class CDbHttpSession extends CComponent
 			@session_destroy();
 		}
 	}
-
   
+	/**
+	 * Gets cookie mode
+	 * @return string
+	 */
+	public function getCookieMode()
+	{
+		if(ini_get('session.use_cookies') === '0'){
+			return 'none';
+		}else if(ini_get('session.use_only_cookies') === '0'){
+			return 'allow';
+		}else{
+			return 'only';
+		}
+	}
+
 	/**
 	 * Session open handler
 	 * Do not call this method directly
@@ -156,7 +239,7 @@ class CDbHttpSession extends CComponent
 	 */
 	public function openSession($savePath, $sessionName)
 	{
-        $this->_db->delete('sessions', 'expires_at < :expires_at', array(':expires_at'=>time()));
+        $this->_deleteExpiredSessions();
 		return true;
 	}
     
@@ -175,12 +258,65 @@ class CDbHttpSession extends CComponent
 	 * Session read handler
 	 * Do not call this method directly
 	 * @param string $id 
-	 * @return string 
+	 * @return bool
 	 */
 	public function readSession($id)
 	{
-        $result = $this->_db->select('SELECT session_data FROM sessions WHERE session_id = :session_id', array(':session_id'=>$id));
-        return isset($result[0]) ? $result[0] : '';
+        $result = $this->_db->select('SELECT session_data FROM `'.CConfig::get('db.prefix').'sessions` WHERE session_id = :session_id', array(':session_id'=>$id));
+
+		// Read session data and store it into $_SESSION array
+		if(isset($result[0]['session_data'])){
+			
+			$dataPairs = explode('|', $result[0]['session_data']);
+			
+			// Prepare array of session variables in the following format:
+			// [var_name_1] => serialized data
+			// [var_name_2] => serialized data
+			// etc.
+			$previousData = '';
+			$previousName = '';
+			$dataPairsNew = array();
+			foreach($dataPairs as $key => $val){
+				if(!empty($previousData)){
+					
+					$previousDataRev = strrev($previousData);
+					$po1 = strpos($previousDataRev,  ';');
+					$po2 = strpos($previousDataRev, '}');
+					
+					if((!empty($po1) && empty($po2)) || (!empty($po1) && !empty($po2) && $po1 < $po2)){						
+						$divider = ';';
+					}else{
+						$divider = '}';
+					}
+					
+					$previousDataParts = explode($divider, $previousData);					
+					$previousDataCount = count($previousDataParts);
+					$paramName = isset($previousDataParts[$previousDataCount - 1]) ? $previousDataParts[$previousDataCount - 1] : '';
+					unset($previousDataParts[$previousDataCount - 1]);
+					$paramValue = implode($divider, $previousDataParts);
+					
+					$dataPairsNew[$previousName] = $paramValue;
+					if($paramValue[0] == 'a'){
+						$dataPairsNew[$previousName] .= '}';
+					}
+				}else{
+					$paramName = $val;
+				}
+				$previousName = $paramName;
+				$previousData = $val;
+			}
+			
+			$dataPairsNew[$previousName] = $dataPairs[count($dataPairs) - 1];
+			
+			// Store session variables in global array $_SESSION
+			foreach($dataPairsNew as $key => $val){				
+				if(!empty($key)){
+					$_SESSION[$key] = unserialize($val);
+				}				
+			}
+		}
+		
+        return true;
 	}
 
 	/**
@@ -192,24 +328,24 @@ class CDbHttpSession extends CComponent
 	 */
 	public function writeSession($id, $data)
 	{        
-        $result = $this->_db->select('SELECT * from sessions WHERE session_id = :session_id', array(':session_id'=>$id));
+        $result = $this->_db->select('SELECT * from `'.CConfig::get('db.prefix').'sessions` WHERE session_id = :session_id', array(':session_id'=>$id));
         if(isset($result[0])){
             $result = $this->_db->update(
                 'sessions',
                 array(
-                    'expires_at'=>time()+$this->getTimeout(),
-                    'session_data'=>$data
+                    'expires_at' => time() + $this->getTimeout(),
+                    'session_data' => $data
                 ),
                 'session_id = :session_id',
-                array(':session_id'=>$id)
+                array(':session_id' => $id)
             );
         }else{
             $result = $this->_db->insert(
                 'sessions',
                 array(
-                    'session_id'=>$id,
-                    'expires_at'=>time()+$this->getTimeout(),
-                    'session_data'=>$data
+                    'session_id' => $id,
+                    'expires_at' => time() + $this->getTimeout(),
+                    'session_data' => $data
                 )
             );
         }
@@ -236,16 +372,27 @@ class CDbHttpSession extends CComponent
 	 */
 	public function gcSession($maxLifetime)
 	{
-        return $this->_db->delete('sessions', 'expires_at < :expires_at', array(':expires_at'=>time()));
+        return $this->_deleteExpiredSessions();
 	}
     
+	/**
+	 * Sets the number of seconds after which data will be seen as 'garbage' and cleaned up
+	 * @param int $value 
+	 */
+	public function setTimeout($value)
+	{
+		ini_set('session.gc_maxlifetime', (int)$value);
+	}
+
 	/**
      * Returns the number of seconds after which data will be seen as 'garbage' and cleaned up
 	 * @return integer 
 	 */
 	public function getTimeout()
 	{
-		return (int)ini_get('session.gc_maxlifetime');
+		// Get lifetime value from configuration file (in minutes)
+		$maxlifetime = CConfig::get('session.lifetime');
+		return (!empty($maxlifetime)) ? (int)($maxlifetime * 60) : (int)ini_get('session.gc_maxlifetime');
 	}
 
 	/**
@@ -253,10 +400,25 @@ class CDbHttpSession extends CComponent
 	 */
 	private function _startSession()
 	{
+		// Set lifetime value from configuration file (in minutes)
+		$maxLifetime = CConfig::get('session.lifetime');		
+		if(!empty($maxLifetime) && $maxLifetime != ini_get('session.gc_maxlifetime')){
+			$this->setTimeout($maxLifetime);
+		} 
+
 		@session_start();
 		if(APPHP_MODE == 'debug' && session_id() == ''){
             Debug::addMessage('errors', 'session', A::t('core', 'Failed to start session'));
 		}
 	}
 
+	/**
+	 * Deletes expired sessions
+	 * @return bool
+	 */
+	private function _deleteExpiredSessions()
+	{
+		return $this->_db->delete('sessions', 'expires_at < :expires_at', array(':expires_at'=>time()));
+	}
+	
 }

@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
- * PUBLIC:					PROTECTED:					PRIVATE:		
+ * PUBLIC (static):			PROTECTED:					PRIVATE:		
  * ----------               ----------                  ----------
  * init
  * 
@@ -16,6 +16,7 @@
 
 class CCaptcha
 {
+	
     const NL = "\n";
 
     /**
@@ -46,6 +47,7 @@ class CCaptcha
         else if($operator == '-') $captchaResult = $firstDigit - $secondDigit;
         else if($operator == '*') $captchaResult = $firstDigit * $secondDigit;
         else $captchaResult = 0;        
+
         A::app()->getSession()->set('captchaResult', $captchaResult);
             
         $output .= CHtml::openTag('div', array('class'=>'captcha'));

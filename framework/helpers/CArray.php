@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
- * PUBLIC:					PROTECTED:					PRIVATE:		
+ * PUBLIC (static):			PROTECTED:					PRIVATE:		
  * ----------               ----------                  ----------
  * groupByValue
  * 
@@ -41,4 +41,29 @@ class CArray
         return $return;        
     }
 
+    /**
+	 * Changes the case of all keys in a given array
+	 * @param array $array
+	 * @param int $case
+	 */
+	public static function changeKeysCase($array, $case = CASE_LOWER)
+    {
+		$function = ($case == CASE_UPPER) ? 'strtoupper' : 'strtolower';		
+		$newArray = array();
+
+        foreach($array as $key => $value) {
+            if(is_array($value)){
+				// $value is an array, handle keys too
+                $newArray[$function($key)] = self::changeKeysCase($value, $case);
+			}else if(is_string($key)){
+                $newArray[$function($key)] = $value;
+			}else{
+				// $key is not a string
+				$newArray[$key] = $value; 
+			}
+        }
+		
+		return $newArray;
+	}	
+	
 }

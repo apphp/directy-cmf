@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
- * PUBLIC:					PROTECTED:					PRIVATE:		
+ * PUBLIC (static):			PROTECTED:					PRIVATE:		
  * ----------               ----------                  ----------
  * isValidDate
  * isValidTime
@@ -61,10 +61,9 @@ class CTime
         if($units == 'hour') return $difference / 3600;
         if($units == 'minute') return $difference / 60;
         return $difference;
-    }
+    }	
 	
-	
-     /**
+    /**
      * 	Returns info about given date formatted according to the specified format
      * 	used to replace date_parse_from_format() function (PHP 5.3+)
      * 	@param string $format

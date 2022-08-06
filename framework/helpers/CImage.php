@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
- * PUBLIC:					PROTECTED:					PRIVATE:		
+ * PUBLIC (static):			PROTECTED:					PRIVATE:		
  * ----------               ----------                  ----------
  * getImageSize
  * resizeImage
@@ -17,6 +17,7 @@
 
 class CImage
 {
+	
 	/**
 	 * Returns size of the given image
 	 * @param string $image

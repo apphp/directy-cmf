@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
- * PUBLIC:					PROTECTED:					PRIVATE:		
+ * PUBLIC (static):			PROTECTED:					PRIVATE:		
  * ----------               ----------                  ----------
  * americanFormat
  * europeanFormat
@@ -17,6 +17,7 @@
 
 class CNumber
 {
+	
     /**
      * Format number to american format (1.000,00 => 1,000.00)
      * @param mixed $number
