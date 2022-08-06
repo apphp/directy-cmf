@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+<atom:link href="feeds/rss.xml" rel="self" type="application/rss+xml" />
+<title>Feed</title>
+<link>feeds/rss.xml</link>
+<description>Feed</description>
+<language>en</language>
+<copyright>(c) copyright</copyright>
+<pubDate>Wed, 06 May 2015 11:21:31 UTC</pubDate>
+<image>
+<url></url>
+<title>Feed</title>
+<link>feeds/rss.xml</link>
+</image>
+</channel>
+</rss>
