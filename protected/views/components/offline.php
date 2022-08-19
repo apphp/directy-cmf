@@ -1,3 +1,6 @@
+<?php
+	Website::setMetaTags(array('title'=>A::t('app', 'Site Offline')));
+?>
 <!DOCTYPE HTML>
 <html>
 <head>

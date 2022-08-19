@@ -1,4 +1,6 @@
 <?php
+	A::app()->view->setMetaTags('title', A::t('setup', 'Database Settings'));
+	
     $this->_activeMenu = $this->_controller.'/'.$this->_action;
 ?>
 

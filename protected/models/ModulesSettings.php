@@ -42,7 +42,7 @@ class ModulesSettings extends CActiveRecord
 	/**
 	 * Updates all settings for given module
 	 */
-	public function update($valuesArray)
+	public function update($valuesArray = array())
 	{
 		$result = true;
 		if(is_array($valuesArray)){
@@ -80,13 +80,15 @@ class ModulesSettings extends CActiveRecord
 	public function getShortcodes()
 	{
 		$_arrModuleSettings = array();
-		$modulesSettings = $this->_db->select("SELECT ms.*
+		$modulesSettings = $this->_db->select("SELECT ms.*, m.class_code
 			FROM ".CConfig::get('db.prefix').$this->_table." ms
 			INNER JOIN ".CConfig::get('db.prefix')."modules m ON ms.module_code = m.code  
             WHERE ms.property_key = 'shortcode' AND  m.is_active = 1 AND m.is_installed = 1");
 		
-		foreach($modulesSettings as $key => $val){			
-			$_arrModuleSettings[$val['module_code']] = array('value'=>$val['property_value'], 'description'=>$val['description']);
+		if(is_array($modulesSettings)){
+			foreach($modulesSettings as $key => $val){			
+				$_arrModuleSettings[$val['module_code']] = array('class_code'=>$val['class_code'], 'value'=>$val['property_value'], 'description'=>$val['description']);
+			}
 		}
 		return $_arrModuleSettings;
 	}

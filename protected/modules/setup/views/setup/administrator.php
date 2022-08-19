@@ -1,5 +1,7 @@
 <?php
-    $this->_activeMenu = $this->_controller.'/'.$this->_action;
+	A::app()->view->setMetaTags('title', A::t('setup', 'Administrator Account'));
+	
+	$this->_activeMenu = $this->_controller.'/'.$this->_action;
 ?>
 
 <h1><?php echo A::t('setup', 'Administrator Account'); ?></h1>

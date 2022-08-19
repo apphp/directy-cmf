@@ -1,7 +1,7 @@
 <?php
 
 return array(
-    // module classes
+    // Module classes
     'classes' => array(
         'Setup'
     )

@@ -11,6 +11,7 @@
  * setDefaultLanguage
  * setDefaultCurrency
  * setSslMode
+ * setCron
  * getSettings
  *
  */
@@ -27,10 +28,10 @@ class Bootstrap extends CComponent
 	{
         $this->_settings = Settings::model()->findByPk(1);
         
-		// check if site is offline
+		// Check if site is offline
 		if($this->_settings->is_offline){
             if(CAuth::isLoggedInAsAdmin() || stripos(A::app()->getRequest()->getRequestUri(), 'backend/login')){
-                // allow viewing
+                // Allow viewing
             }else{
                 $siteInfo = SiteInfo::model()->find('language_code = :lang', array(':lang'=>A::app()->getLanguage()));
                 A::app()->view->siteTitle = $siteInfo ? $siteInfo->header : '';
@@ -47,9 +48,7 @@ class Bootstrap extends CComponent
 		A::app()->attachEventHandler('_onBeginRequest', array($this, 'setDefaultLanguage'));
 		A::app()->attachEventHandler('_onBeginRequest', array($this, 'setDefaultCurrency'));
         A::app()->attachEventHandler('_onBeginRequest', array($this, 'setSslMode'));
-		
-		// un-comment if 'non-batch' cron job type is used
-		// Cron::run();
+		A::app()->attachEventHandler('_onBeginRequest', array($this, 'setCron'));
 	}
 
 	/**
@@ -139,6 +138,16 @@ class Bootstrap extends CComponent
             exit;
         }        
     }
+	
+	/**
+	 * Sets cron job
+	 */	
+	public function setCron()
+	{
+		// Un-comment if 'non-batch' cron job type is used
+		//$cron = new Cron();
+		//$cron->run();
+	}			
     
  	/**
 	 * Returns site settings

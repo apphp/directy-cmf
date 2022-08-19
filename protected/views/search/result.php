@@ -1,5 +1,7 @@
 <?php 
-	$this->_pageTitle = htmlentities($keywords).' - '.A::t('app', 'Search in').' '.CConfig::get('name');
+	Website::setMetaTags(array('title'=>A::t('app', 'Search Results')));
+	
+	$this->_pageTitle = htmlspecialchars($keywords).' - '.A::t('app', 'Search in').' '.CConfig::get('name');
 
 	// Show categories
 	$showCategories = (count($searchCategories) > 1 && empty($currentCategory)) ? true : false;
@@ -15,7 +17,7 @@
 				if(is_array($searchCategories)){
 					echo '<ul class="search-category-links">';
 					foreach($searchCategories as $key => $val){
-						echo '<li><a href="javascript:void(\'search\');" data-code="'.htmlentities($val['category_code']).'">'.A::t('app', $val['category_name']).'</a></li>';
+						echo '<li><a href="javascript:void(\'search\');" data-code="'.htmlentities($val['category_code']).'">'.$val['category_name'].'</a></li>';
 					}
 					echo '</ul>';
 				}
@@ -78,6 +80,7 @@
 						}
 						echo '</div>';
 						echo '</div>';
+						echo '<div class="clear"></div>';
 
 					}else{
 						echo A::t('app', 'No results found for this category!');
@@ -105,8 +108,8 @@ A::app()->getClientScript()->registerScript(
 	'searchByCategory',
 	'jQuery("ul.search-category-links a, div.search-item-content a").each(function(){
 		var frmSearch = jQuery(".form-search"),
-			categoryCode = $(this).data("code");
-			$(this).click(function(){
+			categoryCode = jQuery(this).data("code");
+			jQuery(this).click(function(){
 				var keywords = frmSearch.find(\'input[name="keywords"]\').val();
 				if(keywords != ""){						
 					frmSearch.find("input[name=\'search_category\']").val(categoryCode);

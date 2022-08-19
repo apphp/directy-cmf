@@ -2,7 +2,7 @@
                -= YOU MAY NOT REMOVE OR CHANGE THIS NOTICE =-                 
  --------------------------------------------------------------------------- 
  ApPHP Directy CMF - Content Management Framework
- Version :      2.5.3
+ Version :      2.6.2
  Developed by:  ApPHP <info@apphp.com>                                      
  License:       GNU LGPL v.3                                                
  Site:          http://www.apphp.com/php-directy-cmf/
@@ -17,14 +17,17 @@
 
  Additional (embedded) components and modules used in this project:
  --------------------------------------------------------------------------- 
- - TipTip (Tooltip jQuery plug-in, Drew Wilson)       v1.3     http://code.drewwilson.com/entry/tiptip-jquery-plugin
- - CodeMirror (JavaScript component)                  v3.12    http://codemirror.net
- - Coin Slider (Unique jQuery plug-in - Image Slider) v1.0     http://workshop.rs/projects/coin-slider
- - TinyMCE (WYSIWYG editor)                           v3.5.8   http://www.tinymce.com/
- - jQuery (JavaScript library)                        v1.8.3   http://jquery.com/
- - jQuery User Interface (JavaScript library)         v1.10.2  http://jqueryui.com
- - Tags Input (jQuery Plugin)                         v1.3.3   http://xoxco.com/projects/code/tagsinput/
- - FancyBox (jQuery Plugin)                           v1.3.4   http://fancybox.net
+ - TipTip (Tooltip jQuery plug-in, Drew Wilson)       		v1.3     	http://code.drewwilson.com/entry/tiptip-jquery-plugin
+ - CodeMirror (JavaScript component)                  		v3.12    	http://codemirror.net
+ - Coin Slider (Unique jQuery plug-in - Image Slider) 		v1.0     	http://workshop.rs/projects/coin-slider
+ - TinyMCE (WYSIWYG editor)                           		v3.5.8   	http://www.tinymce.com/
+ - jQuery (JavaScript library)                        		v1.8.3   	http://jquery.com/
+ - jQuery User Interface Plugin (JavaScript library)  		v1.10.2  	http://jqueryui.com
+ - jQuery Modal Plugin (JavaScript library)        	  		v1.2.3   	http://creativedream.net/plugins
+ - Tags Input (jQuery Plugin)                         		v1.3.3   	http://xoxco.com/projects/code/tagsinput/
+ - FancyBox (jQuery Plugin)                           		v1.3.4   	http://fancybox.net
+ - Chosen (Select Box Enhancer) for jQuery and Prototype 	v1.4.2		https://github.com/harvesthq/chosen
+
    
  Installation:
  ---------------------------------------------------------------------------

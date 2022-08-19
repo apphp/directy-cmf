@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE:		
@@ -14,6 +14,8 @@
  * quote
  * length
  * seoString
+ * humanize
+ * isSerialized
  * 
  */	  
 
@@ -105,5 +107,62 @@ class CString
         
         return $seoUrl;
     }
-	
+
+    /**
+     * Humanize a given string
+     * @param mixed $string
+     * @return string
+     */
+	public static function humanize($string)
+	{
+		$string = trim(strtolower($string));
+		$string = preg_replace('/[^a-z0-9\-\_\s+]/', '', $string);
+		$string = preg_replace('/\_/', ' ', $string);
+		$string = preg_replace('/\-/', ' ', $string);
+		$string = preg_replace('/\s+/', ' ', $string);
+		$string = explode(' ', $string);	 
+		$string = array_map('ucwords', $string);
+	 
+		return implode(' ', $string);
+	}
+
+    /**
+     * Checks is a given string is serialized 
+     * @param mixed $string
+     * @return bool
+     */
+	public static function isSerialized($string)
+	{
+		// If it isn't a string, it isn't serialized
+		if (!is_string($string)){
+			return false;
+		}
+		
+		$string = trim($string);
+		
+		if('N;' == $string){
+			return true;
+		}
+		
+		if(!preg_match('/^([adObis]):/', $string, $badions)){
+			return false;
+		}
+		
+		switch($badions[1]){
+			case 'a':
+			case 'O':
+			case 's':
+				if(preg_match("/^{$badions[1]}:[0-9]+:.*[;}]\$/s", $string))
+					return true;
+				break;
+			case 'b':
+			case 'i':
+			case 'd':
+				if(preg_match("/^{$badions[1]}:[0-9.E-]+;\$/", $string))
+					return true;
+				break;
+		}
+		
+		return false;
+	}	
 }

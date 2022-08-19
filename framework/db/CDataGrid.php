@@ -6,7 +6,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
  * @license http://www.apphpframework.com/license/ 
  *
  * Usage:
@@ -236,10 +236,10 @@ abstract class CDataGrid extends CModel
 //
 //            if($this->debug) $finish_time = $this->_getFormattedMicrotime();
 //			if($this->debug){
-//				if(!mysql_error()){ 
+//				if(!mysqli_error()){ 
 //                    $this->arrSQLs['total_records_sql'] = '<i>Total Records</i> | T: '.round((float)$finish_time - (float)$start_time, 4).' sec. <br>'.$sql;
 //				}else{
-//					$this->arrErrors['total_records_sql'] = $sql.'<br>'.mysql_error();		
+//					$this->arrErrors['total_records_sql'] = $sql.'<br>'.mysqli_error();		
 //				}
 //			}
 //			if($this->pageSize == 0) $this->pageSize = '10';

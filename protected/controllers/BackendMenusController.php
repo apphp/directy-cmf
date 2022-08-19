@@ -20,21 +20,23 @@ class BackendMenusController extends CController
 	{
         parent::__construct();
         
-        // block access to this controller to non-logged users
+        // Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');			
 		        
-        // block access if admin has no active privileges to access backend menus
+        // Block access if admin has no active privileges to access backend menus
         if(!Admins::hasPrivilege('backend_menu', array('view', 'edit'))){
         	$this->redirect('backend/index');
         }
 		
-        // set meta tags according to active language
+        // Set meta tags according to active language
     	Website::setMetaTags(array('title'=>A::t('app', 'Backend Menu Management')));
-        // set backend mode 
+        // Set backend mode 
         Website::setBackend();
         
         $this->_view->actionMessage = '';
         $this->_view->errorField = '';        
+		$this->_cRequest = A::app()->getRequest();
+		$this->_cSession = A::app()->getSession();
 	}	
 		
 	/**
@@ -48,11 +50,10 @@ class BackendMenusController extends CController
 	/**
 	 * Backend menu manage handler
 	 * @param int $pid the id of the parent menu, if $pid == 0 views up level menu items.
-     * @param string $msg 
 	 */
-	public function manageAction($pid = 0, $msg = '')
+	public function manageAction($pid = 0)
 	{
-	    // block access if admin has no active privilege to manage backend menus
+	    // Block access if admin has no active privilege to manage backend menus
 		Website::prepareBackendAction('view', 'backend_menu', 'backend/index');
 
 		$this->_view->parentId = 0;
@@ -64,16 +65,15 @@ class BackendMenusController extends CController
 			$this->_view->parentName = $parentMenu->menu_name;
 		}
 		
-	    switch($msg){
-        	case 'updated': 
-				$message = A::t('core', 'The updating operation has been successfully completed!');
-				break;						
-			default:
-				$message = '';						
-        }
-        if(!empty($message)){
-    		$this->_view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
-    	}
+		if($this->_cSession->hasFlash('alert')){
+            $alert = $this->_cSession->getFlash('alert');
+            $alertType = $this->_cSession->getFlash('alertType');
+			
+            $this->_view->actionMessage = CWidget::create(
+                'CMessage', array($alertType, $alert, array('button'=>true))
+            );
+		}
+
 		$this->_view->render('backendMenus/manage');
 	}
 	
@@ -85,7 +85,7 @@ class BackendMenusController extends CController
 	 */
 	public function editAction($id = 0, $pid = 0, $icon = '')
 	{
-	    // block access if admin has no active privilege to edit backend menus
+	    // Block access if admin has no active privilege to edit backend menus
 		Website::prepareBackendAction('edit', 'backend_menu', 'backendMenus/manage');
 
 		$this->_view->parentId = 0;
@@ -93,44 +93,57 @@ class BackendMenusController extends CController
 		$menu = BackendMenus::model()->findbyPk($id);
     	if(!$menu){
 	  		$this->redirect('backendMenus/manage');
-    	}
+    	}		
+		$this->_view->menuName = $menu->menu_name;
         
-        // delete the icon file
+        // Delete the icon file
         if($icon === 'delete'){
-        	$msg = '';
-        	$msgType = '';
+        	$alert = '';
+        	$alertType = '';
 
             if(!empty($menu)){
                 $iconFile = 'templates/backend/images/icons/'.$menu->icon;
                 $menu->icon = '';
             
-                // save the changes in admins table
+                // Save the changes in admins table
                 if($menu->parent_id != 0 && $menu->save()){
-                    // delete the file
+                    // Delete the file
                     if(CFile::deleteFile($iconFile)){
-                        $msg = A::t('app', 'Image Delete Success Message');
-                        $msgType = 'success';
+                        $alert = A::t('app', 'Image Delete Success Message');
+                        $alertType = 'success';
                     }else{
-                        $msg = A::t('app', 'Image Delete Warning');
-                        $msgType = 'warning';
+                        $alert = A::t('app', 'Image Delete Warning');
+                        $alertType = 'warning';
                     }        		
                 }else{
-                    $msg = A::t('app', 'Image Delete Error Message');
-                    $msgType = 'error';                
+                    $alert = A::t('app', 'Image Delete Error Message');
+                    $alertType = 'error';                
                 }
             }
-        	if(!empty($msg)){
-        		$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
-        	}
+
+			if(!empty($alert)){
+				$this->_cSession->setFlash('alert', $alert);
+				$this->_cSession->setFlash('alertType', $alertType);
+				$this->redirect('backendMenus/edit/id/'.$id.($pid ? '/pid/'.$pid : ''));
+			}
         }
 
-        if(!empty($menu)){
+		// Prepare alert message
+		if(!$this->_cRequest->isPostRequest() && $this->_cSession->hasFlash('alert')){
+			$this->_view->actionMessage = CWidget::create('CMessage',
+				array($this->_cSession->getFlash('alertType'), $this->_cSession->getFlash('alert'), array('button'=>true))
+			);
+		}
+
+        // Get parent menu info
+		if(!empty($menu)){
         	$parentMenu = BackendMenus::model()->findbyPk($menu->parent_id);
         	if(!empty($parentMenu)){
 				$this->_view->parentId = $parentMenu->id;
 				$this->_view->parentName = $parentMenu->menu_name;
 			}
         }
+		
     	$this->_view->id = (int)$id;
     	$this->_view->render('backendMenus/edit');
 	}

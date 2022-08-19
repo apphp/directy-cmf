@@ -23,10 +23,13 @@ class CurrenciesController extends CController
 	{
         parent::__construct();
 
-        // set meta tags according to active currencies
+        // Set meta tags according to active currencies
     	Website::setMetaTags(array('title'=>A::t('app', 'Currencies Management')));
-        // set backend mode
+        // Set backend mode
         Website::setBackend();
+
+		$this->_cRequest = A::app()->getRequest();
+		$this->_cSession = A::app()->getSession();
 
         $this->_view->numberFormat = Bootstrap::init()->getSettings('number_format');
         $this->_view->actionMessage = '';
@@ -47,10 +50,10 @@ class CurrenciesController extends CController
      */
     public function changeAction($currency_code)
     {
-        // if redirected from dropdown list
+        // If redirected from dropdown list
         if(empty($currency_code)) $currency_code = A::app()->getRequest()->getQuery('currency');
         
-        // check for existing currency in DB
+        // Check for existing currency in DB
         if($result = Currencies::model()->find('code = :code AND is_active = 1', array(':code'=>$currency_code))){
 			$params = array();
 			$params['symbol'] = $result->symbol;
@@ -65,33 +68,24 @@ class CurrenciesController extends CController
     
     /**
      * Manage currency action handler
-     * @param string $msg 
      */
-	public function manageAction($msg = '')
+	public function manageAction()
 	{
-        // block access to this controller to non-logged users
+        // Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to manage currencies
+		// Block access if admin has no active privilege to manage currencies
         if(!Admins::hasPrivilege('currencies', array('view', 'edit'))){
         	$this->redirect('backend/index');
         }
 		
-		switch($msg){
-			case 'added':
-				$message = A::t('core', 'The adding operation has been successfully completed!');
-				break;
-			case 'updated':
-				$message = A::t('core', 'The updating operation has been successfully completed!');
-				break;
-			default:
-				$message = '';
-		}
-
-		if(!empty($message)){
-            // clean the previous data from session
-            A::app()->getSession()->set('currency_code', '');
-			$this->_view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
+		if($this->_cSession->hasFlash('alert')){
+            $alert = $this->_cSession->getFlash('alert');
+            $alertType = $this->_cSession->getFlash('alertType');
+			
+            $this->_view->actionMessage = CWidget::create(
+                'CMessage', array($alertType, $alert, array('button'=>true))
+            );
 		}
 		
     	$this->_view->render('currencies/manage');        
@@ -102,10 +96,10 @@ class CurrenciesController extends CController
 	 */
 	public function addAction()
 	{
-        // block access to this controller to non-logged users
+        // Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to add currencies
+		// Block access if admin has no active privilege to add currencies
         Website::prepareBackendAction('edit', 'currencies', 'currencies/manage');
 		
         $sortOrder = Currencies::model()->count();
@@ -119,10 +113,10 @@ class CurrenciesController extends CController
 	 */
 	public function editAction($id = 0)
 	{
-		// block access to this controller to non-logged users
+		// Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to edit currencies
+		// Block access if admin has no active privilege to edit currencies
         Website::prepareBackendAction('edit', 'currencies', 'currencies/manage');
 		
 		$currency = Currencies::model()->findByPk($id);
@@ -140,49 +134,43 @@ class CurrenciesController extends CController
 	 */
 	public function deleteAction($id = 0)
 	{
-		// block access if admin has no active privilege to delete currencies
+		// Block access if admin has no active privilege to delete currencies
         Website::prepareBackendAction('edit', 'currencies', 'currencies/manage');
      	
-		$msg = '';
-		$msgType = '';
-	
 		$currency = Currencies::model()->findByPk($id);
 		if(!$currency){
 			$this->redirect('currencies/manage');
 		}
 		
-		// check if the currency is default
+    	$alert = '';
+    	$alertType = '';
+	
+		// Check if the currency is default
 		if($currency->is_default){
-			$msg = A::t('app', 'Delete Default Alert');
-			$msgType = 'error';
+			$alert = A::t('app', 'Delete Default Alert');
+			$alertType = 'error';
 		}else if($currency->delete()){				
 			if($currency->getError()){
-				$msg = A::t('app', 'Delete Warning Message');
-				$msgType = 'warning';
+				$alert = A::t('app', 'Delete Warning Message');
+				$alertType = 'warning';
 			}else{		
-				$msg = A::t('app', 'Delete Success Message');
-				$msgType = 'success';	
+				$alert = A::t('app', 'Delete Success Message');
+				$alertType = 'success';	
 			}		
 		}else{
 			if(APPHP_MODE == 'demo'){
-				$msg = CDatabase::init()->getErrorMessage();
-				$msgType = 'warning';
+				$alert = CDatabase::init()->getErrorMessage();
+				$alertType = 'warning';
 		   	}else{
-				$msg = $currency->getError() ? $currency->getErrorMessage() : A::t('app', 'Delete Error Message');
-				$msgType = 'error';
+				$alert = $currency->getError() ? $currency->getErrorMessage() : A::t('app', 'Delete Error Message');
+				$alertType = 'error';
 		   	}			
 		}
 		
-		if(!empty($msg)){
-			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
-		}
+		$this->_cSession->setFlash('alert', $alert);
+		$this->_cSession->setFlash('alertType', $alertType);
 
-		// block access if admin has no active privilege to view currencies		
-		if(Admins::hasPrivilege('currencies', array('view'))){
-			$this->_view->render('currencies/manage');
-		}else{
-			$this->redirect('currencies/manage');
-		}
-	}	
+		$this->redirect('currencies/manage');
+	}
 	
 }

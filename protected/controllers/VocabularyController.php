@@ -24,23 +24,23 @@ class VocabularyController extends CController
 	{
         parent::__construct();
 
-        // block access to this controller to non-logged users
+        // Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to access vocabulary
+		// Block access if admin has no active privilege to access vocabulary
 		if(!Admins::hasPrivilege('vocabulary', array('view', 'edit'))){
 			$this->redirect('backend/index');
 		}
 		
-        // set meta tags according to active language
+        // Set meta tags according to active language
     	Website::setMetaTags(array('title'=>A::t('app', 'Vocabulary')));
-        // set backend mode
+        // Set backend mode
         Website::setBackend();
 
 		$this->_view->errorField = '';
 		$this->_view->actionMessage = '';
 				
-		// get list of all messages folders
+		// Get list of all messages folders
 		$languages = $this->_getPredefinedLanguages();
 		$langList = array();
 		if(is_array($languages)){
@@ -64,7 +64,7 @@ class VocabularyController extends CController
      */
 	public function manageAction()
 	{
-		// block access if admin has no active privilege to manage vocabulary
+		// Block access if admin has no active privilege to manage vocabulary
         Website::prepareBackendAction('view', 'vocabulary', 'backend/index');
 
 	    $cRequest = A::app()->getRequest();
@@ -72,22 +72,22 @@ class VocabularyController extends CController
     	if(in_array($cRequest->getPost('act'), array('changeLang', 'changeFile'))){
     		$this->_view->language = $cRequest->getPost('language');
     	}else{
-			// default is current active language			
+			// Default is current active language			
 			$this->_view->language = A::app()->getLanguage(); 
 		}		
 		$this->_view->isActiveLanguage = ($this->_view->language == A::app()->getLanguage());
 
-    	// get list of files in the selected language folder
+    	// Get list of files in the selected language folder
 		$this->_view->filesList = $this->_getFilesList($this->_view->language);
 
 		if($cRequest->getPost('act') == 'changeFile'){
 	    	$this->_view->fileName = $cRequest->getPost('fileName');
     	}else{
-			// default is the first file in the folder			
+			// Default is the first file in the folder			
 			$this->_view->fileName = isset($this->_view->filesList['app.php']) ? 'app.php' : ''; 
 		}
 		
-		// read the messages file
+		// Read the messages file
 		$this->_view->fileContent = $this->_getMessagesFileContent($this->_view->language, $this->_view->fileName);
         if(!$this->_view->fileContent) $this->redirect('vocabulary/manage');
         $this->_view->render('vocabulary/manage');    
@@ -98,7 +98,7 @@ class VocabularyController extends CController
      */
 	public function updateAction()
 	{		
-		// block access if admin has no active privilege to edit vocabulary
+		// Block access if admin has no active privilege to edit vocabulary
 		Website::prepareBackendAction('edit', 'vocabulary', 'vocabulary/manage');
      	
 		$cRequest = A::app()->getRequest();
@@ -112,14 +112,14 @@ class VocabularyController extends CController
 			$this->_view->fileName = $cRequest->getPost('fileName');
 			$this->_view->fileContent = trim($cRequest->getPost('fileContent'));
 			
-	    	// get list of files in the selected language folder
+	    	// Get list of files in the selected language folder
 			$this->_view->filesList = $this->_getFilesList($this->_view->language);
 			
     	 	$result = CWidget::create('CFormValidation', array(
 				'fields'=>array(
                 	'language'   =>array('title'=>A::t('app', 'Language'), 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($this->_view->langList))),
 					'fileName'   =>array('title'=>A::t('app', 'Language File'), 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($this->_view->filesList))),
-					'fileContent'=>array('title'=>A::t('app', 'Content'), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>30000)),
+					'fileContent'=>array('title'=>A::t('app', 'Content'), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>50000)),
 				),
 	   		));
     		if($result['error']){
@@ -127,14 +127,14 @@ class VocabularyController extends CController
     			$msgType = 'validation';
     			$this->_view->errorField = $result['errorField'];
     		}else{				
-   				// validate the input: 'key' => 'value',
+   				// Validate the input: 'key' => 'value',
     			$res = $this->_validate($this->_view->fileContent);
      			if($res == ''){ 
 					if(APPHP_MODE == 'demo'){
 						$msgType = 'warning';
 						$msg = A::t('core', 'This operation is blocked in Demo Mode!');
 					}else{
-						// save the messages file
+						// Save the messages file
 						if($this->_saveMessagesFileContent($this->_view->language, $this->_view->fileName, $this->_view->fileContent)){
 							$msg = A::t('app', 'Vocabulary Update Success Message');
 							$msgType = 'success';
@@ -144,7 +144,7 @@ class VocabularyController extends CController
 						}
 					}
     			}else{
-    				// validation failed
+    				// Validation failed
     				$msg = $res;
     				$msgType = 'error';
        			}
@@ -165,7 +165,7 @@ class VocabularyController extends CController
 	 */
 	public function importAction($lang = '')
 	{
-		// block access if admin has no active privilege to import vocabulary
+		// Block access if admin has no active privilege to import vocabulary
 		Website::prepareBackendAction('edit', 'vocabulary', 'vocabulary/manage');
      	
 		$msg = '';
@@ -194,9 +194,9 @@ class VocabularyController extends CController
 		}
 		$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
 		
-    	// get list of files in the selected language folder
+    	// Get list of files in the selected language folder
 		$this->_view->filesList = $this->_getFilesList($lang);
-		// default is the first file in the folder			
+		// Default is the first file in the folder			
 		$this->_view->fileName = isset($this->_view->filesList['app.php']) ? 'app.php' : ''; 
 		// read the messages file
 		$this->_view->fileContent = $this->_getMessagesFileContent($this->_view->language, $this->_view->fileName);		
@@ -211,7 +211,7 @@ class VocabularyController extends CController
 	 **/
 	private function _getMessagesFileContent($language, $fileName)
 	{		
-		// read the whole file as a string
+		// Read the whole file as a string
         $fileContent = '';
 		if(file_exists('protected/messages/'.$language.'/'.$fileName)){
             $fileContent = file_get_contents('protected/messages/'.$language.'/'.$fileName);
@@ -233,7 +233,7 @@ class VocabularyController extends CController
 	{
 		// add array declaration
 		$fileContent = self::FILE_START.$fileContent.self::FILE_END;	
-		// write the file
+		// Write the file
 		return file_put_contents('protected/messages/'.$language.'/'.$fileName, $fileContent);
 	}
 	
@@ -254,8 +254,8 @@ class VocabularyController extends CController
 	 */
 	private function _validate($string)
 	{
-		// pattern: 'text' => 'text',
-		// note: text can include \'
+		// Pattern: 'text' => 'text',
+		// Note: text can include \'
 		$pattern = "/^\s*'(?:\.|(\\\')|[^\''])*'\s*=>\s*'(?:\.|(\\\')|[^\''])*'\s*,\s*/"; 
 		$linesArray = explode("\r\n", $string);
 		$i = 1;
@@ -265,7 +265,7 @@ class VocabularyController extends CController
 			}
 			$i++;
 		}
-		// return empty error message on success
+		// Return empty error message on success
 		return '';
 	}
 	
@@ -275,7 +275,7 @@ class VocabularyController extends CController
 	 */
     private function _getFilesList($language = 'en')
     {
-    	// get list of files in the selected language folder
+    	// Get list of files in the selected language folder
 		$files = CFile::findFiles('protected/messages/'.$language.'/');
 		$filesList = array();
 		if(is_array($files)){

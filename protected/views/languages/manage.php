@@ -1,5 +1,7 @@
 <?php
-    $this->_activeMenu = 'languages/';
+    Website::setMetaTags(array('title'=>A::t('app', 'Languages Management')));
+	
+	$this->_activeMenu = 'languages/';
     $this->_breadCrumbs = array(
         array('label'=>A::t('app', 'Languages Settings'), 'url'=>'languages/'),
         array('label'=>A::t('app', 'Languages')),

@@ -59,7 +59,21 @@ class FrontendMenu extends CComponent
 				if($placement == 'left' || $placement == 'right') $items = array();
 
 				if($item['menu_type'] == 'moduleblock'){
-					$output .= (!empty($item['link_url'])) ? @call_user_func_array($item['module_code'].'Component::'.$item['link_url'], array($item['menu_name'], $activeMenu)) : '';
+					// Find component class
+					$componentClass = '';
+					$components = CConfig::get('components');
+					if(is_array($components)){
+						foreach($components as $key => $component){
+							if(strtolower($key) == strtolower($item['module_code'].'Component')){
+								$componentClass = !empty($component['class']) ? $component['class'] : '';
+								break;
+							}
+						}
+					}
+					
+					$output .= (!empty($item['link_url'])) ? @call_user_func_array($componentClass.'::'.$item['link_url'], array($item['menu_name'], $activeMenu)) : '';
+					// Old code
+					// $output .= (!empty($item['link_url'])) ? @call_user_func_array($item['module_code'].'Component::'.$item['link_url'], array($item['menu_name'], $activeMenu)) : '';
 				}else{
 					if($item['access_level'] == 'registered' && !CAuth::isLoggedIn()) continue;
 					$subItems = '';
@@ -96,7 +110,7 @@ class FrontendMenu extends CComponent
 						'return'	=> true
 					));											
 				}				
-        	} // foreach			
+        	} // Foreach			
 
 			if($placement == 'top' || $placement == 'bottom'){
 				$output .= CWidget::create('CMenu', array(

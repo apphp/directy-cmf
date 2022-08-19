@@ -11,10 +11,10 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>admins` (
   `last_name` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `email` varchar(100) CHARACTER SET latin1 NOT NULL,
   `birth_date` date NOT NULL DEFAULT '0000-00-00',
-  `language_code` varchar(2) CHARACTER SET latin1 NOT NULL DEFAULT '',
+  `LANGUAGE_CODE` VARCHAR(2) CHARACTER SET LATIN1 NOT NULL DEFAULT '',
   `avatar` varchar(125) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `personal_info` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `role` varchar(20) CHARACTER SET latin1 NOT NULL DEFAULT 'admin' COMMENT '''owner'',''mainadmin'',''admin'' or other',
+  `role` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'admin' COMMENT '''owner'',''mainadmin'',''admin'' or other',
   `created_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `last_visited_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -29,13 +29,14 @@ INSERT INTO `<DB_PREFIX>admins` (`id`, `username`, `password`, `salt`, `token_ex
 DROP TABLE IF EXISTS `<DB_PREFIX>accounts`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>accounts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `role` varchar(20) CHARACTER SET latin1 NOT NULL DEFAULT '' COMMENT 'defined for each module separately',
-  `username` varchar(25) CHARACTER SET latin1 NOT NULL,
+  `role` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'defined for each module separately',
+  `username` varchar(25) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `password` varchar(64) CHARACTER SET latin1 NOT NULL,
   `salt` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `token_expires_at` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `email` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `language_code` varchar(2) CHARACTER SET latin1 NOT NULL DEFAULT 'en',
+  `avatar` varchar(125) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `created_ip` varchar(15) CHARACTER SET latin1 NOT NULL,
   `last_visited_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -67,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>languages` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
 
 INSERT INTO `<DB_PREFIX>languages` (`id`, `name`, `name_native`, `code`, `lc_time_name`, `direction`, `icon`, `sort_order`, `used_on`, `is_default`, `is_active`) VALUES
-(1, 'English', 'English', 'en', 'en_US', 'ltr', 'en.gif', 0, 'global', 1, 1);
+(1, 'English', 'English', 'en', 'en_US', 'ltr', 'en.gif', 1, 'global', 1, 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>settings`;
@@ -99,6 +100,8 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>settings` (
   `search_is_highlighted` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `is_offline` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `offline_message` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `analytics_level` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '0 - entire site, 1 - public areas only, 2 - protected areas only',
+  `analytics_code` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dashboard_hotkeys` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `dashboard_notifications` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `dashboard_statistics` tinyint(1) unsigned NOT NULL DEFAULT '1',
@@ -111,8 +114,8 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>settings` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `<DB_PREFIX>settings` (`id`, `template`, `ssl_mode`, `date_format`, `time_format`, `datetime_format`, `time_zone`, `daylight_saving`, `week_startday`, `number_format`, `general_email`, `general_email_name`, `mailer`, `smtp_auth`, `smtp_secure`, `smtp_host`, `smtp_port`, `smtp_username`, `smtp_password`, `wysiwyg_type`, `rss_feed`, `rss_feed_type`, `rss_items_per_feed`, `search_items_per_page`, `search_is_highlighted`, `is_offline`, `offline_message`, `dashboard_hotkeys`, `dashboard_notifications`, `dashboard_statistics`, `google_rank`, `alexa_rank`, `cron_type`, `cron_run_last_time`, `cron_run_period`, `cron_run_period_value`) VALUES
-(1, 'default', 0, 'F d Y', 'H:i:s', 'Y-m-d H:i:s', 'UTC', 1, 1, 'american', 'info@email.me', '', 'phpMail', 1, 'ssl', '', '', '', '', 'none', 1, 'rss2', 10, 20, 1, 0, 'Our website is currently offline for maintenance. Please visit us later.', 1, 1, 1, '', '', 'non-batch', '0000-00-00 00:00:00', 'minute', 1);
+INSERT INTO `<DB_PREFIX>settings` (`id`, `template`, `ssl_mode`, `date_format`, `time_format`, `datetime_format`, `time_zone`, `daylight_saving`, `week_startday`, `number_format`, `general_email`, `general_email_name`, `mailer`, `smtp_auth`, `smtp_secure`, `smtp_host`, `smtp_port`, `smtp_username`, `smtp_password`, `wysiwyg_type`, `rss_feed`, `rss_feed_type`, `rss_items_per_feed`, `search_items_per_page`, `search_is_highlighted`, `is_offline`, `offline_message`, `analytics_level`, `analytics_code`, `dashboard_hotkeys`, `dashboard_notifications`, `dashboard_statistics`, `google_rank`, `alexa_rank`, `cron_type`, `cron_run_last_time`, `cron_run_period`, `cron_run_period_value`) VALUES
+(1, 'default', 0, 'F d Y', 'H:i:s', 'Y-m-d H:i:s', 'UTC', 1, 1, 'american', 'info@email.me', '', 'phpMail', 1, 'ssl', '', '', '', '', 'none', 1, 'rss2', 10, 20, 1, 0, 'Our website is currently offline for maintenance. Please visit us later.', 1, '', 1, 1, 1, '', '', 'non-batch', '0000-00-00 00:00:00', 'minute', 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>site_info`;
@@ -138,6 +141,7 @@ DROP TABLE IF EXISTS `<DB_PREFIX>modules`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>modules` (
   `id` smallint(6) NOT NULL AUTO_INCREMENT,
   `code` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `class_code` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `name` varchar(40) CHARACTER SET latin1 NOT NULL,
   `description` varchar(255) CHARACTER SET latin1 NOT NULL,
   `version` varchar(5) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -147,6 +151,8 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>modules` (
   `is_installed` tinyint(1) NOT NULL DEFAULT '0',
   `is_system` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '0',
+  `installed_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `sort_order` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
@@ -161,9 +167,10 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>module_settings` (
   `property_group` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `description` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `property_type` enum('string','email','numeric','float','positive float','unsigned float','integer','positive integer','unsigned integer','enum','range','bool','html size','text','code','label') CHARACTER SET latin1 NOT NULL,
+  `property_type` enum('string','email','phone','numeric','float','positive float','unsigned float','integer','positive integer','unsigned integer','enum','range','bool','html size','text','code','label') CHARACTER SET latin1 NOT NULL,
   `property_source` varchar(255) CHARACTER SET latin1 NOT NULL COMMENT 'for ''enum'' and ''range'' property types',
   `property_length` varchar(3) CHARACTER SET latin1 NOT NULL DEFAULT '' COMMENT 'for ''string'' and ''text'' property types',
+  `append_text` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'append text to module propery on module settings page',
   `is_required` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `code_key_value` (`module_code`,`property_key`,`property_value`),
@@ -953,7 +960,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>privileges` (
   `description` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=23 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=25 ;
 
 INSERT INTO `<DB_PREFIX>privileges` (`id`, `module_code`, `category`, `code`, `name`, `description`) VALUES
 (1, '', 'site_settings', 'view', 'View Site Settings', 'View settings of the site'),
@@ -966,18 +973,20 @@ INSERT INTO `<DB_PREFIX>privileges` (`id`, `module_code`, `category`, `code`, `n
 (8, '', 'locations', 'edit', 'Edit Locations', 'Edit locations and sub-locations'),
 (9, '', 'currencies', 'view', 'View Currencies', 'View currencies used on the site'),
 (10, '', 'currencies', 'edit', 'Edit Currencies', 'Edit currencies used on the site'),
-(11, '', 'email_templates', 'view', 'View Email Templates', 'View Email Templates of the site'),
-(12, '', 'email_templates', 'edit', 'Edit Email Templates', 'Edit Email Templates of the site'),
-(13, '', 'ban_lists', 'view', 'View Ban Lists', 'View Ban Lists of the site'),
-(14, '', 'ban_lists', 'edit', 'Edit Ban Lists', 'Edit Ban Lists of the site'),
-(15, '', 'languages', 'view', 'View Languages', 'View languages installed on the site'),
-(16, '', 'languages', 'edit', 'Edit Languages', 'Edit languages installed on the site'),
-(17, '', 'vocabulary', 'view', 'View Vocabulary', 'View vocabulary of the site'),
-(18, '', 'vocabulary', 'edit', 'Edit Vocabulary', 'Edit vocabulary of the site'),
-(19, '', 'modules', 'view', 'View Modules', 'View modules settings and management pages'),
-(20, '', 'modules', 'edit', 'Edit Modules', 'Edit, manage, install, uninstall and update modules and module pages'),
-(21, '', 'modules', 'view_management', 'View Modules Management', 'View modules management page'),
-(22, '', 'modules', 'edit_management', 'Edit Modules Management', 'Edit on modules management page');
+(11, '', 'payment_providers', 'view', 'View Payment Providers', 'View payment providers on the site'),
+(12, '', 'payment_providers', 'edit', 'Edit Payment Providers', 'Edit payment providers on the site'),
+(13, '', 'email_templates', 'view', 'View Email Templates', 'View Email Templates of the site'),
+(14, '', 'email_templates', 'edit', 'Edit Email Templates', 'Edit Email Templates of the site'),
+(15, '', 'ban_lists', 'view', 'View Ban Lists', 'View Ban Lists of the site'),
+(16, '', 'ban_lists', 'edit', 'Edit Ban Lists', 'Edit Ban Lists of the site'),
+(17, '', 'languages', 'view', 'View Languages', 'View languages installed on the site'),
+(18, '', 'languages', 'edit', 'Edit Languages', 'Edit languages installed on the site'),
+(19, '', 'vocabulary', 'view', 'View Vocabulary', 'View vocabulary of the site'),
+(20, '', 'vocabulary', 'edit', 'Edit Vocabulary', 'Edit vocabulary of the site'),
+(21, '', 'modules', 'view', 'View Modules', 'View modules settings and management pages'),
+(22, '', 'modules', 'edit', 'Edit Modules', 'Edit, manage, install, uninstall and update modules and module pages'),
+(23, '', 'modules', 'view_management', 'View Modules Management', 'View modules management page'),
+(24, '', 'modules', 'edit_management', 'Edit Modules Management', 'Edit on modules management page');
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>role_privileges`;
@@ -987,7 +996,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>role_privileges` (
   `privilege_id` int(5) NOT NULL DEFAULT '0',
   `is_active` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=67 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=72 ;
 
 INSERT INTO `<DB_PREFIX>role_privileges` (`id`, `role_id`, `privilege_id`, `is_active`) VALUES
 (1, 1, 1, 1),
@@ -1012,50 +1021,56 @@ INSERT INTO `<DB_PREFIX>role_privileges` (`id`, `role_id`, `privilege_id`, `is_a
 (20, 1, 20, 1),
 (21, 1, 21, 1),
 (22, 1, 22, 1),
-(23, 2, 1, 1),
-(24, 2, 2, 1),
-(25, 2, 3, 1),
-(26, 2, 4, 1),
-(27, 2, 5, 1),
-(28, 2, 6, 1),
-(29, 2, 7, 1),
-(30, 2, 8, 1),
-(31, 2, 9, 1),
-(32, 2, 10, 1),
-(33, 2, 11, 1),
-(34, 2, 12, 1),
-(35, 2, 13, 1),
-(36, 2, 14, 1),
-(37, 2, 15, 1),
-(38, 2, 16, 1),
-(39, 2, 17, 1),
-(40, 2, 18, 1),
-(41, 2, 19, 1),
-(42, 2, 20, 1),
-(43, 2, 21, 1),
-(44, 2, 22, 1),
-(45, 3, 1, 1),
-(46, 3, 2, 1),
-(47, 3, 3, 0),
-(48, 3, 4, 0),
-(49, 3, 5, 0),
-(50, 3, 6, 0),
-(51, 3, 7, 1),
-(52, 3, 8, 0),
-(53, 3, 9, 1),
-(54, 3, 10, 0),
-(55, 3, 11, 0),
-(56, 3, 12, 0),
-(57, 3, 13, 0),
-(58, 3, 14, 0),
-(59, 3, 15, 1),
-(60, 3, 16, 0),
-(61, 3, 17, 1),
-(62, 3, 18, 0),
-(63, 3, 19, 1),
-(64, 3, 20, 0),
-(65, 3, 21, 1),
-(66, 3, 22, 0);
+(23, 1, 23, 1),
+(24, 1, 24, 1),
+(25, 2, 1, 1),
+(26, 2, 2, 1),
+(27, 2, 3, 1),
+(28, 2, 4, 1),
+(29, 2, 5, 1),
+(30, 2, 6, 1),
+(31, 2, 7, 1),
+(32, 2, 8, 1),
+(33, 2, 9, 1),
+(34, 2, 10, 1),
+(35, 2, 11, 1),
+(36, 2, 12, 1),
+(37, 2, 13, 1),
+(38, 2, 14, 1),
+(39, 2, 15, 1),
+(40, 2, 16, 1),
+(41, 2, 17, 1),
+(42, 2, 18, 1),
+(43, 2, 19, 1),
+(44, 2, 20, 1),
+(45, 2, 21, 1),
+(46, 2, 22, 1),
+(47, 2, 23, 1),
+(48, 2, 24, 1),
+(49, 3, 1, 1),
+(50, 3, 2, 1),
+(51, 3, 3, 1),
+(52, 3, 4, 1),
+(53, 3, 5, 0),
+(54, 3, 6, 0),
+(55, 3, 7, 0),
+(56, 3, 8, 0),
+(57, 3, 9, 1),
+(58, 3, 10, 0),
+(59, 3, 11, 1),
+(60, 3, 12, 0),
+(61, 3, 13, 0),
+(62, 3, 14, 0),
+(63, 3, 15, 0),
+(64, 3, 16, 0),
+(65, 3, 17, 1),
+(66, 3, 18, 0),
+(67, 3, 19, 1),
+(68, 3, 20, 0),
+(69, 3, 21, 1),
+(70, 3, 22, 0),
+(71, 3, 23, 0),
+(72, 3, 24, 0);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>backend_menus`;
@@ -1082,15 +1097,16 @@ INSERT INTO `<DB_PREFIX>backend_menus` (`id`, `parent_id`, `url`, `module_code`,
 (8, 1, 'frontendMenus/', '', '', 1, 1, 4),
 (9, 1, 'locations/', '', '', 1, 1, 5),
 (10, 1, 'currencies/', '', '', 1, 1, 6),
-(11, 1, 'emailTemplates/', '', '', 1, 1, 7),
-(12, 1, 'banLists/', '', '', 1, 1, 8),
-(13, 1, 'index/', '', '', 1, 1, 9),
-(14, 2, 'admins/', '', '', 1, 1, 1),
+(11, 1, 'paymentProviders/', '', '', 1, 1, 7),
+(12, 1, 'emailTemplates/', '', '', 1, 1, 8),
+(13, 1, 'banLists/', '', '', 1, 1, 9),
+(14, 1, 'index/', '', '', 1, 1, 10),
 (15, 2, 'roles/', '', '', 1, 1, 2),
-(16, 2, 'admins/myAccount', '', '', 1, 1, 3),
-(17, 3, 'languages/', '', '', 1, 1, 1),
-(18, 3, 'vocabulary/', '', '', 1, 1, 2),
-(19, 4, 'modules/', '', '', 1, 1, 1);
+(16, 2, 'admins/', '', '', 1, 1, 1),
+(17, 2, 'admins/myAccount', '', '', 1, 1, 3),
+(18, 3, 'languages/', '', '', 1, 1, 1),
+(19, 3, 'vocabulary/', '', '', 1, 1, 2),
+(20, 4, 'modules/', '', '', 1, 1, 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>backend_menu_translations`;
@@ -1100,7 +1116,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>backend_menu_translations` (
   `language_code` varchar(2) CHARACTER SET latin1 NOT NULL,
   `name` varchar(125) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=19 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=20 ;
 
 INSERT INTO `<DB_PREFIX>backend_menu_translations` (`id`, `menu_id`, `language_code`, `name`) VALUES
 (1, 1, 'en', 'General'),
@@ -1113,15 +1129,16 @@ INSERT INTO `<DB_PREFIX>backend_menu_translations` (`id`, `menu_id`, `language_c
 (8, 8, 'en', 'Frontend Menu'),
 (9, 9, 'en', 'Locations'),
 (10, 10, 'en', 'Currencies'),
-(11, 11, 'en', 'Email Templates'),
-(12, 12, 'en', 'Ban Lists'),
-(13, 13, 'en', 'Preview'),
-(14, 14, 'en', 'Roles & Privileges'),
-(15, 15, 'en', 'Admins'),
-(16, 16, 'en', 'My Account'),
-(17, 17, 'en', 'Languages'),
-(18, 18, 'en', 'Vocabulary'),
-(19, 19, 'en', 'Modules Management');
+(11, 11, 'en', 'Payment Providers'),
+(12, 12, 'en', 'Email Templates'),
+(13, 13, 'en', 'Ban Lists'),
+(14, 14, 'en', 'Preview'),
+(15, 15, 'en', 'Roles & Privileges'),
+(16, 16, 'en', 'Admins'),
+(17, 17, 'en', 'My Account'),
+(18, 18, 'en', 'Languages'),
+(19, 19, 'en', 'Vocabulary'),
+(20, 20, 'en', 'Modules Management');
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>frontend_menus`;
@@ -1163,7 +1180,7 @@ INSERT INTO `<DB_PREFIX>frontend_menu_translations` (`id`, `menu_id`, `language_
 DROP TABLE IF EXISTS `<DB_PREFIX>email_templates`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>email_templates` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `code` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `code` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `module_code` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `is_system` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
@@ -1176,7 +1193,7 @@ INSERT INTO `<DB_PREFIX>email_templates` (`id`, `code`, `module_code`, `is_syste
 DROP TABLE IF EXISTS `<DB_PREFIX>email_template_translations`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>email_template_translations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `template_code` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `template_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `language_code` varchar(2) CHARACTER SET latin1 NOT NULL DEFAULT 'en',
   `template_name` varchar(125) COLLATE utf8_unicode_ci NOT NULL,
   `template_subject` varchar(125) COLLATE utf8_unicode_ci NOT NULL,
@@ -1263,4 +1280,28 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>system_notifications` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 
 
-ALTER TABLE  `<DB_PREFIX>admins` CHANGE  `role`  `role` VARCHAR( 20 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT  'admin' COMMENT  '''owner'',''mainadmin'',''admin'' or other'
+DROP TABLE IF EXISTS `<DB_PREFIX>payment_providers`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>payment_providers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `description` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `instructions` text COLLATE utf8_unicode_ci NOT NULL,
+  `required_fields` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `merchant_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `merchant_code` varchar(60) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `merchant_key` varchar(60) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `used_on` enum('front-end','back-end','global') CHARACTER SET latin1 NOT NULL DEFAULT 'global',
+  `mode` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 - test mode, 1- real mode',
+  `sort_order` smallint(6) unsigned NOT NULL DEFAULT '1',
+  `is_default` tinyint(1) NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=5 ;
+
+INSERT INTO `<DB_PREFIX>payment_providers` (`id`, `code`, `name`, `description`, `instructions`, `required_fields`, `merchant_id`, `merchant_code`, `merchant_key`, `used_on`, `mode`, `sort_order`, `is_default`, `is_active`) VALUES
+(1, 'online_order', 'Online Order', 'Online Order', '''Online Order'' is designed to allow the customer to make an order on the site without any advance payment. It may be used like POA - "Pay on Arrival" order for hotel bookings, car rental etc. The administrator receives a notification about placing the order and can complete the order by himself.', '', '', '', '', 'global', 1, 0, 1, 1),
+(2, 'online_credit_card', 'Online Credit Card', 'Online Credit Card', '''Online Credit Card'' is designed to allow the customer to make an order on the site with payment by credit card. The administrator receives a credit card info and can complete the order by himself (in case he''s allowed to do Offline Credit Card Processing).', '', '', '', '', 'global', 1, 1, 0, 1),
+(3, 'wire_transfer', 'Wire Transfer', 'Wire Payment', '''Wire Transfer'' is designed to allow the customer to perform a purchase on the site without any advance payment. The administrator receives a notification about placing this reservation and can complete it after the customer will pay a required sum to the provided bank account. After the customer send a payment with wire transfer and it successfully received, the status of purchase may be changes to ''paid''.', '', '', '', '', 'global', 1, 2, 0, 1),
+(4, 'paypal', 'PayPal', 'PayPal online payments system', 'To make PayPal processing system works on your site you have to perform the following steps:<br><br>Create an account on PayPal: https://www.paypal.com<br>After account is created, log into and select from the top menu: My Account -> Profile<br>On Profile Summary page select from the Selling Preferences column: Instant Payment Notification (IPN) Preferences.<br>Turn ''On'' IPN by selecting Receive IPN messages (Enabled) and write into Notification URL: {site}/payments/paypal, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/payments/paypal or<br>http://your_domain.com/site_directory/payments/paypal<br>Then go to My Account -> Profile -> Website Payment Preferences, turn Auto Return ''On'' and write into Return URL: {site}/payments/paypal, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/payments/paypal<br>', 'merchant_id', 'sales@test.com', '', '', 'global', 1, 3, 0, 1);
+

@@ -1,6 +1,8 @@
-// -------------------------------------------------------
-// Executes when HTML-Document is loaded and DOM is ready
-// -------------------------------------------------------
+/*
+|--------------------------------------------------------------------------
+| Executes when HTML-Document is loaded and DOM is ready
+|--------------------------------------------------------------------------
+*/ 
 $(document).ready(function(){
     
     // TOP MENU DROPDOWN ITEMS
@@ -23,33 +25,18 @@ $(document).ready(function(){
         $(document).click(function(){            
             $('.wrapper-dropdown').removeClass('active');
         });
-    });
-    
+    });   
 
     // SIDE MENU ITEMS
     // --------------------------------------
-    // restore previous state for menu
-    $('#sidebar>ul>li').each(function(){
-        if($(this).find('li').length == 0){$(this).addClass('nosubmenu');}
-    });
-    
-    var menuOpened = $.cookie('isOpened');
-    if(menuOpened == 'all'){
-        $('#sidebar>ul>li').addClass('active').find('ul:first').slideDown();
-    }else if(menuOpened){
-        $('#sidebar>ul>li.active').removeClass('active').find('ul:first').slideUp();
-        $('#'+menuOpened).addClass('active').find('ul:first').slideDown();            
-    }
-
-    $('#sidebar>ul>li:not([class*="active"])>ul').hide();
-    $('#sidebar>ul>li:not([class*="nosubmenu"])>a').click(function(){        
+    $('#sidebar>ul>li>a').click(function(){        
         var e = $(this).parent();
         if(e.hasClass('active')){
-            $('#sidebar>ul>li.active').removeClass('active').find('ul:first').slideUp();
+            $('#sidebar>ul>li.active').removeClass('active').find('ul:first').slideDown(0).slideUp();
             $.cookie('isOpened', null);
         }else{
-            $('#sidebar>ul>li.active').removeClass('active').find('ul:first').slideUp();
-            e.addClass('active').find('ul:first').slideDown();            
+            $('#sidebar>ul>li.active').removeClass('active').find('ul:first').slideDown(0).slideUp();
+            e.addClass('active').find('ul:first').slideUp(0).slideDown();
             $.cookie('isOpened', e.attr('id'));
         }        
     });
@@ -80,13 +67,13 @@ $(document).ready(function(){
     });
 
     $('#menuclose').click(function(){
-        $('#sidebar>ul>li.active').removeClass('active').find('ul:first').slideUp();        
+        $('#sidebar>ul>li.active').removeClass('active').find('ul:first').slideDown(0).slideUp();        
         $.cookie('isOpened', null);
         return false;
     });
     
     $('#menuopen').click(function(){
-        $('#sidebar>ul>li').addClass('active').find('ul:first').slideDown();        
+        $("#sidebar>ul>li:not('.active')").addClass('active').find('ul:first').slideUp(0).slideDown();        
         $.cookie('isOpened', 'all');
         return false;
     });
@@ -137,6 +124,13 @@ $(document).ready(function(){
     // --------------------------------------
     $('.tooltip-icon').tipTip({maxWidth: '270px', edgeOffset: 10}); /* maxWidth: 'auto' */
     $('.tooltip-link').tipTip({maxWidth: '270px', edgeOffset: 10});
+	
+    // INIT CHOSEN SELECTS
+    // --------------------------------------
+	$('select').addClass('chosen-select-filter');
+	$('.chosen-select-filter').chosen({disable_search_threshold: 7});	
+	//$('.chosen-select').chosen({disable_search: true});
+	$('.chosen-search input, .chosen-select-filter input').attr("maxlength", 255);
 
     // INIT TABS
     // --------------------------------------
@@ -203,7 +197,7 @@ $(document).ready(function(){
  * @param elFind
  */
 function hideElementsFromArray(cName, elFind){
-    var cookieArrName = $.cookie(cName).split(',');
+    var cookieArrName = ($.cookie(cName) != undefined) ? $.cookie(cName).split(',') : '';
     for(var i = 0; i < cookieArrName.length; i++){        
         if(cookieArrName[i] != ''){
             if(typeof elFind != 'undefined'){
@@ -254,7 +248,7 @@ jQuery.cookie = function(name, value, options){
             date.setTime(date.getTime()+(days*24*60*60*1000));
             expires = ';expires='+date.toGMTString();
         }
-        if(jQuery.browser.msie == true){
+        if(isMsIe() == true){
             // IE ignores cookies with domain=...
             document.cookie = name+'='+escape(value)+expires+';path='+escape(path);    
         }else{
@@ -310,7 +304,7 @@ var cookieList = function(cookieName) {
             $.cookie(cookieName, null);
         },
         'exists': function(value){
-            // check if coockie exists the cookie            
+            // check if cookie exists
             return ($.inArray(value, items) > -1) ? true : false;
         },        
         'items': function(){
@@ -320,3 +314,50 @@ var cookieList = function(cookieName) {
     }
 }
 
+/*
+|--------------------------------------------------------------------------
+| Numeric only control handler
+| Usage:
+| // Allow only numeric input	
+| $('input[data-type="numeric"]').forceNumericOnly();
+| $('input[data-type="numeric"]').attr('autocomplete', 'off');
+|--------------------------------------------------------------------------
+*/ 
+jQuery.fn.forceNumericOnly =
+function(t){
+	var integer = (t !== null && (t == 'int' || t == 'integer')) ? true : false,
+		keys_condition = '';
+	
+	return this.each(function(){
+		$(this).keydown(function(e){
+			var key = e.charCode || e.keyCode || 0,
+				shifted = e.shiftKey;
+			
+			// Exit if dot found in iteger 
+			if ( integer && (key == 110 || key == 190) ) {
+				return false;
+			}
+			
+			// allow backspace, tab, delete, enter, arrows, numbers and keypad numbers ONLY
+			// home, end, period, and numpad decimal			
+			keys_condition = ( key == 8 || key == 9 || key == 13 || key == 46 || key == 110 || key == 190 || (key >= 35 && key <= 40) || (key >= 48 && key <= 57) || (key >= 96 && key <= 105) );					
+			
+			return ( (!e.shiftKey || (e.shiftKey && key == 9)) && keys_condition );
+		});
+	});
+};
+
+/*
+|--------------------------------------------------------------------------
+| Internet Explorer detector
+|--------------------------------------------------------------------------
+*/ 
+function isMsIe() {
+	var ua = window.navigator.userAgent;
+	var msie = ua.indexOf('MSIE ');
+	if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)){
+		return true;
+	}
+	
+	return false;
+}

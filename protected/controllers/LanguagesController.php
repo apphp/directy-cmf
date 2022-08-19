@@ -23,11 +23,14 @@ class LanguagesController extends CController
 	{
         parent::__construct();
 
-        // set meta tags according to active language
+        // Set meta tags according to active language
     	Website::setMetaTags(array('title'=>A::t('app', 'Languages')));
-        // set backend mode
+        // Set backend mode
         Website::setBackend();
     	
+		$this->_cRequest = A::app()->getRequest();
+		$this->_cSession = A::app()->getSession();
+
     	$this->_view->frontEndTemplate = Bootstrap::init()->getSettings('template'); 
         $this->_view->actionMessage = '';
         $this->_view->errorField = '';
@@ -47,10 +50,10 @@ class LanguagesController extends CController
      */
     public function changeAction($lang)
     {
-        // if redirected from dropdown list
+        // If redirected from dropdown list
         if(empty($lang)) $lang = A::app()->getRequest()->getQuery('lang');
         
-        // check for existing $lang in DB
+        // Check for existing $lang in DB
         if($result = Languages::model()->find("code = :code AND used_on IN ('front-end','global') AND is_active = 1", array(':code'=>$lang))){
             $params = array(
                 'locale' => $result->lc_time_name,
@@ -59,37 +62,38 @@ class LanguagesController extends CController
             A::app()->setLanguage($lang, $params);
         }
 		
-        $this->redirect(Website::getDefaultPage());
+		$referrerPage = Website::getReferrerPage();
+		$defaultPage = Website::getDefaultPage();
+		$baseUrl = A::app()->getRequest()->getBaseUrl();
+		
+		// If referrer page exists and it comes from current domain redirect to referrer URL, otherwise to default page
+		$redirectPage = (!empty($referrerPage) && preg_match('/'.preg_quote($baseUrl, '/').'/', $referrerPage)) ? $referrerPage : $defaultPage;
+		
+        $this->redirect($redirectPage, true);
     }
 
     /**
      * Manage languages action handler
-     * @param string $msg 
      */
-	public function manageAction($msg = '')
+	public function manageAction()
 	{
-        // block access to this controller to non-logged users
+        // Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to manage languages
+		// Block access if admin has no active privilege to manage languages
         if(!Admins::hasPrivilege('languages', array('view', 'edit'))){
         	$this->redirect('backend/index');
         }
 		
-		switch($msg){
-			case 'added':
-				$message = A::t('core', 'The adding operation has been successfully completed!');
-				break;
-			case 'updated':
-				$message = A::t('core', 'The updating operation has been successfully completed!');
-				break;
-			default:
-				$message = '';
+		if($this->_cSession->hasFlash('alert')){
+            $alert = $this->_cSession->getFlash('alert');
+            $alertType = $this->_cSession->getFlash('alertType');
+			
+            $this->_view->actionMessage = CWidget::create(
+                'CMessage', array($alertType, $alert, array('button'=>true))
+            );
 		}
-		if(!empty($message)){
-			$this->_view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
-		}
-		
+
     	$this->_view->render('languages/manage');        
 	}
 
@@ -98,10 +102,10 @@ class LanguagesController extends CController
 	 */
 	public function addAction()
 	{
-        // block access to this controller to non-logged users
+        // Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to add languages
+		// Block access if admin has no active privilege to add languages
         Website::prepareBackendAction('edit', 'languages', 'languages/manage');
 		
 		$this->_view->localesList = A::app()->getLocalTime()->getLocales();		
@@ -120,10 +124,10 @@ class LanguagesController extends CController
 	 */
 	public function editAction($id = 0, $icon = '')
 	{
-		// block access to this controller to non-logged users
+		// Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to edit languages
+		// Block access if admin has no active privilege to edit languages
         Website::prepareBackendAction('edit', 'languages', 'languages/manage');
 		
 		$language = Languages::model()->findByPk($id);
@@ -136,23 +140,23 @@ class LanguagesController extends CController
 		$this->_view->usedOnList = $this->_getUsedOnList();	
 		$this->_view->language = $language;
 	
-		// delete the icon file
+		// Delete the icon file
 		if($icon == 'delete'){
-			$msg = '';
-			$msgType = '';
+			$alert = '';
+			$alertType = '';
 			$iconFile = 'images/flags/'.$language->icon;
 			$language->icon = '';
-			// save the changes in Languages table and delete the icon file
+			// Save the changes in Languages table and delete the icon file
 			if($language->save() && CFile::deleteFile($iconFile)){
-				$msg = A::t('app', 'Image Delete Success Message');
-				$msgType = 'success';
+				$alert = A::t('app', 'Image Delete Success Message');
+				$alertType = 'success';
 			}else{
-				$msg = A::t('app', 'Image Delete Error Message');
-				$msgType = 'error';
+				$alert = A::t('app', 'Image Delete Error Message');
+				$alertType = 'error';
 				$this->_view->errorField = '';
 			}
-			if(!empty($msg)){
-				$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
+			if(!empty($alert)){
+				$this->_view->actionMessage = CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
 			}
 		}
 		$this->_view->render('languages/edit');
@@ -164,20 +168,20 @@ class LanguagesController extends CController
 	 */
 	public function deleteAction($id = 0)
 	{
-		// block access to this action to non-logged users
+		// Block access to this action to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to delete languages
+		// Block access if admin has no active privilege to delete languages
         Website::prepareBackendAction('edit', 'languages', 'languages/manage');
 		
-		$msg = '';
-		$msgType = '';
+		$alert = '';
+		$alertType = '';
 		
-		// check if there is only one language
+		// Check if there is only one language
 		if(Languages::model()->count() == 1){
-			$msg = A::t('app', 'Delete Last Language Alert');
-			$msgType = 'error';
-			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
+			$alert = A::t('app', 'Delete Last Language Alert');
+			$alertType = 'error';
+			$this->_view->actionMessage = CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
 			$this->_view->render('languages/manage');
 			return;
 		}
@@ -187,40 +191,34 @@ class LanguagesController extends CController
 			$this->redirect('languages/manage');
 		}
 		
-		// check if the language is default
+		// Check if the language is default
 		if($language->is_default){
-			$msg = A::t('app', 'Delete Default Alert');
-			$msgType = 'error';
+			$alert = A::t('app', 'Delete Default Alert');
+			$alertType = 'error';
 		}else if($language->delete()){				
-			// delete messages folder for this language
+			// Delete messages folder for this language
 			CFile::deleteDirectory('protected/messages/'.$language->code);	
 			if($language->getError()){
-				$msg = A::t('app', 'Delete Warning Message');
-				$msgType = 'warning';
+				$alert = A::t('app', 'Delete Warning Message');
+				$alertType = 'warning';
 			}else{		
-				$msg = A::t('app', 'Delete Success Message');
-				$msgType = 'success';	
+				$alert = A::t('app', 'Delete Success Message');
+				$alertType = 'success';	
 			}		
 		}else{
 			if(APPHP_MODE == 'demo'){
-				$msg = CDatabase::init()->getErrorMessage();
-				$msgType = 'warning';
+				$alert = CDatabase::init()->getErrorMessage();
+				$alertType = 'warning';
 		   	}else{
-				$msg = $language->getError() ? $language->getErrorMessage() : A::t('app', 'Delete Error Message');
-				$msgType = 'error';
+				$alert = $language->getError() ? $language->getErrorMessage() : A::t('app', 'Delete Error Message');
+				$alertType = 'error';
 		   	}			
 		}
 		
-		if(!empty($msg)){
-			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
-		}		
+		$this->_cSession->setFlash('alert', $alert);
+		$this->_cSession->setFlash('alertType', $alertType);
 		
-		// block access if admin has no active privilege to view currencies		
-		if(Admins::hasPrivilege('languages', array('view'))){
-			$this->_view->render('languages/manage');
-		}else{
-			$this->redirect('languages/manage');
-		}		
+		$this->redirect('languages/manage');
 	}
 
 	/**

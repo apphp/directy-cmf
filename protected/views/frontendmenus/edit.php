@@ -1,5 +1,7 @@
 <?php
-    $this->_activeMenu = 'frontendMenus/';
+    Website::setMetaTags(array('title'=>A::t('app', 'Edit Menu')));
+	
+	$this->_activeMenu = 'frontendMenus/';
     $breadCrumbs = array(
         array('label'=>A::t('app', 'General'), 'url'=>'backend/dashboard'),
     );
@@ -25,7 +27,7 @@
 	<?php
 		$fields = array();
 		$fields['parent_name']  = array('type'=>'label', 'title'=>A::t('app', 'Parent'), 'definedValues'=>array(''=>$parentName));
-		$fields['placement']    = array('type'=>'select', 'title'=>A::t('app', 'Display On'), 'data'=>$placementsList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($placementsList)));
+		$fields['placement']    = array('type'=>'select', 'title'=>A::t('app', 'Display On'), 'tooltip'=>A::t('app', 'Take in account that some menu placements may be disabled in current Frontend template.'), 'data'=>$placementsList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($placementsList)));
 		$fields['access_level'] = array('type'=>'select', 'title'=>A::t('app', 'Access'), 'data'=>$accessLevelsList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($accessLevelsList)));
 		$fields['menu_type']    = array('type'=>'select', 'title'=>A::t('app', 'Menu Type'), 'data'=>$menuTypesList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($menuTypesList)), 'htmlOptions'=>array('onchange'=>'changeMenuType(this)'));
 
@@ -41,7 +43,7 @@
 		}else{
 			$fields['link_target'] = array('type'=>'select', 'title'=>A::t('app', 'Link Target'), 'default'=>'', 'data'=>$linkTargetsList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($linkTargetsList)));
 			$fields['link_url']    = array('type'=>'textbox', 'title'=>A::t('app', 'Link URL'), 'tooltip'=>A::t('app', 'Link URL Tooltip'), 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('maxlength'=>'255', 'class'=>'large'), 'appendCode'=>$appendCode);
-			$fields['module_code'] = array('type'=>'data', 'default'=>'');
+			$fields['module_code'] = array('type'=>'data', 'default'=>$moduleCode);
 		}
 
 		$fields['parent_id']  = array('type'=>'data', 'default'=>$parentId);
@@ -53,32 +55,35 @@
 		}
 
 		echo CWidget::create('CDataForm', array(
-			'model'=>'FrontendMenus',
-			'primaryKey'=>$id,
-			'operationType'=>'edit',
-			'action'=>'frontendMenus/edit/id/'.$id.($parentId ? '/pid/'.$parentId : ''), 
-			'successUrl'=>'frontendMenus/manage/pid/'.($parentId ? $parentId : '0').'/msg/updated',
-			'cancelUrl'=>'frontendMenus/manage'.($parentId ? '/pid/'.$parentId : ''),
-			//'passParameters'=>true,
-			'requiredFieldsAlert'=>true,
-			'method'=>'post',
-			'messagesSource'=>'core',
-			'return'=>true,
-			'htmlOptions'=>array(
-				'name'=>'frmMenuEdit',
-				'autoGenerateId'=>true
+			'model'				=> 'FrontendMenus',
+			'primaryKey'		=> $id,
+			'operationType'		=> 'edit',
+			'action'			=> 'frontendMenus/edit/id/'.$id.($parentId ? '/pid/'.$parentId : ''), 
+			'successUrl'		=> 'frontendMenus/manage/pid/'.($parentId ? $parentId : '0'),
+			'cancelUrl'			=> 'frontendMenus/manage'.($parentId ? '/pid/'.$parentId : ''),
+			//'passParameters'  => true,
+			'requiredFieldsAlert' => true,
+			'method'			=> 'post',
+			'messagesSource'	=> 'core',
+			'return'			=> true,
+			'htmlOptions'		=> array(
+				'name'				=> 'frmMenuEdit',
+				'autoGenerateId'	=> true
 			),
-			'requiredFieldsAlert'=>true,
-			'fields'=>$fields,
-			'translationInfo' => array('relation'=>array('id', 'menu_id'), 'languages'=>Languages::model()->findAll('is_active = 1')),
+			'requiredFieldsAlert' => true,
+			'fields'			=> $fields,
+			'translationInfo' 	=> array('relation'=>array('id', 'menu_id'), 'languages'=>Languages::model()->findAll('is_active = 1')),
 			'translationFields' => array(
-				'name' => array('type'=>'textbox', 'title'=>A::t('app', 'Menu Title'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any'), 'htmlOptions'=>array('title'=>'', 'class'=>'middle')),
+				'name' 				=> array('type'=>'textbox', 'title'=>A::t('app', 'Menu Title'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any'), 'htmlOptions'=>array('title'=>'', 'class'=>'middle')),
 			),
-			'buttons'=>array(
+			'buttons'			=> array(
                 'submitUpdateClose' => array('type'=>'submit', 'value'=>A::t('app', 'Update & Close'), 'htmlOptions'=>array('name'=>'btnUpdateClose')),
-                'submitUpdate' => array('type'=>'submit', 'value'=>A::t('app', 'Update'), 'htmlOptions'=>array('name'=>'btnUpdate')),
-                'cancel' => array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
+                'submitUpdate' 		=> array('type'=>'submit', 'value'=>A::t('app', 'Update'), 'htmlOptions'=>array('name'=>'btnUpdate')),
+                'cancel' 			=> array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
 			),
+			'messagesSource'	=> 'core',
+			'alerts'			=> array('type'=>'flash', 'itemName'=>A::t('app', 'Menu').' '.$menuName),
+            'return'            => true,
 		));
 	?>
 	

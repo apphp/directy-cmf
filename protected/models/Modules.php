@@ -49,7 +49,7 @@ class Modules extends CActiveRecord
         // $pk - key used for saving operation
         if(BackendMenus::model()->exists('module_code = :moduleCode', array(':moduleCode'=>$this->_columns['code']))){
             if($this->_columns['show_in_menu'] == 1){
-                // do nothing    
+                // Do nothing    
             }else{
                 BackendMenus::model()->deleteMenu($this->_columns['code']);
             }                

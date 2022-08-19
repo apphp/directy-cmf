@@ -28,19 +28,27 @@ class ModulesController extends CController
 	{
         parent::__construct();
 
-        // block access to this controller to non-logged users
+        // Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to view modules and modules management pages
+		// Block access if admin has no active privilege to view modules and modules management pages
 		if(!Admins::hasPrivilege('modules', 'view') && !Admins::hasPrivilege('modules', 'view_management')){
 			$this->redirect('backend/index');
 		}
 		
-        // set meta tags according to active language
+        // Set meta tags according to active language
     	Website::setMetaTags(array('title'=>A::t('app', 'Modules Management')));				
-        // set backend mode
+        // Set backend mode
         Website::setBackend();
         
+		$this->_cRequest = A::app()->getRequest();
+		$this->_cSession = A::app()->getSession();
+
+		// Get detetime formats
+		$settings = Bootstrap::init()->getSettings();
+		$this->_view->dateTimeFormat = $settings->datetime_format;
+		$this->_view->dateFormat = $settings->date_format;
+
         $this->_view->actionMessage = '';
         $this->_view->errorField = '';
 		$this->_view->notInstalledModulesList = array();
@@ -56,11 +64,10 @@ class ModulesController extends CController
 
     /**
      * View system modules action handler
-     * @param string $msg 
      */
-	public function systemAction($msg = '')
+	public function systemAction()
 	{
-		// block access if admin has no active privilege to view modules management page
+		// Block access if admin has no active privilege to view modules management page
      	if(!Admins::hasPrivilege('modules', 'view_management')){
      		$this->redirect('backend/index');
      	}
@@ -70,19 +77,24 @@ class ModulesController extends CController
         $this->_view->allModulesList = $this->_getModules('application');
 		$this->_view->tabs = $this->_prepareTab('system');		
 		
-		if($msg == 'updated'){
-			$this->_view->actionMessage = CWidget::create('CMessage', array('success', A::t('core', 'The updating operation has been successfully completed!'), array('button'=>true)));
+		if($this->_cSession->hasFlash('alert')){
+            $alert = $this->_cSession->getFlash('alert');
+            $alertType = $this->_cSession->getFlash('alertType');
+			
+            $this->_view->actionMessage = CWidget::create(
+                'CMessage', array($alertType, $alert, array('button'=>true))
+            );
 		}
+
     	$this->_view->render('modules/system');		
     }
 
     /**
      * View application modules action handler
-     * @param string $msg 
      */
-	public function applicationAction($msg = '')
+	public function applicationAction()
 	{
-		// block access if admin has no active privilege to view modules management page
+		// Block access if admin has no active privilege to view modules management page
      	if(!Admins::hasPrivilege('modules', 'view_management')){
      		$this->redirect('backend/index');
      	}
@@ -92,9 +104,15 @@ class ModulesController extends CController
         $this->_view->allModulesList = $this->_getModules('application');
 		$this->_view->tabs = $this->_prepareTab('application');		
 		
-		if($msg == 'updated'){
-			$this->_view->actionMessage = CWidget::create('CMessage', array('success', A::t('core', 'The updating operation has been successfully completed!'), array('button'=>true)));
+		if($this->_cSession->hasFlash('alert')){
+            $alert = $this->_cSession->getFlash('alert');
+            $alertType = $this->_cSession->getFlash('alertType');
+			
+            $this->_view->actionMessage = CWidget::create(
+                'CMessage', array($alertType, $alert, array('button'=>true))
+            );
 		}
+
     	$this->_view->render('modules/application');		
     }
     
@@ -104,7 +122,7 @@ class ModulesController extends CController
      */
 	public function editAction($id = 0)
 	{	
-		// block access if admin has no active privilege to edit on modules management page
+		// Block access if admin has no active privilege to edit on modules management page
      	if(Admins::hasPrivilege('modules', 'view_management') && !Admins::hasPrivilege('modules', 'edit_management')){
      		$this->redirect('backend/index');
      	}
@@ -124,10 +142,10 @@ class ModulesController extends CController
 	public function settingsAction($code = '')
 	{	
 		$cRequest = A::app()->getRequest();
-		$msg = '';
-		$msgType = '';
+		$alert = '';
+		$alertType = '';
 		
-		// fetch the module
+		// Fetch the module
 		$moduleCode = $cRequest->getPost('act') == 'send' ? $cRequest->getPost('code') : $code;
         $module = Modules::model()->find('code = :code', array(':code'=>$moduleCode));
 		if(!$module){
@@ -139,7 +157,7 @@ class ModulesController extends CController
 		$moduleSettings = ModulesSettings::model()->findAll(array('condition'=>'module_code = :moduleCode', 'order'=>'property_group ASC, id ASC'), array(':moduleCode'=>$moduleCode));
     	$valuesArray = array();    	
 		if($cRequest->getPost('act') == 'send'){
-    		// module settings form submit
+    		// Module settings form submit
 			
 			$valuesArray = array();
 			$fields = array();
@@ -147,7 +165,7 @@ class ModulesController extends CController
 				foreach($moduleSettings as $setting){
 					$valuesArray[$setting['id']] = $cRequest->getPost('value_'.$setting['id']);
 				
-					// array of fields for form validation
+					// Array of fields for form validation
 					// TODO: validate each value according to its type (property_type)
 					$validationType = 'any';
 					$validationSource = '';
@@ -171,6 +189,10 @@ class ModulesController extends CController
 							$validationType = 'set';
 							$validationSource = array(0,1);
 							break;
+                        case 'phone':
+                            $maxLength = 32;
+                            $validationType = $setting['property_type'];
+                            break;
 						case 'email': 
 							$maxLength = 100;
 						case 'numeric': 
@@ -197,35 +219,45 @@ class ModulesController extends CController
 				}
 			}
 						
-			// validate the form
+			// Validate the form
 			$result = CWidget::create('CFormValidation', array('fields'=>$fields));
 			if($result['error']){
-				$msg = $result['errorMessage'];
+				$alert = $result['errorMessage'];
 				$this->_view->errorField = $result['errorField'];
-				$msgType = 'validation';
+				$alertType = 'validation';
 			}else{
 				if(APPHP_MODE == 'demo'){
-					$msg = A::t('core', 'This operation is blocked in Demo Mode!');
-					$msgType = 'warning';
+					$alert = A::t('core', 'This operation is blocked in Demo Mode!');
+					$alertType = 'warning';
 				}else{
 					$model = new ModulesSettings();
 					if($model->update($valuesArray)){
-						$msg = A::t('app', 'Module Settings Update Success Message');
-						$msgType = 'success';
-						$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
+						$alert = A::t('app', 'Module Settings Update Success Message');
+						$alertType = 'success';
 					}else{
-						$msg = A::t('app', 'Module Settings Update Error Message');
-						$msgType = 'error';
+						$alert = A::t('app', 'Module Settings Update Error Message');
+						$alertType = 'error';
 						$this->_view->errorField = '';
 					}					
 				}
 			}
-			if(!empty($msg)){
-				$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
+			if(!empty($alert)){
+				$this->_cSession->setFlash('alert', $alert);
+				$this->_cSession->setFlash('alertType', $alertType);
+				$this->redirect('modules/settings/code/'.$code);
 			}				
     	}
 
-        // set meta tags according to active language
+		if($this->_cSession->hasFlash('alert')){
+            $alert = $this->_cSession->getFlash('alert');
+            $alertType = $this->_cSession->getFlash('alertType');
+			
+            $this->_view->actionMessage = CWidget::create(
+                'CMessage', array($alertType, $alert, array('button'=>true))
+            );
+		}
+
+        // Set meta tags according to active language
     	Website::setMetaTags(array('title'=>$moduleName));
 
 		$this->_view->module = $module;
@@ -241,64 +273,64 @@ class ModulesController extends CController
 	 */
 	public function installAction($code = '')
 	{
-		// block access if admin has no active privilege to edit on modules management page
+		// Block access if admin has no active privilege to edit on modules management page
      	if(Admins::hasPrivilege('modules', 'view_management') && !Admins::hasPrivilege('modules', 'edit_management')){
      		$this->redirect('backend/index');
      	}
 		
      	$installed = false;
-		$msgType = '';
+		$alertType = '';
 		$moduleType = '';
-		$msg = '';
+		$alert = '';
 		
-		// check if the module is already installed
+		// Check if the module is already installed
         if(APPHP_MODE == 'demo'){
-			$msg = A::t('core', 'This operation is blocked in Demo Mode!');			
-			$msgType = 'warning';
+			$alert = A::t('core', 'This operation is blocked in Demo Mode!');			
+			$alertType = 'warning';
        	}else if(Modules::model()->exists('code = :code AND is_installed = 1', array(':code'=>$code))){
-       		$msg = A::t('app', 'Module Already Installed Message');
-       		$msgType = 'warning';
+       		$alert = A::t('app', 'Module Already Installed Message');
+       		$alertType = 'warning';
        		$moduleType = 'application';
 		}else{
-			// read module xml file
+			// Read module xml file
 			$xml = $this->_readModuleXml($code);
 			$name = isset($xml->name) ? $xml->name : $code;
 			$moduleType = $xml->moduleType;
 			if(!is_object($xml)){
-				// if failed to read XML file, $xml will contain error message 
-				$msg = A::t('app', 'XML File Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$code.'/info.xml', 30, 50)));
-				$msgType = 'error';				
+				// If failed to read XML file, $xml will contain error message 
+				$alert = A::t('app', 'XML File Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$code.'/info.xml', 30, 50)));
+				$alertType = 'error';				
 			//}else if($xml->moduleType == 'system'){
 				// check if this module is a system module
-				//$msg = A::t('app', 'Operation Blocked Error Message');
-				//$msgType = 'error';
+				//$alert = A::t('app', 'Operation Blocked Error Message');
+				//$alertType = 'error';
 			}else{								
-				// get sql schema filename from the xml
+				// Get sql schema filename from the xml
 				$sqlInstallFile = isset($xml->files->data->install) ? $xml->files->data->install : '';
 				$sqlUninstallFile = isset($xml->files->data->uninstall) ? $xml->files->data->uninstall : '';
-                $msgSql = $this->_runSqlFile(APPHP_PATH.'/protected/modules/'.$code.'/data/'.$sqlInstallFile);
-				if($msgSql){
-					$msg = A::t('app', 'Module Installation Error Message', array('{module}'=>$name)).'<br><br>'.htmlspecialchars($msgSql);
-    				$msgType = 'error';
+                $alertSql = $this->_runSqlFile(APPHP_PATH.'/protected/modules/'.$code.'/data/'.$sqlInstallFile);
+				if($alertSql){
+					$alert = A::t('app', 'Module Installation Error Message', array('{module}'=>$name)).'<br><br>'.htmlspecialchars($alertSql);
+    				$alertType = 'error';
 					$this->_runSqlFile(APPHP_PATH.'/protected/modules/'.$code.'/data/'.$sqlUninstallFile, true);
 				}else{
 					$installed = true;					
 
-					$msgSuccess = A::t('app', 'Module Installation Success Message', array('{module}'=>$name));
-					$msgSuccess .= '<br><br>'.A::t('app', 'Adding information to database').' ... <span style="color:darkgreen;">'.A::t('app', 'OK').'</span>';
-					$msgSuccess .= '<br>'.A::t('app', 'Copying files and directories');
+					$alertSuccess = A::t('app', 'Module Installation Success Message', array('{module}'=>$name));
+					$alertSuccess .= '<br><br>'.A::t('app', 'Adding information to database').' ... <span style="color:darkgreen;">'.A::t('app', 'OK').'</span>';
+					$alertSuccess .= '<br>'.A::t('app', 'Copying files and directories');
                     
                     $result = $this->_processInfoXml($xml, $code);
-                    $msg .= $result['msg'];
-                    $msgSuccess .= $result['msg_success'];
-                    $msgType .= $result['error_type'];
+                    $alert .= $result['msg'];
+                    $alertSuccess .= $result['msg_success'];
+                    $alertType .= $result['error_type'];
 				}
 			}
 		}	
 		if($installed){
-			$this->_view->actionMessage .= CWidget::create('CMessage', array('success', $msgSuccess, array('button'=>true)));
+			$this->_view->actionMessage .= CWidget::create('CMessage', array('success', $alertSuccess, array('button'=>true)));
 		}
-		$this->_view->actionMessage .= CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
+		$this->_view->actionMessage .= CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
 			
         $this->_view->modulesList = ($moduleType == 'application') ? $this->_getApplicationModules() : $this->_getSystemModules();
 		$this->_view->notInstalledModulesList = $this->_getNotInstalledModules();
@@ -313,7 +345,7 @@ class ModulesController extends CController
 	 */
 	public function updateAction($code = '')
 	{
-		// block access if admin has no active privilege to edit on modules management page
+		// Block access if admin has no active privilege to edit on modules management page
      	if(Admins::hasPrivilege('modules', 'view_management') && !Admins::hasPrivilege('modules', 'edit_management')){
      		$this->redirect('backend/index');
      	}
@@ -321,76 +353,76 @@ class ModulesController extends CController
         $allModulesList = $this->_getModules('application');
         $moduleVersion = isset($allModulesList[$code]['version']) ? $allModulesList[$code]['version'] : '';
      	$updated = false;
-		$msg = '';
-		$msgSuccess = '';
-		$msgType = '';
+		$alert = '';
+		$alertSuccess = '';
+		$alertType = '';
 		$moduleType = '';
         
-		// check if the last version of the module is already installed
+		// Check if the last version of the module is already installed
         if(APPHP_MODE == 'demo'){
-			$msg = A::t('core', 'This operation is blocked in Demo Mode!');			
-			$msgType = 'warning';
+			$alert = A::t('core', 'This operation is blocked in Demo Mode!');			
+			$alertType = 'warning';
 		}else if(Modules::model()->exists('code = :code AND is_installed = 1'.(!empty($moduleVersion) ? ' AND version >= \''.$moduleVersion.'\'' : ''), array(':code'=>$code))){
-       		$msg = A::t('app', 'Module Already Updated Message', array('{module}'=>$code));
-       		$msgType = 'error';
+       		$alert = A::t('app', 'Module Already Updated Message', array('{module}'=>$code));
+       		$alertType = 'error';
        		$moduleType = 'application';
 		}else{
             $module = Modules::model()->find('code = :code', array(':code'=>$code));
             $installedVersion = $module ? $module->version : '';
-			// read module xml file
+			// Read module xml file
 			$xml = $this->_readModuleXml($code);
 			$name = isset($xml->name) ? $xml->name : $code;
 			$moduleType = $xml->moduleType;
 			if(!is_object($xml)){
-				// if failed to read XML file, $xml will contain error message                
-				$msg = A::t('app', 'XML File Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$code.'/info.xml', 30, 50)));
-				$msgType = 'error';				
+				// If failed to read XML file, $xml will contain error message                
+				$alert = A::t('app', 'XML File Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$code.'/info.xml', 30, 50)));
+				$alertType = 'error';				
 			//}else if($xml->moduleType == 'system'){
 			//	// check if this module is a system module
-			//	$msg = A::t('app', 'Operation Blocked Error Message');
-			//	$msgType = 'error';
+			//	$alert = A::t('app', 'Operation Blocked Error Message');
+			//	$alertType = 'error';
 			}else{								
-				// get sql schema filename from the xml
+				// Get sql schema filename from the xml
 				$sqlUpdateFiles = isset($xml->files->data->update) ? $xml->files->data->update : '';
                 $moduleLastVersion = isset($xml->version) ? $xml->version : '';
                 if(is_object($sqlUpdateFiles)){
                     $count = 0;
                     foreach($sqlUpdateFiles->children() as $sqlUpdateFile){
                         $count++;
-                        // continue if there is a smaller version
+                        // Continue if there is a smaller version
                         if(preg_replace('/[^0-9]/', '', $sqlUpdateFile) <= preg_replace('/[^0-9]/', '', $installedVersion)) continue;
-                        $msgSql = $this->_runSqlFile(APPHP_PATH.'/protected/modules/'.$code.'/data/'.$sqlUpdateFile);
-                        if($msgSql){
-                            $msg = A::t('app', 'Module Updating Error Message', array('{module}'=>$name)).'<br><br>'.$msgSql;
-                            $msgType = 'error';
+                        $alertSql = $this->_runSqlFile(APPHP_PATH.'/protected/modules/'.$code.'/data/'.$sqlUpdateFile);
+                        if($alertSql){
+                            $alert = A::t('app', 'Module Updating Error Message', array('{module}'=>$name)).'<br><br>'.$alertSql;
+                            $alertType = 'error';
                             break;
                         }                        
                     }
                     if(!$count){
-                        // run single file
-                        $msgSql = $this->_runSqlFile(APPHP_PATH.'/protected/modules/'.$code.'/data/'.$sqlUpdateFiles);
-                        if($msgSql){
-                            $msg = A::t('app', 'Module Updating Error Message', array('{module}'=>$name)).'<br><br>'.$msgSql;
-                            $msgType = 'error';
+                        // Run single file
+                        $alertSql = $this->_runSqlFile(APPHP_PATH.'/protected/modules/'.$code.'/data/'.$sqlUpdateFiles);
+                        if($alertSql){
+                            $alert = A::t('app', 'Module Updating Error Message', array('{module}'=>$name)).'<br><br>'.$alertSql;
+                            $alertType = 'error';
                         }                        
                     }
-                    if(!$msgType){
+                    if(!$alertType){
                         $updated = true;
-                        $msgSuccess = A::t('app', 'Module Updating Success Message', array('{module}'=>$name, '{version}'=>$moduleLastVersion));
-                        $msgSuccess .= '<br><br>'.A::t('app', 'Updating information in database').' ... <span style="color:darkgreen;">'.A::t('app', 'OK').'</span>';
+                        $alertSuccess = A::t('app', 'Module Updating Success Message', array('{module}'=>$name, '{version}'=>$moduleLastVersion));
+                        $alertSuccess .= '<br><br>'.A::t('app', 'Updating information in database').' ... <span style="color:darkgreen;">'.A::t('app', 'OK').'</span>';
 
                         $result = $this->_processInfoXml($xml, $code);
-                        $msg .= $result['msg'];
-                        $msgSuccess .= $result['msg_success'];
-                        $msgType .= $result['error_type'];
+                        $alert .= $result['msg'];
+                        $alertSuccess .= $result['msg_success'];
+                        $alertType .= $result['error_type'];
                     }
                 }
 			}
 		}	
 		if($updated){
-			$this->_view->actionMessage .= CWidget::create('CMessage', array('success', $msgSuccess, array('button'=>true)));
+			$this->_view->actionMessage .= CWidget::create('CMessage', array('success', $alertSuccess, array('button'=>true)));
 		}
-		$this->_view->actionMessage .= CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
+		$this->_view->actionMessage .= CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
 			
         $this->_view->modulesList = $this->_getApplicationModules();
 		$this->_view->notInstalledModulesList = $this->_getNotInstalledModules();
@@ -405,100 +437,101 @@ class ModulesController extends CController
 	 */
 	public function uninstallAction($id = 0)
 	{
-		// block access if admin has no active privilege to edit on modules management page
+		// Block access if admin has no active privilege to edit on modules management page
      	if(Admins::hasPrivilege('modules', 'view_management') && !Admins::hasPrivilege('modules', 'edit_management')){
      		$this->redirect('backend/index');
      	}
 		
-     	$msg = '';
-		$msgType = '';
+     	$alert = '';
+		$alertType = '';
 		
 		$module = Modules::model()->findByPk((int)$id);
        	if(!$module){
 			$this->redirect('modules/index');
        	}
         if(APPHP_MODE == 'demo'){
-			$msg = A::t('core', 'This operation is blocked in Demo Mode!');
-			$msgType = 'warning';
+			$alert = A::t('core', 'This operation is blocked in Demo Mode!');
+			$alertType = 'warning';
 		}else if(!$module->is_installed){
-            // check if the module is already installed
-       		$msg = A::t('app', 'Module Not Installed Message');
-       		$msgType = 'warning';
+            // Check if the module is already installed
+       		$alert = A::t('app', 'Module Not Installed Message');
+       		$alertType = 'warning';
 		}else if($module->is_system){
-            // check if the module is system module
-       		$msg = A::t('app', 'Operation Blocked Error Message');
-       		$msgType = 'error';       	
+            // Check if the module is system module
+       		$alert = A::t('app', 'Operation Blocked Error Message');
+       		$alertType = 'error';       	
 		}else{
-       		// read module xml file
+       		// Read module xml file
 			$xml = $this->_readModuleXml($module->code);
 			if(!is_object($xml)){
-				// if failed to read XML file, $xml will contain error message 
-				$msg = A::t('app', 'XML File Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$module->code.'/info.xml', 30, 50)));
-				$msgType = 'error';
+				// If failed to read XML file, $xml will contain error message 
+				$alert = A::t('app', 'XML File Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$module->code.'/info.xml', 30, 50)));
+				$alertType = 'error';
 			}else{
-				// get sql schema filename from the xml
+				// Get sql schema filename from the xml
 				$sqlFile = isset($xml->files->data->uninstall) ? $xml->files->data->uninstall : '';
-                $msgSql = $this->_runSqlFile(APPHP_PATH.'/protected/modules/'.$module->code.'/data/'.$sqlFile, true);
-				if($msgSql){
-					$msg = A::t('app', 'Module Uninstallation Error Message', array('{module}'=>$module->name)).'<br><br>'.$msgSql;
-    				$msgType = 'error';
+                $alertSql = $this->_runSqlFile(APPHP_PATH.'/protected/modules/'.$module->code.'/data/'.$sqlFile, true);
+				if($alertSql){
+					$alert = A::t('app', 'Module Uninstallation Error Message', array('{module}'=>$module->name)).'<br><br>'.htmlspecialchars($alertSql);
+    				$alertType = 'error';
 				}else{
-                    // remove module from backend menu (if exists)
+                    // Remove module from backend menu (if exists)
                     BackendMenus::model()->deleteMenu($module->code);
                     
-					// remove module files
-					$msg = A::t('app', 'Module Uninstallation Success Message', array('{module}'=>$module->name));
-					$msg .= '<br><br>'.A::t('app', 'Removing information from database').' ... <span style="color:darkgreen;">'.A::t('app', 'OK').'</span>';
-					$msgType = 'success';	
+					// Remove module files
+					$alert = A::t('app', 'Module Uninstallation Success Message', array('{module}'=>$module->name));
+					$alert .= '<br><br>'.A::t('app', 'Removing information from database').' ... <span style="color:darkgreen;">'.A::t('app', 'OK').'</span>';
+					$alertType = 'success';	
 					$deletedFiles = '';
 					foreach($xml->files->children() as $folder){
                         if(isset($folder['exclude']) && strtolower($folder['exclude']) == 'yes') continue;
 						if(!isset($folder['installationPath'])) continue;
 
                         if(isset($folder['byDirectory']) && strtolower($folder['byDirectory']) == 'true'){
-                            // remove by whole directory
+                            // Remove by whole directory
                             $deletedFiles .= '<br> - dir.: '.$folder['installationPath'].'*';
                             if(!CFile::emptyDirectory(trim($folder['installationPath']))){
-                                $msg .= (!empty($msg) ? '<br>' : '').A::t('app', 'Module Uninstallation Warning Message', array('{module}'=>$module->name));
+                                $alert .= (!empty($alert) ? '<br>' : '').A::t('app', 'Module Uninstallation Warning Message', array('{module}'=>$module->name));
                                 $deletedFiles .= ' ... <span style="color:darkred;">'.A::t('app', 'Failed').'</span>';
-                                $msgType = 'warning';									
+                                $alertType = 'warning';									
                             }else{
                                 $deletedFiles .= ' ... <span style="color:darkgreen;">'.A::t('app', 'OK').'</span>';
                             }
                         }else{
                             foreach($folder->children() as $file){
                                 if(isset($file['exclude']) && strtolower($file['exclude']) == 'yes') continue;
-                                    $destPaths = $this->_getSubDirectories($folder);
-                                    foreach($destPaths as $destPath){                                        
-                                        // by files in subdirectories
-                                        // if($file->count()){ $file->count() is not supported in PHP prior to 5.3.0 
-                                        if(count($file->children())){
-                                            // subdirectory exists
-                                            if(basename($destPath) != trim($file->getName(), '/')) continue;
-                                            $destFile = APPHP_PATH.'/'.trim($destPath, '/').'/'.$file->filename;
-                                            $deletedFiles .= '<br> - file: '.trim($destPath, '/').'/'.$file->filename;                                                
-                                            $this->_deleteFile($destFile, $module->name, $deletedFiles, $msg, $msgType);
-                                        // by files in directory
-                                        }else{
-                                            $destFile = APPHP_PATH.'/'.trim($destPath, '/').'/'.$file;
-                                            $deletedFiles .= '<br> - file: '.trim($destPath, '/').'/'.$file;                                            
-                                            $this->_deleteFile($destFile, $module->name, $deletedFiles, $msg, $msgType);
-                                        }
-                                    }
-
+								$destPaths = $this->_getSubDirectories($folder);
+								foreach($destPaths as $destPath){                                        
+									// By files in subdirectories
+									// if($file->count()){ $file->count() is not supported in PHP prior to 5.3.0 
+									if(count($file->children())){
+										// Subdirectory exists
+										if(basename($destPath) != trim($file->getName(), '/')) continue;
+										$destFile = APPHP_PATH.'/'.trim($destPath, '/').'/'.$file->filename;
+										$deletedFiles .= '<br> - file: '.trim($destPath, '/').'/'.$file->filename;                                                
+										$this->_deleteFile($destFile, $module->name, $deletedFiles, $alert, $alertType);
+									// By files in directory
+									}else{
+										$destFile = APPHP_PATH.'/'.trim($destPath, '/').'/'.$file;
+										$deletedFiles .= '<br> - file: '.trim($destPath, '/').'/'.$file;
+										if(file_exists($destFile)){
+											$this->_deleteFile($destFile, $module->name, $deletedFiles, $alert, $alertType);
+										}
+									}
+								}
                             }
                         }
 					}
-					$msg .= '<br>'.A::t('app', 'Removing files and directories').$deletedFiles;
+					$alert .= '<br>'.A::t('app', 'Removing files and directories').$deletedFiles;
 				}
 			}	
 		}
-		if(empty($msg)){
-			// success
-			$msg = A::t('app', 'Module Uninstallation Success Message', array('{module}'=>$module->name));
-       		$msgType = 'success';
+		if(empty($alert)){
+			// Success
+			$alert = A::t('app', 'Module Uninstallation Success Message', array('{module}'=>$module->name));
+       		$alertType = 'success';
 		}
-		$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
+		$this->_view->actionMessage = CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
 					
         $this->_view->modulesList = $this->_getApplicationModules();
 		$this->_view->notInstalledModulesList = $this->_getNotInstalledModules();
@@ -518,7 +551,7 @@ class ModulesController extends CController
 			return A::t('app', 'File Reading Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$moduleCode.'/info.xml', 30, 50)));
 		}
 		
-    	// load XML file for module info
+    	// Load XML file for module info
 		$xml = simplexml_load_file('protected/modules/'.$moduleCode.'/info.xml');
 		if(!is_object($xml)){		
 			return A::t('app', 'XML File Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$moduleCode.'/info.xml', 30, 50)));
@@ -535,13 +568,15 @@ class ModulesController extends CController
 	 */
 	private function _runSqlFile($sqlFile = '', $ignoreErrors = false)
 	{
-		// get sql schema content
+		// Get sql schema content
 		if(file_exists($sqlFile)){
 			$sqlDump = file($sqlFile);
 			if(!empty($sqlDump)){
-				// replace placeholders
-				$sqlDump = str_ireplace('<DB_PREFIX>', CConfig::get('db.prefix'), $sqlDump);			
-				// run the sql
+				// Replace placeholders
+				$sqlDump = str_ireplace('<DB_PREFIX>', CConfig::get('db.prefix'), $sqlDump);
+				$sqlDump = str_ireplace('<CURRENT_DATE>', date('Y-m-d', time() + (date('I', time()) ? 3600 : 0)), $sqlDump);
+				$sqlDump = str_ireplace('<CURRENT_DATETIME>', date('Y-m-d H:i:s', time() + (date('I', time()) ? 3600 : 0)), $sqlDump);
+				// Run the sql
 				$model = new Setup();
 				$result = $model->install($sqlDump, true, $ignoreErrors);
 				if(!$result || $ignoreErrors){
@@ -554,7 +589,7 @@ class ModulesController extends CController
 			return A::t('app', 'File Opening Error Message', array('{file}'=>CFile::createShortenName(trim($sqlFile, "<br />\r\n"), 30, 50)));
 		}
 		
-		// return empty message on success
+		// Return empty message on success
 		return '';
 	}
 	
@@ -564,11 +599,11 @@ class ModulesController extends CController
 	 */
 	private function _getSystemModules()
 	{
-		// get list of all modules folders
+		// Get list of all modules folders
 		$modulesFolders = CFile::findSubDirectories('protected/modules/');
 		$codesList = "'".implode("','", $modulesFolders)."'";
 		
-		// get system modules
+		// Get system modules
 		return Modules::model()->findAll('code IN ('.$codesList.') AND is_system = 1');
 	}	
 	
@@ -578,12 +613,12 @@ class ModulesController extends CController
 	 */
 	private function _getApplicationModules()
 	{
-		// get list of all modules folders
+		// Get list of all modules folders
 		$modulesFolders = CFile::findSubDirectories('protected/modules/');
 		$codesList = "'".implode("','", $modulesFolders)."'";
 		
-		// get application (not system) modules
-		return Modules::model()->findAll('code IN ('.$codesList.') AND is_system = 0');
+		// Get application (not system) modules
+		return Modules::model()->findAll(array('condition'=>'code IN ('.$codesList.') AND is_system = 0', 'orderBy'=>'sort_order ASC'));
     }
     
 	/**
@@ -593,7 +628,7 @@ class ModulesController extends CController
 	 */
     private function _getNotInstalledModules($moduleType = 'application')
     {
-    	// get all not installed modules from configuration file
+    	// Get all not installed modules from configuration file
     	$modulesList = array();
     	$modules = CConfig::get('modules');
     	if(!is_array($modules)) return $modulesList;
@@ -602,11 +637,11 @@ class ModulesController extends CController
             $enable = isset($module['enable']) ? (bool)$module['enable'] : false;
             if($enable){
                 $moduleCode = strtolower($code);
-                // check if this module is installed
+                // Check if this module is installed
                 if(!Modules::model()->exists('code = :code AND is_installed = 1', array(':code'=>$moduleCode))){
                     $xml = $this->_readModuleXml($moduleCode);    				
                     if(is_object($xml)){
-                        // check the module type
+                        // Check the module type
                         if($moduleType == '' || ($moduleType != '' && $xml->moduleType == $moduleType)){
                             $modulesList[$moduleCode] = array(
                                 'name' => isset($xml->name) ? $xml->name : A::t('app', 'Unknown'),
@@ -629,7 +664,7 @@ class ModulesController extends CController
 	 */
     private function _getModules($moduleType = 'application', $mCode = '')
     {
-    	// get all not installed modules from configuration file
+    	// Get all not installed modules from configuration file
     	$modulesList = array();
     	$modules = CConfig::get('modules');
     	if(!is_array($modules)) return $modulesList;
@@ -641,7 +676,7 @@ class ModulesController extends CController
                 $moduleCode = strtolower($code);
                 $xml = $this->_readModuleXml($moduleCode);    				
                 if(is_object($xml)){
-                    // check the module type
+                    // Check the module type
                     if(!empty($moduleType) || ($moduleType != '' && $xml->moduleType == $moduleType)){
                         $modulesList[$moduleCode] = array(
                             'name' => isset($xml->name) ? $xml->name : A::t('app', 'Unknown'),
@@ -689,7 +724,7 @@ class ModulesController extends CController
 		
 		foreach($managementLinks as $property => $val){
 			$tabs[$property] = array('href'=>$val, 'id'=>'tab'.$property, 'content'=>'', 'active'=>false);
-			// block access to prohibited tabs
+			// Block access to prohibited tabs
 			if(Admins::privilegeExists($code, $property) && !Admins::hasPrivilege($code, $property)){
 				$tabs[$property]['disabled'] = true;
 			}
@@ -717,7 +752,7 @@ class ModulesController extends CController
     {
         $return = array('msg'=>'', 'msg_success' => '', 'error_type'=>'');
         
-        // copy module files
+        // Copy module files
         foreach($xml->files->children() as $folder){
             if(isset($folder['exclude']) && strtolower($folder['exclude']) == 'yes') continue;
             if(!isset($folder['installationPath'])) continue;
@@ -725,7 +760,7 @@ class ModulesController extends CController
 
             $src = '/protected/modules/'.$code.'/'.$folder->getName().'/';
             if($byDirectory){
-                // copy by whole directory
+                // Copy by whole directory
                 $return['msg_success'] .= '<br> - dir.: '.$folder['installationPath'].'*';
                 $dest = '/'.$folder['installationPath'];
                 if(!CFile::copyDirectory($src, $dest)){
@@ -736,7 +771,7 @@ class ModulesController extends CController
                     $return['msg_success'] .= ' ... <span style="color:darkgreen;">'.A::t('app', 'OK').'</span>';
                 }
             }else{
-                // copy file by file (default)
+                // Copy file by file (default)
                 $destPaths = $this->_getSubDirectories($folder);
                 foreach($destPaths as $destPath){
                     $destPath = trim($destPath, '/').'/';
@@ -745,21 +780,21 @@ class ModulesController extends CController
                     $found = false;
                     $defaultPath = $defaultFile = '';
                     foreach($folder->children() as $file){                        
-                        // find and stire info about default file
+                        // Find and stire info about default file
                         if(isset($file['default'])){
                             $defaultPath = $file->getName().'/';
                             $defaultFile = $file->filename;
                         } 
-                        // by files in subdirectories
+                        // By files in subdirectories
                         // if($file->count()){ $file->count() is not supported in PHP prior to 5.3.0 
                         if(count($file->children())){
-                            // subdirectory exists
+                            // Subdirectory exists
                             $destSubPath = $file->getName().'/';
                             if(basename($destPath) != trim($destSubPath, '/')) continue;
                             $return['msg_success'] .= $file->filename;                                
                             $this->_copyFile(APPHP_PATH.$src.$destSubPath, $dest, $file->filename, $return);
                             $found = true;
-                        // by files in directory    
+                        // By files in directory    
                         }else{
                             if(isset($file['exclude']) && strtolower($file['exclude']) == 'yes') continue;
                             if(!file_exists($dest)) mkdir($dest);
@@ -788,7 +823,7 @@ class ModulesController extends CController
     private function _getSubDirectories($folder)
     {
         if(substr($folder['installationPath'], -1) === '*'){
-            // prepare array of destinations for copying to all subfolders
+            // Prepare array of destinations for copying to all subfolders
             $destPaths = CFile::findSubDirectories(substr($folder['installationPath'], 0, -1), true);
         }else{
             $destPaths = array($folder['installationPath']);
@@ -822,14 +857,14 @@ class ModulesController extends CController
 	 * @param string &$msg,
 	 * @param string &$msgType
 	 */
-    private function _deleteFile($destFile, $moduleName, &$deletedFiles, &$msg, &$msgType)
+    private function _deleteFile($destFile, $moduleName, &$deletedFiles, &$alert, &$alertType)
     {                                
         if(CFile::deleteFile($destFile)){
             $deletedFiles .= ' ... <span style="color:darkgreen;">'.A::t('app', 'OK').'</span>';
         }else{
             $deletedFiles .= ' ... <span style="color:darkred;">'.A::t('app', 'Failed').'</span>';
-            $msg = A::t('app', 'Module Uninstallation Warning Message', array('{module}'=>$moduleName));
-            $msgType = 'warning';
+            $alert = A::t('app', 'Module Uninstallation Warning Message', array('{module}'=>$moduleName));
+            $alertType = 'warning';
         }
     }
    

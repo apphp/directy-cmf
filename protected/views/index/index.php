@@ -1,5 +1,6 @@
-<?php 
-    $this->_pageTitle = '';
+<?php
+    Website::setMetaTags(array('title'=>A::t('app', 'Home Page')));
+	$this->_pageTitle = '';
     
     if(!isset($title)) $title = '';
     if(!isset($text)) $text = '';

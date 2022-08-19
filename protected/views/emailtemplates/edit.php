@@ -1,5 +1,7 @@
 <?php
-    $this->_activeMenu = 'emailTemplates/';
+    Website::setMetaTags(array('title'=>A::t('app', 'Edit Template')));
+	
+	$this->_activeMenu = 'emailTemplates/';
     $this->_breadCrumbs = array(
         array('label'=>A::t('app', 'General'), 'url'=>'backend/'),
         array('label'=>A::t('app', 'Email Templates'), 'url'=>'emailTemplates/manage'),
@@ -14,38 +16,40 @@
     <div class="content">        
 	<?php
 		echo CWidget::create('CDataForm', array(
-			'model'=>'EmailTemplates',
-            'primaryKey'=>$template->id,
-			'operationType'=>'edit',
-			'action'=>'emailTemplates/edit/id/'.$template->id,
-			'successUrl'=>'emailTemplates/manage/msg/updated',
-			'cancelUrl'=>'emailTemplates/manage',
-			'passParameters'=>false,
-			'method'=>'post',
-			'htmlOptions'=>array(
-				'name'=>'frmEmailTemplatesEdit',
-				'enctype'=>'multipart/form-data',
-				'autoGenerateId'=>true
+			'model'				=> 'EmailTemplates',
+            'primaryKey'		=> $template->id,
+			'operationType'		=> 'edit',
+			'action'			=> 'emailTemplates/edit/id/'.$template->id,
+			'successUrl'		=> 'emailTemplates/manage',
+			'cancelUrl'			=> 'emailTemplates/manage',
+			'passParameters'	=> false,
+			'method'			=> 'post',
+			'htmlOptions'		=> array(
+				'name'				=> 'frmEmailTemplatesEdit',
+				//'enctype'			=> 'multipart/form-data',
+				'autoGenerateId'	=> true
 			),
-            //'fieldSetType'=>'tabs',
-			'requiredFieldsAlert'=>true,
-			'fields'=>array(
-				'code'        => array('type'=>'label', 'title'=>A::t('app', 'Code'), 'default'=>'', 'tooltip'=>'', 'definedValues'=>'', 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false),
-				'module_code' => array('type'=>'label', 'title'=>A::t('app', 'Module'), 'default'=>'', 'tooltip'=>'', 'definedValues'=>array(''=>A::t('app', 'system')), 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false),
-				'is_system'   => array('type'=>'label',  'title'=>A::t('app', 'System Template'), 'default'=>'', 'tooltip'=>'', 'definedValues'=>array('0'=>A::t('app', 'No'), '1'=>A::t('app', 'Yes')), 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false),
+            'fieldSets'			=> array('type'=>'frameset'),
+			'requiredFieldsAlert' => true,
+			'fields'			=> array(
+				'code'        		=> array('type'=>'label', 'title'=>A::t('app', 'Code'), 'default'=>'', 'tooltip'=>'', 'definedValues'=>'', 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false),
+				'module_code' 		=> array('type'=>'label', 'title'=>A::t('app', 'Module'), 'default'=>'', 'tooltip'=>'', 'definedValues'=>array(''=>A::t('app', 'system')), 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false),
+				'is_system'   		=> array('type'=>'label',  'title'=>A::t('app', 'System Template'), 'default'=>'', 'tooltip'=>'', 'definedValues'=>array('0'=>A::t('app', 'No'), '1'=>A::t('app', 'Yes')), 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false),
 			),
-			'translationInfo' => array('relation'=>array('code', 'template_code'), 'languages'=>Languages::model()->findAll('is_active = 1')),
+			'translationInfo' 	=> array('relation'=>array('code', 'template_code'), 'languages'=>Languages::model()->findAll('is_active = 1')),
 			'translationFields' => array(
                 'template_name' 	=> array('type'=>'textbox', 'title'=>A::t('app', 'Template Name'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>125), 'htmlOptions'=>array('maxLength'=>'125', 'class'=>'middle')),
                 'template_subject' 	=> array('type'=>'textbox', 'title'=>A::t('app', 'Template Subject'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'text', 'maxLength'=>125), 'htmlOptions'=>array('maxLength'=>'125', 'class'=>'large')),
                 'template_content' 	=> array('type'=>'textarea', 'title'=>A::t('app', 'Template Content'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>5000), 'htmlOptions'=>array('maxLength'=>'5000', 'class'=>'full')),
 			),
-			'buttons'=>array(
-                'submit' => array('type'=>'submit', 'value'=>A::t('app', 'Create'), 'htmlOptions'=>array('name'=>'')),
-                'cancel' => array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
+			'buttons'			=> array(
+                'submitUpdateClose' => array('type'=>'submit', 'value'=>A::t('app', 'Update & Close'), 'htmlOptions'=>array('name'=>'btnUpdateClose')),
+                'submitUpdate' 		=> array('type'=>'submit', 'value'=>A::t('app', 'Update'), 'htmlOptions'=>array('name'=>'btnUpdate')),
+                'cancel' 			=> array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
 			),
-			'messagesSource'=>'core',
-			'return'=>true,
+			'messagesSource'	=> 'core',
+			'alerts'			=> array('type'=>'flash', 'itemName'=>A::t('app', 'Email Template')),
+            'return'            => true,
 		));		                
 	?>
     <br>

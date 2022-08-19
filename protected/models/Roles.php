@@ -15,6 +15,8 @@ class Roles extends CActiveRecord
 
     /** @var string */    
     protected $_table = 'roles';
+	protected $_tablePrivileges = 'privileges';
+	protected $_tableRolesPrivileges = 'role_privileges';
 
     /**
 	 * Class default constructor
@@ -57,7 +59,10 @@ class Roles extends CActiveRecord
 			);
 			
 			$privileges = RolePrivileges::model()->addPrivilages($data);
-		}
+			if(!$privileges){
+				$this->_isError = true;
+			}
+		}		
 	}
 
 	/**
@@ -66,7 +71,7 @@ class Roles extends CActiveRecord
 	 */
 	protected function _afterDelete($pk = '')
 	{
-		// remove role privileges		
+		// Remove role privileges		
 		RolePrivileges::model()->deleteAll('role_id = :role_id', array(':role_id' => $pk));
 	}
 	

@@ -2,9 +2,9 @@
 <install version="1.0" type="module">
     <name>Setup</name>
     <description>Setup module allows to install application using web installation wizard</description>
-    <version>0.0.9</version>
+    <version>0.1.0</version>
     <creationDate>01/02/2013</creationDate>
-    <lastChangedDate>24/11/2014</lastChangedDate>
+    <lastChangedDate>10.09.2015</lastChangedDate>
     <author>ApPHP</author>
     <authorEmail>info@apphp.com</authorEmail>
     <authorUrl>http://www.apphp.com</authorUrl>
@@ -43,6 +43,9 @@
             <filename>Setup.php</filename>
         </models>
         <messages exclude="yes">
+            <de>
+                <filename>setup.php</filename>
+            </de>
             <en>
                 <filename>setup.php</filename>
             </en>

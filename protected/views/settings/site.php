@@ -1,5 +1,7 @@
 <?php
-    $this->_activeMenu = 'settings/';
+    Website::setMetaTags(array('title'=>A::t('app', 'Site Info')));
+	
+	$this->_activeMenu = 'settings/';
     $this->_breadCrumbs = array(
         array('label'=>A::t('app', 'General'), 'url'=>'backend/'),
         array('label'=>A::t('app', 'Site Settings'), 'url'=>'settings/general'),

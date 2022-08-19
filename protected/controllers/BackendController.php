@@ -25,7 +25,7 @@ class BackendController extends CController
 	{
         parent::__construct();
 
-		// set backend mode 
+		// Set backend mode 
         Website::setBackend();
 		
         $this->_view->actionMessage = '';
@@ -45,18 +45,15 @@ class BackendController extends CController
      */
   	public function dashboardAction()
 	{		
-        // block access to this controller to non-logged users
+        // Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 
-		// set meta tags according to active language
-		Website::setMetaTags(array('title'=>A::t('app', 'Dashboard')));
-
         $alerts = array();
-        // draw predefined alerts
+        // Draw predefined alerts
         if(APPHP_MODE == 'debug') $alerts[] = array('type'=>'warning', 'message'=>A::t('app', 'Debug Mode Alert'));
 		if(CConfig::get('cookies.path') == '/' && A::app()->getRequest()->getBasePath() != '/') $alerts[] = array('type'=>'warning', 'message'=>A::t('app', 'Cookies Base Path Alert', array('{path}'=>A::app()->getRequest()->getBasePath())));			 
         if(CAuth::getLoggedEmail() == '' || preg_match('/email.me/i', CAuth::getLoggedEmail())) $alerts[] = array('type'=>'error', 'message'=>A::t('app', 'Default Email Alert'));
-		// draw alerts from modules		
+		// Draw alerts from modules		
 		$modules = Modules::model()->findAll('is_active = 1');		
 		if(is_array($modules)){
 			foreach($modules as $key => $val){
@@ -70,10 +67,10 @@ class BackendController extends CController
 		}
         $this->_view->alerts = $alerts;
         
-        // fetch modules that need to be shown in hotkeys
+        // Fetch modules that need to be shown in hotkeys
         $this->_view->modulesToShow = Modules::model()->findAll('show_on_dashboard=1 AND is_active=1');
 
-		// fetch datetime format from settings table
+		// Fetch datetime format from settings table
     	$dateTimeFormat = Bootstrap::init()->getSettings('datetime_format');
 		
         $this->_view->dashboardHotkeys = Bootstrap::init()->getSettings('dashboard_hotkeys');
@@ -85,7 +82,7 @@ class BackendController extends CController
 		$this->_view->scriptName = CConfig::get('name');
 		$this->_view->scriptVersion = CConfig::get('version');
 
-		// fetch last 5 admins
+		// Fetch last 5 admins
 		$lastAdmins = Admins::model()->findAll(array('order'=>'id DESC', 'limit'=>'5'));
 		$lastAdminsList = '';
 		if(is_array($lastAdmins)){
@@ -95,14 +92,14 @@ class BackendController extends CController
 		}
 		$this->_view->lastAdminsList = $lastAdminsList;
 		
-		// prepare active sessions
+		// Prepare active sessions
 		$this->_view->customStorage = CConfig::get('session.customStorage');
 		if($this->_view->customStorage){
 			$sessions = CDatabase::init()->select('SELECT COUNT(*) as cnt FROM '.CConfig::get('db.prefix').'sessions');
 			$this->_view->activeSessions = isset($sessions[0]['cnt']) ? $sessions[0]['cnt'] : '0';
 		}
 
-		// prepare notifications 
+		// Prepare notifications 
 		$systemNotifications = array();		
 		$condition = '';
 		$loggedRole = CAuth::getLoggedRole();
@@ -137,12 +134,10 @@ class BackendController extends CController
      */
 	public function loginAction()
 	{
-        // redirect logged in admins
+        // Redirect logged in admins
 		CAuth::handleLoggedIn('backend/dashboard');
-        // set default language for backend
+        // Set default language for backend
         Website::setDefaultLanguage();		
-        // set meta tags according to active language
-		Website::setMetaTags(array('title'=>A::t('app', 'Login')));
 		
 		$cRequest = A::app()->getRequest();
 		$this->_view->username = $cRequest->getPost('username');
@@ -184,7 +179,7 @@ class BackendController extends CController
 		// --------------------------------------------------
 		if($cRequest->getPost('act') == 'send'){			
 			if(!$userBanned){
-				// perform login form validation
+				// Perform login form validation
 				$result = CWidget::create('CFormValidation', array(
 					'fields'=>array(
 						'username'=>array('title'=>A::t('app', 'Username'), 'validation'=>array('required'=>true, 'type'=>'any', 'minLength'=>4, 'maxLength'=>20)),
@@ -203,9 +198,9 @@ class BackendController extends CController
 					if(!$userBanned){
 						if($admin->login($this->_view->username, $this->_view->password, false, $this->_view->remember)){
 							if($this->_view->remember){
-								// username may be decoded
+								// Username may be decoded
 								$usernameHash = CHash::encrypt($this->_view->username, CConfig::get('password.hashKey'));
-								// password cannot be decoded, so we save ID + username + salt + HTTP_USER_AGENT
+								// Password cannot be decoded, so we save ID + username + salt + HTTP_USER_AGENT
 								$httpUserAgent = A::app()->getRequest()->getUserAgent();
 								$passwordHash = CHash::create(CConfig::get('password.encryptAlgorithm'), $admin->id.$admin->username.$admin->getPasswordSalt().$httpUserAgent);
 								A::app()->getCookie()->set('auth', 'usr='.$usernameHash.'&hash='.$passwordHash, (time() + 3600 * 24 * 14));
@@ -275,7 +270,7 @@ class BackendController extends CController
 	{
         A::app()->getSession()->endSession();
 		A::app()->getCookie()->remove('auth');
-        // clear cache
+        // Clear cache
         if(CConfig::get('cache.enable')) CFile::emptyDirectory('protected/tmp/cache/');
         $this->redirect('backend/login');        
     }

@@ -86,8 +86,12 @@ var tinymceConfigs = [
 }];
 
 function setEditor(id, set_focus, mode){	
-	// set mode
+	// get mode
 	var mce_mode = (mode != null) ? mode : 'advanced';
+	
+	tinyMCE.execCommand('mceRemoveControl', true, id);
+	
+	// set mode
 	if (mce_mode == 'simplest') {
 		tinyMCE.settings = tinymceConfigs[0];
 	}else if (mce_mode == 'simple') {

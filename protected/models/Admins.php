@@ -74,11 +74,11 @@ class Admins extends CActiveRecord
 	protected function _beforeSave($id = 0)
 	{
     	if($id > 0){
-    		// update admin
+    		// Update admin
 			if($this->birth_date == '') $this->birth_date = '0000-00-00';
         	$this->updated_at = LocalTime::currentDateTime();
         }else{
-        	// insert new admin
+        	// Insert new admin
 			if($this->birth_date == '') $this->birth_date = '0000-00-00';
         	$this->created_at = LocalTime::currentDateTime();
         }
@@ -91,7 +91,7 @@ class Admins extends CActiveRecord
 	 */
 	protected function _afterSave($id = 0)
 	{
-		// refresh logged-in session variables
+		// Refresh logged-in session variables
 		if($id == CAuth::getLoggedId()){
 			$session = A::app()->getSession();
 			$session->set('loggedName', ($this->display_name != '' ? $this->display_name : $this->username));
@@ -134,19 +134,19 @@ class Admins extends CActiveRecord
 				$this->_errorDescription = A::t('app', 'This email is banned.');
 			}else{
 				if($admin->is_active){					
-					// prepare password for check
+					// Prepare password for check
 					if($checkRememberMe){
-						// check if token is not expired
+						// Check if token is not expired
 						if($admin->token_expires_at != '' && time() > $admin->token_expires_at){
 							$savedPassword = true;
 							$checkPassword = false;
 							
-							// update token expires date in admin record
+							// Update token expires date in admin record
 							$admin->token_expires_at = '';
 							$admin->save();						
 						}else{
 							if(CConfig::get('password.encryption')){
-								// we use ID + username + salt + HTTP_USER_AGENT
+								// We use ID + username + salt + HTTP_USER_AGENT
 								$checkSalt = CConfig::get('password.encryptSalt') ? $admin->salt : '';
 								$httpUserAgent = A::app()->getRequest()->getUserAgent();
 								$checkPassword = CHash::create(CConfig::get('password.encryptAlgorithm'), $admin->id.$admin->username.$checkSalt.$httpUserAgent);
@@ -176,10 +176,10 @@ class Admins extends CActiveRecord
 						$session->set('loggedLanguage', ($admin->language_code ? $admin->language_code : Languages::getDefaultLanguage()));
 						$session->set('loggedRole', $admin->role);
 						
-						// we don't want to save this data in session - just in this object to minimum use
+						// We don't want to save this data in session - just in this object to minimum use
 						$this->_passwordSalt = $admin->salt;
 						
-						// set current language
+						// Set current language
 						if($adminLang = Languages::model()->find('code = :code AND is_active = 1', array(':code'=>$admin->language_code))){
 							$params = array(
 								'locale' => $adminLang->lc_time_name,
@@ -188,7 +188,7 @@ class Admins extends CActiveRecord
 							A::app()->setLanguage($admin->language_code, $params);
 						}
 			
-						// update last visited and token expires dates in admin record
+						// Update last visited and token expires dates in admin record
 						$admin->last_visited_at = LocalTime::currentDateTime();
 						$admin->token_expires_at = ($saveTokenExpires ? (time() + 3600 * 24 * 14) : '');
 						$admin->save();						

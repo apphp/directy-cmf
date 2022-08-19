@@ -1,4 +1,6 @@
 <?php
+	A::app()->view->setMetaTags('title', A::t('setup', 'Ready to Install Updates'));
+	
     $this->_activeMenu = $this->_controller.'/'.$this->_action;
 ?>
 

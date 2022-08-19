@@ -18,7 +18,7 @@ class IndexController extends CController
 	{
         parent::__construct();
 
-        // set frontend mode
+        // Set frontend mode
         Website::setFrontend();
 	}
 	
@@ -29,7 +29,15 @@ class IndexController extends CController
 	{
         $this->_view->title = '';
         $this->_view->text = '';
-
-		$this->_view->render('index/index');	
+		
+		$controller = CConfig::get('defaultController');
+		$action = CConfig::get('defaultAction');
+		$renderPath = strtolower($controller.'/'.$action);
+		
+		if(in_array($renderPath, array('/', 'index', 'index/', 'index/index'))){
+			$this->_view->render('index/index');	
+		}else{
+			$this->redirect($controller.'/'.$action);	
+		}		
 	}	
 }

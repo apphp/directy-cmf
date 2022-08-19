@@ -1,5 +1,7 @@
 <?php
-    $this->_activeMenu = 'frontendMenus/';
+    Website::setMetaTags(array('title'=>A::t('app', 'Add New Menu')));
+	
+	$this->_activeMenu = 'frontendMenus/';
     $breadCrumbs = array(
         array('label'=>A::t('app', 'General'), 'url'=>'backend/dashboard'),
     );    
@@ -23,9 +25,9 @@
 	<div class="title"><?php echo A::t('app', 'Add New Menu'); ?></div>
     <div class="content">
 	<?php
-		$fields = array();
+		$fields = array(); 
 		$fields['parent_name']  = array('type'=>'label', 'title'=>A::t('app', 'Parent'), 'definedValues'=>array(''=>$parentName));
-		$fields['placement']    = array('type'=>'select', 'title'=>A::t('app', 'Display On'), 'data'=>$placementsList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($placementsList)));
+		$fields['placement']    = array('type'=>'select', 'title'=>A::t('app', 'Display On'), 'tooltip'=>A::t('app', 'Take in account that some menu placements may be disabled in current Frontend template.'), 'data'=>$placementsList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($placementsList)));
 		$fields['access_level'] = array('type'=>'select', 'title'=>A::t('app', 'Access'), 'data'=>$accessLevelsList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($accessLevelsList)));
 		$fields['menu_type']    = array('type'=>'select', 'title'=>A::t('app', 'Menu Type'), 'data'=>$menuTypesList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($menuTypesList)), 'htmlOptions'=>array('onchange'=>'changeMenuType(this)'));
 
@@ -53,31 +55,30 @@
 		}
 
 		echo CWidget::create('CDataForm', array(
-			'model'=>'FrontendMenus',
-			//'primaryKey'=>0,
-			'operationType'=>'add',
-			'action'=>'frontendMenus/add'.($parentId ? '/pid/'.$parentId : ''),
-			'successUrl'=>'frontendMenus/manage'.($parentId ? '/pid/'.$parentId : '').'/msg/added',
-			'cancelUrl'=>'frontendMenus/manage'.($parentId ? '/pid/'.$parentId : ''),
-			'method'=>'post',
-			'htmlOptions'=>array(
-				'name'=>'frmMenuAdd',
-				'autoGenerateId'=>true
+			'model'				=> 'FrontendMenus',
+			'operationType'		=> 'add',
+			'action'			=> 'frontendMenus/add'.($parentId ? '/pid/'.$parentId : ''),
+			'successUrl'		=> 'frontendMenus/manage'.($parentId ? '/pid/'.$parentId : ''),
+			'cancelUrl'			=> 'frontendMenus/manage'.($parentId ? '/pid/'.$parentId : ''),
+			'method'			=> 'post',
+			'htmlOptions'		=> array(
+				'name'				=> 'frmMenuAdd',
+				'autoGenerateId'	=> true
 			),
-			'requiredFieldsAlert'=>true,
-			'fields'=>$fields,
-			'translationInfo' => array('relation'=>array('id', 'menu_id'), 'languages'=>Languages::model()->findAll('is_active = 1')),
+			'requiredFieldsAlert' => true,
+			'fields'			=> $fields,
+			'translationInfo' 	=> array('relation'=>array('id', 'menu_id'), 'languages'=>Languages::model()->findAll('is_active = 1')),
 			'translationFields' => array(
-				'name' => array('type'=>'textbox', 'title'=>A::t('app', 'Menu Title'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>''), 'htmlOptions'=>array('title'=>'', 'class'=>'middle')),
+				'name' 				=> array('type'=>'textbox', 'title'=>A::t('app', 'Menu Title'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>''), 'htmlOptions'=>array('title'=>'', 'class'=>'middle')),
 			),
-			'buttons'=>array(
-			   'submit' => array('type'=>'submit', 'value'=>A::t('app', 'Create'), 'htmlOptions'=>array('name'=>'')),
-			   'cancel' => array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
+			'buttons'			=> array(
+			   'submit' 			=> array('type'=>'submit', 'value'=>A::t('app', 'Create'), 'htmlOptions'=>array('name'=>'')),
+			   'cancel' 			=> array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
 			),
-			'messagesSource'=>'core',
-			'return'=>true,
+			'messagesSource'	=> 'core',
+			'alerts'			=> array('type'=>'flash', 'itemName'=>A::t('app', 'Menu')),
+            'return'            => true,
 		));
-
 	?>		
 
 	<div id="dialog" class="dialog-window" title="<?php echo $dialogTitle; ?>">

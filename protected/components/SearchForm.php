@@ -56,7 +56,7 @@ class SearchForm extends CComponent
 		A::app()->getClientScript()->registerScript(
 			'formSearch',
 			'jQuery(".form-search").each(function(){
-				var self = $(this);
+				var self = jQuery(this);
 				self.find(".btn").click(function(){
 					var keywords = self.find(\'input[name="keywords"]\').val();
 					if(keywords == ""){						

@@ -6,15 +6,15 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC:					PROTECTED:					PRIVATE:		
  * ----------               ----------                  ----------
  * __construct              _cleanRequest               _getParam
- * __call
- * init (static)
- * stripSlashes
+ * __call												_getAll
+ * init (static)										
+ * stripSlashes											
  * getBasePath
  * getBaseUrl
  * getRequestUri
@@ -30,17 +30,24 @@
  * setPost
  * post (alias to getPost/setPost)
  * getRequest
+ * request
  * isAjaxRequest
  * isPutRequest
  * isDeleteRequest
  * isPostRequest
  * isPostExists
+ * isSecureConnection
  * getCsrfValidation
  * getCsrfTokenKey
  * getCsrfTokenValue
  * validateCsrfToken
+ * setGzipHandler
  * downloadFile
  * getBrowser
+ * getUrlReferrer
+ * getPort
+ * getSecurePort
+ * getUrlContent
  * 
  */	  
 
@@ -55,20 +62,33 @@ class CHttpRequest extends CComponent
 	public $cookieValidation = false;
 	/** @var boolean whether to enable CSRF (Cross-Site Request Forgery) validation (defaults - false) */
 	private $_csrfValidation = false;
+	/** @var string excluding controllers */
+	private $_csrfExclude = array();
+	/** @var boolean whether to enable output compression */
+	private $_compression = false;
+	/** @var string */
+	private $_compressionType = '';
 	/** @var string */
 	private $_csrfTokenKey = 'APPHP_CSRF_TOKEN';
 	/** @var string */
 	private $_csrfTokenValue = null;
 	/** @var string session or cookie */
 	private $_csrfTokenType = 'session';
-	
+	/** @var int port number */
+	private $_port = null;
+	/** @var int secure port number */
+	private $_securePort = null;
+		
 	
 	/**
 	 * Class default constructor
 	 */
 	function __construct()
 	{
-		$this->_csrfValidation = (CConfig::get('validation.csrf') === true) ? true : false;
+		$this->_csrfValidation = (CConfig::get('validation.csrf.enable') === true) ? true : false;
+		$this->_csrfExclude = CConfig::exists('validation.csrf.exclude') ? CConfig::get('validation.csrf.exclude') : array();
+		$this->_compression = (CConfig::get('compression.enable') === true) ? true : false;
+		$this->_compressionType = CConfig::exists('compression.method') ? CConfig::get('compression.method') : 'gzip';
 		
 		$this->_cleanRequest();
 		$this->_baseUrl = $this->setBaseUrl();
@@ -84,7 +104,9 @@ class CHttpRequest extends CComponent
 	{
 		switch(strtolower($method)){
 			case 'post':
-				if(count($args) == 1){
+				if(count($args) == 0){
+					return $this->_getAll('post');
+				}else if(count($args) == 1){
 					return $this->getPost($args[0]);
 				}else if(count($args) == 2){
 					return $this->setPost($args[0], $args[1]);
@@ -92,7 +114,9 @@ class CHttpRequest extends CComponent
 				break;
 			
 			case 'get':
-				if(count($args) == 1){
+				if(count($args) == 0){
+					return $this->_getAll('get');
+				}else if(count($args) == 1){
 					return $this->getQuery($args[0]);
 				}else if(count($args) == 2){
 					return $this->setQuery($args[0], $args[1]);
@@ -103,6 +127,16 @@ class CHttpRequest extends CComponent
 				if(count($args) == 1){
 					return $this->getPostWith($args[0]);
 				}				
+				break;
+			
+			case 'request':
+				if(count($args) == 0){
+					return $this->_getAll('request');
+				}else if(count($args) == 1){
+					return $this->getRequest($args[0]);
+				}else if(count($args) == 2){
+					return $this->getRequest($args[0], $args[1]);
+				}
 				break;
 		}
 	}
@@ -174,25 +208,27 @@ class CHttpRequest extends CComponent
 	
 	/**
 	 * Sets base URL
-	 * @param boolean $absolute
+	 * @param boolean $absolutePath
 	 */
-	public function setBaseUrl($absolute = true)
+	public function setBaseUrl($absolutePath = true)
 	{
 		$absolutePart = '';
 		
-		if($absolute){
+		if($absolutePath){
 			$protocol = 'http://';
 			$port = '';
-			$httpHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
+			$httpHost = isset($_SERVER['HTTP_HOST']) ? htmlentities($_SERVER['HTTP_HOST']) : '';
+			
 			if((isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) != 'off')) ||
 				strtolower(substr($_SERVER['SERVER_PROTOCOL'], 0, 5)) == 'https'){
 				$protocol = 'https://';
-			}	
-			if(isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] != '80'){
-				if(!strpos($httpHost, ':')){
-					$port = ':'.$_SERVER['SERVER_PORT'];
-				}
+			}			
+			
+			$portNumber = $this->getPort();			
+			if($portNumber != '80' && !strpos($httpHost, ':')){
+				$port = ':'.$portNumber;
 			}
+			
 			$absolutePart = $protocol.$httpHost.$port;
 		}
 
@@ -224,9 +260,13 @@ class CHttpRequest extends CComponent
      *	@see CFilter
      *	@return mixed
      */
-	public function getQuery($name, $filters = '', $default = '')
+	public function getQuery($name = '', $filters = '', $default = '')
 	{
-		return $this->_getParam('get', $name, $filters, $default);		
+		if(empty($name)){
+			return $this->_getAll('get');
+		}else{
+			return $this->_getParam('get', $name, $filters, $default);
+		}
 	}
     
     /**
@@ -253,9 +293,13 @@ class CHttpRequest extends CComponent
      *	@see CFilter
      *	@return mixed
      */
-	public function getPost($name, $filters = '', $default = '')
+	public function getPost($name = '', $filters = '', $default = '')
 	{
-		return $this->_getParam('post', $name, $filters, $default);		
+		if(empty($name)){
+			return $this->_getAll('post');
+		}else{
+			return $this->_getParam('post', $name, $filters, $default);
+		}		
 	}
 
     /**
@@ -302,9 +346,13 @@ class CHttpRequest extends CComponent
      *	@param string $default
      *	@return mixed
      */
-	public function getRequest($name, $filters = '', $default = '')
+	public function getRequest($name = '', $filters = '', $default = '')
 	{
-		return $this->_getParam('request', $name, $filters, $default);		
+		if(empty($name)){
+			return $this->_getAll('request');
+		}else{
+			return $this->_getParam('request', $name, $filters, $default);
+		}
 	}
 
 	/**
@@ -344,8 +392,8 @@ class CHttpRequest extends CComponent
 	public function isPostRequest()
 	{
 		return isset($_SERVER['REQUEST_METHOD']) && !strcasecmp($_SERVER['REQUEST_METHOD'], 'POST');
-	}
-	
+	}	
+ 
 	/**
 	 * Returns whether there is a POST variable exists
 	 * @param string $name
@@ -357,11 +405,32 @@ class CHttpRequest extends CComponent
 	}
 
 	/**
+	 * Return if the request is sent via secure channel (https)
+	 * @return boll
+	 */
+	public function isSecureConnection()
+	{
+		return isset($_SERVER['HTTPS']) && !strcasecmp($_SERVER['HTTPS'], 'on');
+	}
+
+	/**
 	 * Returns is csrf validation is used
 	 * @return string 
 	 */
 	public function getCsrfValidation()
 	{
+		if(is_array($this->_csrfExclude) && !empty($this->_csrfExclude)){
+			// Retrirve current controller
+			// TODO: this is a simplest code, we need to improve it and use URL rules
+			$request = isset($_GET['url']) ? $_GET['url'] : '';
+			$split = explode('/', trim($request, '/'));
+			$controller = !empty($split[0]) ? $split[0] : CConfig::get('defaultController');
+			
+			if(in_array(strtolower($controller), array_map('strtolower', $this->_csrfExclude))){
+				return false;
+			}
+		}
+
 		return $this->_csrfValidation;
 	}
 	
@@ -381,7 +450,7 @@ class CHttpRequest extends CComponent
 	 */
 	public function getCsrfTokenValue()
 	{
-		// check and set token
+		// Check and set token
 		if($this->_csrfTokenValue === null){
 			if($this->_csrfTokenType == 'session'){
 				$this->_csrfTokenValue = md5(uniqid(rand(), true));	
@@ -400,7 +469,7 @@ class CHttpRequest extends CComponent
 	 */
 	public function validateCsrfToken()
 	{
-		// validate only POST requests
+		// Validate only POST requests
 		if($this->isPostRequest()){			
 			if(A::app()->getSession()->isExists('token') && isset($_POST[$this->_csrfTokenKey])){
 				$tokenFromSession = A::app()->getSession()->get('token');
@@ -409,10 +478,23 @@ class CHttpRequest extends CComponent
 			}else{
 				$valid = false;
 			}
+			
 			if(!$valid){
 				unset($_POST);
 				CDebug::addMessage('warnings', 'csrf_token', A::t('core', 'The CSRF token could not be verified.'));
 			}
+		}
+	}
+
+	/**
+	 * Set GZIP compression handler
+	 */
+	public function setGzipHandler()
+	{
+		if(isset($_SERVER['HTTP_ACCEPT_ENCODING']) && substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')){
+			ob_start('ob_gzhandler');
+		}else{
+			ob_start();
 		}
 	}
 
@@ -423,7 +505,7 @@ class CHttpRequest extends CComponent
 	 */
 	protected function _cleanRequest()
 	{
-		// clean request
+		// Clean request
 		if(function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()){
 			$_GET = $this->stripSlashes($_GET);
 			$_POST = $this->stripSlashes($_POST);
@@ -432,6 +514,7 @@ class CHttpRequest extends CComponent
 		}
         
 		if($this->getCsrfValidation()) A::app()->attachEventHandler('_onBeginRequest', array($this, 'validateCsrfToken'));
+		if($this->_compression) A::app()->attachEventHandler('_onBeginRequest', array($this, 'setGzipHandler'));
 	}
 
     /**
@@ -444,12 +527,13 @@ class CHttpRequest extends CComponent
      */
 	private function _getParam($type = 'get', $name = '', $filters = '', $default = '')
 	{
-		$value = '';
+		$value = null;
+		
 		if($type == 'get'){
 			if(isset($_GET[$name])){
 				$value = $_GET[$name];
 			}else{
-				// check for variant
+				// Check for variant
 				// URL: http://localhost/site/page/contact/param1/aaa/param2/bbb/param3/ccc
 				$request = isset($_GET['url']) ? $_GET['url'] : '';
 				$split = explode('/', trim($request,'/'));
@@ -473,7 +557,7 @@ class CHttpRequest extends CComponent
 			$value = isset($_GET[$name]) ? $_GET[$name] : $_POST[$name];
 		}
 		
-		if($value !== ''){
+		if($value !== null){
 			if(!is_array($filters)) $filters = array($filters);
 			foreach($filters as $filter){
 				$value = CFilter::sanitize($filter, $value);
@@ -482,7 +566,25 @@ class CHttpRequest extends CComponent
 		}else{
 			return $default;
 		}		
-	}  
+	}
+	
+    /**
+     *	Returns global arrays: $_GET, $_POST or $_REQUEST according to given type
+     *	@param string $type
+     *	@return array
+     */
+	private function _getAll($type = 'get')
+	{
+		if($type == 'get'){
+			return isset($_GET) ? $_GET : array();	
+		}else if($type == 'post'){
+			return isset($_POST) ? $_POST : array();
+		}else if($type == 'request' && (isset($_GET) || isset($_POST))){
+			return isset($_GET) ? $_GET : $_POST;
+		}
+		
+		return array();
+	}
    
 	/**
 	 * Downloads a file from browser to user 
@@ -508,7 +610,7 @@ class CHttpRequest extends CComponent
 		
         if($terminate) exit(0);
 	}
- 
+
 	/**
 	 * Returns information about the browser of user
 	 * @param string $key
@@ -527,4 +629,150 @@ class CHttpRequest extends CComponent
 		return $browser;
 	}
  
+	/**
+	 * Returns the URL referrer, null if not present
+	 */	
+	public function getUrlReferrer()
+	{
+		return isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
+	}
+
+ 	/**
+	 * Returns the port to use for insecure requests
+	 * Defaults to 80 or the port specified by the server (if the current request is insecure)
+	 * @return int
+	 * @since 0.7.0
+	 */
+	public function getPort()
+	{
+		if($this->_port === null){
+			$this->_port = !$this->isSecureConnection() && isset($_SERVER['SERVER_PORT']) ? (int)$_SERVER['SERVER_PORT'] : 80;
+		}
+		
+		return $this->_port;
+	}
+ 
+	/**
+	 * Returns the port to use for secure requests
+	 * Defaults to 443, or the port specified by the server (if the current request is secure)
+	 * @return int
+	 * @since 0.7.0
+	 */
+	public function getSecurePort()
+	{
+		if($this->_securePort === null){
+			$this->_securePort = $this->isSecureConnection() && isset($_SERVER['SERVER_PORT']) ? (int)$_SERVER['SERVER_PORT'] : 443;
+		}
+		
+		return $this->_securePort;
+	}
+	
+	/**
+	* Returns content of the given URL
+	* @param string $url
+	* @param string $method
+	* @param string $data
+	* @param string $params
+	* @param string $function			'file_get_contents' or 'curl'
+	* @return mixed
+	*/
+   function getUrlContent($url = '', $method = 'get', $data = array(), $params = array(), $function = 'file_get_contents'){
+	
+		# Validate function argumanets
+		$method = strtolower($method);
+		$data = (array)$data;
+		
+		if(empty($url) && !in_array($method, array('get', 'post'))){
+			return true;
+		}
+	
+		# Get parameters
+		$ajaxCall = isset($params['ajax']) ? (bool)$params['ajax'] : false;
+		$showErrors = isset($params['errors']) ? (bool)$params['errors'] : false;
+		$json = isset($params['json']) ? (bool)$params['json'] : false;
+		$sslVerifyHost = isset($params['ssl_verify_host']) ? (bool)$params['ssl_verify_host'] : false;
+		$sslVerifyPeer = isset($params['ssl_verify_peer']) ? (bool)$params['ssl_verify_peer'] : false;
+		$result = NULL;	
+	
+		if($function == 'curl'){
+			# Init curl
+			$ch = curl_init();	
+				
+			# Set options
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+			curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)');
+	
+			# Fake AJAX call
+			if($ajaxCall){
+				curl_setopt($ch, CURLOPT_HTTPHEADER, array("X-Requested-With: XMLHttpRequest"));
+			}
+	
+			# SSL verification
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, ($sslVerifyHost ? 2 : 0));
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, ($sslVerifyPeer ? 1 : 0));
+	
+			if($method == 'post'){
+				# Set the HEADER, number of POST vars, POST data
+				if($json){
+					curl_setopt($ch, CURLOPT_HEADER, false);
+					curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
+					curl_setopt($ch, CURLOPT_POST, count($data));
+					curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+				}
+				else{
+					curl_setopt($ch, CURLOPT_POST, count($data));
+					curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+					curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+				}
+			}
+		
+			if($showErrors){
+				# Check for errors and include in the error message
+				$error = '';
+				if($errno = curl_errno($ch)){
+					$errorMessage = function_exists('curl_strerror') ? curl_strerror($errno) : '';
+					$error = "cURL error ({$errno}):\n {$errorMessage}";
+				}
+				
+				$result['result'] = curl_exec($ch);
+				$result['error'] = $error;
+			}else{
+				$result = curl_exec($ch);
+			}
+			
+			# Close connection
+			curl_close($ch);
+		}else{
+			$context = NULL;
+			
+			# Use key 'http' even if you send the request to https://
+			if($method == 'post'){
+				$options = array(
+					'http' => array(
+						'header'  => "Content-type: application/x-www-form-urlencoded\r\n" .
+									( $ajaxCall ? "X-Requested-With: XMLHttpRequest\r\n" : '' ),
+						'method'  => 'POST',
+						'content' => http_build_query($data),
+					),
+				);
+	
+				# Disable SSL verification
+				if(!$sslVerifyPeer){
+					$options['ssl'] = array(
+						'verify_peer'		=> false,
+						'verify_peer_name'	=> false
+					);
+				}
+				
+				$context = stream_context_create($options);
+			}
+			
+			$result = file_get_contents($url, false, $context);
+		}	
+		
+		return $result;
+	}
+	
 }

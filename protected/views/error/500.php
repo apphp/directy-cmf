@@ -1,5 +1,6 @@
 <?php
-    $this->_pageTitle = A::t('app', 'Error 500');
+    Website::setMetaTags(array('title'=>A::t('app', 'Error 500')));
+	$this->_pageTitle = A::t('app', 'Error 500');
 ?>
 
 <?php if(A::app()->view->getTemplate() != 'backend'){ ?>

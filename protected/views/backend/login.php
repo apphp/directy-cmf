@@ -1,3 +1,7 @@
+<?php
+	// Set meta tags according to active language
+	Website::setMetaTags(array('title'=>A::t('app', 'Login')));
+?>
 <div id="content" class="login">
     
     <img src="templates/backend/images/lock-closed.png" alt="icon" />
@@ -25,7 +29,7 @@
 			));    			
 		}else{
 			echo $actionMessage;		
-			// draw login form
+			// Draw login form
 			echo CWidget::create('CFormView', array(
 				'action'=>'backend/login',
 				'method'=>'post',
@@ -51,8 +55,6 @@
 			));    
 			
 		}
-		//}
-
     ?>
 
     <div class="clear"></div>    

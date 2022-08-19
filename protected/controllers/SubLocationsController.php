@@ -23,18 +23,21 @@ class SubLocationsController extends CController
 	{
         parent::__construct();
 
-        // block access to this controller to non-logged users
+        // Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 		
-		// block access if admin has no active privilege to access sub-locations
+		// Block access if admin has no active privilege to access sub-locations
 		if(!Admins::hasPrivilege('locations', array('view', 'edit'))){
 			$this->redirect('backend/index');
 		}
 		
-        // set meta tags according to active language
+        // Set meta tags according to active language
     	Website::setMetaTags(array('title'=>A::t('app', 'Sub-Locations')));
-        // set backend mode
+        // Set backend mode
         Website::setBackend();
+
+		$this->_cRequest = A::app()->getRequest();
+		$this->_cSession = A::app()->getSession();
 
         $this->_view->actionMessage = '';
         $this->_view->errorField = '';
@@ -53,11 +56,10 @@ class SubLocationsController extends CController
     /**
      * Manage states action handler
      * @param int $country The country id
-     * @param string $msg 
      */
-	public function manageAction($country = 0, $msg = '')
+	public function manageAction($country = 0)
 	{
-		// block access if admin has no active privilege to manage sub-locations
+		// Block access if admin has no active privilege to manage sub-locations
         Website::prepareBackendAction('view', 'locations', 'backend/index');
 
 		$selectedCountry = Countries::model()->findByPk((int)$country);
@@ -66,19 +68,15 @@ class SubLocationsController extends CController
 		}
 		$this->_view->selectedCountry = $selectedCountry;
 			
-		switch($msg){
-			case 'added':
-				$message = A::t('core', 'The adding operation has been successfully completed!');
-				break;
-			case 'updated':
-				$message = A::t('core', 'The updating operation has been successfully completed!');
-				break;
-			default:
-				$message = '';
+		if($this->_cSession->hasFlash('alert')){
+            $alert = $this->_cSession->getFlash('alert');
+            $alertType = $this->_cSession->getFlash('alertType');
+			
+            $this->_view->actionMessage = CWidget::create(
+                'CMessage', array($alertType, $alert, array('button'=>true))
+            );
 		}
-		if(!empty($message)){
-			$this->_view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
-		}
+
 		$this->_view->render('subLocations/manage');    
     }
 
@@ -88,7 +86,7 @@ class SubLocationsController extends CController
      */
 	public function addAction($country = 0)
 	{		
-		// block access if admin has no active privilege to add sub-locations
+		// Block access if admin has no active privilege to add sub-locations
 		Website::prepareBackendAction('edit', 'locations', 'subLocations/manage');		
 		
      	$selectedCountry = Countries::model()->findByPk((int)$country);
@@ -105,7 +103,7 @@ class SubLocationsController extends CController
 	 */
 	public function editAction($id = 0)
 	{		
-		// block access if admin has no active privilege to edit sub-locations
+		// Block access if admin has no active privilege to edit sub-locations
 		Website::prepareBackendAction('edit', 'locations', 'subLocations/manage');
 		
      	$state = States::model()->findByPk((int)$id);
@@ -128,51 +126,44 @@ class SubLocationsController extends CController
 	 */
 	public function deleteAction($id = 0)
 	{
-		// block access if admin has no active privilege to delete sub-locations
+		// Block access if admin has no active privilege to delete sub-locations
 		Website::prepareBackendAction('edit', 'locations', 'subLocations/manage');
 		
-     	$msg = '';
-		$msgType = '';
-	
 		$state = States::model()->findByPk((int)$id);
 		if(!$state){
 			$this->redirect('subLocations/manage');
 		}
+
         $selectedCountry = Countries::model()->find('code = :code', array(':code'=>$state->country_code));
-		if($selectedCountry){
-            $this->_view->selectedCountry = $selectedCountry;
-        }else{
+		if(!$selectedCountry){
             $this->redirect('subLocations/manage');
         }
-				
-		// delete states names from translation table
+		
+    	$alert = '';
+    	$alertType = '';
+	
+		// Delete states names from translation table
 		if($state->delete()){				
 			if($state->getError()){
-				$msg = A::t('app', 'Delete Warning Message');
-				$msgType = 'warning';
+				$alert = A::t('app', 'Delete Warning Message');
+				$alertType = 'warning';
 			}else{		
-				$msg = A::t('app', 'Delete Success Message');
-				$msgType = 'success';	
+				$alert = A::t('app', 'Delete Success Message');
+				$alertType = 'success';	
 			}		
 		}else{
 			if(APPHP_MODE == 'demo'){
-				$msg = CDatabase::init()->getErrorMessage();
-				$msgType = 'warning';
+				$alert = CDatabase::init()->getErrorMessage();
+				$alertType = 'warning';
 		   	}else{
-				$msg = $state->getError() ? $state->getErrorMessage() : A::t('app', 'Delete Error Message');
-				$msgType = 'error';
+				$alert = $state->getError() ? $state->getErrorMessage() : A::t('app', 'Delete Error Message');
+				$alertType = 'error';
 		   	}			
 		}
 
-		if(!empty($msg)){
-			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
-		}
+		$this->_cSession->setFlash('alert', $alert);
+		$this->_cSession->setFlash('alertType', $alertType);
 
-		// block access if admin has no active privilege to view email sub-locations
-		if(Admins::hasPrivilege('ban_lists', array('view'))){
-			$this->_view->render('subLocations/manage');
-		}else{
-			$this->redirect('subLocations/manage');
-		}
+		$this->redirect('subLocations/manage/country/'.$selectedCountry->id);
 	}
 }

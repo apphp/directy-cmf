@@ -35,12 +35,15 @@ class BackendMenu extends CComponent
 		if(is_array($menuItems)){
 			foreach($menuItems as $item){
 				
-				// draw modules management and modules menu
+				// Get opened meni ID
+				$openedMenu = A::app()->getCookie()->get('isOpened');
+
+				// Draw modules management and modules menu
 				if($item['icon'] == 'modules.png' && !Admins::hasPrivilege('modules', 'view') && !Admins::hasPrivilege('modules', 'view_management')) continue;
 				if($item['module_code'] != '' && !Admins::hasPrivilege('modules', 'view')) continue;				
 				
 				$subItems = ($parentId == 0 ? self::_getMenu($item['id']) : '') ;
-                // don't show parent menu if it has no child items
+                // Don't show parent menu if it has no child items
                 if($parentId == 0 && is_array($subItems) && !count($subItems)) continue;
 
 				$imagePath = (preg_match('/\//', $item['icon'])) ? '' : 'templates/backend/images/icons/';
@@ -48,12 +51,12 @@ class BackendMenu extends CComponent
 				$target = '';
 				$show = true;
 
-				// preview link
+				// Preview link
 				if($item['url'] == 'index/'){
 					$item['url'] = Website::getDefaultPage();
 					$target = '_blank';
 				}else{					
-					// check other links - if admin has privileges to access specific menus items
+					// Check other links - if admin has privileges to access specific menus items
 					switch($item['url']){
 						case 'settings/':
 							if(!Admins::hasPrivilege('site_settings', 'view')) $show = false; break;
@@ -84,25 +87,27 @@ class BackendMenu extends CComponent
 				
 				if($show){
 					$items[$i] = array(
-						'label'  => $image.$item['menu_name'],
+						'label'  => $image.(!empty($item['module_code']) ? A::t($item['module_code'], $item['menu_name']) : $item['menu_name']),
 						'url' 	 => empty($item['url']) ? 'javascript:void(0)' : $item['url'],
 						'id' 	 => 'menu-'.$parentId.$i,
-						'target' => $target, 
-						'items'  => $subItems,
+						'target' => $target,
+						'class'	 => ('menu-'.$parentId.$i === $openedMenu || $openedMenu == 'all') ? 'active' : '',
+						'items'  => $subItems,						
 					);					
 				}
 				
-				// add menu items for installed modules under Modules menu
+				// Add menu items for installed modules under Modules menu
 				if($item['url'] === 'modules/'){
-					$modules = Modules::model()->findAll('is_installed = 1');
+					$modules = Modules::model()->findAll(array('condition'=>'is_installed = 1', 'orderBy'=>'sort_order ASC'));
 					if(is_array($modules)){
 						foreach($modules as $module){
 							if(Admins::privilegeExists($module['code'], 'view') && !Admins::hasPrivilege($module['code'], 'view')){
-								// do nothing - don't show this module in menu (only for modules which has "view" privilege)
+								// Do nothing - don't show this module in menu (only for modules which has "view" privilege)
 							}else{
+								$backendDefaultUrl = CConfig::get('modules.'.$module['code'].'.backendDefaultUrl');
 								$items[] = array(
 									'label' => '<img src="images/modules/'.$module['code'].'/'.$module['icon'].'" class="sub-menu-icon" />'.$module['name'],
-									'url' 	=> 'modules/settings/code/'.$module['code']
+									'url' 	=> (!empty($backendDefaultUrl) ? $backendDefaultUrl : 'modules/settings/code/'.$module['code'])
 								);								
 							}
 						}

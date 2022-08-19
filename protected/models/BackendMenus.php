@@ -62,7 +62,7 @@ class BackendMenus extends CActiveRecord
 	protected function _afterDelete($id = 0)
 	{
 		$this->_isError = false;
-		// delete menu names from translation table
+		// Delete menu names from translation table
 		if(false === $this->_db->delete($this->_tableTranslation, 'menu_id = :menu_id', array(':menu_id'=>$id))){
 			$this->_isError = true;
 		}
@@ -85,14 +85,14 @@ class BackendMenus extends CActiveRecord
 	 */
 	public function addMenu($code = '', $name = '')
 	{
-        // add main item
+        // Add main item
         $lastInsertId = $this->_addMenuItem($code, $name, $code.'.png');
         
-        // add settings item
+        // Add settings item
         $this->_addMenuItem($code, A::t('app', 'Settings'), '', 'modules/settings/code/'.$code, $lastInsertId);
         
-        // add sub items
-		$configModule = include(APPHP_PATH.'/protected/modules/'.$code.'/config/main.php');
+        // Add sub items
+		$configModule = CLoader::file('main.php', 'protected/modules/'.$code.'/config/', true);
 		$managementLinks = (isset($configModule['managementLinks']) && is_array($configModule['managementLinks'])) ? $configModule['managementLinks'] : array();
         foreach($managementLinks as $key => $val){
             $this->_addMenuItem($code, $key, '', $val, $lastInsertId);
@@ -115,12 +115,12 @@ class BackendMenus extends CActiveRecord
     {
         $total = ($count = $this->count()) ? $count + 1 : 0;
 
-        // add new menu
+        // Add new menu
         $sql = "INSERT INTO `".CConfig::get('db.prefix').$this->_table."` (`id`, `parent_id`, `url`, `module_code`, `icon`, `is_system`, `is_visible`, `sort_order`) VALUES (NULL, :parent_id, :url, :code, :icon, 0, 1, :total)";
         $this->_db->customExec($sql, array(':parent_id'=>(int)$parentId, ':url'=>$url, ':code'=>$code, ':icon'=>$icon, ':total'=>(int)($total + 1)));
         $backendMenusLastId = $this->_db->lastInsertId();
 
-        // add new menu translations
+        // Add new menu translations
         $sql = "INSERT INTO `".CConfig::get('db.prefix').$this->_tableTranslation."` (`id`, `menu_id`, `language_code`, `name`) SELECT NULL, :menu_id, code, :name FROM `".CConfig::get('db.prefix')."languages`";
         $this->_db->customExec($sql, array(':menu_id'=>(int)$backendMenusLastId, ':name'=>$name));
         
@@ -136,7 +136,7 @@ class BackendMenus extends CActiveRecord
 	public function deleteMenu($code = '', $mode = 'all')
 	{
         if($mode == 'icons' || $mode == 'all'){
-            // delete all icons for the given module
+            // Delete all icons for the given module
             $menus = $this->_db->select('SELECT icon FROM `'.CConfig::get('db.prefix').$this->_table.'` WHERE `module_code` = :module_code', array(':module_code'=>$code));
             $totalMenus = count($menus);
             for($i = 0 ; $i < $totalMenus; $i++){
@@ -145,7 +145,7 @@ class BackendMenus extends CActiveRecord
         }
 
         if($mode == 'all'){
-            // delete all records from menu translations table
+            // Delete all records from menu translations table
             $sql = "DELETE
                     FROM `".CConfig::get('db.prefix').$this->_tableTranslation."`
                     WHERE `menu_id` IN (
@@ -156,7 +156,7 @@ class BackendMenus extends CActiveRecord
                     ";
             $this->_db->customExec($sql, array(':code'=>$code));
     
-            // delete all records from menus table
+            // Delete all records from menus table
             $sql = "DELETE FROM `".CConfig::get('db.prefix').$this->_table."` WHERE `module_code` = :code";
             $this->_db->customExec($sql, array(':code'=>$code));
         }

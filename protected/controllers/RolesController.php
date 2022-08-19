@@ -22,16 +22,19 @@ class RolesController extends CController
 	{
         parent::__construct();
         
-        // block access to this controller to non-logged users
+        // Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 			
         if(!CAuth::isLoggedInAs('owner', 'mainadmin')){
         	$this->redirect('backend/index');
         }
-        // set meta tags according to active language
+        // Set meta tags according to active language
     	Website::setMetaTags(array('title'=>A::t('app', 'Roles Management')));
-        // set backend mode
+        // Set backend mode
         Website::setBackend();
+
+		$this->_cRequest = A::app()->getRequest();
+		$this->_cSession = A::app()->getSession();
 
 		$this->_view->rolesCondition = '';
         $this->_view->actionMessage = '';
@@ -48,17 +51,23 @@ class RolesController extends CController
 	
 	/**
 	 * Manage roles action handler
-     * @param string $msg 
 	 */
-	public function manageAction($msg = '')
+	public function manageAction()
 	{		
-		// "main admin" can view and edit only "simple admin" role
+		// This "main admin" can view and edit only "simple admin" role
 		if(CAuth::isLoggedInAs('mainadmin')){
         	$this->_view->rolesCondition = 'code = "admin"';
         }
-		if($msg == 'updated'){
-			$this->_view->actionMessage = CWidget::create('CMessage', array('success', A::t('core', 'The updating operation has been successfully completed!'), array('button'=>true)));
+
+		if($this->_cSession->hasFlash('alert')){
+            $alert = $this->_cSession->getFlash('alert');
+            $alertType = $this->_cSession->getFlash('alertType');
+			
+            $this->_view->actionMessage = CWidget::create(
+                'CMessage', array($alertType, $alert, array('button'=>true))
+            );
 		}
+
 		$this->_view->render('roles/manage');
 	}
 	
@@ -67,7 +76,7 @@ class RolesController extends CController
 	 */
 	public function addAction()
 	{
-		// only site owner can add new roles
+		// Only site owner can add new roles
 		if(!CAuth::isLoggedInAs('owner')){
 			$this->redirect('roles/manage');
         }
@@ -86,7 +95,7 @@ class RolesController extends CController
 			$this->redirect('roles/manage');
 		}
 
-		// "main admin" can view and edit only "simple admin" role
+		// This "main admin" can view and edit only "simple admin" role
 		if(CAuth::isLoggedInAs('mainadmin') && $roleModel->code != 'admin'){
 			$this->redirect('roles/manage');
         }
@@ -106,45 +115,39 @@ class RolesController extends CController
 			$this->redirect('roles/manage');
 		}
 
-		$msg = '';
-		$msgType = '';
+		$alert = '';
+		$alertType = '';
 
-		// check if this role is a system role
+		// Check if this role is a system role
 		if($roleModel->is_system){
-			$msg = A::t('app', 'Delete System Role Alert');
-			$msgType = 'error';
+			$alert = A::t('app', 'Delete System Role Alert');
+			$alertType = 'error';
 		}else if($roleModel->delete()){				
 			if($roleModel->getError()){
-				$msg = A::t('app', 'Delete Warning Message');
-				$msgType = 'warning';
+				$alert = A::t('app', 'Delete Warning Message');
+				$alertType = 'warning';
 			}else{		
-				$msg = A::t('app', 'Delete Success Message');
-				$msgType = 'success';	
+				$alert = A::t('app', 'Delete Success Message');
+				$alertType = 'success';	
 			}		
 		}else{
 			if(APPHP_MODE == 'demo'){
-				$msg = CDatabase::init()->getErrorMessage();
-				$msgType = 'warning';
+				$alert = CDatabase::init()->getErrorMessage();
+				$alertType = 'warning';
 		   	}else{
-				$msg = $roleModel->getError() ? $roleModel->getErrorMessage() : A::t('app', 'Delete Error Message');
-				$msgType = 'error';
+				$alert = $roleModel->getError() ? $roleModel->getErrorMessage() : A::t('app', 'Delete Error Message');
+				$alertType = 'error';
 		   	}			
 		}
 
-		if(!empty($msg)){
-			$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
+		if(!empty($alert)){
+			$this->_view->actionMessage = CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
 		}
         
-		// block access if admin has no active privilege to view roles
-		if(CAuth::isLoggedInAs('owner')){
-			// "main admin" can view and edit only "simple admin" role
-			if(CAuth::isLoggedInAs('mainadmin')){
-				$this->_view->rolesCondition = 'code = "admin"';
-			}		
-			$this->_view->render('roles/manage');
-		}else{
-			$this->redirect('roles/manage');
-		}		
+		$this->_cSession->setFlash('alert', $alert);
+		$this->_cSession->setFlash('alertType', $alertType);
+		
+		$this->redirect('roles/manage');
 	}
 
 }

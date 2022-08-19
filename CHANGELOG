@@ -1,3 +1,22 @@
+Version 2.6.2 - 28 April, 2016
+----------------------------
+- New: jQuery Modal and Browser.Mobile plugins
+- New: jQuery plugin Chosen (Select Box Enhancer)
+- New: added possibility to create cron jobs in each module by creating Model::cron()
+- New: added payment providers management
+- New: added possibility to allow output compression with gzip
+- Enh: added possibility to define exclusions for CSRF protection on controller-level
+- Enh: minor changes in backend style
+- Enh: added search by text in Email Templates in BO
+- Enh: added autocomplete in filter section of Countries Management 
+- Enh: changes in logic of rendering default view in IndexController
+- Enh: added possibility on account login to check multiple roles
+- Enh: minor changes in FrontendMenu and Locations main view
+- Enh: upgraded jQuery to 1.9.1
+- Bug: fixed syntax error while runing cron controller
+- Bug: fixed error on deleting menu from Frontend menu
+
+
 Version 2.5.3 - 20 May, 2015
 ----------------------------
 - New: added table "rss_channels" and changed some RSS settings on General > Site Settings page
@@ -5,7 +24,7 @@ Version 2.5.3 - 20 May, 2015
 - New: added possibility to perform search on the whole site or by separate modules
 - New: added new vendor Tags Input (jQuery Plugin)
 - New: added possibility to define 3 types of WYSIWYG: simplest, simple and advanced (default)
-- New: added new feature Ban Lsits that allows to ban by IP, username or email
+- New: added new feature Ban Lists that allows to ban by IP, username or email
 - Enh: added field "property_length" for module properties
 - Enh: added field "personal_information" to table "admins"
 - Enh: changed placement for view file of components to protected/views/components/

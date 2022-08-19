@@ -1,8 +1,10 @@
 <?php
+	Website::setMetaTags(array('title'=>A::t('app', 'Module Settings')));
+	
 	$this->_activeMenu = 'modules/settings/code/'.$module->code;
     $this->_breadCrumbs = array(
         array('label'=>A::t('app', 'Modules'), 'url'=>'modules/'),
-		array('label'=>A::t('app', $module->name), 'url'=>'modules/settings/code/'.$module->code),
+		array('label'=>A::t($module->code, $module->name), 'url'=>'modules/settings/code/'.$module->code),
         array('label'=>A::t('app', 'Module Settings')),
     );
 	
@@ -19,14 +21,14 @@
     	echo $actionMessage;
         
 		if(is_array($moduleSettings) && count($moduleSettings) > 0){
-			// open form
+			// Open form
 			$formName = 'frmModuleSettingsEdit';
 			echo CHtml::openForm('modules/settings/code/'.$module->code, 'post', array('name'=>$formName, 'autoGenerateId'=>true));
 			
-			// required fields alert
+			// Required fields alert
 			if(Admins::hasPrivilege('modules', 'edit_management')) echo CHtml::tag('span', array('class'=>'required-fields-alert'), A::t('core','Items marked with an asterisk (*) are required'), true);
 			
-			// hidden fields
+			// Hidden fields
 			echo CHtml::hiddenField('act', 'send');
 			echo CHtml::hiddenField('code', $module->code);
 			?>
@@ -44,12 +46,13 @@
 			<tbody>
 			<?php
             $currentGroup = '';
-			// add settings fields for the module
+			// Add settings fields for the module
 			foreach($moduleSettings as $setting){				
 				$hiddenField = CHtml::hiddenField('id_'.$setting['id'], $setting['id']);
 				$settingName = A::t($setting['module_code'], $setting['name']).(($setting['is_required']) ? CHtml::$afterRequiredLabel : '');
 				$fieldName = 'value_'.$setting['id'];
 				$fieldValue = isset($valuesArray[$setting['id']]) ? $valuesArray[$setting['id']] : $setting['property_value'];
+				$appendText = isset($setting['append_text']) ? $setting['append_text'] : '';
                 
                 if($currentGroup != $setting['property_group'] && $setting['property_group'] != ''){
                     echo '<tr><td class="property-group left" colspan="3"><div class="property-group-title">'.$setting['property_group'].' / '.A::t('app', 'Settings').':</div></td></tr>';
@@ -99,6 +102,9 @@
 						case 'email': 
 							echo CHtml::textField($fieldName, $fieldValue, array('maxlength'=>'100', 'class'=>'email', 'placeholder'=>'email@example.com', 'autocomplete'=>'off'));
 							break;
+                        case 'phone':
+                            echo CHtml::textField($fieldName, $fieldValue, array('maxlength'=>'32', 'class'=>'phone', 'placeholder'=>''));
+                            break;
 						case 'string':	 
 							echo CHtml::textField($fieldName, $fieldValue, array('maxlength'=>'255')); 
 							break;
@@ -110,9 +116,10 @@
 							break;
 						default:	 
 							echo CHtml::textField($fieldName, $fieldValue, array('maxlength'=>'10', 'class'=>'small'));
-					}					
+					}
+					
+					echo '&nbsp; '.A::t($module->code, $appendText);
 					?>
-					&nbsp;
 					</td>
 				</tr>
                 <?php

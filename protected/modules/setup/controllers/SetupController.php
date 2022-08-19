@@ -6,7 +6,7 @@
  * -----------         		------------------
  * __construct            	_checkModRewrite   	
  * indexAction              _checkPdoExtension
- * requirementsAction
+ * requirementsAction		_getPhpInfo
  * databaseAction
  * administratorAction
  * readyAction
@@ -95,9 +95,17 @@ class SetupController extends CController
             }
         }
         
+        $phpInfo = $this->_getPhpInfo();
+		
+        // Check pdoExtension
+        $pdoExtension = $this->_checkPdoExtension($phpInfo);
+
         $this->_cSession->set('step', 1);
         $this->_view->setMetaTags('title', A::t('setup', 'General | Setup Wizard'));
         $this->_view->render('setup/index');
+		
+		// Stop work if no PDO detected
+		if(!$pdoExtension) exit;
     }
 
 	/**
@@ -115,24 +123,10 @@ class SetupController extends CController
         $this->_view->notifyMessage = '';
         $this->_view->isCriticalError = false;
         
-        ob_start();        
-        if(function_exists('phpinfo')) @phpinfo(-1);
-        $phpinfo = array('phpinfo' => array());
-        if(preg_match_all('#(?:<h2>(?:<a name=".*?">)?(.*?)(?:</a>)?</h2>)|(?:<tr(?: class=".*?")?><t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>(?:<t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>(?:<t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>)?)?</tr>)#s', ob_get_clean(), $matches, PREG_SET_ORDER))
-        foreach($matches as $match){
-			$arrayKeys = array_keys($phpinfo);
-			$endArrayKeys = end($arrayKeys);
-            if(strlen($match[1])){
-                $phpinfo[$match[1]] = array();
-            }else if(isset($match[3])){
-                $phpinfo[$endArrayKeys][$match[2]] = isset($match[4]) ? array($match[3], $match[4]) : $match[3];
-            }else{				
-                $phpinfo[$endArrayKeys][] = $match[2];
-            }
-        }
-        
+        $phpInfo = $this->_getPhpInfo();
+		
         // check all required settings        
-        $pdoExtension = $this->_checkPdoExtension($phpinfo);
+        $pdoExtension = $this->_checkPdoExtension($phpInfo);
         $modeRewrite = $this->_checkModRewrite();
         
         if(version_compare(phpversion(), '5.2.3', '<')){	
@@ -153,22 +147,22 @@ class SetupController extends CController
         }
 
         $this->_view->phpVersion = function_exists('phpversion') ? '<span class="found">'.phpversion().'</span>' : '<span class="unknown">Unknown</span>';
-        $this->_view->system = isset($phpinfo['phpinfo']['System']) ? '<span class="found">'.$phpinfo['phpinfo']['System'].'</span>' : '<span class="unknown">Unknown</span>';
-        $this->_view->systemArchitecture = isset($phpinfo['phpinfo']['Architecture']) ? '<span class="found">'.$phpinfo['phpinfo']['Architecture'].'</span>' : '<span class="unknown">Unknown</span>';
-        $this->_view->buildDate = isset($phpinfo['phpinfo']['Build Date']) ? '<span class="found">'.$phpinfo['phpinfo']['Build Date'].'</span>' : '<span class="unknown">Unknown</span>';
-        $this->_view->serverApi = isset($phpinfo['phpinfo']['Server API']) ? '<span class="found">'.$phpinfo['phpinfo']['Server API'].'</span>' : '<span class="unknown">Unknown</span>';
-        $this->_view->vdSupport = isset($phpinfo['phpinfo']['Virtual Directory Support']) ? $phpinfo['phpinfo']['Virtual Directory Support'] : 'Unknown';
+        $this->_view->system = isset($phpInfo['phpinfo']['System']) ? '<span class="found">'.$phpInfo['phpinfo']['System'].'</span>' : '<span class="unknown">Unknown</span>';
+        $this->_view->systemArchitecture = isset($phpInfo['phpinfo']['Architecture']) ? '<span class="found">'.$phpInfo['phpinfo']['Architecture'].'</span>' : '<span class="unknown">Unknown</span>';
+        $this->_view->buildDate = isset($phpInfo['phpinfo']['Build Date']) ? '<span class="found">'.$phpInfo['phpinfo']['Build Date'].'</span>' : '<span class="unknown">Unknown</span>';
+        $this->_view->serverApi = isset($phpInfo['phpinfo']['Server API']) ? '<span class="found">'.$phpInfo['phpinfo']['Server API'].'</span>' : '<span class="unknown">Unknown</span>';
+        $this->_view->vdSupport = isset($phpInfo['phpinfo']['Virtual Directory Support']) ? $phpInfo['phpinfo']['Virtual Directory Support'] : 'Unknown';
         $this->_view->vdSupport = ($this->_view->vdSupport == 'enabled') ? '<span class="found">'.$this->_view->vdSupport.'</span>' : '<span class="disabled">'.$this->_view->vdSupport.'</span>';
 
         $this->_view->pdoExtension = $pdoExtension ? '<span class="found">enabled</span>' : '<span class="disabled">disabled</span>';
         $this->_view->modeRewrite = $modeRewrite ? '<span class="found">enabled</span>' : '<span class="disabled">disabled</span>';
         
         $phpCoreIndex = ((version_compare(phpversion(), '5.3.0', '<'))) ? 'PHP Core' : 'Core';
-        $this->_view->aspTags   = isset($phpinfo[$phpCoreIndex]) ? '<span class="found">'.$phpinfo[$phpCoreIndex]['asp_tags'][0].'</span>' : '<span class="unknown">Unknown</span>';
-        $this->_view->safeMode = isset($phpinfo[$phpCoreIndex]['safe_mode']) ? '<span class="found">'.$phpinfo[$phpCoreIndex]['safe_mode'][0].'</span>' : '<span class="unknown">Unknown</span>';
-        $this->_view->shortOpenTag = isset($phpinfo[$phpCoreIndex]) ? '<span class="found">'.$phpinfo[$phpCoreIndex]['short_open_tag'][0].'</span>' : '<span class="unknown">Unknown</span>';
+        $this->_view->aspTags   = isset($phpInfo[$phpCoreIndex]) ? '<span class="found">'.$phpInfo[$phpCoreIndex]['asp_tags'][0].'</span>' : '<span class="unknown">Unknown</span>';
+        $this->_view->safeMode = isset($phpInfo[$phpCoreIndex]['safe_mode']) ? '<span class="found">'.$phpInfo[$phpCoreIndex]['safe_mode'][0].'</span>' : '<span class="unknown">Unknown</span>';
+        $this->_view->shortOpenTag = isset($phpInfo[$phpCoreIndex]) ? '<span class="found">'.$phpInfo[$phpCoreIndex]['short_open_tag'][0].'</span>' : '<span class="unknown">Unknown</span>';
 
-        $this->_view->sessionSupport = isset($phpinfo['session']['Session Support']) ? $phpinfo['session']['Session Support'] : 'Unknown';
+        $this->_view->sessionSupport = isset($phpInfo['session']['Session Support']) ? $phpInfo['session']['Session Support'] : 'Unknown';
         $this->_view->sessionSupport = ($this->_view->sessionSupport == "enabled") ? '<span class="found">'.$this->_view->sessionSupport.'</span>' : '<span class="disabled">'.$this->_view->sessionSupport.'</span>';
         
         $this->_view->magicQuotesGpc = ini_get('magic_quotes_gpc') ? '<span class="found">On</span>' : '<span class="disabled">Off</span>';
@@ -182,6 +176,9 @@ class SetupController extends CController
         
         $this->_view->setMetaTags('title', A::t('setup', 'Check Application Requirements | Setup Wizard'));
         $this->_view->render('setup/requirements');
+
+		// Stop work if no PDO detected
+		if(!$pdoExtension) exit;
     }
 
 	/**
@@ -208,17 +205,18 @@ class SetupController extends CController
         }
         
         $this->_view->actionMessage = '';
+		$dbDrivers = array('mysql'=>'MySql');
         $msg = '';
 
         $separatorGeneralFields = array(
             'separatorInfo' => array('legend'=>'General Settings'),
             'setupType'  =>array('type'=>'dropdownlist', 'value'=>$this->_view->setupType, 'title'=>A::t('setup', 'Setup Type'), 'mandatoryStar'=>false, 'data'=>array('install'=>A::t('setup', 'New Installation'), 'update'=>A::t('setup', 'Update')), 'htmlOptions'=>array(), 'validation'=>array('required'=>true, 'type'=>'text', 'source'=>array('install'))),
-            'dbDriver'   =>array('type'=>'dropdownlist', 'value'=>$this->_view->dbDriver, 'title'=>A::t('setup', 'Database Driver'), 'mandatoryStar'=>true, 'data'=>array('mysql'=>'MySql'), 'htmlOptions'=>array(), 'validation'=>array('required'=>true, 'type'=>'text', 'source'=>array('mysql'))),
+            'dbDriver'   =>array('type'=>'dropdownlist', 'value'=>$this->_view->dbDriver, 'title'=>A::t('setup', 'Database Driver'), 'mandatoryStar'=>true, 'data'=>$dbDrivers, 'htmlOptions'=>array(), 'validation'=>array('required'=>true, 'type'=>'text', 'source'=>array_keys($dbDrivers))),
             'dbPrefix'   =>array('type'=>'textbox', 'value'=>$this->_view->dbPrefix, 'title'=>A::t('setup', 'Database (tables) Prefix'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxLength'=>'10', 'autocomplete'=>'off'), 'validation'=>array('required'=>false, 'type'=>'variable')),
         );
         $separatorConenctionSettingsFields = array(
             'separatorInfo' => array('legend'=>'Connection Settings'),
-            'dbHost'     =>array('type'=>'textbox', 'value'=>$this->_view->dbHost, 'title'=>A::t('setup', 'Database Host'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'32', 'autocomplete'=>'off'), 'validation'=>array('required'=>true, 'type'=>'text')),
+            'dbHost'     =>array('type'=>'textbox', 'value'=>$this->_view->dbHost, 'title'=>A::t('setup', 'Database Host'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'60', 'autocomplete'=>'off'), 'validation'=>array('required'=>true, 'type'=>'text')),
             'dbName'     =>array('type'=>'textbox', 'value'=>$this->_view->dbName, 'title'=>A::t('setup', 'Database Name'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'20', 'autocomplete'=>'off'), 'validation'=>array('required'=>true, 'type'=>'text')),
             'dbUser'     =>array('type'=>'textbox', 'value'=>$this->_view->dbUser, 'title'=>A::t('setup', 'Database User'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'20', 'autocomplete'=>'off'), 'validation'=>array('required'=>true, 'type'=>'text')),
             'dbPassword' =>array('type'=>'password', 'value'=>$this->_view->dbPassword, 'title'=>A::t('setup', 'Database Password'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxLength'=>'20', 'autocomplete'=>'off'), 'validation'=>array('required'=>false, 'type'=>'text')),
@@ -338,32 +336,35 @@ class SetupController extends CController
         $this->_view->actionMessage = '';
         $this->_view->installed = false;
         
-        // check if previous step was passed
+        // Check if previous step was passed
         if($this->_cSession->get('step') < 4){
             $this->redirect('setup/index');
         }else if($this->_cRequest->getPost('act') == 'send'){
-            // get sql schema
-            $sqlDumpPath = APPHP_PATH.'/protected/data/schema'.($this->_cSession->get('setupType') == 'update' ? '.update' : '').'.mysql.sql';
+            // Get sql schema
+			$dbDriver = $this->_cSession->get('dbDriver', 'mysql');			
+            $sqlDumpPath = APPHP_PATH.'/protected/data/schema'.($this->_cSession->get('setupType') == 'update' ? '.update' : '').'.'.strtolower($dbDriver).'.sql';
             $sqlDump = file($sqlDumpPath);
             if(empty($sqlDump)){
                 $this->_view->actionMessage = CWidget::create('CMessage', array('error', 'Could not read file <b>'.$sqlDumpPath.'</b>! Please check if this file exists.'));
             }else{
                 $encryption = isset($this->_configMain['password']['encryption']) ? $this->_configMain['password']['encryption'] : false;
                 $encryptAlgorithm = isset($this->_configMain['password']['encryptAlgorithm']) ? $this->_configMain['password']['encryptAlgorithm'] : '';
-                $encryptSalt = isset($this->_configMain['password']['encryptSalt']) ? (bool)$this->_configMain['password']['encryptSalt'] : false;
-				$salt = ($encryption && $encryptSalt) ? CHash::salt() : '';
+                $encryptionSalt = isset($this->_configMain['password']['encryptionSalt']) ? (bool)$this->_configMain['password']['encryptionSalt'] : false;
+				$salt = ($encryption && $encryptionSalt) ? CHash::salt() : '';
                 $components = isset($this->_configMain['components']) ? $this->_configMain['components'] : '';
         
-                // replace placeholders
+                // Replace placeholders
                 $sqlDump = str_ireplace('<DB_PREFIX>', $this->_cSession->get('dbPrefix'), $sqlDump);
                 $sqlDump = str_ireplace('<USERNAME>', $this->_cSession->get('username'), $sqlDump);
 				$sqlDump = str_ireplace('<SALT>', $salt, $sqlDump);
-				$sqlDump = str_ireplace('<PASSWORD>', (($encryption) ? CHash::create($encryptAlgorithm, $this->_cSession->get('password'), $salt) : $this->_cSession->get('password')), $sqlDump);
+                $sqlDump = str_ireplace('<PASSWORD>', (($encryption) ? CHash::create($encryptAlgorithm, $this->_cSession->get('password'), $salt) : $this->_cSession->get('password')), $sqlDump);
                 $sqlDump = str_ireplace('<EMAIL>', $this->_cSession->get('email'), $sqlDump);
                 $sqlDump = str_ireplace('<CREATED_AT>', date('Y-m-d H:i:s', time() + (date('I', time()) ? 3600 : 0)), $sqlDump);
+				$sqlDump = str_ireplace('<CURRENT_DATE>', date('Y-m-d', time() + (date('I', time()) ? 3600 : 0)), $sqlDump);
+				$sqlDump = str_ireplace('<CURRENT_DATETIME>', date('Y-m-d H:i:s', time() + (date('I', time()) ? 3600 : 0)), $sqlDump);
                 
                 $model = new Setup(array(
-                    'dbDriver' => $this->_cSession->get('dbDriver'),
+                    'dbDriver' => $dbDriver,
                     'dbHost' => $this->_cSession->get('dbHost'),
                     'dbName' => $this->_cSession->get('dbName'),
                     'dbUser' => $this->_cSession->get('dbUser'),
@@ -391,6 +392,8 @@ class SetupController extends CController
                                             if(!empty($sqlDump)){											
                                                 // get and run sql schema filename for the module
                                                 $sqlDump = str_ireplace('<DB_PREFIX>', $this->_cSession->get('dbPrefix'), $sqlDump);
+												$sqlDump = str_ireplace('<CURRENT_DATE>', date('Y-m-d', time() + (date('I', time()) ? 3600 : 0)), $sqlDump);
+												$sqlDump = str_ireplace('<CURRENT_DATETIME>', date('Y-m-d H:i:s', time() + (date('I', time()) ? 3600 : 0)), $sqlDump);
                                                 $model->doBeginTransaction();
                                                 if(!$model->install($sqlDump, false)){
                                                     $modulesError = true;
@@ -539,27 +542,61 @@ class SetupController extends CController
 
 	/**
      * Checks mod_rewrite
+     * Uses few steps to check if mod_rewrite is enabled
 	 */
     private function _checkModRewrite()
     {
+		$mod_rewrite = false;
+		
         if(function_exists('apache_get_modules')){
             // works only if PHP is not running as CGI module
             $mod_rewrite = in_array('mod_rewrite', apache_get_modules());
-        }else{
-            // old - $mod_rewrite = getenv('HTTP_MOD_REWRITE') == 'On' ? true : false ;
-            $file_content = file_get_contents($this->_cRequest->getBaseUrl().'setup/testModeRewrite');
+        }
+		
+		if (!$mod_rewrite){
+			$mod_rewrite = getenv('HTTP_MOD_REWRITE') == 'On' ? true : false ;
+		}
+		
+		if (!$mod_rewrite){
+			$useAbsolutePath = ini_get('allow_url_fopen') ? true : false;
+			$file_content = file_get_contents($this->_cRequest->getBaseUrl($useAbsolutePath).'setup/testModeRewrite');	
             $mod_rewrite = (substr($file_content, 0, 16) == 'test_mod_rewrite') ? true : false;
-        }   
+        }
+		
         return $mod_rewrite;            
     }
     
 	/**
      * Checks PDO extension
-     * @param array $phpinfo
+     * @param array $phpInfo
 	 */
-    private function _checkPdoExtension($phpinfo)
+    private function _checkPdoExtension($phpInfo)
     {
-        return (isset($phpinfo['PDO']['PDO support']) && $phpinfo['PDO']['PDO support'] == 'enabled') ? true : false;
+        return (isset($phpInfo['PDO']['PDO support']) && $phpInfo['PDO']['PDO support'] == 'enabled') ? true : false;
     }
    
+	/**
+	 * Returns array with full PHP info
+	 * @return array
+	 */
+	private function _getPhpInfo()
+	{
+        ob_start();        
+        if(function_exists('phpinfo')) @phpinfo(-1);
+        $phpInfo = array('phpinfo' => array());
+        if(preg_match_all('#(?:<h2>(?:<a name=".*?">)?(.*?)(?:</a>)?</h2>)|(?:<tr(?: class=".*?")?><t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>(?:<t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>(?:<t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>)?)?</tr>)#s', ob_get_clean(), $matches, PREG_SET_ORDER))
+        foreach($matches as $match){
+			$arrayKeys = array_keys($phpInfo);
+			$endArrayKeys = end($arrayKeys);
+            if(strlen($match[1])){
+                $phpInfo[$match[1]] = array();
+            }else if(isset($match[3])){
+                $phpInfo[$endArrayKeys][$match[2]] = isset($match[4]) ? array($match[3], $match[4]) : $match[3];
+            }else{				
+                $phpInfo[$endArrayKeys][] = $match[2];
+            }
+        }
+		
+		return $phpInfo;
+	}
 }

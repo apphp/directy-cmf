@@ -38,6 +38,7 @@ class Accounts extends CActiveRecord
 	 * We use this method to avoid calling model($className = __CLASS__) in derived class
 	 * @param string $method
 	 * @param array $args
+	 * @version PHP 5.3.0 or higher
 	 * @return mixed
 	 */
 	public static function __callStatic($method, $args)
@@ -50,21 +51,39 @@ class Accounts extends CActiveRecord
             }
 		}		
 	}
+
+    ///**
+    // * Returns the static model of the specified AR class
+	// * @version PHP 5.2.x 
+    // */
+    //public static function model($class = __CLASS__)
+    //{
+    //    return parent::model($class);
+    //}
     
     /**
      * Account login
      * @param string $username
      * @param string $password
-     * @param string $role
+     * @param mixed $roles
      * @param bool $checkRememberMe
      * @param bool $saveTokenExpires
      */
-    public function login($username, $password, $role = '', $checkRememberMe = false, $saveTokenExpires = false)
+    public function login($username, $password, $roles = '', $checkRememberMe = false, $saveTokenExpires = false)
     {
         $this->_db->cacheOff();
 		
-		if(!empty($role)){
-			$account = $this->find('role = :role AND username = :username', array(':username' => $username, ':role' => $role));
+		if(!empty($roles)){
+			if(is_array($roles)){
+				$roles_in = array('-1');
+				foreach($roles as $role){
+					$roles_in[] = "'$role'";
+				}
+				$account = $this->find('role IN('.implode(',', $roles_in).') AND username = :username', array(':username' => $username));	
+			}else{
+				$account = $this->find('role = :role AND username = :username', array(':role' => $roles, ':username' => $username));	
+			}
+			
 		}else{
 			$account = $this->find('username = :username', array(':username' => $username));
 		}
@@ -72,19 +91,19 @@ class Accounts extends CActiveRecord
         if($account){
             if($account->is_active){
 				
-				// prepare password for check
+				// Prepare password for check
 				if($checkRememberMe){
-					// check if token is not expired
+					// Check if token is not expired
 					if($account->token_expires_at != '' && time() > $account->token_expires_at){
 						$savedPassword = true;
 						$checkPassword = false;
 						
-						// update token expires date in account record
+						// Update token expires date in account record
 						$account->token_expires_at = '';
 						$account->save();						
 					}else{
 						if(CConfig::get('password.encryption')){
-							// we use ID + username + salt + HTTP_USER_AGENT
+							// We use ID + username + salt + HTTP_USER_AGENT
 							$checkSalt = CConfig::get('password.encryptSalt') ? $account->salt : '';
 							$httpUserAgent = A::app()->getRequest()->getUserAgent();
 							$checkPassword = CHash::create(CConfig::get('password.encryptAlgorithm'), $account->id.$account->username.$checkSalt.$httpUserAgent);
@@ -110,13 +129,14 @@ class Accounts extends CActiveRecord
 					$session->set('loggedName', $account->username);
 					$session->set('loggedEmail', $account->email);
 					$session->set('loggedLastVisit', $account->last_visited_at);
+					if($account->iscolumnExists('avatar')) $session->set('loggedAvatar', $account->avatar);
 					$session->set('loggedLanguage', ($account->language_code ? $account->language_code : Languages::getDefaultLanguage()));
 					$session->set('loggedRole', $account->role);
 							  
-					// we don't want to save this data in session - just in this object to minimum use
+					// We don't want to save this data in session - just in this object to minimum use
 					$this->_passwordSalt = $account->salt;
 
-					// set current language
+					// Set current language
 					if($accountLang = Languages::model()->find('code = :code AND is_active = 1', array(':code'=>$account->language_code))){
 						$params = array(
 							'locale' => $accountLang->lc_time_name,
@@ -125,7 +145,7 @@ class Accounts extends CActiveRecord
 						A::app()->setLanguage($account->language_code, $params);
 					}
 	
-					// update last visited and token expires dates in account record
+					// Update last visited and token expires dates in account record
 					$account->last_visited_at = LocalTime::currentDateTime();
 					$account->last_visited_ip = A::app()->getRequest()->getUserHostAddress();
 					$account->token_expires_at = ($saveTokenExpires ? (time() + 3600 * 24 * 14) : '');

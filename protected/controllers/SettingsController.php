@@ -21,8 +21,8 @@
 class SettingsController extends CController
 {
 	private $_settings;
-	private $_msg;
-	private $_errorType;
+	private $_alert;
+	private $_alertType;
 	private $_cRequest;
 	private $_arrDateFormats;
 	private $_arrTimeFormats;
@@ -35,72 +35,39 @@ class SettingsController extends CController
 	{
         parent::__construct();
         
-        // block access to this controller to non-logged users
+        // Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');		
 	        
-		// block access if admin has no active privileges to access site settings
+		// Block access if admin has no active privileges to access site settings
 		if(!Admins::hasPrivilege('site_settings', 'view')){
 			$this->redirect('backend/index');
 		}
 		
-        // set meta tags according to active language
+        // Set meta tags according to active language
     	Website::setMetaTags(array('title'=>A::t('app', 'Site Settings')));
-        // set backend mode
+        // Set backend mode
         Website::setBackend();
 
         $this->_view->actionMessage = '';
         $this->_view->errorField = ''; 
-        $this->_msg = '';
-        $this->_errorType = '';
+        $this->_alert = '';
+        $this->_alertType = '';
         
         $this->_settings = Bootstrap::init()->getSettings();
         if(!$this->_settings){
     		$this->redirect('backend/index');
         }                    
         $this->_cRequest = A::app()->getRequest();       
+		$this->_cSession = A::app()->getSession();
 
-    	$this->_arrDateFormats = array(
-			'Y-m-d' => '[ Y-m-d ] ',
-			'd-m-Y' => '[ d-m-Y ] ',
-			'm-d-Y' => '[ m-d-Y ] ',
-			'Y F d' => '[ Y F d ] ',
-			'M d, Y' => '[ M d, Y ] ',
-			'd M, Y' => '[ d M, Y ] ',
-			'F d Y' => '[ F d Y ] ',
-			'F j, Y' => '[ F j, Y ] ',
-			'd F Y' => '[ d F Y ] ',
-			'd F, Y' => '[ d F, Y ] ',
-			'' => A::t('app', 'Custom...'),
-		);		
+    	$this->_arrDateFormats = CLocale::getDateFormats();
+		$this->_arrDateFormats[''] = A::t('app', 'Custom...');
 
-    	$this->_arrTimeFormats = array(
-			'H:i:s'=>'[ H:i:s ] ',
-			'h:i:s'=>'[ h:i:s ] ',
-			'g:i:s'=>'[ g:i:s ] ',
-			'h:i a'=>'[ h:i a ] ',
-			'h:i A'=>'[ h:i A ] ',
-			'g:i a'=>'[ g:i a ] ',
-			'g:i A'=>'[ g:i A ] ',
-			'H:i'=>'[ H:i ] ',
-			'h:i'=>'[ h:i ] ',
-			'g:i'=>'[ g:i ] ',
-			'' => A::t('app', 'Custom...'),
-		);
-
-    	$this->_arrDateTimeFormats = array(
-			'Y-m-d H:i:s'=>'[ Y-m-d H:i:s ] ',
-			'm-d-Y H:i:s'=>'[ m-d-Y H:i:s ] ',
-			'm-d-Y g:ia'=>'[ m-d-Y g:ia ] ',
-			'd-m-Y H:i:s'=>'[ d-m-Y H:i:s ] ',
-			'd-m-Y g:ia'=>'[ d-m-Y g:ia ] ',
-			'M d, Y g:ia'=>'[ M d, Y g:ia ] ',
-			'd M, Y g:ia'=>'[ d M, Y g:ia ] ',
-			'F j Y, g:ia'=>'[ F j Y, g:ia ] ',
-			'j F Y, g:ia'=>'[ j F Y, g:ia ] ',
-			'D, F j Y g:ia'=>'[ D, F j Y g:ia ] ',
-			'D, M d Y g:ia'=>'[ D, M d Y g:ia ] ',
-			'' => A::t('app', 'Custom...'),
-		);		
+		$this->_arrTimeFormats = CLocale::getTimeFormats();
+		$this->_arrTimeFormats[''] = A::t('app', 'Custom...');
+		
+		$this->_arrDateTimeFormats = CLocale::getDateTimeFormats();
+		$this->_arrDateTimeFormats[''] = A::t('app', 'Custom...');		
 	}	
 
 	/**
@@ -181,28 +148,28 @@ class SettingsController extends CController
 
         if($this->_cRequest->getQuery('task') == 'clearCache'){
 
-     		// block access if admin has no active privilege to edit site settings
+     		// Block access if admin has no active privilege to edit site settings
      		if(!Admins::hasPrivilege('site_settings', 'edit')){
      			$this->redirect('backend/index');
      		}
 
             if(APPHP_MODE == 'demo'){
-                $this->_msg = A::t('core', 'This operation is blocked in Demo Mode!');
-                $this->_errorType = 'warning';
+                $this->_alert = A::t('core', 'This operation is blocked in Demo Mode!');
+                $this->_alertType = 'warning';
             }else if(CFile::isDirectoryEmpty('protected/tmp/cache/')){
-                $this->_msg = A::t('app', 'No cache files found');
-                $this->_errorType = 'error';                
+                $this->_alert = A::t('app', 'No cache files found');
+                $this->_alertType = 'error';                
             }else if(CFile::emptyDirectory('protected/tmp/cache/')){
-                $this->_msg = A::t('app', 'Clear Cache Success Message');
-                $this->_errorType = 'success';
+                $this->_alert = A::t('app', 'Clear Cache Success Message');
+                $this->_alertType = 'success';
             }else{
-                $this->_msg = A::t('app', 'Clear Cache Error Message');
-                $this->_errorType = 'error';
+                $this->_alert = A::t('app', 'Clear Cache Error Message');
+                $this->_alertType = 'error';
             }            
         }else if($this->_cRequest->getPost('act') == 'send'){
-    		// settings form submit
+    		// Settings form submit
             
-     		// block access if admin has no active privilege to edit site settings
+     		// Block access if admin has no active privilege to edit site settings
      		if(!Admins::hasPrivilege('site_settings', 'edit')){
      			$this->redirect('backend/index');
      		}
@@ -230,33 +197,39 @@ class SettingsController extends CController
 				),
 		    ));
 		    if($result['error']){
-		    	$this->_msg = $result['errorMessage'];
+		    	$this->_alert = $result['errorMessage'];
 		    	$this->_view->errorField = $result['errorField'];
-		    	$this->_errorType = 'validation';
+		    	$this->_alertType = 'validation';
 		    }else{
 				if(APPHP_MODE == 'demo'){
-					$this->_msg = A::t('core', 'This operation is blocked in Demo Mode!');
-					$this->_errorType = 'warning';
+					$this->_alert = A::t('core', 'This operation is blocked in Demo Mode!');
+					$this->_alertType = 'warning';
 				}else{
 					if($this->_settings->save()){
-						$this->_msg = A::t('app', 'Settings Update Success Message');
-						$this->_errorType = 'success';
+						$this->_cSession->setFlash('alert', A::t('app', 'Settings Update Success Message'));
+						$this->_cSession->setFlash('alertType', 'success');
+						$this->redirect('settings/general');
 					}else{
-						$this->_msg = A::t('app', 'Settings Update Error Message');
+						$this->_alert = A::t('app', 'Settings Update Error Message');
 						$this->_view->errorField = '';
-						$this->_errorType = 'error';
+						$this->_alertType = 'error';
 					}
 				}
 		    }
     	}
 		
-        if(!empty($this->_msg)){
-            $this->_view->actionMessage = CWidget::create('CMessage', array($this->_errorType, $this->_msg, array('button'=>true)));
+		if($this->_cSession->hasFlash('alert')){
+            $this->_alert = $this->_cSession->getFlash('alert');
+            $this->_alertType = $this->_cSession->getFlash('alertType');
+		}
+		
+        if(!empty($this->_alert)){
+            $this->_view->actionMessage = CWidget::create('CMessage', array($this->_alertType, $this->_alert, array('button'=>true)));
         }
    		
 		$this->_view->settings = $this->_settings;        
     	$this->_view->tabs = $this->_prepareTab('general');		
-    	$this->_view->render('settings/general');		
+    	$this->_view->render('settings/general');
     }
     
     /**
@@ -264,7 +237,7 @@ class SettingsController extends CController
      */
     public function visualAction()
     {    	 
-    	// all active languages list for dropdown box
+    	// All active languages list for dropdown box
         $languages = Languages::model()->findAll('is_active = 1');
         $langList = array();
        	if(is_array($languages)){
@@ -277,19 +250,19 @@ class SettingsController extends CController
     	if($this->_cRequest->getPost('act') == 'send'){
     		// settings form submit
     		
-    		// block access if admin has no active privilege to edit site settings
+    		// Block access if admin has no active privilege to edit site settings
     		if(!Admins::hasPrivilege('site_settings', 'edit')){
     			$this->redirect('backend/index');
     		}
     		
-            // check site desc ID access
+            // Check site desc ID access
 	    	$siteInfo = SiteInfo::model()->findByPk($this->_cRequest->getPost('siteDescId', 'int'));
             if(!$siteInfo){
                 $this->redirect('backend/index');
             }
 
 	    	$this->_view->selectedLanguage = $siteInfo->language_code;		
-        	// get selected site descriptions
+        	// Get selected site descriptions
     		$siteInfo->header = $this->_cRequest->getPost('siteHeader');
     		$siteInfo->slogan = $this->_cRequest->getPost('slogan');
     		$siteInfo->footer = $this->_cRequest->getPost('footer');
@@ -304,50 +277,48 @@ class SettingsController extends CController
 					'siteHeader'	=>array('title'=>A::t('app', 'Header Text'), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>100)),
 					'slogan'		=>array('title'=>A::t('app', 'Slogan'), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
 					'footer'		=>array('title'=>A::t('app', 'Footer Text'), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
-					'metaTagTitle'		=>array('title'=>CHtml::encode(A::t('app', 'Tag TITLE')), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>250)),
-					'metaTagKeywords'	=>array('title'=>CHtml::encode(A::t('app', 'Meta tag KEYWORDS')), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
-					'metaTagDescription'=>array('title'=>CHtml::encode(A::t('app', 'Meta tag DESCRIPTION')), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
+					'metaTagTitle'		=>array('title'=>A::te('app', 'Tag TITLE'), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>250)),
+					'metaTagKeywords'	=>array('title'=>A::te('app', 'Meta tag KEYWORDS'), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
+					'metaTagDescription'=>array('title'=>A::te('app', 'Meta tag DESCRIPTION'), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
 				),
 	   		));
     		if($result['error']){
-    			$this->_msg = $result['errorMessage'];
+    			$this->_alert = $result['errorMessage'];
     			$this->_view->errorField = $result['errorField'];
-    			$this->_errorType = 'validation';
+    			$this->_alertType = 'validation';
     		}else{
 				if(APPHP_MODE == 'demo'){
-					$this->_msg = A::t('core', 'This operation is blocked in Demo Mode!');
-					$this->_errorType = 'warning';
+					$this->_alert = A::t('core', 'This operation is blocked in Demo Mode!');
+					$this->_alertType = 'warning';
 				}else{
 					if($siteInfo->save()){
-						$this->_msg = A::t('app', 'Settings Update Success Message');
-						$this->_errorType = 'success';
+						$this->_cSession->setFlash('alert', A::t('app', 'Settings Update Success Message'));
+						$this->_cSession->setFlash('alertType', 'success');
+						$this->redirect('settings/visual');
 					}else{
-						$this->_msg = A::t('app', 'Settings Update Error Message');
+						$this->_alert = A::t('app', 'Settings Update Error Message');
 						$this->_view->errorField = '';
-						$this->_errorType = 'error';
+						$this->_alertType = 'error';
 					}
 				}
      		}
-	    	if(!empty($this->_msg)){
-	    		$this->_view->actionMessage = CWidget::create('CMessage', array($this->_errorType, $this->_msg, array('button'=>true)));
-	    	}	    
-	    		    	
     	}else{	
-    		// view the settings        	
+    		// View the settings        	
 	    	if($this->_cRequest->getPost('act') == 'changeLang'){
 				
-				// block access if admin has no active privilege to edit site settings
+				// Block access if admin has no active privilege to edit site settings
 				if(!Admins::hasPrivilege('site_settings', 'edit')){
 					$this->redirect('backend/index');
 				}
 				
-	    		// language changed
+	    		// Language changed
 	    		$selectedLanguage = $this->_cRequest->getPost('selectedLanguage');
 	    	}else{
-	    		// default is current active language
+	    		// Default is current active language
 		    	$selectedLanguage = A::app()->getLanguage();		
 	    	}
-	    	// find site descriptions according to the selected language
+	    	
+			// Find site descriptions according to the selected language
             $siteInfo = SiteInfo::model()->find('language_code = :languageCode', array(':languageCode'=>$selectedLanguage));
 			if(!$siteInfo){
                 $this->redirect('backend/index');
@@ -356,6 +327,16 @@ class SettingsController extends CController
                 $this->_view->siteInfo = $siteInfo;                
             }
     	}        
+
+		if($this->_cSession->hasFlash('alert')){
+			$this->_alert = $this->_cSession->getFlash('alert');
+			$this->_alertType = $this->_cSession->getFlash('alertType');
+		}
+
+		if(!empty($this->_alert)){
+			$this->_view->actionMessage = CWidget::create('CMessage', array($this->_alertType, $this->_alert, array('button'=>true)));
+		}
+
     	$this->_view->tabs = $this->_prepareTab('visual');
     	$this->_view->render('settings/visual');
     }
@@ -392,7 +373,7 @@ class SettingsController extends CController
         $this->_view->utcTime = A::t('app', 'UTC time is').' '.gmdate('Y-m-d H:i:s', time()+date('Z'));
     	
     	if($this->_cRequest->getPost('act') != ''){
-			// settings form submit or select box change
+			// Settings form submit or select box change
 			$this->_settings->date_format = $this->_cRequest->getPost('dateFormat');
 			$this->_settings->time_format = $this->_cRequest->getPost('timeFormat');
 			$this->_settings->datetime_format = $this->_cRequest->getPost('dateTimeFormat');
@@ -401,23 +382,23 @@ class SettingsController extends CController
 			$this->_settings->number_format = $this->_cRequest->getPost('numberFormat');
 			$this->_settings->daylight_saving = $this->_cRequest->getPost('daylightSaving', '', 0);
 
-			// check date and time formats
+			// Check date and time formats
 			$isGoodFormats = $this->_checkDateTimeFormats();
 		}
 
 		if($this->_cRequest->getPost('act') == 'change'){
-			// select box changed
-			$this->_msg = A::t('app', 'Save Changes Warning Message');
-			$this->_errorType = 'warning';
-			$this->_view->actionMessage = CWidget::create('CMessage', array($this->_errorType, $this->_msg, array('button'=>true)));							
+			// Select box changed
+			$this->_alert = A::t('app', 'Save Changes Warning Message');
+			$this->_alertType = 'warning';
+			$this->_view->actionMessage = CWidget::create('CMessage', array($this->_alertType, $this->_alert, array('button'=>true)));							
 		}else if($this->_cRequest->getPost('act') == 'send'){							     		
 
-     		// block access if admin has no active privilege to edit site settings
+     		// Block access if admin has no active privilege to edit site settings
      		if(!Admins::hasPrivilege('site_settings', 'edit')){
      			$this->redirect('backend/index');
      		}
 			
-     		// settings form submit
+     		// Settings form submit
 			$result = CWidget::create('CFormValidation', array(
 				'fields'=>array(
 					'dateFormat'     =>array('title'=>A::t('app', 'Date Format'), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>10)),
@@ -430,33 +411,45 @@ class SettingsController extends CController
 				),
 			));
 			if($result['error']){
-				$this->_msg = $result['errorMessage'];
+				$this->_alert = $result['errorMessage'];
 				$this->_view->errorField = $result['errorField'];
-				$this->_errorType = 'validation';
+				$this->_alertType = 'validation';
 			}else{
-				// check date and time formats
+				// Check date and time formats
 				if($isGoodFormats){
 					if(APPHP_MODE == 'demo'){
-						$this->_msg = A::t('core', 'This operation is blocked in Demo Mode!');
-						$this->_errorType = 'warning';
+						$this->_alert = A::t('core', 'This operation is blocked in Demo Mode!');
+						$this->_alertType = 'warning';
 					}else{
-						// save the new settings
+						// Save the new settings
 						if($this->_settings->save()){
-							$this->_msg = A::t('app', 'Settings Update Success Message');
-							$this->_errorType = 'success';
+							$this->_alert = A::t('app', 'Settings Update Success Message');
+							$this->_alertType = 'success';
 						}else{
-							$this->_msg = A::t('app', 'Settings Update Error Message');
+							$this->_alert = A::t('app', 'Settings Update Error Message');
 							$this->_view->errorField = '';
-							$this->_errorType = 'error';
+							$this->_alertType = 'error';
 						}
 					}
 				}
 			}
-			if(!empty($this->_msg)){
-				$this->_view->actionMessage = CWidget::create('CMessage', array($this->_errorType, $this->_msg, array('button'=>true)));
+
+			if(!empty($this->_alert)){
+				$this->_cSession->setFlash('alert', $this->_alert);
+				$this->_cSession->setFlash('alertType', $this->_alertType);
+				$this->redirect('settings/local');
 			}
 		}
         
+		if($this->_cSession->hasFlash('alert')){
+			$this->_alert = $this->_cSession->getFlash('alert');
+			$this->_alertType = $this->_cSession->getFlash('alertType');
+		}
+
+		if(!empty($this->_alert)){
+			$this->_view->actionMessage = CWidget::create('CMessage', array($this->_alertType, $this->_alert, array('button'=>true)));
+		}
+
 		$this->_view->settings = $this->_settings;
 
 		$dateFormatValue = array_key_exists($this->_settings->date_format, $this->_arrDateFormats) ? $this->_settings->date_format : '';
@@ -466,19 +459,19 @@ class SettingsController extends CController
 			$this->_arrDateFormats, 
 			array('submit'=>'$(this).closest("form").find("input[name=dateFormat]").val($(this).val());$(this).closest("form").find("input[name=act]").val("change");')
 		).' ';
-		$this->_view->dateFormatSample = $this->_view->dateFormatSample == 'no' ? '' : date($this->_settings->date_format);
+		$this->_view->dateFormatSample = $this->_view->dateFormatSample == 'no' ? '' : CLocale::date($this->_settings->date_format);
 		
     	$timeFormatValue = array_key_exists($this->_settings->time_format, $this->_arrTimeFormats) ? $this->_settings->time_format : '';
     	$this->_view->timeFormatsList = CHtml::dropDownList('timeFormatsDdl', $timeFormatValue, $this->_arrTimeFormats,
 			array('submit'=>'$(this).closest("form").find("input[name=timeFormat]").val($(this).val());$(this).closest("form").find("input[name=act]").val("change");')
     	).' ';		
-    	$this->_view->timeFormatSample = $this->_view->timeFormatSample == 'no' ? '' : date($this->_settings->time_format);
+    	$this->_view->timeFormatSample = $this->_view->timeFormatSample == 'no' ? '' : CLocale::date($this->_settings->time_format);
     	 
     	$dateTimeFormatValue = array_key_exists($this->_settings->datetime_format, $this->_arrDateTimeFormats) ? $this->_settings->datetime_format : '';
     	$this->_view->dateTimeFormatsList = CHtml::dropDownList('dateTimeFormatsDdl', $dateTimeFormatValue, $this->_arrDateTimeFormats,
-			array('submit'=>'$(this).closest("form").find("input[name=dateTimeFormat]").val($(this).val());$(this).closest("form").find("input[name=act]").val("change");')
-    	).' ';		
-    	$this->_view->dateTimeFormatSample = $this->_view->dateTimeFormatSample == 'no' ? '' : date($this->_settings->datetime_format);
+			array('submit'=>'$(this).closest("form").find("input[name=dateTimeFormat]").val($(this).val());$(this).closest("form").find("input[name=act]").val("change");', 'style'=>'width:130px')
+    	).' ';
+    	$this->_view->dateTimeFormatSample = $this->_view->dateTimeFormatSample == 'no' ? '' : CLocale::date($this->_settings->datetime_format);
     	     	 
     	$this->_view->tabs = $this->_prepareTab('local');		
 		$this->_view->render('settings/local');
@@ -499,9 +492,9 @@ class SettingsController extends CController
     	);
     	
 		if(in_array($this->_cRequest->getPost('act'), array('test', 'send'))){
-			// settings form submit
+			// Settings form submit
 			     		
-     		// block access if admin has no active privilege to edit site settings
+     		// Block access if admin has no active privilege to edit site settings
      		if(!Admins::hasPrivilege('site_settings', 'edit')){
      			$this->redirect('backend/index');
      		}
@@ -530,9 +523,9 @@ class SettingsController extends CController
 				$fields['smtpPassword'] = array('title'=>A::t('app', 'SMTP Password'), 'validation'=>array('required'=>((!$this->_settings->smtp_password) ? true : false), 'type'=>'password', 'maxLength'=>20));
 			}
 
-			// test email settings
+			// Test email settings
 			if($this->_cRequest->getPost('act') == 'test'){
-				// send email
+				// Send email
 				$body  = 'From: '.CConfig::get('name').$nl;
 				$body .= 'Email: '.$this->_settings->general_email_name.' '.$this->_settings->general_email.$nl;
 				$body .= 'Message: '.A::t('app', 'Test Email Body', array('{site}'=>CConfig::get('name')));
@@ -554,52 +547,65 @@ class SettingsController extends CController
 				));				
 				
 				if(APPHP_MODE == 'demo'){
-					$this->_msg = A::t('app', 'Sending Email Blocked Alert');
-					$this->_errorType = 'warning';
+					$this->_alert = A::t('app', 'Sending Email Blocked Alert');
+					$this->_alertType = 'warning';
 				}else{
 					if(CMailer::send($this->_settings->general_email, A::t('app', 'Test Email Subject'), $body, array('from'=>$this->_settings->general_email, 'from_name'=>$this->_settings->general_email_name))){
-						$this->_msg = A::t('app', 'Test Email Success Message');
-						$this->_errorType = 'success';
+						$this->_alert = A::t('app', 'Test Email Success Message');
+						$this->_alertType = 'success';
 					}else{
-						if(APPHP_MODE == 'debug') $this->_msg = CMailer::getError();
-						else $this->_msg = A::t('app', 'Test Email Error Message');
-						$this->_errorType = 'error';
+						if(APPHP_MODE == 'debug') $this->_alert = CMailer::getError();
+						else $this->_alert = A::t('app', 'Test Email Error Message');
+						$this->_alertType = 'error';
 					}
 				}
-			// submit the form
+			// Submit the form
 			}else{			
 				$result = CWidget::create('CFormValidation', array('fields'=>$fields));
 				if($result['error']){
-					$this->_msg = $result['errorMessage'];
+					$this->_alert = $result['errorMessage'];
 					$this->_view->errorField = $result['errorField'];
-					$this->_errorType = 'validation';
+					$this->_alertType = 'validation';
 				}else{
 				    unset($this->_settings->smtp_password);
 	                if($this->_view->smtpPassword != ''){
 	                    $this->_settings->smtp_password = CHash::encrypt($this->_view->smtpPassword, CConfig::get('password.hashKey'));
 	                }
 					if(APPHP_MODE == 'demo'){
-						$this->_msg = A::t('core', 'This operation is blocked in Demo Mode!');
-						$this->_errorType = 'warning';
+						$this->_alert = A::t('core', 'This operation is blocked in Demo Mode!');
+						$this->_alertType = 'warning';
 					}else{
 						if($this->_settings->save()){
-							$this->_msg = A::t('app', 'Settings Update Success Message');
-							$this->_errorType = 'success';
+							$this->_alert = A::t('app', 'Settings Update Success Message');
+							$this->_alertType = 'success';
 						}else{
-							$this->_msg = A::t('app', 'Settings Update Error Message');
+							$this->_alert = A::t('app', 'Settings Update Error Message');
 							$this->_view->errorField = '';
-							$this->_errorType = 'error';
+							$this->_alertType = 'error';
 						}
 					}
 				}
-
-				// always clear password field after form submission
+				
+				// Always clear password field after form submission
 				$this->_view->smtpPassword = '';
 			}
-			if(!empty($this->_msg)){
-				$this->_view->actionMessage = CWidget::create('CMessage', array($this->_errorType, $this->_msg, array('button'=>true)));
+
+			if(!empty($this->_alert)){
+				$this->_cSession->setFlash('alert', $this->_alert);
+				$this->_cSession->setFlash('alertType', $this->_alertType);
+				$this->redirect('settings/email');				
 			}
 		}
+
+		if($this->_cSession->hasFlash('alert')){
+			$this->_alert = $this->_cSession->getFlash('alert');
+			$this->_alertType = $this->_cSession->getFlash('alertType');
+		}
+
+		if(!empty($this->_alert)){
+			$this->_view->actionMessage = CWidget::create('CMessage', array($this->_alertType, $this->_alert, array('button'=>true)));
+		}
+
 		$this->_view->settings = $this->_settings;
     	$this->_view->tabs = $this->_prepareTab('email');		
 		$this->_view->render('settings/email');
@@ -611,9 +617,9 @@ class SettingsController extends CController
 	public function templatesAction()
     {
 		if($this->_cRequest->getPost('act') == 'send'){
-			// settings form submit
+			// Settings form submit
 			
-			// block access if admin has no active privilege to edit site settings
+			// Block access if admin has no active privilege to edit site settings
 			if(!Admins::hasPrivilege('site_settings', 'edit')){
 				$this->redirect('backend/index');
 			}
@@ -626,39 +632,51 @@ class SettingsController extends CController
 				),
 			));
 			if($result['error']){
-				$this->_msg = $result['errorMessage'];
+				$this->_alert = $result['errorMessage'];
 				$this->_view->errorField = $result['errorField'];
-				$this->_errorType = 'validation';
+				$this->_alertType = 'validation';
 			}else{
 				$this->_settings->template = $this->_view->selectedTemplate;
 				if(APPHP_MODE == 'demo'){
-					$this->_msg = A::t('core', 'This operation is blocked in Demo Mode!');
-					$this->_errorType = 'warning';
+					$this->_alert = A::t('core', 'This operation is blocked in Demo Mode!');
+					$this->_alertType = 'warning';
 				}else{
 					if($this->_settings->save()){
-						$this->_msg = A::t('app', 'Settings Update Success Message');
-						$this->_errorType = 'success';
+						$this->_alert = A::t('app', 'Settings Update Success Message');
+						$this->_alertType = 'success';
 					}else{
-						$this->_msg = A::t('app', 'Settings Update Error Message');
+						$this->_alert = A::t('app', 'Settings Update Error Message');
 						$this->_view->errorField = '';
-						$this->_errorType = 'error';
+						$this->_alertType = 'error';
 					}
 				}
 			}
-			if(!empty($this->_msg)){
-				$this->_view->actionMessage = CWidget::create('CMessage', array($this->_errorType, $this->_msg, array('button'=>true)));
-			}
-		
+
+			if(!empty($this->_alert)){
+				$this->_cSession->setFlash('alert', $this->_alert);
+				$this->_cSession->setFlash('alertType', $this->_alertType);
+				$this->redirect('settings/templates');				
+			}	
 		}else if($this->_cRequest->getPost('act') == 'changeTemp'){
-			// template selection changed
+			// Template selection changed
 			$this->_view->selectedTemplate = $this->_cRequest->getPost('template');
 		}else{
 			$this->_view->selectedTemplate = $this->_settings->template;				
 		}
         
-        // get all templates
+		// Prepare alert message
+		if($this->_cSession->hasFlash('alert')){
+			$this->_alert = $this->_cSession->getFlash('alert');
+			$this->_alertType = $this->_cSession->getFlash('alertType');
+		}
+
+		if(!empty($this->_alert)){
+			$this->_view->actionMessage = CWidget::create('CMessage', array($this->_alertType, $this->_alert, array('button'=>true)));
+		}
+
+        // Get all templates
 		$this->_view->allTemplates = CFile::findSubDirectories('templates/');
-        // prepare available templates list 
+        // Prepare available templates list 
 		$templatesList = array();
         if(is_array($this->_view->allTemplates)){
         	foreach($this->_view->allTemplates as $temp){
@@ -669,7 +687,7 @@ class SettingsController extends CController
         }
         $this->_view->templatesList = $templatesList;
 		
-    	// load XML file for template info
+    	// Load XML file for template info
 		if(array_key_exists($this->_view->selectedTemplate, $this->_view->templatesList) && @file_exists('templates/'.$this->_view->selectedTemplate.'/info.xml')) {
 			$xml = simplexml_load_file('templates/'.$this->_view->selectedTemplate.'/info.xml');		 
         }
@@ -677,6 +695,7 @@ class SettingsController extends CController
 		$this->_view->icon = isset($xml->icon) ? 'templates/'.$this->_view->selectedTemplate.'/'.$xml->icon : 'templates/backend/images/no_image.png';
 		$this->_view->textDirection = isset($xml->direction) ? $xml->direction : A::t('app', 'Unknown');
 		$this->_view->description = isset($xml->description) ? $xml->description : A::t('app', 'Unknown');
+		$this->_view->author = isset($xml->author) ? $xml->author : A::t('app', 'Unknown');
 		$this->_view->license = isset($xml->license) ? $xml->license : A::t('app', 'Unknown');
 		$this->_view->version = isset($xml->version) ? $xml->version : A::t('app', 'Unknown');
 		$this->_view->layout = isset($xml->layout) ? $xml->layout : A::t('app', 'Unknown');
@@ -726,6 +745,9 @@ class SettingsController extends CController
 		$this->_view->system 		= isset($phpinfo['phpinfo']['System']) ? $phpinfo['phpinfo']['System'] : A::t('app', 'Unknown');
 		$this->_view->buildDate 	= isset($phpinfo['phpinfo']['Build Date']) ? $phpinfo['phpinfo']['Build Date'] : A::t('app', 'Unknown');
 		$this->_view->serverApi 	= isset($phpinfo['phpinfo']['Server API']) ? $phpinfo['phpinfo']['Server API'] : A::t('app', 'Unknown');
+
+		$this->_view->postMaxSize   = isset($phpinfo['Core']['post_max_size']) ? $phpinfo['Core']['post_max_size'][0] : A::t('app', 'Unknown');
+		$this->_view->uploadMaxSize = isset($phpinfo['Core']['upload_max_filesize']) ? $phpinfo['Core']['upload_max_filesize'][0] : A::t('app', 'Unknown');
 		
 		$this->_view->smtp 	 		= (ini_get('SMTP') != '') ? ini_get('SMTP') : A::t('app', 'Unknown');
 		$this->_view->smtpPort	 	= (ini_get('smtp_port') != '') ? ini_get('smtp_port') : A::t('app', 'Unknown');
@@ -749,24 +771,24 @@ class SettingsController extends CController
    		$this->_view->domain = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : A::t('app', 'Unknown');
 		
 		if($this->_cRequest->getPost('act') == 'send'){
-			// update button clicked - update the ranks
+			// Update button clicked - update the ranks
     		$this->_settings->google_rank = (int)$this->_checkGoogleRank($this->_view->domain);
     		$this->_settings->alexa_rank = number_format((float)$this->_checkAlexaRank($this->_view->domain));
 			
 			if(APPHP_MODE == 'demo'){
-				$this->_msg = A::t('core', 'This operation is blocked in Demo Mode!');
-				$this->_errorType = 'warning';
+				$this->_alert = A::t('core', 'This operation is blocked in Demo Mode!');
+				$this->_alertType = 'warning';
 			}else{
 				if($this->_settings->save()){
-					$this->_msg = A::t('app', 'Site Info Success Message');
-					$this->_errorType = 'success';
+					$this->_alert = A::t('app', 'Site Info Success Message');
+					$this->_alertType = 'success';
 				}else{
-					$this->_msg = A::t('app', 'Site Info Error Message');
-					$this->_errorType = 'error';
+					$this->_alert = A::t('app', 'Site Info Error Message');
+					$this->_alertType = 'error';
 				}
 			}
-			if(!empty($this->_msg)){
-				$this->_view->actionMessage = CWidget::create('CMessage', array($this->_errorType, $this->_msg, array('button'=>true)));
+			if(!empty($this->_alert)){
+				$this->_view->actionMessage = CWidget::create('CMessage', array($this->_alertType, $this->_alert, array('button'=>true)));
 			}
 		}
 		
@@ -795,9 +817,9 @@ class SettingsController extends CController
 		);
     	
     	if($this->_cRequest->getPost('act') == 'send'){
-			// settings form submit
+			// Settings form submit
     		
-    		// block access if admin has no active privilege to edit site settings
+    		// Block access if admin has no active privilege to edit site settings
     		if(!Admins::hasPrivilege('site_settings', 'edit')){
     			$this->redirect('backend/index');
     		}
@@ -814,29 +836,41 @@ class SettingsController extends CController
 				),
 			));
 			if($result['error']){
-				$this->_msg = $result['errorMessage'];
+				$this->_alert = $result['errorMessage'];
 				$this->_view->errorField = $result['errorField'];
-				$this->_errorType = 'validation';
+				$this->_alertType = 'validation';
 			}else{
 				if(APPHP_MODE == 'demo'){
-					$this->_msg = A::t('core', 'This operation is blocked in Demo Mode!');
-					$this->_errorType = 'warning';
+					$this->_alert = A::t('core', 'This operation is blocked in Demo Mode!');
+					$this->_alertType = 'warning';
 				}else{
 					if($this->_settings->save()){
-						$this->_msg = A::t('app', 'Settings Update Success Message');
-						$this->_errorType = 'success';
+						$this->_alert = A::t('app', 'Settings Update Success Message');
+						$this->_alertType = 'success';
 					}else{
-						$this->_msg = A::t('app', 'Settings Update Error Message');
+						$this->_alert = A::t('app', 'Settings Update Error Message');
 						$this->_view->errorField = '';
-						$this->_errorType = 'error';
+						$this->_alertType = 'error';
 					}
 				}
 			}
-			if(!empty($this->_msg)){
-				$this->_view->actionMessage = CWidget::create('CMessage', array($this->_errorType, $this->_msg, array('button'=>true)));
+			if(!empty($this->_alert)){
+				$this->_cSession->setFlash('alert', $this->_alert);
+				$this->_cSession->setFlash('alertType', $this->_alertType);
+				$this->redirect('settings/cron');				
 			}
 		}
         
+		// Prepare alert message
+		if($this->_cSession->hasFlash('alert')){
+			$this->_alert = $this->_cSession->getFlash('alert');
+			$this->_alertType = $this->_cSession->getFlash('alertType');
+		}
+
+		if(!empty($this->_alert)){
+			$this->_view->actionMessage = CWidget::create('CMessage', array($this->_alertType, $this->_alert, array('button'=>true)));
+		}
+
 		$this->_view->settings = $this->_settings;
 		
     	$this->_view->tabs = $this->_prepareTab('cron');		
@@ -983,12 +1017,12 @@ class SettingsController extends CController
 		$length = strlen($str);
 		for ($i = 0; $i < $length; $i++) {
 			$check *= $magic;
-			// if the float is beyond the boundaries of integer (usually +/- 2.15e+9 = 2^31),
-			//  the result of converting to integer is undefined
-			//  refer to http://www.php.net/manual/en/language.types.integer.php
+			// If the float is beyond the boundaries of integer (usually +/- 2.15e+9 = 2^31),
+			// the result of converting to integer is undefined
+			// refer to http://www.php.net/manual/en/language.types.integer.php
 			if ($check >= $int_32_u) {
 				$check = ($check - $int_32_u * (int) ($check / $int_32_u));
-				// if the check less than -2^31
+				// If the check less than -2^31
 				$check = ($check < -2147483648) ? ($check + $int_32_u) : $check;
 			}
 			$check += ord($str{$i});
@@ -1053,30 +1087,30 @@ class SettingsController extends CController
 	 */
 	private function _checkDateTimeFormats()
 	{
-		// check date and time formats
+		// Check date and time formats
 		if(!$this->_testDateFormat($this->_settings->date_format)){
 			$this->_view->dateFormatSample = 'no';
-			$this->_msg = A::t('app', 'Date Format Error Message');
+			$this->_alert = A::t('app', 'Date Format Error Message');
 			$this->_view->errorField = 'dateFormat';
-			$this->_errorType = 'validation';
+			$this->_alertType = 'validation';
 		}
 		if(!$this->_testTimeFormat($this->_settings->time_format)){
 			$this->_view->timeFormatSample = 'no';
-			if($this->_msg == ''){
-				$this->_msg = A::t('app', 'Time Format Error Message');
+			if($this->_alert == ''){
+				$this->_alert = A::t('app', 'Time Format Error Message');
 				$this->_view->errorField = 'timeFormat';
-				$this->_errorType = 'validation';
+				$this->_alertType = 'validation';
 			}
 		}
 		if(!$this->_testDateFormat($this->_settings->datetime_format) && !$this->_testTimeFormat($this->_settings->datetime_format)){
 			$this->_view->dateTimeFormatSample = 'no';
-			if($this->_msg == ''){
-				$this->_msg = A::t('app', 'Date Time Format Error Message');
+			if($this->_alert == ''){
+				$this->_alert = A::t('app', 'Date Time Format Error Message');
 				$this->_view->errorField = 'dateTimeFormat';
-				$this->_errorType = 'validation';
+				$this->_alertType = 'validation';
 			}
 		}
-		if($this->_msg == ''){
+		if($this->_alert == ''){
 			return true;
 		}else{
 			return false;
@@ -1089,7 +1123,7 @@ class SettingsController extends CController
     private function _checkModRewrite()
     {
         if(function_exists('apache_get_modules')){
-            // works only if PHP is not running as CGI module
+            // Works only if PHP is not running as CGI module
             $mod_rewrite = in_array('mod_rewrite', apache_get_modules());
         }else{
             return true;            

@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE (static):		
@@ -16,6 +16,8 @@
  * console
  * c
  * write
+ * backtrace
+ * addSqlTime
  * addMessage
  * getMessage
  * displayInfo
@@ -28,6 +30,10 @@ class CDebug
     private static $_startTime;
 	/** @var string */
     private static $_endTime;
+	/** @var string */
+    private static $_startMemoryUsage;
+	/** @var string */
+    private static $_endMemoryUsage;
 	/** @var array */
 	private static $_arrGeneral;
 	/** @var array */
@@ -40,6 +46,8 @@ class CDebug
     private static $_arrErrors;
 	/** @var array */
 	private static $_arrQueries;
+	/** @var float */
+	private static $_sqlTotalTime = 0;
     
 
     /**
@@ -49,7 +57,10 @@ class CDebug
     {
         if(APPHP_MODE != 'debug') return false;
         
+		// Catch start time
         self::$_startTime = self::_getFormattedMicrotime();
+		// Displays the amount of memory being used as soon as the script runs
+		self::$_startMemoryUsage = memory_get_usage(); 
     }
 
     /**
@@ -120,13 +131,61 @@ class CDebug
      * @param string $val
      * @param string $key
      * @param string $storeType
+     * @return void
      */
     public static function write($val = '', $key = '', $storeType = '')
     {
         if($key == '') $key = 'console-write-'.CHash::getRandomString(4);
         self::addMessage('general', $key, $val, $storeType);
     }
-    
+	
+    /**
+     * Debug backtrace
+     * @param array $traceData
+     * @param bool $formatted
+     * @return HTML
+     */
+    public static function backtrace($traceData = '', $formatted = true)
+    {
+		$stack = '';
+		$i = 0;		
+		
+		// Prepare trace data
+		if(empty($traceData)){
+			$trace = debug_backtrace();
+			// Remove call to this function from stack trace
+			unset($trace[0]);
+		}else{
+			$trace = $traceData;	
+		}
+		
+		foreach($trace as $node){
+			$file = isset($node['file']) ? $node['file'] : '';
+			$line = isset($node['line']) ? '('.$node['line'].') ' : '';
+			$stack .= '#'.(++$i).' '.$file.$line.': '; 
+			if(isset($node['class'])){
+				$stack .= $node['class'].'->'; 
+			}
+			$stack .= $node['function'].'()'.PHP_EOL;
+		}
+		
+		if($formatted){
+			return '<pre>'.$stack.'</pre>';	
+		}else{
+			return $stack;	
+		}		
+    }
+	    
+    /**
+     * Add message to the stack
+     * @param float $time
+     * @return void
+     */
+    public static function addSqlTime($time = 0)
+    {		
+		self::$_sqlTotalTime += (float)$time;
+	}
+
     /**
      * Add message to the stack
      * @param string $type
@@ -146,7 +205,7 @@ class CDebug
 		else if($type == 'params') self::$_arrParams[$key] = CFilter::sanitize('string', $val);
         else if($type == 'errors') self::$_arrErrors[$key][] = CFilter::sanitize('string', $val);
 		else if($type == 'warnings') self::$_arrWarnings[$key][] = CFilter::sanitize('string', $val);
-		else if($type == 'queries') self::$_arrQueries[$key][] = CFilter::sanitize('string', $val);
+		else if($type == 'queries') self::$_arrQueries[$key][] = CHtml::encode($val);
 		else if($type == 'console'){
 			if(is_array($val)){
 				$value = $val;
@@ -187,11 +246,12 @@ class CDebug
     {
         if(APPHP_MODE != 'debug') return false;
 		
-        self::$_endTime = self::_getFormattedMicrotime();        
+        self::$_endTime = self::_getFormattedMicrotime();
+		self::$_endMemoryUsage = memory_get_usage(); 
 
 		$nl = "\n";
         
-        // retrieve stored error messages and show them, then remove
+        // Retrieve stored error messages and show them, then remove
         if($debugError = A::app()->getSession()->get('debug-errors')){
             //self::addMessage('errors', 'debug-errors', $debugError);
             A::app()->getSession()->remove('debug-errors');
@@ -201,7 +261,7 @@ class CDebug
             A::app()->getSession()->remove('debug-warnings');
  		}		
 
-		// debug bar status
+		// Debug bar status
 		$debugBarState = isset($_COOKIE['debugBarState']) ? $_COOKIE['debugBarState'] : 'min';
 		$onDblClick = 'appTabsMinimize()';
 
@@ -278,12 +338,28 @@ class CDebug
 			'.A::t('core', 'Script version').': '.CConfig::get('version').'<br>
 			'.A::t('core', 'Framework version').': '.A::getVersion().'<br>
 			'.A::t('core', 'PHP version').': '.phpversion().'<br>
-			'.ucfirst(CConfig::get('db.driver')).' '.A::t('core', 'version').': '.CDatabase::init()->getVersion().'<br><br>
-			'.A::t('core', 'Total running time').': '.round((float)self::$_endTime - (float)self::$_startTime, 6).' sec.<br><br>';
+			'.ucfirst(CConfig::get('db.driver')).' '.A::t('core', 'version').': '.CDatabase::init()->getVersion().'<br><br>';			
+			
+			$totalRunningTime = round((float)self::$_endTime - (float)self::$_startTime, 5);
+			$totalRunningTimeSql = round($totalRunningTime - (float)self::$_sqlTotalTime, 5);
+			$totalRunningTimeScript = round($totalRunningTime - $totalRunningTimeSql, 5);
+			$totalMemoryUsage = CConvert::fileSize((float)self::$_endMemoryUsage - (float)self::$_startMemoryUsage);
+			
+			echo A::t('core', 'Total running time').': '.$totalRunningTime.' sec.<br>';
+			echo A::t('core', 'Script running time').': '.$totalRunningTimeSql.' sec.<br>';
+			echo A::t('core', 'SQL running time').': '.$totalRunningTimeScript.' sec.<br>';
+			echo A::t('core', 'Total memory usage').': '.$totalMemoryUsage.'<br>';
+			echo A::t('core', 'Output compression').': '.(CConfig::get('compression.enable') ? CConfig::get('compression.method') : A::t('core', 'no')).'<br><br>';
+			
 			if(count(self::$_arrGeneral) > 0){
-				echo '<strong>CLASSES</strong>:';
+				echo '<strong>LOADED CLASSES</strong>:';
 				echo '<pre>';
-				print_r(self::$_arrGeneral);
+				isset(self::$_arrGeneral['classes']) ? print_r(self::$_arrGeneral['classes']) : '';
+				echo '</pre>';
+				echo '<br>';
+				echo '<strong>INCLUDED FILES</strong>:';
+				echo '<pre>';
+				isset(self::$_arrGeneral['included']) ? print_r(self::$_arrGeneral['included']) : '';
 				echo '</pre>';
 				echo '<br>';
 			}						
@@ -319,6 +395,18 @@ class CDebug
                 }
             }
             print_r($arrPost);
+			echo '</pre>';
+			echo '<br>';
+
+			echo '<strong>$_FILES</strong>:';
+			echo '<pre style="white-space:pre-wrap;">';
+            $arrFiles = array();
+			if(isset($_FILES)){
+                foreach($_FILES as $key => $val){
+                    $arrFiles[$key] = is_array($val) ? $val : strip_tags($val);
+                }
+            }
+            print_r($arrFiles);
 			echo '</pre>';
 			echo '<br>';
 
@@ -386,6 +474,7 @@ class CDebug
 	
 		<div id="contentQueries" style="display:none;padding:10px;height:200px;overflow-y:auto;">';
 			if(count(self::$_arrQueries) > 0){
+				echo A::t('core', 'SQL running time').': '.$totalRunningTimeScript.' sec.<br><br>';							
 				foreach(self::$_arrQueries as $msgKey => $msgVal){
 					echo $msgKey.'<br>';
 					echo $msgVal[0].'<br><br>';

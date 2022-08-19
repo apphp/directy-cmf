@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * IMPORTANT:
@@ -15,17 +15,18 @@
  *
  * PUBLIC:					PROTECTED:					PRIVATE:		
  * ---------------         	---------------            	---------------
- * __construct                                          _errorLog
- * init (static)                                        _fatalErrorPageContent (static)
- * getError (static)									_interpolateQuery 
- * getErrorMessage (static)								_prepareParams
- * cacheOn                                              _enableCache
- * cacheOff                                             
- * select                                               
+ * __construct                                          _init
+ * init (static)                                        _errorLog
+ * getError (static)									_fatalErrorPageContent (static)
+ * getErrorMessage (static)								_interpolateQuery 
+ * cacheOn                                              _prepareParams
+ * cacheOff                                             _enableCache
+ * select                                               _formattedMicrotime
  * insert                                               
  * update                                               
  * delete
  * lastId
+ * lastQuery
  * customQuery                                          
  * customExec
  * showTables
@@ -37,6 +38,9 @@
 class CDatabase extends PDO
 {    
  
+    /** @var string */
+    public static $count = 0;
+
 	/** @var object */    
     private static $_instance;
     /** @var string */ 
@@ -51,12 +55,12 @@ class CDatabase extends PDO
     private $_cacheLifetime;
     /** @var string */ 
     private $_cacheDir;
+	/**	@var string */
+	private $_query;
 	/**	@var boolean */
 	private static $_error;
 	/**	@var string */
 	private static $_errorMessage;
-    /** @var string */
-    public static $count = 0;
     
 	/**
 	 * Class default constructor
@@ -64,7 +68,7 @@ class CDatabase extends PDO
 	 */
     public function __construct($params = array())
     {
-        // for direct use (e.g. setup module)
+        // For direct use (e.g. setup module)
         if(!empty($params)){
             $dbDriver = isset($params['dbDriver']) ? $params['dbDriver'] : '';
             $dbHost = isset($params['dbHost']) ? $params['dbHost'] : '';
@@ -74,9 +78,8 @@ class CDatabase extends PDO
             $dbCharset = isset($params['dbCharset']) ? $params['dbCharset'] : 'utf8';
         
             try{
-                @parent::__construct($dbDriver.':host='.$dbHost.';dbname='.$dbName, $dbUser, $dbPassword, array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \''.$dbCharset.'\''));
-                $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            }catch(Exception $e){
+				$this->_init($dbDriver, $dbHost, $dbName, $dbUser, $dbPassword, $dbCharset);
+			}catch(Exception $e){
                 self::$_error = true;
                 self::$_errorMessage = $e->getMessage();
             }
@@ -84,45 +87,42 @@ class CDatabase extends PDO
             $this->_dbName = $dbName;
             $this->_dbPrefix = '';
         }else{
-            try{
-                if(CConfig::get('db') != ''){
-                    @parent::__construct(CConfig::get('db.driver').':host='.CConfig::get('db.host').';dbname='.CConfig::get('db.database'),
-                        CConfig::get('db.username'),
-                        CConfig::get('db.password'),
-						array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \''.CConfig::get('db.charset', 'utf8').'\'')
-                    );
-                    $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 				
-                }else{
-                    throw new Exception('Missing database configuration file');
-                }
-            }catch(Exception $e){    
-                header('HTTP/1.1 503 Service Temporarily Unavailable');
-                header('Status: 503 Service Temporarily Unavailable');
-                $output = self::_fatalErrorPageContent();
-                if(APPHP_MODE == 'debug'){
-                    $output = str_ireplace('{DESCRIPTION}', '<p>'.A::t('core', 'This application is currently experiencing some database difficulties').'</p>', $output);
-                    $output = str_ireplace(
-                        '{CODE}',
-                        '<b>Description:</b> '.$e->getMessage().'<br>
-                        <b>File:</b> '.$e->getFile().'<br>
-                        <b>Line:</b> '.$e->getLine(),
-                        $output
-                    );
-                }else{
-                    $output = str_ireplace('{DESCRIPTION}', '<p>'.A::t('core', 'This application is currently experiencing some database difficulties. Please check back again later').'</p>', $output);
-                    $output = str_ireplace('{CODE}', A::t('core', 'For more information turn on debug mode in your application'), $output);
-                }
-                echo $output;
-                exit(1);
-            }
-            $this->_dbDriver = CConfig::get('db.driver');
-            $this->_dbName = CConfig::get('db.database');
-            $this->_dbPrefix = CConfig::get('db.prefix');
-            
-            $this->_cache = (CConfig::get('cache.enable')) ? true : false;
-            $this->_cacheLifetime = CConfig::get('cache.lifetime', 0); /* in minutes */
-            $this->_cacheDir = CConfig::get('cache.path'); /* protected/tmp/cache/ */
-            if($this->_cache) CDebug::AddMessage('general', 'cache', 'enabled');
+			if(!A::app()->isSetup()){
+				try{
+					if(CConfig::get('db') != ''){						
+						$this->_init(CConfig::get('db.driver'), CConfig::get('db.host'), CConfig::get('db.database'), CConfig::get('db.username'), CConfig::get('db.password'), CConfig::get('db.charset', 'utf8'));
+					}else{
+						throw new Exception('Missing database configuration file');
+					}
+				}catch(Exception $e){    
+					header('HTTP/1.1 503 Service Temporarily Unavailable');
+					header('Status: 503 Service Temporarily Unavailable');
+					$output = self::_fatalErrorPageContent();
+					if(APPHP_MODE == 'debug'){
+						$output = str_ireplace('{DESCRIPTION}', '<p>'.A::t('core', 'This application is currently experiencing some database difficulties').'</p>', $output);
+						$output = str_ireplace(
+							'{CODE}',
+							'<b>Description:</b> '.$e->getMessage().'<br>
+							<b>File:</b> '.$e->getFile().'<br>
+							<b>Line:</b> '.$e->getLine(),
+							$output
+						);
+					}else{
+						$output = str_ireplace('{DESCRIPTION}', '<p>'.A::t('core', 'This application is currently experiencing some database difficulties. Please check back again later').'</p>', $output);
+						$output = str_ireplace('{CODE}', A::t('core', 'For more information turn on debug mode in your application'), $output);
+					}
+					echo $output;
+					exit(1);
+				}
+				$this->_dbDriver = CConfig::get('db.driver');
+				$this->_dbName = CConfig::get('db.database');
+				$this->_dbPrefix = CConfig::get('db.prefix');
+				
+				$this->_cache = (CConfig::get('cache.enable')) ? true : false;
+				$this->_cacheLifetime = CConfig::get('cache.lifetime', 0); /* in minutes */
+				$this->_cacheDir = CConfig::get('cache.path'); /* protected/tmp/cache/ */
+				if($this->_cache) CDebug::addMessage('general', 'cache', 'enabled');
+			}
         }        
     }    
 
@@ -155,7 +155,7 @@ class CDatabase extends PDO
     /**
      * Performs select query
      * @param string $sql SQL string
-     * @param array $array parameters to bind
+     * @param array $params parameters to bind
      * @param constant $fetchMode PDO fetch mode
      * @param string $cacheId cache identificator
      * @return mixed - an array containing all of the result set rows
@@ -163,6 +163,8 @@ class CDatabase extends PDO
      */
     public function select($sql, $params = array(), $fetchMode = PDO::FETCH_ASSOC, $cacheId = '')
     {
+		$startTime = $this->_formattedMicrotime();
+		
         $sth = $this->prepare($sql);
         $cacheContent = '';
         $error = false;
@@ -195,9 +197,19 @@ class CDatabase extends PDO
 			$result = false;
             $error = true;
 		}
+		
+		// Interpolate query and save it
+		$this->_query = $this->_interpolateQuery($sql, $params);
 
-        CDebug::AddMessage('queries', ++self::$count.'. select | <i>'.A::t('core', 'total').': '.(($result) ? count($result) : '0 (<b>'.($error ? 'error' : 'empty').'</b>)').'</i>', $sql);
-        return $result;
+		// Save data for debug
+		if(APPHP_MODE == 'debug'){
+			$finishTime = $this->_formattedMicrotime();
+			$sqlTotalTime = round((float)$finishTime - (float)$startTime, 5);	
+			CDebug::addSqlTime($sqlTotalTime);
+			CDebug::addMessage('queries', ++self::$count.'. select | '.$sqlTotalTime.' '.A::t('core', 'sec').'. | <i>'.A::t('core', 'total').': '.(($result) ? count($result) : '0 (<b>'.($error ? 'error' : 'empty').'</b>)').'</i>', $this->_query);
+		}
+		
+		return $result;
     }
     
     /**
@@ -212,6 +224,8 @@ class CDatabase extends PDO
 			self::$_errorMessage = A::t('core', 'This operation is blocked in Demo Mode!');
 			return false;
 		}
+		
+		$startTime = $this->_formattedMicrotime();
 
         ksort($data);
         
@@ -235,8 +249,18 @@ class CDatabase extends PDO
             $this->_errorLog('insert [database.php, ln.:'.$e->getLine().']', $e->getMessage().' => '.$this->_interpolateQuery($sql, $data));
 			$result = false;
 		}
-        
-        CDebug::AddMessage('queries', ++self::$count.'. insert | <i>ID: '.(($result) ? $result : '0 (<b>error</b>)').'</i>', $sql);
+		
+		// Interpolate query and save it
+		$this->_query = $this->_interpolateQuery($sql, $data);
+
+		// Save data for debug
+		if(APPHP_MODE == 'debug'){
+			$finishTime = $this->_formattedMicrotime();
+			$sqlTotalTime = round((float)$finishTime - (float)$startTime, 5);
+			CDebug::addSqlTime($sqlTotalTime);
+			CDebug::addMessage('queries', ++self::$count.'. insert | '.$sqlTotalTime.' '.A::t('core', 'sec').'. | <i>ID: '.(($result) ? $result : '0 (<b>error</b>)').'</i>', $this->_query);
+		}
+		
 		return $result; 
     }
     
@@ -255,6 +279,8 @@ class CDatabase extends PDO
 			return false;
 		} 
 		
+		$startTime = $this->_formattedMicrotime();
+
 		ksort($data);
         
         $fieldDetails = NULL;
@@ -295,7 +321,17 @@ class CDatabase extends PDO
 			$result = false; 
 		}
         
-        CDebug::AddMessage('queries', ++self::$count.'. update | <i>'.A::t('core', 'total').': '.(($result) ? $sth->rowCount() : '0 (<b>error</b>)').'</i>', $sql);
+		// Interpolate query and save it
+		$this->_query = $this->_interpolateQuery($sql, $data);
+
+		// Save data for debug
+		if(APPHP_MODE == 'debug'){
+			$finishTime = $this->_formattedMicrotime();
+			$sqlTotalTime = round((float)$finishTime - (float)$startTime, 5);
+			CDebug::addSqlTime($sqlTotalTime);
+			CDebug::addMessage('queries', ++self::$count.'. update | '.$sqlTotalTime.' '.A::t('core', 'sec').'. | <i>'.A::t('core', 'total').': '.(($result) ? $sth->rowCount() : '0 (<b>error</b>)').'</i>', $this->_query);
+		}
+		
 		return $result; 
     }
     
@@ -313,6 +349,8 @@ class CDatabase extends PDO
 			return false;
 		} 
 
+		$startTime = $this->_formattedMicrotime();
+
         $where_clause = (!empty($where) && !preg_match('/\bwhere\b/i', $where)) ? ' WHERE '.$where : $where;
         $sql = 'DELETE FROM `'.$this->_dbPrefix.$table.'` '.$where_clause;
         
@@ -323,16 +361,26 @@ class CDatabase extends PDO
                 $sth->bindValue($key, $value, $param);
             }
         }
-
+		
 		try{
             $sth->execute();
             $result = $sth->rowCount();
 		}catch(PDOException $e){			
-            $this->_errorLog('delete [database.php, ln.:'.$e->getLine().']', $e->getMessage().' => '.$this->_interpolateQuery($sql, $params));            
+            $this->_errorLog('delete [database.php, ln.:'.$e->getLine().']', $e->getMessage().' => '.$this->_interpolateQuery($sql, $params));
 			$result = false;
 		}
+		
+		// Interpolate query and save it
+		$this->_query = $this->_interpolateQuery($sql, $params);
 
-        CDebug::AddMessage('queries', ++self::$count.'. delete | <i>'.A::t('core', 'total').': '.(($result) ? $result : '0 (<b>warning</b>)').'</i>', $sql);
+		// Save data for debug
+		if(APPHP_MODE == 'debug'){
+			$finishTime = $this->_formattedMicrotime();
+			$sqlTotalTime = round((float)$finishTime - (float)$startTime, 5);
+			CDebug::addSqlTime($sqlTotalTime);
+			CDebug::addMessage('queries', ++self::$count.'. delete | '.$sqlTotalTime.' '.A::t('core', 'sec').'. | <i>'.A::t('core', 'total').': '.(($result) ? $result : '0 (<b>warning</b>)').'</i>', $this->_query);
+		}
+		
 		return $result; 
     }
 	
@@ -344,6 +392,15 @@ class CDatabase extends PDO
 	{
         return (!empty($this)) ? $this->lastInsertId() : 0;
     }
+
+    /**
+     * Returns last query
+	 * @return string
+	 */
+	public function lastQuery()
+	{
+		return $this->_query;
+	} 
 
     /**
      * Performs a standard query
@@ -358,6 +415,8 @@ class CDatabase extends PDO
 			self::$_errorMessage = A::t('core', 'This operation is blocked in Demo Mode!');
 			return false;
 		}
+		
+		$startTime = $this->_formattedMicrotime();
         
 		try{
             if(is_array($params) && !empty($params)){
@@ -375,8 +434,18 @@ class CDatabase extends PDO
             $this->_errorLog('customQuery [database.php, ln.:'.$e->getLine().']', $e->getMessage().' => '.$sql);
 			$result = false;
 		}
-        
-        CDebug::AddMessage('queries', ++self::$count.'. query | <i>'.A::t('core', 'total').': '.(($result) ? count($result) : '0 (<b>error</b>)').'</i>', $sql);
+		
+		// Interpolate query and save it
+		$this->_query = $this->_interpolateQuery($sql, $params);
+
+		// Save data for debug
+		if(APPHP_MODE == 'debug'){
+			$finishTime = $this->_formattedMicrotime();
+			$sqlTotalTime = round((float)$finishTime - (float)$startTime, 5);			
+			CDebug::addSqlTime($sqlTotalTime);
+			CDebug::addMessage('queries', ++self::$count.'. query | '.$sqlTotalTime.' '.A::t('core', 'sec').'. | <i>'.A::t('core', 'total').': '.(($result) ? count($result) : '0 (<b>error</b>)').'</i>', $this->_query);
+		}
+		
 		return $result;
 	}
     
@@ -392,6 +461,8 @@ class CDatabase extends PDO
 			self::$_errorMessage = A::t('core', 'This operation is blocked in Demo Mode!');
 			return false;
 		} 
+
+		$startTime = $this->_formattedMicrotime();
 		
 		try{
             if(is_array($params) && !empty($params)){
@@ -410,7 +481,17 @@ class CDatabase extends PDO
 			$result = false;
 		}
         
-        CDebug::AddMessage('queries', ++self::$count.'. query | <i>'.A::t('core', 'total').': '.(($result) ? $result : '0 (<b>error</b>)').'</i>', $sql);
+		// Interpolate query and save it
+		$this->_query = $this->_interpolateQuery($sql, $params);
+
+		// Save data for debug
+		if(APPHP_MODE == 'debug'){
+			$finishTime = $this->_formattedMicrotime();
+			$sqlTotalTime = round((float)$finishTime - (float)$startTime, 5);	
+			CDebug::addSqlTime($sqlTotalTime);
+			CDebug::addMessage('queries', ++self::$count.'. query | '.$sqlTotalTime.' '.A::t('core', 'sec').'. | <i>'.A::t('core', 'total').': '.(($result) ? $result : '0 (<b>error</b>)').'</i>', $this->_query);
+		}
+		
 		return $result;
     }
     
@@ -420,6 +501,8 @@ class CDatabase extends PDO
      */
 	public function showTables()
 	{
+		$startTime = $this->_formattedMicrotime();
+
         switch($this->_dbDriver){
 			case 'mssql';
             case 'sqlsrv':
@@ -451,10 +534,19 @@ class CDatabase extends PDO
 			$result = false; 
 		}        
         
-        CDebug::AddMessage('queries', ++self::$count.'. query | <i>'.A::t('core', 'total').': '.(($result) ? count($result) : '0 (<b>error</b>)').'</i>', $sql);
+		// Save query 
+		$this->_query = $sql;
+
+		// Save data for debug
+		if(APPHP_MODE == 'debug'){
+			$finishTime = $this->_formattedMicrotime();
+			$sqlTotalTime = round((float)$finishTime - (float)$startTime, 5);	
+			CDebug::addSqlTime($sqlTotalTime);
+			CDebug::addMessage('queries', ++self::$count.'. query | '.$sqlTotalTime.' '.A::t('core', 'sec').'. | <i>'.A::t('core', 'total').': '.(($result) ? count($result) : '0 (<b>error</b>)').'</i>', $this->_query);
+		}
+		
 		return $result;
 	}
-
 
 	/**
      * Performs a show column query
@@ -463,6 +555,8 @@ class CDatabase extends PDO
      */
 	public function showColumns($table = '')
 	{
+		$startTime = $this->_formattedMicrotime();
+		
         $cacheContent = '';
         
         switch($this->_dbDriver){
@@ -497,8 +591,18 @@ class CDatabase extends PDO
             $this->_errorLog('showColumns [database.php, ln.:'.$e->getLine().']', $e->getMessage());
 			$result = false;
 		}
-        
-        CDebug::AddMessage('queries', ++self::$count.'. query | <i>'.A::t('core', 'total').': '.(($result) ? count($result) : '0 (<b>error</b>)').'</i>', $sql);
+		
+		// Save query 
+		$this->_query = $sql;
+
+		// Save data for debug
+		if(APPHP_MODE == 'debug'){
+			$finishTime = $this->_formattedMicrotime();
+			$sqlTotalTime = round((float)$finishTime - (float)$startTime, 5);			
+			CDebug::addSqlTime($sqlTotalTime);
+			CDebug::addMessage('queries', ++self::$count.'. query | '.$sqlTotalTime.' '.A::t('core', 'sec').'. | <i>'.A::t('core', 'total').': '.(($result) ? count($result) : '0 (<b>error</b>)').'</i>', $this->_query);
+		}
+		
 		return $result;
     }    
     
@@ -508,7 +612,7 @@ class CDatabase extends PDO
 	public function getVersion()
 	{
 		$version = $this->getAttribute(PDO::ATTR_SERVER_VERSION);
-		// clean version number from alphabetic characters
+		// Clean version number from alphabetic characters
 		return preg_replace('/[^0-9,.]/', '', $version);
 	}
 	
@@ -529,6 +633,36 @@ class CDatabase extends PDO
 	{
 		return self::$_errorMessage;
 	} 
+	
+    /**
+     * Initialize connection
+     * @param string $dbDriver
+     * @param string $dbHost
+     * @param string $dbName
+     * @param string $dbUser
+     * @param string $dbPassword
+     * @param string $dbCharset
+     * @return void
+     */
+    private function _init($dbDriver = '', $dbHost = '', $dbName = '', $dbUser = '', $dbPassword = '', $dbCharset = '')
+    {
+		$dsn = $dbDriver.':host='.$dbHost.';dbname='.$dbName;
+		$options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION);
+		
+		if(version_compare(PHP_VERSION, '5.3.6', '<')){
+			if(defined('PDO::MYSQL_ATTR_INIT_COMMAND')){
+				$options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '".$dbCharset."'";
+			}
+		}else{
+			$dsn .= ';charset='.$dbCharset;
+		}						
+		
+		@parent::__construct($dsn, $dbUser, $dbPassword, $options);
+		
+		if(version_compare(PHP_VERSION, '5.3.6', '<') && !defined('PDO::MYSQL_ATTR_INIT_COMMAND')){
+			$this->exec("SET NAMES '".$dbCharset."'");
+		}
+	}  
 
     /**
      * Writes error log
@@ -539,7 +673,7 @@ class CDatabase extends PDO
     {
         self::$_error = true;
         self::$_errorMessage = $errorMessage;
-        CDebug::AddMessage('errors', $debugMessage, $errorMessage);
+        CDebug::addMessage('errors', $debugMessage, $errorMessage);
     }
     
     /**
@@ -591,10 +725,21 @@ class CDatabase extends PDO
         $keys = array();        
         if(!is_array($params)) return $sql;
     
-        // build regular expression for each parameter
+        // Build regular expression for each parameter
         foreach($params as $key => $value){
-            if (is_string($key)) {
-                $keys[] = '/:'.$key.'/';
+            if(is_string($key)){
+				$ind = strpos($key, ':');
+				if($ind == 1){
+					// used param with prefix, like: i:param, f:param etc.
+					$newKey = substr($key, 2, strlen($key));
+					$keys[] = '/:'.$newKey.'/';
+					$params[$newKey] = $params[$key];
+					unset($params[$key]);
+				}else if($ind !== false){
+					$keys[] = '/'.$key.'/';
+				}else{
+					$keys[] = '/:'.$key.'/';
+				}
             }else{
                 $keys[] = '/[?]/';
             }
@@ -647,7 +792,17 @@ class CDatabase extends PDO
     private function _enableCache($enabled)
     {
         $this->_cache = ($enabled) ? true : false;
-        if(!$this->_cache) CDebug::AddMessage('general', 'cache', 'disabled');
+        if(!$this->_cache) CDebug::addMessage('general', 'cache', 'disabled');
     }
-  
+	
+	/**
+	 * Get formatted microtime
+	 * @return float
+	 */	
+    private function _formattedMicrotime()
+	{
+        list($usec, $sec) = explode(' ', microtime());
+        return ((float)$usec + (float)$sec);
+    }
+	
 }

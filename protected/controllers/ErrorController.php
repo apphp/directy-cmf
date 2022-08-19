@@ -25,14 +25,14 @@ class ErrorController extends CController
         }
 
 		if(CAuth::isLoggedInAsAdmin()){
-            // set backend mode
+            // Set backend mode
             Website::setBackend();
 		}else{
-            // set frontend mode
+            // Set frontend mode
             Website::setFrontend();
         }
 
-		// display error description
+		// Display error description
 		$this->_view->errorDescription = '';
 		if(APPHP_MODE == 'debug'){
 			$this->_view->errorDescription = A::app()->getSession()->getFlash('error500');

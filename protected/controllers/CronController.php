@@ -27,7 +27,8 @@ class CronController extends CController
 	 */
 	public function runAction()
 	{
-		Cron::run();
+		$cron = new Cron();
+		$cron->run();
     } 
    
 }

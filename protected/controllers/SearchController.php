@@ -19,7 +19,7 @@ class SearchController extends CController
 	{
         parent::__construct();
 
-        // set frontend mode
+        // Set frontend mode
         Website::setFrontend();
 	}
 	

@@ -1,14 +1,14 @@
 <?php
 
 return array(
-    // application data
+    // Application data
     'name' => 'ApPHP Directy CMF',
-    'version' => '2.5.3',
+    'version' => '2.6.2',
     
-    // installation settings
+    // Installation settings
     'installationKey' => '<INSTALLATION_KEY>',
 
-    // password keys settings (for database passwords only - don't change it)
+    // Password keys settings (for database passwords only - don't change it)
     // md5, sha1, sha256, whirlpool, etc
 	'password' => array(
         'encryption' => true,
@@ -17,7 +17,7 @@ return array(
 		'hashKey' => 'apphp_directy_cmf',    
     ),
     
-    // default email settings
+    // Default email settings
 	'email' => array(
         'mailer' => 'smtpMailer', /* phpMail | phpMailer | smtpMailer */
         'from' => 'info@email.me',
@@ -33,26 +33,33 @@ return array(
         ),
     ),
     
-    // validations
-   	'validation' => array(
-        'csrf' => true,
+    // Validations
+	// Define 'exclude' controllers array, ex.: array('PaymentProviders', 'Checkout')
+    'validation' => array(
+        'csrf' 		 => array('enable' => true, 'exclude' => array()),
         'bruteforce' => array('enable' => true, 'badLogins' => 5, 'redirectDelay' => 3),
     ),
 
-    // session settings
+    // Output compression
+	'compression' => array(
+		'enable' => true, 
+		'method' => 'gzip'
+	),
+
+    // Session settings
     'session' => array(
         'customStorage' => false,	/* true value means use a custom storage (database), false - standard storage */
         'cacheLimiter' => '',		/* to prevent 'Web Page expired' message for POST request use "private,must-revalidate" */
         'lifetime' => 24,			/* session timeout in minutes, default: 24 min = 1440 sec */
     ),
     
-    // cookies settings
+    // Cookies settings
     'cookies' => array(
         'domain' => '', 
         'path' => '/' 
     ),
 
-    // cache settings 
+    // Cache settings 
     'cache' => array(
         'enable' => false, 
         'lifetime' => 20,  /* in minutes */
@@ -64,15 +71,15 @@ return array(
         'path' => 'feeds/'
     ),
 
-    // datetime settings
+    // Datetime settings
     'defaultTimeZone' => 'UTC',
     
-    // application settings
+    // Application settings
     'defaultTemplate' => 'default',
 	'defaultController' => 'Index',
     'defaultAction' => 'index',
     
-    // application components
+    // Application components
     'components' => array(
         'BackendMenu' => array('enable' => true, 'class' => 'BackendMenu'),
         'Bootstrap' => array('enable' => true, 'class' => 'Bootstrap'),
@@ -82,20 +89,29 @@ return array(
         'Website' => array('enable' => true, 'class' => 'Website'),
     ),
 
-    // application helpers
+	// Widget settings
+	'widgets' => array(
+		'paramKeysSensitive' => true
+	),
+
+    // Application helpers
     'helpers' => array(
         //'helper' => array('enable' => true, 'class' => 'Helper'),
     ),
 
-    // application modules
+    // Application modules
     'modules' => array(
-        'setup' => array('enable' => true, 'removable' => false),
+        'setup' => array('enable' => true, 'removable' => false, 'backendDefaultUrl' => ''),
     ),
 
-    // url manager
+    // Url manager
     'urlManager' => array(
         'urlFormat' => 'shortPath',  /* get | path | shortPath */
         'rules' => array(
+			//'paymentProviders/handlePayment/provider/([a-zA-Z0-9\_]+)' => 'paymentProviders/handlePayment/provider/{$0}',
+			'paymentProviders/handlePayment/([a-zA-Z0-9\_]+)' => 'paymentProviders/handlePayment/provider/{$0}',
+			//'paymentProviders/handlePayment/([a-zA-Z0-9\_]+)/handler/([a-zA-Z0-9\_]+)' => 'paymentProviders/handlePayment/provider/{$0}/handler/{1}',
+			'paymentProviders/handlePayment/([a-zA-Z0-9\_]+)/([a-zA-Z0-9\_]+)' => 'paymentProviders/handlePayment/provider/{$0}/handler/{1}',
             //'controller/action/value1/value2' => 'controller/action/param1/value1/param2/value2',
         ),
     ),

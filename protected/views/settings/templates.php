@@ -1,5 +1,7 @@
 <?php
-    $this->_activeMenu = 'settings/';
+    Website::setMetaTags(array('title'=>A::t('app', 'Templates Settings')));
+	
+	$this->_activeMenu = 'settings/';
     $this->_breadCrumbs = array(
         array('label'=>A::t('app', 'General'), 'url'=>'backend/'),
         array('label'=>A::t('app', 'Site Settings'), 'url'=>'settings/general'),
@@ -58,6 +60,7 @@
 			<ul>
 				<li><b><?php echo A::t('app', 'Name'); ?>:</b> <i><?php echo $name; ?></i></li>
 				<li><b><?php echo A::t('app', 'Description'); ?>:</b> <i><?php echo $description; ?></i></li>
+				<li><b><?php echo A::t('app', 'Author'); ?>:</b> <i><?php echo $author; ?></i></li>
 				<li><b><?php echo A::t('app', 'License'); ?>:</b> <i><?php echo $license; ?></i></li>
 				<li><b><?php echo A::t('app', 'Version'); ?>:</b> <i><?php echo $version; ?></i></li>
 				<li><b><?php echo A::t('app', 'Layout'); ?>:</b> <i><?php echo $layout; ?></i></li>

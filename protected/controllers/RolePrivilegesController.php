@@ -19,16 +19,16 @@ class RolePrivilegesController extends CController
 	{
         parent::__construct();
         
-        // block access to this controller to non-logged users
+        // Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
 			
-		// allow access only to site owner 
+		// Allow access only to site owner 
         if(!CAuth::isLoggedInAs('owner', 'mainadmin')){
         	$this->redirect('backend/index');
         }
-        // set meta tags according to active language
+        // Set meta tags according to active language
     	Website::setMetaTags(array('title'=>A::t('app', 'Privileges Management')));
-        // set backend mode
+        // Set backend mode
         Website::setBackend();
 
         $this->_view->actionMessage = '';
@@ -57,7 +57,7 @@ class RolePrivilegesController extends CController
 		if(!$roleModel){
 			$this->redirect('roles/manage');
 		}
-		// "main admin" can view and edit only "simple admin" role
+		// This "main admin" can view and edit only "simple admin" role
 		if(CAuth::isLoggedInAs('mainadmin') && $roleModel->code != 'admin'){
 			$this->redirect('roles/manage');
         }
@@ -67,7 +67,7 @@ class RolePrivilegesController extends CController
 			if(APPHP_MODE == 'demo'){
 				$this->_view->actionMessage = CWidget::create('CMessage', array('warning', A::t('core', 'This operation is blocked in Demo Mode!'), array('button'=>true)));
 		   	}else{
-				// get current privileges from database			
+				// Get current privileges from database			
                 $privileges = RolePrivileges::model()->findAll(
 					array(
 						'condition'=>'role_id='.$this->_view->id,
@@ -76,7 +76,7 @@ class RolePrivilegesController extends CController
 					)			
 				);
 				
-				// update only privileges which value is changed
+				// Update only privileges which value is changed
 				foreach($privileges as $key => $val){
 					if($val['privilege_category'] != '' && $val['privilege_code'] != ''){					
 						$activity = $cRequest->getPost($val['privilege_category'].'#'.$val['privilege_code']);

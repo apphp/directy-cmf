@@ -1,5 +1,6 @@
 <?php
-    $this->_pageTitle = A::t('app', 'Error 404');
+    Website::setMetaTags(array('title'=>A::t('app', 'Error 404')));	
+	$this->_pageTitle = A::t('app', 'Error 404');
 ?>
 
 <?php if(A::app()->view->getTemplate() != 'backend'){ ?>

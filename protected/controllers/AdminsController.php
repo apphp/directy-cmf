@@ -27,24 +27,27 @@ class AdminsController extends CController
 	{
         parent::__construct();
         
-        // block access to this controller to non-logged users
+        // Block access to this controller to non-logged users
 		CAuth::handleLogin('backend/login');
         $this->_loggedId = CAuth::getLoggedId();
         
-        // allow access to any type of admins
+        // Allow access to any type of admins
         if(!CAuth::isLoggedInAsAdmin()){
         	$this->redirect('backend/index');
         }
         
-        // set meta tags according to active language
+        // Set meta tags according to active language
     	Website::setMetaTags(array('title'=>A::t('app', 'Admins Management')));
-        // set backend mode
+        // Set backend mode
         Website::setBackend();
         
+		$this->_cRequest = A::app()->getRequest();
+		$this->_cSession = A::app()->getSession();
+
         $this->_view->actionMessage = '';
         $this->_view->errorField = '';        
 	
-        // prepare list of all active languages
+        // Prepare list of all active languages
         $languages = Languages::model()->findAll('is_active = 1');
         $langList = array();
 		if(is_array($languages)){
@@ -54,7 +57,7 @@ class AdminsController extends CController
 	  	}
 	  	$this->_view->langList = $langList;
         
-        // prepare list of roles that the logged admin can deal with
+        // Prepare list of roles that the logged admin can deal with
         $allRolesList = array(); 
         $rolesList = array(); 
         
@@ -77,7 +80,7 @@ class AdminsController extends CController
         $this->_view->rolesList = $rolesList;
         $this->_view->allRolesList = $allRolesList;
 		
-	    // fetch datetime format from settings table
+	    // Fetch datetime format from settings table
         $this->_view->dateTimeFormat = Bootstrap::init()->getSettings('datetime_format');
 	}	
 		
@@ -91,27 +94,23 @@ class AdminsController extends CController
     
     /**
      * Manage admins action handler
-     * @param string $msg 
      */
-    public function manageAction($msg = '')
+    public function manageAction()
     {
-    	// allow access only to site owner or main admin
+    	// Allow access only to site owner or main admin
         if(!CAuth::isLoggedInAs('owner', 'mainadmin')){
         	$this->redirect('backend/index');
         }
-        switch($msg){
-        	case 'added': 
-				$message = A::t('core', 'The adding operation has been successfully completed!');
-				break;						
-        	case 'updated': 
-				$message = A::t('core', 'The updating operation has been successfully completed!');
-				break;						
-			default:
-				$message = '';						
-        }
-        if(!empty($message)){
-    		$this->_view->actionMessage = CWidget::create('CMessage', array('success', $message, array('button'=>true)));
-    	}
+
+		if($this->_cSession->hasFlash('alert')){
+            $alert = $this->_cSession->getFlash('alert');
+            $alertType = $this->_cSession->getFlash('alertType');
+			
+            $this->_view->actionMessage = CWidget::create(
+                'CMessage', array($alertType, $alert, array('button'=>true))
+            );
+		}
+
         $this->_view->render('admins/manage');
     }
     
@@ -120,12 +119,12 @@ class AdminsController extends CController
      */
     public function addAction()
     {
-        // allow access only to site owner or main admin
+        // Allow access only to site owner or main admin
         if(!CAuth::isLoggedInAs('owner', 'mainadmin')){
         	$this->redirect('backend/index');
         }
 	
-		// prepare salt
+		// Prepare salt
 		$this->_view->salt = '';
 		if(A::app()->getRequest()->getPost('password') != ''){
 			$this->_view->salt = CConfig::get('password.encryptSalt') ? CHash::salt() : '';
@@ -153,7 +152,7 @@ class AdminsController extends CController
     	}
     	$this->_view->isMyAccount = ($admin->id == $this->_loggedId ? true : false);
 		
-    	// allow access to edit other admins only to site owner or main admin
+    	// Allow access to edit other admins only to site owner or main admin
         if(!$this->_view->isMyAccount && 
         		!CAuth::isLoggedInAs('owner', 'mainadmin') && 
         		!in_array($admin->role, array_keys($this->_view->rolesList))){
@@ -161,7 +160,7 @@ class AdminsController extends CController
         }
         $this->_view->admin = $admin;
 
-		// prepare salt
+		// Prepare salt
 		$this->_view->salt = '';
 		$this->_view->saltDisabled = true;		
 
@@ -170,34 +169,36 @@ class AdminsController extends CController
 			$this->_view->saltDisabled = false;		
 		}
 
-        // delete the avatar file
-        if($avatar === 'delete'){
-        	$msg = '';
-        	$msgType = '';
+        // Delete the avatar file
+        if($avatar === 'delete' && $admin->avatar != ''){
         	$avatar = 'templates/backend/images/accounts/'.$admin->avatar;
         	$admin->avatar = '';
-        	// save the changes in admins table
+			$alert = '';
+			$alertType = '';
+        	
+			// Save the changes in admins table
         	if($admin->save()){
-        		// delete the file
+        		// Delete the file
         		if(CFile::deleteFile($avatar)){
-        			$msg = A::t('app', 'Image Delete Success Message');
-        			$msgType = 'success';
+        			$alert = A::t('app', 'Image Delete Success Message');
+        			$alertType = 'success';
         		}else{
-        			$msg = A::t('app', 'Image Delete Warning');
-        			$msgType = 'warning';
+        			$alert = A::t('app', 'Image Delete Warning');
+        			$alertType = 'warning';
         		}
         		
         		if($this->_view->isMyAccount){
-	        		// use default avatar image in session variable
+	        		// Use default avatar image in session variable
 	        		$session = A::app()->getSession();
 	        		$session->set('loggedAvatar', 'no_image.png');
         		}
         	}else{
-        		$msg = A::t('app', 'Image Delete Error Message');
-        		$msgType = 'error';
+        		$alert = A::t('app', 'Image Delete Error Message');
+        		$alertType = 'error';
         	}
-        	if(!empty($msg)){
-        		$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
+        	
+			if(!empty($alert)){
+        		$this->_view->actionMessage = CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
         	}
         }
 
@@ -210,57 +211,56 @@ class AdminsController extends CController
      */
     public function deleteAction($id = 0)
     {
-        // allow access only to site owner or main admin
+        // Allow access only to site owner or main admin
         if(!CAuth::isLoggedInAs('owner', 'mainadmin')){
         	$this->redirect('backend/index');
         }
     	    		
-    	$msg = '';
-    	$msgType = '';
+    	$alert = '';
+    	$alertType = '';
 
     	$admin = Admins::model()->findByPk($id);
     	if(!$admin){
     		$this->redirect('admins/manage');
     	}    	
-    	// check if this delete operation is allowed
+    	// Check if this delete operation is allowed
     	if(!in_array($admin->role, array_keys($this->_view->rolesList))){
-    		$msg = A::t('app', 'Operation Blocked Error Message');
-    		$msgType = 'error';
-    	// delete the admin
+    		$alert = A::t('app', 'Operation Blocked Error Message');
+    		$alertType = 'error';
+    	// Delete the admin
     	}else if($admin->delete()){
-        	$msg = A::t('app', 'Delete Success Message');		
-			// delete admin images
+        	$alert = A::t('app', 'Delete Success Message');		
+			// Delete admin images
 			$hash = CConfig::get('installationKey') ? CConfig::get('installationKey') : 'admins_';
 			CFile::deleteDirectory('images/upload/'.md5($hash.$id).'/');
             
             $avatar = $admin->avatar;
             $avatarPath = 'templates/backend/images/accounts/'.$avatar;    
-			// delete the avatar file
+			// Delete the avatar file
         	if(CFile::deleteFile($avatarPath)){
-        		$msgType = 'success';
+        		$alertType = 'success';
         	}else{
                 if($avatar == ''){
-                    $msgType = 'success';	    
+                    $alertType = 'success';	    
                 }else{
-                    $msg .= '<br>'.A::t('app', 'Image Delete Warning');
-                    $msgType = 'warning';
+                    $alert .= '<br>'.A::t('app', 'Image Delete Warning');
+                    $alertType = 'warning';
                 }
         	}
     	}else{
 			if(APPHP_MODE == 'demo'){
-				$msg = CDatabase::init()->getErrorMessage();
-				$msgType = 'warning';
+				$alert = CDatabase::init()->getErrorMessage();
+				$alertType = 'warning';
 		   	}else{
-				$msg = A::t('app', 'Delete Error Message');
-				$msgType = 'error';
+				$alert = A::t('app', 'Delete Error Message');
+				$alertType = 'error';
 		   	}    		
     	}
 		
-    	if(!empty($msg)){
-    		$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg, array('button'=>true)));
-    	}
+		$this->_cSession->setFlash('alert', $alert);
+		$this->_cSession->setFlash('alertType', $alertType);
 		
-    	$this->_view->render('admins/manage');
+		$this->redirect('admins/manage');
     }
 
     /**
@@ -270,7 +270,7 @@ class AdminsController extends CController
      */
 	public function myAccountAction($avatar = '')
 	{
-        // set meta tags according to active language
+        // Set meta tags according to active language
     	Website::setMetaTags(array('title'=>A::t('app', 'My Account')));
 		$this->editAction($this->_loggedId, $avatar, true);
     }
@@ -282,10 +282,10 @@ class AdminsController extends CController
 	 */
 	public function sendNewAccountEmail($id)
 	{
-		// retrieve admin info
+		// Retrieve admin info
 		$admin = Admins::model()->findByPk($id);
 		
-		// set admin role for email template
+		// Set admin role for email template
 		$role = in_array($admin->role, array('mainadmin', 'admin')) ? 'admin' : $admin->role;
 		
 		if(!empty($admin)){

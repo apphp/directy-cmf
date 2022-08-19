@@ -1,14 +1,16 @@
-<!-- register CodeMirror files -->
-<?php A::app()->getClientScript()->registerCssFile('js/vendors/codemirror/codemirror.css'); ?>
-<?php A::app()->getClientScript()->registerScriptFile('js/vendors/codemirror/codemirror.js'); ?>
-<?php A::app()->getClientScript()->registerScriptFile('js/vendors/codemirror/clike.js'); ?>
-
 <?php
+	Website::setMetaTags(array('title'=>A::t('app', 'Vocabulary Management')));
+	
     $this->_activeMenu = 'vocabulary/';
     $this->_breadCrumbs = array(
         array('label'=>A::t('app', 'Languages Settings'), 'url'=>'languages/'),
         array('label'=>A::t('app', 'Vocabulary')),
     );    
+
+	// Register CodeMirror files
+	A::app()->getClientScript()->registerCssFile('js/vendors/codemirror/codemirror.css');
+	A::app()->getClientScript()->registerScriptFile('js/vendors/codemirror/codemirror.js');
+	A::app()->getClientScript()->registerScriptFile('js/vendors/codemirror/clike.js');
 ?>
 
 <h1><?php echo A::t('app', 'Vocabulary Management'); ?></h1>
@@ -37,7 +39,7 @@
 					'act'        =>array('type'=>'hidden', 'value'=>'send'),
 					'language'	 =>array('type'=>'select', 'value'=>$language, 'title'=>A::t('app', 'Language'), 'appendCode'=>$importLink, 'data'=>$langList, 'htmlOptions'=>array('submit'=>'$(this).closest("form").find("input[name=act]").val("changeLang");$(this).closest("form").attr("action","vocabulary/manage");')),
 					'fileName'	 =>array('type'=>'select', 'value'=>$fileName, 'title'=>A::t('app', 'Language File'), 'data'=>$filesList, 'htmlOptions'=>array('submit'=>'$(this).closest("form").find("input[name=act]").val("changeFile");$(this).closest("form").attr("action","vocabulary/manage");')),
-					'fileContent'=>array('type'=>'textarea', 'value'=>$fileContent, 'title'=>A::t('app', 'Content'), 'htmlOptions'=>array('maxlength'=>'30000', 'class'=>'full')),					
+					'fileContent'=>array('type'=>'textarea', 'value'=>$fileContent, 'title'=>A::t('app', 'Content'), 'htmlOptions'=>array('maxlength'=>'50000', 'class'=>'full')),					
 				),
 				'buttons'=>$buttons,
 				'events'=>array(),

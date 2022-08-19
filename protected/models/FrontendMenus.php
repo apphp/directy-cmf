@@ -6,7 +6,7 @@
  * ---------------         	---------------            	---------------
  * __construct             	_afterDelete
  * model (model)           	_relations
- * getError     
+ * getError     			_customFields
  *
  */
 
@@ -56,18 +56,26 @@ class FrontendMenus extends CActiveRecord
 	}
 	
 	/**
+     * Used to define custom fields
+	 */
+	protected function _customFields()
+	{
+		return array(CConfig::get('db.prefix').$this->_table.'.id'=>'menu_id');
+	}
+
+	/**
 	 * This method is invoked after deleting a record successfully
 	 * @param string $id
 	 */
 	protected function _afterDelete($id = 0)
 	{
 		$this->_isError = false;
-		// delete menu names from translation table
+		// Delete menu names from translation table
 		if(!$this->_db->delete($this->_tableTranslation, 'menu_id = :menu_id', array(':menu_id'=>$id))){
 			$this->_isError = true;
 		}
 		
-		// delete sub-menus 
+		// Delete sub-menus 
 		if(!$this->_db->delete($this->_tableTranslation, 'WHERE menu_id IN (SELECT id FROM '.CConfig::get('db.prefix').$this->_table.' WHERE parent_id = :parent_id)', array(':parent_id'=>$id))){
 			$this->_isError = true;
 		}else{

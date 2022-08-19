@@ -11,8 +11,11 @@
  * setMetaTags
  * setInfo
  * sendEmailByTemplate
+ * sendEmail
  * prepareBackendAction
  * prepareLinkByFormat
+ * getReferrerPage
+ * getCurrentPage
  * getDefaultPage
  * 
  */
@@ -75,13 +78,15 @@ class Website extends CComponent
 
 	/**
 	 * Sets meta tags according to active language
+	 * @param array $params
+	 * @param bool $siteTitle
 	 * @param array $string
 	 */
-    public static function setMetaTags($params = array())
+    public static function setMetaTags($params = array(), $siteTitle = true)
     {
     	if(isset($params['title'])){
 			$viewTitle = A::app()->view->siteTitle;
-			A::app()->view->setMetaTags('title', $params['title'].($viewTitle != '' ? ' | '.$viewTitle : ''));
+			A::app()->view->setMetaTags('title', $params['title'].(($siteTitle && $viewTitle != '') ? ' | '.$viewTitle : ''));
 		}
     	if(isset($params['keywords'])) A::app()->view->setMetaTags('keywords', $params['keywords']);
     	if(isset($params['description'])) A::app()->view->setMetaTags('description', $params['description']);
@@ -92,7 +97,7 @@ class Website extends CComponent
 	 */
     public static function setInfo()
     {
-		// set meta tags according to active language
+		// Set meta tags according to active language
 		$siteInfo = SiteInfo::model()->find('language_code = :languageCode', array(':languageCode'=>A::app()->getLanguage()));
 		if($siteInfo && APPHP_MODE != 'hidden'){
 			A::app()->view->setMetaTags('title', $siteInfo->meta_title);
@@ -103,20 +108,53 @@ class Website extends CComponent
 			A::app()->view->siteSlogan = $siteInfo->slogan;
 			A::app()->view->siteFooter = $siteInfo->footer;
 
-			// set default page URL
+			// Set default page URL
 			A::app()->view->defaultPage = CConfig::get('defaultController').'/'.CConfig::get('defaultAction');
 		}
     }
     
+	/**
+	 * Send email 
+	 * @param string $emailTo
+	 * @param string $content
+	 * @param array $params
+	 * @param array $attachments	Array of attached files, must be a full path to file relatively to site domain
+	 * @return bool
+	 */
+    public static function sendEmail($emailTo, $subject = '', $content = '', $params = array(), $attachments = array())
+    {
+		$result = false;
+		
+		if(!empty($content)){
+			// Set base variables if not defined        
+			$settings = Bootstrap::init()->getSettings();
+			CMailer::config(array(
+				'mailer'		=> $settings->mailer,
+				'smtp_auth'		=> $settings->smtp_auth,
+				'smtp_secure'	=> $settings->smtp_secure,
+				'smtp_host'		=> $settings->smtp_host,
+				'smtp_port'		=> $settings->smtp_port,
+				'smtp_username'	=> $settings->smtp_username,
+				'smtp_password'	=> CHash::decrypt($settings->smtp_password, CConfig::get('password.hashKey')),
+			));
+			
+			$result = CMailer::send($emailTo, $subject, $content, array('from'=>$settings->general_email), $attachments);
+			if(CMailer::getError()) CDebug::addMessage('errors', 'sending-email', CMailer::getError());			
+		}        
+        
+		return $result;
+    }
+
 	/**
 	 * Send email using template
 	 * @param string $emailTo
 	 * @param string $templateCode
 	 * @param string $templateLang
 	 * @param array $params
+	 * @param array $attachments	Array of attached files, must be a full path to file relatively to site domain
 	 * @return bool
 	 */
-    public static function sendEmailByTemplate($emailTo, $templateCode, $templateLang = '', $params = array())
+    public static function sendEmailByTemplate($emailTo, $templateCode, $templateLang = '', $params = array(), $attachments = array())
     {
         $template = EmailTemplates::model()->getTemplate($templateCode, $templateLang);
         $templateSubject = isset($template['template_subject']) ? $template['template_subject'] : '';
@@ -148,8 +186,8 @@ class Website extends CComponent
 				'smtp_password'=>CHash::decrypt($settings->smtp_password, CConfig::get('password.hashKey')),
 			));
 			
-			$result = CMailer::send($emailTo, $templateSubject, $templateContent, array('from'=>$settings->general_email));
-			if(CMailer::getError()) CDebug::addMessage('errors', 'sending-restore-email', CMailer::getError());			
+			$result = CMailer::send($emailTo, $templateSubject, $templateContent, array('from'=>$settings->general_email), $attachments);
+			if(CMailer::getError()) CDebug::addMessage('errors', 'sending-email', CMailer::getError());			
 		}        
         
 		return $result;
@@ -165,10 +203,10 @@ class Website extends CComponent
     {
         $baseUrl = A::app()->getRequest()->getBaseUrl();
 
-        // block access to this action to non-logged users
+        // Block access to this action to non-logged users
         CAuth::handleLogin('backend/login');
 
-        // block access if admin has no privileges to view modules
+        // Block access if admin has no privileges to view modules
         if(!Admins::hasPrivilege('modules', 'view')){
             header('location: '.$baseUrl.'error/index/code/no-privileges');
             exit;        
@@ -181,7 +219,7 @@ class Website extends CComponent
 
 		foreach($actions as $action){			
 			if(in_array($action, array('add', 'insert', 'edit', 'update', 'delete'))){
-				// block access if admin has no privileges to add/edit modules
+				// Block access if admin has no privileges to add/edit modules
 				if(!Admins::hasPrivilege('modules', 'edit')){
 					header('location: '.$baseUrl.'error/index/code/no-privileges');
 					exit;        
@@ -189,7 +227,7 @@ class Website extends CComponent
 			}
 			
 			if(in_array($action, array('view'))){
-				// block access if admin has no privileges to delete records
+				// Block access if admin has no privileges to delete records
 				if(!Admins::hasPrivilege($privilegeCategory, 'view')){
 					header('location: '.$baseUrl.$redirectPath);
 					exit;        
@@ -197,7 +235,7 @@ class Website extends CComponent
 			}
 	
 			if(in_array($action, array('add', 'insert'))){
-				// block access if admin has no privileges to add records
+				// Block access if admin has no privileges to add records
 				if(!Admins::hasPrivilege($privilegeCategory, 'add')){
 					header('location: '.$baseUrl.$redirectPath);
 					exit;        
@@ -205,7 +243,7 @@ class Website extends CComponent
 			}
 			
 			if(in_array($action, array('edit', 'update'))){
-				// block access if admin has no privileges to edit records
+				// Block access if admin has no privileges to edit records
 				if(!Admins::hasPrivilege($privilegeCategory, 'edit')){
 					header('location: '.$baseUrl.$redirectPath);
 					exit;        
@@ -213,7 +251,7 @@ class Website extends CComponent
 			}
 			
 			if(in_array($action, array('delete'))){
-				// block access if admin has no privileges to delete records
+				// Block access if admin has no privileges to delete records
 				if(!Admins::hasPrivilege($privilegeCategory, 'delete')){
 					header('location: '.$baseUrl.$redirectPath);
 					exit;        
@@ -221,7 +259,7 @@ class Website extends CComponent
 			}
 		}		
         
-        // set backend mode
+        // Set backend mode
         Website::setBackend();        
     }
 	
@@ -248,6 +286,28 @@ class Website extends CComponent
         return $link;
     }
 	
+	/**
+	 * Gets referrer URL
+	 * @return string
+	 */
+	public static function getReferrerPage()
+	{
+		return A::app()->getRequest()->getUrlReferrer();
+	}
+
+	/**
+	 * Gets current URL
+	 * @return string
+	 */
+	public static function getCurrentPage()
+	{
+		$baseUrl = A::app()->getRequest()->getBaseUrl();
+		$controller = A::app()->view->getController();
+		$action = A::app()->view->getAction();
+		
+		return $baseUrl.$controller.'/'.$action;
+	}
+
     /**
      * Returns default page
      * @param string $page

@@ -154,3 +154,10 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>ban_lists` (
 ALTER TABLE  `<DB_PREFIX>accounts` ADD  `salt` VARCHAR( 50 ) NOT NULL DEFAULT  '' AFTER  `username`;
 ALTER TABLE  `<DB_PREFIX>accounts` ADD  `token_expires_at` VARCHAR( 20 ) NOT NULL DEFAULT  '' AFTER  `salt`;
 
+-- 26x
+ALTER TABLE  `<DB_PREFIX>modules` ADD  `class_code` VARCHAR( 40 ) NOT NULL DEFAULT  '' AFTER  `code`;
+ALTER TABLE  `modules` ADD  `installed_at` DATETIME NOT NULL DEFAULT  '0000-00-00 00:00:00' AFTER  `is_active`;
+ALTER TABLE  `modules` ADD  `updated_at` DATETIME NOT NULL DEFAULT  '0000-00-00 00:00:00' AFTER  `installed_at`;
+
+ALTER TABLE  `<DB_PREFIX>admins` CHANGE  `role`  `role` VARCHAR( 20 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT  'admin' COMMENT  '''owner'',''mainadmin'',''admin'' or other'
+ALTER TABLE  `<DB_PREFIX>module_settings` CHANGE  `property_type`  `property_type` ENUM(  'string',  'email',  'phone',  'numeric',  'float', 'positive float',  'unsigned float',  'integer',  'positive integer',  'unsigned integer',  'enum',  'range',  'bool',  'html size',  'text',  'code',  'label' ) CHARACTER SET latin1 NOT NULL;

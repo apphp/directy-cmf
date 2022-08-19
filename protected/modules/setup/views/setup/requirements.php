@@ -1,4 +1,6 @@
 <?php
+	A::app()->view->setMetaTags('title', A::t('setup', 'Check Application Requirements - System Info and Important Settings'));
+	
     $this->_activeMenu = $this->_controller.'/'.$this->_action;
 ?>
 
@@ -50,7 +52,7 @@
 </fieldset>
 
 <?php
-    if(!$notifyMessage){
+    if(!$isCriticalError){
         echo CWidget::create('CFormView', array(
             'action'=>'setup/requirements',
             'method'=>'post',

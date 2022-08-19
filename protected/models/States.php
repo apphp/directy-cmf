@@ -60,7 +60,7 @@ class States extends CActiveRecord
 	protected function _afterDelete($id = 0)
 	{
 		$this->_isError = false;
-		// delete state names from translation table
+		// Delete state names from translation table
 		if(false === $this->_db->delete($this->_tableTranslation, 'state_id = :state_id', array(':state_id'=>$id))){
 			$this->_isError = true;
 		}

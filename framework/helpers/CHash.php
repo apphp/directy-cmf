@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2013 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE:		
@@ -14,6 +14,7 @@
  * salt
  * equals
  * getRandomString
+ * getSequentialString
  * encrypt
  * decrypt
  * 
@@ -73,6 +74,7 @@ class CHash
      * @param array $params
      * type: 'numeric', 'positiveNumeric', 'alphanumeric', 'alpha'
      * case: 'upper', 'lower' (default)
+     * @return string
      */
     public static function getRandomString($length = 10, $params = array())
     {
@@ -104,6 +106,17 @@ class CHash
         return $output;       
     }
     
+    /**
+     * Creates sequential string
+     * @param int $numeric
+     * @param int $length
+     * @return string
+     */
+    public static function getSequentialString($number = '', $length = 10)
+    {
+		str_pad($number, $length, '0', STR_PAD_LEFT);
+	}
+
 	/**
 	 * Encrypt given value
 	 * @param $value

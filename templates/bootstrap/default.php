@@ -6,7 +6,7 @@
     <meta charset="UTF-8" />
 	<meta name="keywords" content="<?php echo CHtml::encode($this->_pageKeywords); ?>" />
 	<meta name="description" content="<?php echo CHtml::encode($this->_pageDescription); ?>" />
-    <meta name="generator" content="<?php echo CConfig::get('name').' v'.CConfig::get('version'); ?>">
+    <meta name="generator" content="<?php echo CConfig::get('name').' v'.CConfig::get('version'); ?>" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<!-- don't move it -->

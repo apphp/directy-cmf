@@ -1,5 +1,6 @@
 <?php
-    $this->_pageTitle = A::t('app', 'Error 404');
+	A::app()->view->setMetaTags('title', '404 Error');
+    $this->_pageTitle = '404 Error';
 ?>
 
 <h2><?php echo $header; ?></h2>

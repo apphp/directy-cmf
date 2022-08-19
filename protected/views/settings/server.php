@@ -1,5 +1,7 @@
 <?php
-    $this->_activeMenu = 'settings/';
+    Website::setMetaTags(array('title'=>A::t('app', 'Server Info')));
+	
+	$this->_activeMenu = 'settings/';
     $this->_breadCrumbs = array(
         array('label'=>A::t('app', 'General'), 'url'=>'backend/'),
         array('label'=>A::t('app', 'Site Settings'), 'url'=>'settings/general'),
@@ -29,6 +31,8 @@
 			<li><b><?php echo A::t('app', 'Virtual Directory Support'); ?>:</b> <i><?php echo $vdSupport; ?></i></li>
             <li><b><?php echo A::t('app', 'Mode_Rewrite'); ?>:</b> <i><?php echo $modeRewrite; ?></i></li>
 			<li><b><?php echo A::t('app', 'Safe Mode'); ?>:</b> <i><?php echo $safeMode; ?></i></li>
+			<li><b><?php echo A::t('app', 'Post Max Size'); ?>:</b> <i><?php echo $postMaxSize; ?></i></li>
+			<li><b><?php echo A::t('app', 'Upload Max Filesize'); ?>:</b> <i><?php echo $uploadMaxSize; ?></i></li>
 		</ul>		
 	</fieldset>	
 	<fieldset>

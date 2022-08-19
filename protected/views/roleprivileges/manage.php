@@ -1,5 +1,7 @@
 <?php
-    $this->_activeMenu = 'roles/';
+    Website::setMetaTags(array('title'=>A::t('app', 'Privileges Management')));
+	
+	$this->_activeMenu = 'roles/';
     $this->_breadCrumbs = array(
         array('label'=>A::t('app', 'Accounts'), 'url'=>'admins/'),
         array('label'=>A::t('app', 'Roles & Privileges'), 'url'=>'roles/'),
@@ -45,12 +47,12 @@
             $privilegeDescription = A::t('app', $val['privilege_description']);
             $categoryName = A::t('app', $val['privilege_category']).'#'.$val['privilege_code'];
             
-            // draw privilege category frame
+            // Draw privilege category frame
             if($currentCategory != $val['privilege_category']){
                 if($currentCategory != '') echo '</fieldset>'.$nl;
             }
 
-            // draw module frame
+            // Draw module frame
             if($currentModule != $val['module_code']){
                 if($currentModulesCount) echo '</fieldset>'.$nl; 
                 echo '<fieldset>'.$nl;
@@ -58,7 +60,7 @@
                 $currentModulesCount++;
             }
             
-            // draw privilege category frame
+            // Draw privilege category frame
             if($currentCategory != $val['privilege_category']){
                 if($currentCategory != '') echo '<fieldset>'.$nl;
                 echo '<legend>'.ucwords(str_replace('_', ' ', $val['privilege_category'])).'</legend>'.$nl;

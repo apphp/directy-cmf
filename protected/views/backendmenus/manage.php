@@ -1,4 +1,6 @@
 <?php
+    Website::setMetaTags(array('title'=>A::t('app', 'Backend Menu Management')));
+	
     $this->_activeMenu = 'backendMenus/';
     $breadCrumbs = array(
         array('label'=>A::t('app', 'General'), 'url'=>'backend/dashboard'),

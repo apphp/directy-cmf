@@ -1,5 +1,7 @@
 <?php
-    $this->_activeMenu = 'currencies/';
+    Website::setMetaTags(array('title'=>A::t('app', 'Currencies Management')));
+	
+	$this->_activeMenu = 'currencies/';
     $this->_breadCrumbs = array(
         array('label'=>A::t('app', 'General'), 'url'=>'backend/'),
         array('label'=>A::t('app', 'Currencies')),
@@ -19,13 +21,13 @@
 		    }
             
             echo CWidget::create('CGridView', array(
-                'model'=>'Currencies',
-                'actionPath'=>'currencies/manage',
-                'defaultOrder'=>array('sort_order'=>'ASC'),
-                'pagination'=>array('enable'=>true, 'pageSize'=>20),
-                'sorting'=>true,
-                'filters'=>array(),
-                'fields'=>array(
+                'model'			=> 'Currencies',
+                'actionPath'	=> 'currencies/manage',
+                'defaultOrder'	=> array('sort_order'=>'ASC'),
+                'pagination'	=> array('enable'=>true, 'pageSize'=>20),
+                'sorting'		=> true,
+                'filters'		=> array(),
+                'fields'		=> array(
                     'name'         => array('title'=>A::t('app', 'Currency Name'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left'),
 	                'symbol'       => array('title'=>A::t('app', 'Symbol'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'100px'),
                     'example_symbol_place' => array('title'=>A::t('app', 'Symbol Place'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px'),
@@ -36,19 +38,17 @@
                     'is_default'   => array('title'=>A::t('app', 'Default'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>array('0'=>'<span class="badge-gray">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'width'=>'90px'),
                     'is_active'    => array('title'=>A::t('app', 'Active'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>array('0'=>'<span class="badge-red">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'width'=>'90px'),
                 ),
-				'actions'=>array(
-					'edit'   => array(
-						'disabled'=>!Admins::hasPrivilege('currencies', 'edit'),
-						'link'=>'currencies/edit/id/{id}', 'imagePath'=>'templates/backend/images/edit.png', 'title'=>A::t('app', 'Edit this record')
+				'actions'		=> array(
+					'edit' => array(
+						'disabled'	=> !Admins::hasPrivilege('currencies', 'edit'),
+						'link'		=> 'currencies/edit/id/{id}', 'imagePath'=>'templates/backend/images/edit.png', 'title'=>A::t('app', 'Edit this record')
 					),
 					'delete' => array(
-						'disabled'=>!Admins::hasPrivilege('currencies', 'edit'),
-						'link'=>'currencies/delete/id/{id}', 'imagePath'=>'templates/backend/images/delete.png', 'title'=>A::t('app', 'Delete this record'), 'onDeleteAlert'=>true
+						'disabled'	=> !Admins::hasPrivilege('currencies', 'edit'),
+						'link'		=> 'currencies/delete/id/{id}', 'imagePath'=>'templates/backend/images/delete.png', 'title'=>A::t('app', 'Delete this record'), 'onDeleteAlert'=>true
 					)
 				),
-            ));
-        
-        ?>
-    
+            ));        
+        ?>    
     </div>
 </div>

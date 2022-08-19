@@ -1,4 +1,6 @@
 <?php
+    Website::setMetaTags(array('title'=>A::t('app', 'Edit Menu')));
+	
     $this->_activeMenu = 'backendMenus/';
     $breadCrumbs = array(
         array('label'=>A::t('app', 'General'), 'url'=>'backend/dashboard'),
@@ -24,28 +26,28 @@
     <?php
         $allowImageOptions = (!$parentId) ? false : true;
     	echo CWidget::create('CDataForm', array(
-			'model'=>'BackendMenus',
-			'primaryKey'=>$id,
-			'operationType'=>'edit',
-			'action'=>'backendMenus/edit/id/'.$id.($parentId ? '/pid/'.$parentId : ''), 
-			'successUrl'=>'backendMenus/manage'.($parentId ? '/pid/'.$parentId : '/pid/0').'/msg/updated',
-			'cancelUrl'=>'backendMenus/manage'.($parentId ? '/pid/'.$parentId : ''),
-			'requiredFieldsAlert'=>true,
+			'model'					=> 'BackendMenus',
+			'primaryKey'			=> $id,
+			'operationType'			=> 'edit',
+			'action'				=> 'backendMenus/edit/id/'.$id.($parentId ? '/pid/'.$parentId : ''), 
+			'successUrl'			=> 'backendMenus/manage'.($parentId ? '/pid/'.$parentId : '/pid/0').'/msg/updated',
+			'cancelUrl'				=> 'backendMenus/manage'.($parentId ? '/pid/'.$parentId : ''),
+			'requiredFieldsAlert'	=> true,
 			//'passParameters'=>true,
-			'return'=>true,
-			'htmlOptions'=>array(
-				'name'=>'frmMenuEdit',
-                'enctype'=>'multipart/form-data',
-				'autoGenerateId'=>true
+			'return'				=> true,
+			'htmlOptions'			=> array(
+				'name'			 => 'frmMenuEdit',
+                'enctype'		 => 'multipart/form-data',
+				'autoGenerateId' => true
 			),
-			'fields'=>array(
-				'url'		  => array('type'=>'label', 'title'=>A::t('app', 'URL')),
-				'parent_name' => array('type'=>'label', 'title'=>A::t('app', 'Parent'), 'definedValues'=>array(''=>$parentName)),
-				'is_system'   => array('type'=>'checkbox', 'title'=>A::t('app', 'System'), 'htmlOptions'=>array('disabled'=>'disabled')),
-				'is_visible'  => array('type'=>'checkbox', 'title'=>A::t('app', 'Visible'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>array()),                    
-				'sort_order'  => array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'4', 'class'=>'small')),
+			'fields'				=> array(
+				'url'		  	=> array('type'=>'label', 'title'=>A::t('app', 'URL')),
+				'parent_name' 	=> array('type'=>'label', 'title'=>A::t('app', 'Parent'), 'definedValues'=>array(''=>$parentName)),
+				'is_system'   	=> array('type'=>'checkbox', 'title'=>A::t('app', 'System'), 'htmlOptions'=>array('disabled'=>'disabled')),
+				'is_visible'  	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Visible'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>array()),                    
+				'sort_order'  	=> array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'4', 'class'=>'small')),
 
-                'icon' =>array(
+                'icon'				=> array(
                     'type'          => 'imageupload',
                     'title'         => A::t('app', 'Icon'),
                     'validation'    => array('required'=>false, 'type'=>'image', 'maxSize'=>'50k', 'maxWidth'=>'32px', 'maxHeight'=>'32px', 'targetPath'=>'templates/backend/images/icons/', 'mimeType'=>'image/jpeg, image/jpg, image/png, image/gif', 'fileName'=>'menu_'.$id),
@@ -54,9 +56,9 @@
                     'fileOptions'   => array('showAlways'=>false, 'class'=>'file', 'size'=>'25', 'filePath'=>'templates/backend/images/icons/')
                 ),
 			),
-			'translationInfo' => array('relation'=>array('id', 'menu_id'), 'languages'=>Languages::model()->findAll('is_active = 1')),
+			'translationInfo' 		=> array('relation'=>array('id', 'menu_id'), 'languages'=>Languages::model()->findAll('is_active = 1')),
 			'translationFields' => array(
-				'name' => array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>125), 'htmlOptions'=>array('title'=>'')),
+				'name' 	=> array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>125), 'htmlOptions'=>array('title'=>'')),
 			),
 			'buttons' => array(
                 'submitUpdateClose' => array('type'=>'submit', 'value'=>A::t('app', 'Update & Close'), 'htmlOptions'=>array('name'=>'btnUpdateClose')),
@@ -66,9 +68,11 @@
 			'events'=>array(
 				'focus'=>array('field'=>$errorField)
 			),
-   		));
-            
-	?>        
-        	
+            'messagesSource'        => 'core',
+            'showAllErrors'         => false,
+			'alerts'				=> array('type'=>'flash', 'itemName'=>A::t('app', 'Menu').' '.$menuName),
+            'return'                => true,
+   		));            
+	?>
     </div>
 </div>

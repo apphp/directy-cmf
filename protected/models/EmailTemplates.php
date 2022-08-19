@@ -67,7 +67,7 @@ class EmailTemplates extends CActiveRecord
 	protected function _afterDelete($pk = '')
 	{
 		$this->_isError = false;
-		// delete records from translation table
+		// Delete records from translation table
 		if(false === $this->_db->delete($this->_tableTranslation, 'template_code = :template_code', array(':template_code'=>$this->code))){
 			$this->_isError = true;
 		}

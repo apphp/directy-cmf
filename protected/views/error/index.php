@@ -1,4 +1,5 @@
 <?php
+	Website::setMetaTags(array('title'=>A::t('app', 'Common Error')));
     $this->_pageTitle = A::t('app', 'Common Error');
 ?>
 

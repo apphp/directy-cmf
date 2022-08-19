@@ -59,12 +59,20 @@ class Countries extends CActiveRecord
 	}
 
 	/**
+     * Used to define custom fields
+	 */
+	protected function _customFields()
+	{
+		return array('code'=>'country_code');
+	}
+
+	/**
 	 * This method is invoked before saving a record
 	 * @param string $id
 	 */
 	protected function _beforeSave($id = 0)
 	{
-		// if country is default - it must be active
+		// If country is default - it must be active
 		if($this->is_default) $this->is_active = 1;
 		return true;
 	}
@@ -76,7 +84,7 @@ class Countries extends CActiveRecord
 	protected function _afterSave($id = 0)
 	{
 		$this->_isError = false;
-		// if this country is default - remove default flag in all other countries
+		// If this country is default - remove default flag in all other countries
 		if($this->is_default){
 			if(!$this->_db->update($this->_table, array('is_default'=>0), 'id != :id', array(':id'=>(int)$id))){
 				$this->_isError = true;
@@ -107,12 +115,12 @@ class Countries extends CActiveRecord
 	protected function _afterDelete($pk = '')
 	{
 		$this->_isError = false;
-		// delete country names from translation table
+		// Delete country names from translation table
 		if(false === $this->_db->delete($this->_tableTranslation, 'country_code = :country_code', array(':country_code'=>$this->code))){
 			$this->_isError = true;
 		}
 		
-		// delete states in loop to force call to afterDelete for each state to delete states translations 
+		// Delete states in loop to force call to afterDelete for each state to delete states translations 
 		$states = States::model()->findAll('country_code = :countryCode', array(':countryCode'=>$this->code));
 		if(is_array($states)){
 			foreach($states as $state){

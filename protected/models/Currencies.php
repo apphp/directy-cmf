@@ -78,7 +78,7 @@ class Currencies extends CActiveRecord
 	 */
 	protected function _beforeSave($id = 0)
 	{
-		// if currency is default - it must be active
+		// If currency is default - it must be active
 		if($this->is_default) $this->is_active = 1;
 		$this->code = strtoupper($this->code);
 		return true;
@@ -92,7 +92,7 @@ class Currencies extends CActiveRecord
 	{
 		$this->_isError = false;
 		
-		// if this currency is default - remove default flag in all other currencies
+		// If this currency is default - remove default flag in all other currencies
 		if($this->is_default){
             if(!$this->_db->update($this->_table, array('is_default'=>0), 'id != :id', array(':id'=>(int)$id))){    
         		$this->_isError = true;

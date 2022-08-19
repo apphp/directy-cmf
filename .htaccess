@@ -13,4 +13,9 @@
 	ErrorDocument 404 index.php
 </IfModule>
 
+<Limit PUT DELETE>
+	order deny,allow
+	deny from all
+</Limit>
+
 Options All -Indexes

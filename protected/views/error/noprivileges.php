@@ -1,5 +1,6 @@
 <?php
-    $this->_pageTitle = A::t('app', 'Error No Privileges');
+    Website::setMetaTags(array('title'=>A::t('app', 'Error No Privileges')));
+	$this->_pageTitle = A::t('app', 'Error No Privileges');
 ?>
 
 <?php if(A::app()->view->getTemplate() != 'backend'){ ?>
