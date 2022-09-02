@@ -4,16 +4,16 @@
 ?>
 
 <?php if(A::app()->view->getTemplate() != 'backend'){ ?>
-	<h3 class="title"><?php echo A::t('app', 'Common Error'); ?></h3>
+	<h3 class="title"><?= A::t('app', 'Common Error'); ?></h3>
 <?php } ?>
 
 <div class="block-body">                       
     <div id="error-page">
-        <h2 class="error-title"><?php echo A::t('app', 'Common Error Title'); ?></h2>
+        <h2 class="error-title"><?= A::t('app', 'Common Error Title'); ?></h2>
         <div class="error-description">    
-            <?php echo A::t('app', 'Common Error Description'); ?>        
+            <?= A::t('app', 'Common Error Description'); ?>        
             <br><br>
-            <?php echo A::t('app', 'Common Error Troubleshooting'); ?>        
+            <?= A::t('app', 'Common Error Troubleshooting'); ?>        
         </div>
     </div>
 </div>

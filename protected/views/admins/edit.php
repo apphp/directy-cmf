@@ -9,13 +9,13 @@
     );    
 ?>
 
-<h1><?php echo A::t('app', 'Admins Management'); ?></h1>
+<h1><?= A::t('app', 'Admins Management'); ?></h1>
 
 <div class="bloc">
-    <div class="title"><?php echo ($isMyAccount ? A::t('app', 'My Account') : A::t('app', 'Edit Admin')); ?></div>
+    <div class="title"><?= ($isMyAccount ? A::t('app', 'My Account') : A::t('app', 'Edit Admin')); ?></div>
     <div class="content">
     
-    <?php echo $actionMessage; ?>
+    <?= $actionMessage; ?>
 
     <?php
 		echo CWidget::create('CDataForm', array(
@@ -60,15 +60,16 @@
 					'separatorInfo' => array('legend'=>A::t('app', 'Account Information')),
 					'role'			=> array('type'=>'select', 'title'=>A::t('app', 'Account Type'), 'data'=>($isMyAccount ? $allRolesList : $rolesList), 'mandatoryStar'=>true, 'htmlOptions'=>($isMyAccount ? array('disabled'=>'disabled') : array()), 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>($isMyAccount ? array('owner') : array_keys($rolesList)))),
 					'username'		=> array('type'=>'label', 'title'=>A::t('app', 'Username'), 'tooltip'=>'', 'htmlOptions'=>array()),
-					'password'		=> array('type'=>'password', 'title'=>A::t('app', 'Password'), 'validation'=>array('required'=>false, 'type'=>'password', 'minLength'=>6, 'maxlength'=>20), 'encryption'=>array('enabled'=>CConfig::get('password.encryption'), 'encryptAlgorithm'=>CConfig::get('password.encryptAlgorithm'), 'encryptSalt'=>$salt), 'htmlOptions'=>array('maxlength'=>'20', 'placeholder'=>'&#9679;&#9679;&#9679;&#9679;&#9679;')),
+					'password'		=> array('type'=>'password', 'title'=>A::t('app', 'Password'), 'validation'=>array('required'=>false, 'type'=>'password', 'minLength'=>6, 'maxlength'=>20, 'simplePassword'=>(APPHP_MODE == 'debug' ? true : false)), 'encryption'=>array('enabled'=>CConfig::get('password.encryption'), 'encryptAlgorithm'=>CConfig::get('password.encryptAlgorithm'), 'encryptSalt'=>$salt), 'htmlOptions'=>array('maxlength'=>'20', 'placeholder'=>'&#9679;&#9679;&#9679;&#9679;&#9679;')),
 					'salt'			=> array('type'=>'data', 'default'=>$salt, 'disabled'=>$saltDisabled),
 					///'passwordRetype' => array('type'=>'password', 'title'=>A::t('app', 'Retype Password'), 'validation'=>array('required'=>false, 'type'=>'confirm', 'confirmField'=>'password', 'minLength'=>6, 'maxlength'=>20), 'htmlOptions'=>array('maxlength'=>'20', 'placeholder'=>'&#9679;&#9679;&#9679;&#9679;&#9679;')),
-					'is_active' 	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>($isMyAccount ? array('disabled'=>'disabled', 'uncheckValue'=>1) : array())),
+					'is_active' 	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>($isMyAccount ? array('disabled'=>'disabled', 'uncheckValue'=>1) : array()), 'viewType'=>'custom'),
 				),
 				'separatorOther' 	=> array(
 					'separatorInfo' 	=> array('legend'=>A::t('app', 'Other')),
 					'created_at'	  	=> array('type'=>'label', 'title'=>A::t('app', 'Time Created'), 'definedValues'=>array('0000-00-00 00:00:00'=>A::t('app', 'Unknown')), 'format'=>$dateTimeFormat),
 					'updated_at'	  	=> array('type'=>'label', 'title'=>A::t('app', 'Last Changed'), 'definedValues'=>array('0000-00-00 00:00:00'=>A::t('app', 'Never')), 'format'=>$dateTimeFormat),
+					'password_changed_at' => array('type'=>'label', 'title'=>A::t('app', 'Last Password Changed'), 'definedValues'=>array('0000-00-00 00:00:00'=>A::t('app', 'Never')), 'format'=>$dateTimeFormat),
 					'last_visited_at' 	=> array('type'=>'label', 'title'=>A::t('app', 'Last Visit'), 'definedValues'=>array('0000-00-00 00:00:00'=>A::t('app', 'Never')), 'format'=>$dateTimeFormat),
 	            ),
 			),

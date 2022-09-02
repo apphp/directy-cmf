@@ -28,10 +28,10 @@ class AdminsController extends CController
         parent::__construct();
         
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
         $this->_loggedId = CAuth::getLoggedId();
         
-        // Allow access to any type of admins
+        // Allow access to any type of admins only 
         if(!CAuth::isLoggedInAsAdmin()){
         	$this->redirect('backend/index');
         }
@@ -48,7 +48,7 @@ class AdminsController extends CController
         $this->_view->errorField = '';        
 	
         // Prepare list of all active languages
-        $languages = Languages::model()->findAll('is_active = 1');
+        $languages = Languages::model()->findAll(array('condition'=>'is_active = 1', 'orderBy'=>'sort_order ASC'));
         $langList = array();
 		if(is_array($languages)){
 			foreach($languages as $lang){
@@ -154,8 +154,8 @@ class AdminsController extends CController
 		
     	// Allow access to edit other admins only to site owner or main admin
         if(!$this->_view->isMyAccount && 
-        		!CAuth::isLoggedInAs('owner', 'mainadmin') && 
-        		!in_array($admin->role, array_keys($this->_view->rolesList))){
+       		!CAuth::isLoggedInAs('owner', 'mainadmin') && 
+       		!in_array($admin->role, array_keys($this->_view->rolesList))){
         	$this->redirect('backend/index');
         }
         $this->_view->admin = $admin;
@@ -292,10 +292,11 @@ class AdminsController extends CController
 			$emailTo = $admin->email;
 			$templateCode = 'bo_'.$role.'_account_created_by_owner';
 			$emailParams = array(
-				'{FIRST NAME}'  => $admin->first_name,
-				'{LAST NAME}'   => $admin->last_name,
-				'{USER NAME}'   => $admin->username,
-				'{WEB SITE}'    => A::app()->getRequest()->getBaseUrl()
+				'{FIRST_NAME}'  => $admin->first_name,
+				'{LAST_NAME}'   => $admin->last_name,
+				'{USERNAME}'    => $admin->username,
+				'{PASSWORD}'    => A::app()->getRequest()->getPost('password'),
+				'{WEB_SITE}'    => A::app()->getRequest()->getBaseUrl()
 			);
 
 			Website::sendEmailByTemplate($emailTo, $templateCode, A::app()->getLanguage(), $emailParams);					

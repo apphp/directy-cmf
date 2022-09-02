@@ -3,15 +3,18 @@
 
     $this->_activeMenu = 'emailTemplates/';
     $this->_breadCrumbs = array(
-        array('label'=>A::t('app', 'General'), 'url'=>'backend/'),
+        array('label'=>A::t('app', 'Mail Settings'), 'url'=>'emailTemplates/manage'),
         array('label'=>A::t('app', 'Email Templates')),
     );    
 ?>
 
-<h1><?php echo A::t('app', 'Email Templates Management'); ?></h1>
+<h1><?= A::t('app', 'Email Templates Management'); ?></h1>
 
 <div class="bloc">
-    <div class="title"><?php echo A::t('app', 'Email Templates'); ?></div>
+    <div class="title">
+		<?= A::t('app', 'Email Templates'); ?>	
+		<a class="feature-settings-link tooltip-link" title="<?= A::te('app', 'Email Settings');?>" href="settings/email"></a>
+	</div>
     <div class="content">
 	<?php 
 		echo $actionMessage; 

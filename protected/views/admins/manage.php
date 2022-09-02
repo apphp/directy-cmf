@@ -8,13 +8,13 @@
     );	
 ?>
 
-<h1><?php echo A::t('app', 'Admins Management'); ?></h1>
+<h1><?= A::t('app', 'Admins Management'); ?></h1>
 
 <div class="bloc">
-    <div class="title"><?php echo A::t('app', 'Admins')?></div>
+    <div class="title"><?= A::t('app', 'Admins')?></div>
     <div class="content">
-		<?php echo $actionMessage; ?>
-    	<a href="admins/add" class="add-new"><?php echo A::t('app', 'Add New'); ?></a>
+		<?= $actionMessage; ?>
+    	<a href="admins/add" class="add-new"><?= A::t('app', 'Add New'); ?></a>
         <?php
             echo CWidget::create('CGridView', array(
                 'model'				=> 'Admins',
@@ -25,10 +25,11 @@
             	'pagination'		=> array('enable'=>true, 'pageSize'=>20),
                 'sorting'			=> true,
                 'filters'			=> array(
-                    'first_name'    	=> array('title'=>A::t('app', 'First Name'), 'type'=>'textbox', 'operator'=>'like%', 'width'=>'100px', 'maxLength'=>'32'),
-                    'last_name'     	=> array('title'=>A::t('app', 'Last Name'), 'type'=>'textbox', 'operator'=>'like%', 'width'=>'100px', 'maxLength'=>'32'),
-                    'is_active'     	=> array('title'=>A::t('app', 'Active'), 'type'=>'enum', 'operator'=>'=', 'width'=>'', 'source'=>array('0'=>A::t('app', 'No'), '1'=>A::t('app', 'Yes')), 'emptyOption'=>true),
-                    'role'     			=> array('title'=>A::t('app', 'Account Type'), 'type'=>'enum', 'operator'=>'=', 'width'=>'', 'source'=>$rolesList, 'emptyOption'=>true),
+                    'first_name'    	=> array('title'=>A::t('app', 'First Name'), 'type'=>'textbox', 'operator'=>'%like%', 'width'=>'100px', 'maxLength'=>'32'),
+                    'last_name'     	=> array('title'=>A::t('app', 'Last Name'), 'type'=>'textbox', 'operator'=>'%like%', 'width'=>'100px', 'maxLength'=>'32'),
+                    'username'    		=> array('title'=>A::t('app', 'Username'), 'type'=>'textbox', 'operator'=>'%like%', 'width'=>'100px', 'maxLength'=>'32'),
+                    'is_active'     	=> array('title'=>A::t('app', 'Active'), 'type'=>'enum', 'operator'=>'=', 'width'=>'90px', 'source'=>array('0'=>A::t('app', 'No'), '1'=>A::t('app', 'Yes')), 'emptyOption'=>true),
+                    'role'     			=> array('title'=>A::t('app', 'Account Type'), 'type'=>'enum', 'operator'=>'=', 'width'=>'130px', 'source'=>$rolesList, 'emptyOption'=>true),
                 ),
                 'fields'			=> array(
                     'avatar'        	=> array('title'=>'', 'type'=>'image', 'align'=>'', 'width'=>'40px', 'class'=>'left', 'headerClass'=>'', 'isSortable'=>false, 'imagePath'=>'templates/backend/images/accounts/', 'defaultImage'=>'no_image.png', 'imageWidth'=>'26px', 'imageHeight'=>'', 'alt'=>''),

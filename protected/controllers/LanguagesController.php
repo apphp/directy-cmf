@@ -48,7 +48,7 @@ class LanguagesController extends CController
      * Changes language on site
 	 * @param string $lang code of the new site language
      */
-    public function changeAction($lang)
+    public function changeAction($lang = '')
     {
         // If redirected from dropdown list
         if(empty($lang)) $lang = A::app()->getRequest()->getQuery('lang');
@@ -57,19 +57,24 @@ class LanguagesController extends CController
         if($result = Languages::model()->find("code = :code AND used_on IN ('front-end','global') AND is_active = 1", array(':code'=>$lang))){
             $params = array(
                 'locale' => $result->lc_time_name,
-                'direction' => $result->direction
+                'direction' => $result->direction,
+				'icon' => $result->icon,
+				'name' => $result->name,
+				'name_native' => $result->name_native,
             );
             A::app()->setLanguage($lang, $params);
         }
 		
-		$referrerPage = Website::getReferrerPage();
+		$referrerPage = Website::getRefererPage();
 		$defaultPage = Website::getDefaultPage();
 		$baseUrl = A::app()->getRequest()->getBaseUrl();
 		
-		// If referrer page exists and it comes from current domain redirect to referrer URL, otherwise to default page
-		$redirectPage = (!empty($referrerPage) && preg_match('/'.preg_quote($baseUrl, '/').'/', $referrerPage)) ? $referrerPage : $defaultPage;
-		
-        $this->redirect($redirectPage, true);
+		// If referrer page exists and it comes from current domain redirect to referrer URL, otherwise to default page		
+		if(!empty($referrerPage) && preg_match('/'.preg_quote($baseUrl, '/').'/', $referrerPage)){
+			$this->redirect($referrerPage, true);
+		}else{
+			$this->redirect($defaultPage);
+		}
     }
 
     /**
@@ -78,7 +83,7 @@ class LanguagesController extends CController
 	public function manageAction()
 	{
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 		
 		// Block access if admin has no active privilege to manage languages
         if(!Admins::hasPrivilege('languages', array('view', 'edit'))){
@@ -103,7 +108,7 @@ class LanguagesController extends CController
 	public function addAction()
 	{
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 		
 		// Block access if admin has no active privilege to add languages
         Website::prepareBackendAction('edit', 'languages', 'languages/manage');
@@ -125,7 +130,7 @@ class LanguagesController extends CController
 	public function editAction($id = 0, $icon = '')
 	{
 		// Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 		
 		// Block access if admin has no active privilege to edit languages
         Website::prepareBackendAction('edit', 'languages', 'languages/manage');
@@ -169,7 +174,7 @@ class LanguagesController extends CController
 	public function deleteAction($id = 0)
 	{
 		// Block access to this action to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 		
 		// Block access if admin has no active privilege to delete languages
         Website::prepareBackendAction('edit', 'languages', 'languages/manage');

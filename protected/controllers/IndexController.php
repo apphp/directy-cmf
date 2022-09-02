@@ -35,6 +35,7 @@ class IndexController extends CController
 		$renderPath = strtolower($controller.'/'.$action);
 		
 		if(in_array($renderPath, array('/', 'index', 'index/', 'index/index'))){
+			//$this->_view->setLayout('wide');
 			$this->_view->render('index/index');	
 		}else{
 			$this->redirect($controller.'/'.$action);	

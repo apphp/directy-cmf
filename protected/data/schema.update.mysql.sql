@@ -161,3 +161,205 @@ ALTER TABLE  `modules` ADD  `updated_at` DATETIME NOT NULL DEFAULT  '0000-00-00 
 
 ALTER TABLE  `<DB_PREFIX>admins` CHANGE  `role`  `role` VARCHAR( 20 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT  'admin' COMMENT  '''owner'',''mainadmin'',''admin'' or other'
 ALTER TABLE  `<DB_PREFIX>module_settings` CHANGE  `property_type`  `property_type` ENUM(  'string',  'email',  'phone',  'numeric',  'float', 'positive float',  'unsigned float',  'integer',  'positive integer',  'unsigned integer',  'enum',  'range',  'bool',  'html size',  'text',  'code',  'label' ) CHARACTER SET latin1 NOT NULL;
+
+-- 27x
+
+DROP TABLE IF EXISTS `<DB_PREFIX>payment_providers`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>payment_providers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `description` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `instructions` text COLLATE utf8_unicode_ci NOT NULL,
+  `required_fields` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `merchant_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `merchant_code` varchar(60) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `merchant_key` varchar(60) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `used_on` enum('front-end','back-end','global') CHARACTER SET latin1 NOT NULL DEFAULT 'global',
+  `mode` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 - test mode, 1- real mode',
+  `sort_order` smallint(6) unsigned NOT NULL DEFAULT '1',
+  `is_default` tinyint(1) NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=5 ;
+
+INSERT INTO `<DB_PREFIX>payment_providers` (`id`, `code`, `name`, `description`, `instructions`, `required_fields`, `merchant_id`, `merchant_code`, `merchant_key`, `used_on`, `mode`, `sort_order`, `is_default`, `is_active`) VALUES
+(1, 'online_order', 'Online Order', 'Online Order', '''Online Order'' is designed to allow the customer to make an order on the site without any advance payment. It may be used like POA - "Pay on Arrival" order for hotel bookings, car rental etc. The administrator receives a notification about placing the order and can complete the order by himself.', '', '', '', '', 'global', 1, 0, 1, 1),
+(2, 'online_credit_card', 'Online Credit Card', 'Online Credit Card', '''Online Credit Card'' is designed to allow the customer to make an order on the site with payment by credit card. The administrator receives a credit card info and can complete the order by himself (in case he''s allowed to do Offline Credit Card Processing).', '', '', '', '', 'global', 1, 1, 0, 1),
+(3, 'wire_transfer', 'Wire Transfer', 'Wire Payment', '''Wire Transfer'' is designed to allow the customer to perform a purchase on the site without any advance payment. The administrator receives a notification about placing this reservation and can complete it after the customer will pay a required sum to the provided bank account. After the customer send a payment with wire transfer and it successfully received, the status of purchase may be changes to ''paid''.', '', '', '', '', 'global', 1, 2, 0, 1),
+(4, 'paypal', 'PayPal', 'PayPal online payments system', 'To make PayPal processing system works on your site you have to perform the following steps:<br><br>Create an account on PayPal: https://www.paypal.com<br>After account is created, log into and select from the top menu: My Account -> Profile<br>On Profile Summary page select from the Selling Preferences column: Instant Payment Notification (IPN) Preferences.<br>Turn ''On'' IPN by selecting Receive IPN messages (Enabled) and write into Notification URL: {site}/payments/paypal, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/payments/paypal or<br>http://your_domain.com/site_directory/payments/paypal<br>Then go to My Account -> Profile -> Website Payment Preferences, turn Auto Return ''On'' and write into Return URL: {site}/payments/paypal, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/payments/paypal<br>', 'merchant_id', 'sales@test.com', '', '', 'global', 1, 3, 0, 1);
+
+DROP TABLE IF EXISTS `<DB_PREFIX>social_networks`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>social_networks` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `site_id` int(11) NOT NULL DEFAULT '0',
+  `icon` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `link` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `sort_order` smallint(1) unsigned NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=9;
+
+INSERT INTO `<DB_PREFIX>social_networks` (`id`, `site_id`, `icon`, `name`, `link`, `sort_order`, `is_active`) VALUES
+(1, 1, 'facebook.png', 'Facebook', 'http://facebook.com/#', 1, 1),
+(2, 1, 'youtube.png', 'YouTube', 'http://youtube.com/#', 3, 1),
+(3, 1, 'twitter.png', 'Twitter', 'http://twitter.com/#', 2, 1),
+(4, 1, 'skype.png', 'Skype', 'http://web.skype.com/#', 4, 0),
+(5, 1, 'pinterest.png', 'Pinterest', 'http://pinterest.com/#', 5, 0),
+(6, 1, 'linkedin.png', 'LinkedIn', 'http://linkedin.com/#', 6, 0),
+(7, 1, 'instagram.png', 'Instagram', 'http://instagram.com/#', 7, 0),
+(8, 1, 'google_plus.png', 'Google+', 'https://plus.google.com/#', 8, 1);
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>social_networks_login`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>social_networks_login` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `type` varchar(32) CHARACTER SET latin1 NOT NULL DEFAULT '',
+  `application_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `application_secret` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `sort_order` smallint(1) unsigned NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4;
+
+INSERT INTO `<DB_PREFIX>social_networks_login` (`id`, `name`, `type`, `application_id`, `application_secret`, `sort_order`, `is_active`) VALUES
+(1, 'Facebook', 'facebook', '', '', 1, 0),
+(2, 'Google+', 'google', '', '', 2, 0),
+(3, 'Twitter', 'twitter', '', '', 3, 0);
+
+
+ALTER TABLE  `<DB_PREFIX>settings` ADD  `indexed_pages_google` varchar(10) CHARACTER SET latin1 NOT NULL;
+ALTER TABLE  `<DB_PREFIX>settings` ADD  `indexed_pages_bing` varchar(10) CHARACTER SET latin1 NOT NULL;
+ALTER TABLE  `<DB_PREFIX>settings` ADD  `indexed_pages_yahoo` varchar(10) CHARACTER SET latin1 NOT NULL;
+ALTER TABLE  `<DB_PREFIX>settings` ADD  `indexed_pages_yandex` varchar(10) CHARACTER SET latin1 NOT NULL;
+ALTER TABLE  `<DB_PREFIX>settings` ADD  `indexed_pages_baidu` varchar(10) CHARACTER SET latin1 NOT NULL;
+ALTER TABLE  `<DB_PREFIX>settings` ADD  `indexed_pages_goo` varchar(10) CHARACTER SET latin1 NOT NULL;
+ALTER TABLE  `<DB_PREFIX>settings` ADD  `site_last_updated` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
+ALTER TABLE  `<DB_PREFIX>settings` ADD  `mailing_log` tinyint(1) unsigned NOT NULL DEFAULT '0';
+ALTER TABLE  `<DB_PREFIX>settings` ADD  `website_domain` varchar(255) COLLATE utf8_unicode_ci NOT NULL;
+
+INSERT INTO `<DB_PREFIX>backend_menus` (`id`, `parent_id`, `url`, `module_code`, `icon`, `is_system`, `is_visible`, `sort_order`) VALUES
+(NULL, 4, 'emailTemplates/', '', '', 1, 1, 1),
+(NULL, 4, 'mailingLog/', '', '', 1, 1, 2);
+
+INSERT INTO `<DB_PREFIX>backend_menu_translations` (`id`, `menu_id`, `language_code`, `name`) VALUES
+(NULL, 22, 'en', 'Mailing Log');
+
+INSERT INTO `<DB_PREFIX>privileges` (`id`, `module_code`, `category`, `code`, `name`, `description`) VALUES
+(NULL, '', 'mailing_log', 'view', 'View Mailing Log', 'View Mailing Log of the system');
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>mailing_log`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>mailing_log` (
+  `id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
+  `email_from` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
+  `email_to` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
+  `email_subject` varchar(125) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `email_content` text COLLATE utf8_unicode_ci NOT NULL,
+  `sent_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0 - error, 1- successfully sent',
+  `status_description` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+
+DROP TABLE IF EXISTS `<DB_PREFIX>role_privileges`;
+CREATE TABLE IF NOT EXISTS `<DB_PREFIX>role_privileges` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `role_id` int(5) NOT NULL DEFAULT '0',
+  `privilege_id` int(5) NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=85 ;
+
+INSERT INTO `<DB_PREFIX>role_privileges` (`id`, `role_id`, `privilege_id`, `is_active`) VALUES
+(1, 1, 1, 1),
+(2, 1, 2, 1),
+(3, 1, 3, 1),
+(4, 1, 4, 1),
+(5, 1, 5, 1),
+(6, 1, 6, 1),
+(7, 1, 7, 1),
+(8, 1, 8, 1),
+(9, 1, 9, 1),
+(10, 1, 10, 1),
+(11, 1, 11, 1),
+(12, 1, 12, 1),
+(13, 1, 13, 1),
+(14, 1, 14, 1),
+(15, 1, 15, 1),
+(16, 1, 16, 1),
+(17, 1, 17, 1),
+(18, 1, 18, 1),
+(19, 1, 19, 1),
+(20, 1, 20, 1),
+(21, 1, 21, 1),
+(22, 1, 22, 1),
+(23, 1, 23, 1),
+(24, 1, 24, 1),
+(25, 1, 25, 1),
+(26, 1, 26, 1),
+(27, 1, 27, 1),
+(28, 1, 28, 1),
+(29, 2, 1, 1),
+(30, 2, 2, 1),
+(31, 2, 3, 1),
+(32, 2, 4, 1),
+(33, 2, 5, 1),
+(34, 2, 6, 1),
+(35, 2, 7, 1),
+(36, 2, 8, 1),
+(37, 2, 9, 1),
+(38, 2, 10, 1),
+(39, 2, 11, 1),
+(40, 2, 12, 1),
+(41, 2, 13, 1),
+(42, 2, 14, 1),
+(43, 2, 15, 1),
+(44, 2, 16, 1),
+(45, 2, 17, 1),
+(46, 2, 18, 1),
+(47, 2, 19, 1),
+(48, 2, 20, 1),
+(49, 2, 21, 1),
+(50, 2, 22, 1),
+(51, 2, 23, 1),
+(52, 2, 24, 1),
+(53, 2, 25, 1),
+(54, 2, 26, 1),
+(55, 2, 27, 1),
+(56, 2, 28, 1),
+(57, 3, 1, 1),
+(58, 3, 2, 1),
+(59, 3, 3, 1),
+(60, 3, 4, 1),
+(61, 3, 5, 1),
+(62, 3, 6, 1),
+(63, 3, 7, 1),
+(64, 3, 8, 0),
+(65, 3, 9, 0),
+(66, 3, 10, 0),
+(67, 3, 11, 0),
+(68, 3, 12, 1),
+(69, 3, 13, 0),
+(70, 3, 14, 1),
+(71, 3, 15, 0),
+(72, 3, 16, 0),
+(73, 3, 17, 0),
+(74, 3, 18, 0),
+(75, 3, 19, 0),
+(76, 3, 20, 0),
+(77, 3, 21, 1),
+(78, 3, 22, 0),
+(79, 3, 23, 1),
+(80, 3, 24, 0),
+(81, 3, 25, 1),
+(82, 3, 26, 0),
+(83, 3, 27, 0),
+(84, 3, 28, 0);
+
+ALTER TABLE  `<DB_PREFIX>admins` ADD `password_changed_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
+ALTER TABLE  `<DB_PREFIX>accounts` ADD `password_changed_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
+

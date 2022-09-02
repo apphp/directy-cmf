@@ -4,10 +4,10 @@
     $this->_activeMenu = $this->_controller.'/'.$this->_action;
 ?>
 
-<h1><?php echo A::t('setup', 'Database Settings'); ?></h1>
-<p><?php echo A::t('setup', 'Database Settings Notice'); ?></p>
+<h1><?= A::t('setup', 'Database Settings'); ?></h1>
+<p><?= A::t('setup', 'Database Settings Notice'); ?></p>
 
-<?php echo $actionMessage; ?>
+<?= $actionMessage; ?>
 <br>
 
 <?php

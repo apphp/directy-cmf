@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * USAGE:
@@ -23,7 +23,7 @@
  *      </SOAP-ENV:Body>
  * </SOAP-ENV:Envelope>
  * Then:
- * 1) Standart - CSoap::config(array('namespace'=>'SOAP-ENV', 'operation'=>'checkVat', 'wsdl'=>true)) +
+ * 1) Standard - CSoap::config(array('namespace'=>'SOAP-ENV', 'operation'=>'checkVat', 'wsdl'=>true)) +
  *               CSoap::call('http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl', array('parameters'=>array('countryCode'=>'BG', 'vatNumber'=>'175074752')))
  * 2) Simple - CSoap::call('http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl', array('checkVat'=>array('countryCode'=>'BG', 'vatNumber'=>'175074752')))
  *

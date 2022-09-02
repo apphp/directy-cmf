@@ -12,6 +12,7 @@
  * setDefaultCurrency
  * setSslMode
  * setCron
+ * setLastVisitedPage
  * getSettings
  *
  */
@@ -49,6 +50,8 @@ class Bootstrap extends CComponent
 		A::app()->attachEventHandler('_onBeginRequest', array($this, 'setDefaultCurrency'));
         A::app()->attachEventHandler('_onBeginRequest', array($this, 'setSslMode'));
 		A::app()->attachEventHandler('_onBeginRequest', array($this, 'setCron'));
+		
+		A::app()->attachEventHandler('_onEndRequest', array($this, 'setLastVisitedPage'));
 	}
 
 	/**
@@ -91,7 +94,10 @@ class Bootstrap extends CComponent
             if($defaultLang = Languages::model()->find('is_default = 1')){
                 $params = array(
                     'locale' => $defaultLang->lc_time_name,
-                    'direction' => $defaultLang->direction
+                    'direction' => $defaultLang->direction,
+					'icon' => $defaultLang->icon,
+					'name' => $defaultLang->name,
+					'name_native' => $defaultLang->name_native,
                 );
                 A::app()->setLanguage($defaultLang->code, $params);    
             }			
@@ -147,8 +153,16 @@ class Bootstrap extends CComponent
 		// Un-comment if 'non-batch' cron job type is used
 		//$cron = new Cron();
 		//$cron->run();
-	}			
-    
+	}
+	
+	/**
+	 * Sets last visited page
+	 */	
+	public function setLastVisitedPage()
+	{
+		Website::setLastVisitedPage();
+	}
+	
  	/**
 	 * Returns site settings
 	 * Helps to prevent multiple call of Settings::model()->findByPk(1);

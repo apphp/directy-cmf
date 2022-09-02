@@ -201,7 +201,7 @@ if(!CAuth::isLoggedInAsAdmin()){
     <script type="text/javascript" src="../../tiny_mce_popup.js"></script>    
     <script type="text/javascript">
     function selectImage(img_src){
-        var imgsrc = '<?php echo $baseUrl; ?>'+img_src;
+        var imgsrc = '<?= $baseUrl; ?>'+img_src;
         var ImageDialog = {
           init : function(ed) {
             ed.execCommand('mceInsertContent', false, 
@@ -223,20 +223,20 @@ if(!CAuth::isLoggedInAsAdmin()){
 </head>
 <body style="padding:5px;margin:0px;">
 <?php if($act == 'upload'){ ?>
-    <script type="text/javascript">selectImage('<?php echo $image; ?>');</script>
+    <script type="text/javascript">selectImage('<?= $image; ?>');</script>
 <?php }else if($act == 'select'){ ?>
-    <script type="text/javascript">selectImage('<?php echo $selFile; ?>');</script>
+    <script type="text/javascript">selectImage('<?= $selFile; ?>');</script>
 <?php }else{ ?>
    
     <form name="iform" style="margin:0px 0px 5px 0px" action="" method="post" enctype="multipart/form-data">
         <div style="display:inline-block;">
         <input id="file" style="float:left;" accept="image/*" type="file" name="image" />
-        <button id="insert" <?php echo (($isDemo) ? "disabled='disabled'" : "");?>>Upload</button>
+        <button id="insert" <?= (($isDemo) ? "disabled='disabled'" : "");?>>Upload</button>
         </div>
     </form>    
     <fieldset>
     <legend>IMAGES:</legend>
-    <?php echo ($msg) ? '<br>&nbsp;&nbsp;&nbsp;'.$msg : ''; ?>    
+    <?= ($msg) ? '<br>&nbsp;&nbsp;&nbsp;'.$msg : ''; ?>    
 <?php
 
     $arsize = count($files);

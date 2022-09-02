@@ -7,12 +7,12 @@
 	$showCategories = (count($searchCategories) > 1 && empty($currentCategory)) ? true : false;
 ?>
 
-<h1 class="title"><?php echo A::t('app', 'Search Results'); ?></h1>
+<h1 class="title"><?= A::t('app', 'Search Results'); ?></h1>
 <div class="block-body">	
 
 	<?php if($showCategories){ ?>
 		<div class="search-categories-nav">
-			<h3><?php echo A::t('app', 'Page Content'); ?></h3>
+			<h3><?= A::t('app', 'Page Content'); ?></h3>
 			<?php
 				if(is_array($searchCategories)){
 					echo '<ul class="search-category-links">';
@@ -25,7 +25,7 @@
 		</div>
 	<?php } ?>
 	
-	<div class="<?php echo $showCategories ? 'search-results' : 'search-results-wide'; ?>">
+	<div class="<?= $showCategories ? 'search-results' : 'search-results-wide'; ?>">
 		<?php			
 			if(is_array($results) && !empty($results)){
 				foreach($results as $key => $val){

@@ -11,11 +11,11 @@
     A::app()->getClientScript()->registerCssFile('js/vendors/jquery/jquery-ui.min.css');
 ?>
     
-<h1><?php echo A::t('app', 'General Settings'); ?></h1>
+<h1><?= A::t('app', 'General Settings'); ?></h1>
 
 <div class="bloc">
 
-	<?php echo $tabs; ?>
+	<?= $tabs; ?>
 
 	<div class="content">
 	<?php		
@@ -61,6 +61,7 @@
 	        	'separatorCache' => array(
 	                'separatorInfo' 		=> array('legend'=>A::t('app', 'Cache Settings')),
                     'cacheAllowed' 			=> array('type'=>'label', 'title'=>A::t('app', 'Enabled'), 'tooltip'=>A::t('app', 'Cache Tooltip'), 'value'=>$cacheEnable, 'definedValues'=>array(''=>'<span class="badge-red">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'format'=>''),
+					'cacheType' 			=> array('type'=>'label', 'title'=>A::t('app', 'Cache Type'), 'tooltip'=>A::t('app', 'Cache Type Tooltip'), 'value'=>$cacheType, 'definedValues'=>array('auto'=>A::t('app', 'Auto'), 'manual'=>A::t('app', 'Manual')), 'format'=>''),
                     'cacheLifetime' 		=> array('type'=>'label', 'title'=>A::t('app', 'Cache Lifetime'), 'tooltip'=>A::t('app', 'Cache Lifetime Tooltip'), 'value'=>$cacheLifetime.' '.A::t('app', 'minute/s'), 'definedValues'=>array(), 'format'=>''),
                     'cachePath' 			=> array('type'=>'label', 'title'=>A::t('app', 'Cache Path'), 'tooltip'=>A::t('app', 'Cache Path Tooltip'), 'value'=>$cachePath, 'definedValues'=>array(), 'format'=>''),
                     'cacheDeleteLink' =>

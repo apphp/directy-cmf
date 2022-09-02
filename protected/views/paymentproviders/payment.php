@@ -20,10 +20,10 @@
 	
 ?>
 
-<h1><?php echo A::t('app', 'Test Checkout'); ?></h1>
+<h1><?= A::t('app', 'Test Checkout'); ?></h1>
 
 <div class="bloc">
-    <div class="title"><?php echo A::t('app', 'Payment Provider'); ?>: <?php echo CString::humanize($type); ?></div>
+    <div class="title"><?= A::t('app', 'Payment Provider'); ?>: <?= CString::humanize($type); ?></div>
 	<br>
 		
     <div class="content">
@@ -31,29 +31,29 @@
 		<fieldset>
 			<legend>Payment Details</legend>
 			<?php if($type == 'paypal'){ ?>
-				<label>PayPal Email: </label> 	<?php echo $providerSettings->merchant_id; ?><br>
+				<label>PayPal Email: </label> 	<?= $providerSettings->merchant_id; ?><br>
 			<?php } ?>
-			<label>Item Name: </label> 		<?php echo $product['item_name']; ?><br>
-			<label>Item Number: </label> 	<?php echo $product['item_number']; ?><br>
-			<label>Amount: </label> 		<?php echo $product['amount']; ?><br>
-			<label>Currency: </label> 		<?php echo $product['currency_code']; ?><br>
+			<label>Item Name: </label> 		<?= $product['item_name']; ?><br>
+			<label>Item Number: </label> 	<?= $product['item_number']; ?><br>
+			<label>Amount: </label> 		<?= $product['amount']; ?><br>
+			<label>Currency: </label> 		<?= $product['currency_code']; ?><br>
 		</fieldset>
 
 		<fieldset>
 			<legend>Customer Details</legend>
-			<label>First Name: </label> 	<?php echo $product['first_name']; ?><br>
-			<label>Last Name: </label> 		<?php echo $product['last_name']; ?><br>
-			<label>Email: </label> 			<?php echo $product['email']; ?><br>
-			<label>Phone: </label> 			<?php echo $product['phone']; ?><br>
+			<label>First Name: </label> 	<?= $product['first_name']; ?><br>
+			<label>Last Name: </label> 		<?= $product['last_name']; ?><br>
+			<label>Email: </label> 			<?= $product['email']; ?><br>
+			<label>Phone: </label> 			<?= $product['phone']; ?><br>
 		</fieldset>
 		
 		<fieldset>
 			<legend>Billing Address Details</legend>
-			<label>Address: </label> 		<?php echo $product['address1'].$product['address1']; ?><br>
-			<label>City: </label> 			<?php echo $product['city']; ?><br>
-			<label>Zip: </label> 			<?php echo $product['zip']; ?><br>
-			<label>State: </label> 			<?php echo $product['state']; ?><br>
-			<label>Country: </label> 		<?php echo $product['country']; ?><br>
+			<label>Address: </label> 		<?= $product['address1'].$product['address1']; ?><br>
+			<label>City: </label> 			<?= $product['city']; ?><br>
+			<label>Zip: </label> 			<?= $product['zip']; ?><br>
+			<label>State: </label> 			<?= $product['state']; ?><br>
+			<label>Country: </label> 		<?= $product['country']; ?><br>
 		</fieldset>				
 		<br>
 		

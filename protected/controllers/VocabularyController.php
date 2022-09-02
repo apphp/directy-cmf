@@ -25,7 +25,7 @@ class VocabularyController extends CController
         parent::__construct();
 
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 		
 		// Block access if admin has no active privilege to access vocabulary
 		if(!Admins::hasPrivilege('vocabulary', array('view', 'edit'))){
@@ -244,7 +244,7 @@ class VocabularyController extends CController
 	{
 		$messagesFolders = CFile::findSubDirectories('protected/messages/');
 		$codesList = "'".implode("','", $messagesFolders)."'";
-	    return Languages::model()->findAll('is_active = 1 AND code IN ('.$codesList.')');
+	    return Languages::model()->findAll(array('condition'=>'is_active = 1 AND code IN ('.$codesList.')', 'orderBy'=>'sort_order ASC'));
 	}
 	
 	/**

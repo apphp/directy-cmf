@@ -9,14 +9,14 @@
     );    
 ?>
     
-<h1><?php echo A::t('app', 'Cron Jobs Settings'); ?></h1>
+<h1><?= A::t('app', 'Cron Jobs Settings'); ?></h1>
 
 <div class="bloc">
 
-	<?php echo $tabs; ?>
+	<?= $tabs; ?>
 
 	<div class="content">
-	<?php echo $actionMessage; ?>
+	<?= $actionMessage; ?>
 	
 		<div class="left-side" id="left-cronjobs">
 		<?php 		
@@ -50,11 +50,11 @@
 	    </div>
 	
 	    <div class="central-part" id="right-cronjobs">
-	    	<?php echo A::t('app', 'Cron Jobs Notice');?>
+	    	<?= A::t('app', 'Cron Jobs Notice');?>
 	    	<br /><br />
-	    	<?php echo A::t('app', 'Cron Jobs Batch Command');?>
+	    	<?= A::t('app', 'Cron Jobs Batch Command');?>
 			<b>php &#36;HOME/public_html/cron.php &gt;/dev/null 2&gt;&1</b><br /><br />
-			<?php echo A::t('app', 'Cron Jobs htaccess Block');?>
+			<?= A::t('app', 'Cron Jobs htaccess Block');?>
 			<br /><br />
 
 <pre>
@@ -63,7 +63,7 @@
    Deny from all
    Allow from localhost
    Allow from 127.0.0.1
-   Allow from xx.xx.xx.xx &lt;-- <?php echo A::t('app', 'add here your IP address (allowed)');?>
+   Allow from xx.xx.xx.xx &lt;-- <?= A::t('app', 'add here your IP address (allowed)');?>
    
 &lt;/Files&gt;
 </pre>

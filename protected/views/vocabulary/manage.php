@@ -3,7 +3,7 @@
 	
     $this->_activeMenu = 'vocabulary/';
     $this->_breadCrumbs = array(
-        array('label'=>A::t('app', 'Languages Settings'), 'url'=>'languages/'),
+        array('label'=>A::t('app', 'Language Settings'), 'url'=>'languages/'),
         array('label'=>A::t('app', 'Vocabulary')),
     );    
 
@@ -13,10 +13,10 @@
 	A::app()->getClientScript()->registerScriptFile('js/vendors/codemirror/clike.js');
 ?>
 
-<h1><?php echo A::t('app', 'Vocabulary Management'); ?></h1>
+<h1><?= A::t('app', 'Vocabulary Management'); ?></h1>
 
 <div class="bloc">
-    <div class="title"><?php echo A::t('app', 'Vocabulary'); ?></div>
+    <div class="title"><?= A::t('app', 'Vocabulary'); ?></div>
     <div class="content">
     <?php  
 		echo $actionMessage;

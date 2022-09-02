@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE (static):		
@@ -141,11 +141,12 @@ class CDebug
 	
     /**
      * Debug backtrace
+     * @param string $message
      * @param array $traceData
      * @param bool $formatted
      * @return HTML
      */
-    public static function backtrace($traceData = '', $formatted = true)
+    public static function backtrace($message = '', $traceData = '', $formatted = true)
     {
 		$stack = '';
 		$i = 0;		
@@ -170,12 +171,42 @@ class CDebug
 		}
 		
 		if($formatted){
-			return '<pre>'.$stack.'</pre>';	
+			$stack = '<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="utf-8">
+				<title>Error</title>
+				<style type="text/css">
+					::selection { background-color: #E13300; color: white; }
+					::-moz-selection { background-color: #E13300; color: white; }
+					body { background-color: #fff; margin: 40px; font: 13px/20px normal Helvetica, Arial, sans-serif; color: #4F5155;}
+					a {	color: #003399;	background-color: transparent; font-weight: normal;}
+					h1 { color: #444; background-color: transparent; border-bottom: 1px solid #D0D0D0; font-size: 19px; font-weight: normal; margin: 0 0 14px 0; padding: 14px 15px 10px 15px;}
+					code { font-family: Consolas, Monaco, Courier New, Courier, monospace; font-size: 12px; background-color: #f9f9f9; border: 1px solid #D0D0D0; color: #002166; display: block; margin: 14px 0 14px 0; padding: 12px 10px 12px 10px;}
+					#container { margin: 10px; border: 1px solid #D0D0D0; box-shadow: 0 0 8px #D0D0D0; }
+					#container-content { padding:10px 20px; }
+					p {	margin: 12px 15px 12px 15px;}
+				</style>
+			</head>
+			<body>
+				<div id="container">
+					<h1>'.A::te('An Error Was Encountered').'</h1>
+					<div id="container-content">
+						Exception caught:<br>
+						<p>'.$message.'</p><br><br>
+						Backtrace:<br>
+						<p><pre>'.$stack.'</pre></p>
+					</div>
+				</div>
+			</body>
+			</html>';
+			
+			return $stack;
 		}else{
-			return $stack;	
-		}		
+			return $stack;
+		}
     }
-	    
+
     /**
      * Add message to the stack
      * @param float $time
@@ -338,7 +369,7 @@ class CDebug
 			'.A::t('core', 'Script version').': '.CConfig::get('version').'<br>
 			'.A::t('core', 'Framework version').': '.A::getVersion().'<br>
 			'.A::t('core', 'PHP version').': '.phpversion().'<br>
-			'.ucfirst(CConfig::get('db.driver')).' '.A::t('core', 'version').': '.CDatabase::init()->getVersion().'<br><br>';			
+			'.(CConfig::get('db.driver') != '' ? ucfirst(CConfig::get('db.driver')) : 'DB').' '.A::t('core', 'version').': '.CDatabase::init()->getVersion().'<br><br>';
 			
 			$totalRunningTime = round((float)self::$_endTime - (float)self::$_startTime, 5);
 			$totalRunningTimeSql = round($totalRunningTime - (float)self::$_sqlTotalTime, 5);
@@ -349,6 +380,7 @@ class CDebug
 			echo A::t('core', 'Script running time').': '.$totalRunningTimeSql.' sec.<br>';
 			echo A::t('core', 'SQL running time').': '.$totalRunningTimeScript.' sec.<br>';
 			echo A::t('core', 'Total memory usage').': '.$totalMemoryUsage.'<br>';
+			if(!empty(self::$_arrGeneral['cache'])) echo A::t('core', 'Database Query Cache').': '.implode('', self::$_arrGeneral['cache']).'<br>';
 			echo A::t('core', 'Output compression').': '.(CConfig::get('compression.enable') ? CConfig::get('compression.method') : A::t('core', 'no')).'<br><br>';
 			
 			if(count(self::$_arrGeneral) > 0){

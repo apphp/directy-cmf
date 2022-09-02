@@ -5,18 +5,19 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
- * PUBLIC (static):			PROTECTED:					PRIVATE:		
+ * PUBLIC (static):			PROTECTED:					PRIVATE (static):
  * ----------               ----------                  ----------
- * create
+ * create                                               _padKey
  * salt
  * equals
  * getRandomString
  * getSequentialString
  * encrypt
  * decrypt
+ * getRandomOrIterationString
  * 
  */	  
 
@@ -107,6 +108,24 @@ class CHash
     }
     
     /**
+     * Creates random string
+     * @param integer $length
+     * @param boolean $isRandom
+     * @param integer $id
+     * @return string
+     */
+    public static function getRandomOrIterationString($length = 10, $isRandom = true, $id = 0)
+    {
+        if($isRandom){
+            $result = self::getRandomString($length);
+        }else{
+            $result = sprintf('%0'.(int)$length.'d',$id);
+        }
+
+        return $result;
+    }
+
+    /**
      * Creates sequential string
      * @param int $numeric
      * @param int $length
@@ -114,7 +133,7 @@ class CHash
      */
     public static function getSequentialString($number = '', $length = 10)
     {
-		str_pad($number, $length, '0', STR_PAD_LEFT);
+		return str_pad($number, $length, '0', STR_PAD_LEFT);
 	}
 
 	/**
@@ -124,7 +143,20 @@ class CHash
 	 */
 	public static function encrypt($value, $secretKey)
     {
-		return trim(strtr(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $secretKey, $value, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))), '+/=', '-_,'));
+        $secretKey = self::_padKey($secretKey);
+
+		if(version_compare(phpversion(), '7.0.0', '<')){
+			$return = strtr(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $secretKey, $value, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))), '+/=', '-_,');	
+		}else{
+			// Generate an initialization vector
+			$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+			// Encrypt the data using AES 256 encryption in CBC mode using our encryption key and initialization vector
+			$encrypted = openssl_encrypt($value, 'aes-256-cbc', base64_decode($secretKey), 0, $iv);
+			// The $iv is just as important as the key for decrypting, so save it with our encrypted data using a unique separator (::)
+			$return = base64_encode($encrypted . '::' . $iv);
+		}
+		
+		return trim($return);
     }
 	
 	/**
@@ -134,8 +166,40 @@ class CHash
 	 */
 	public static function decrypt($value, $secretKey)
 	{
-		return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $secretKey, base64_decode(strtr($value, '-_,', '+/=')), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+        $secretKey = self::_padKey($secretKey);
+		
+		if(version_compare(phpversion(), '7.0.0', '<')){
+			$return = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $secretKey, base64_decode(strtr($value, '-_,', '+/=')), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));	
+		}else{
+			// To decrypt, split the encrypted data from our IV - our unique separator used was "::"
+			list($encrypted_data, $iv) = explode('::', base64_decode($value), 2);
+			$return = openssl_decrypt($encrypted_data, 'aes-256-cbc', base64_decode($secretKey), 0, $iv);
+		}
+		
+		return trim($return);
 	}
     
-   
+	/**
+	 * Pad key
+	 * @param string $key
+	 * @return string
+	 */
+    private static function _padKey($key)
+    {
+        // Key is too large
+        if(strlen($key) > 32) return false;
+
+        // Set sizes
+        $sizes = array(16,24,32);
+
+        // Loop through sizes and pad key
+        foreach($sizes as $s){
+            if($s > strlen($key)){
+                $key = str_pad($key, $s, "\0");
+                break;
+            }
+        }
+
+        return $key;
+    }
 }

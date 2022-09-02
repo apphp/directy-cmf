@@ -4,16 +4,16 @@
 ?>
 
 <?php if(A::app()->view->getTemplate() != 'backend'){ ?>
-	<h1 class="title"><?php echo A::t('app', 'Error No Privileges'); ?></h1>
+	<h1 class="title"><?= A::t('app', 'Error No Privileges'); ?></h1>
 <?php } ?>
 
 <div class="block-body">                       
     <div id="error-page">
-        <h2 class="error-title"><?php echo A::t('app', 'Error No Privileges Title'); ?></h2>
+        <h2 class="error-title"><?= A::t('app', 'Error No Privileges Title'); ?></h2>
         <div class="error-description">    
-            <?php echo A::t('app', 'Error No Privileges Description'); ?>
+            <?= A::t('app', 'Error No Privileges Description'); ?>
             <br><br>
-            <?php echo A::t('app', 'Error No Privileges Troubleshooting'); ?>        
+            <?= A::t('app', 'Error No Privileges Troubleshooting'); ?>        
         </div>
     </div>    
 </div>

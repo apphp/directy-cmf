@@ -1,39 +1,39 @@
 <?php header('content-type: text/html; charset=utf-8'); ?>
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8" />
-	<meta name="keywords" content="<?php echo CHtml::encode($this->_pageKeywords); ?>" />
-	<meta name="description" content="<?php echo CHtml::encode($this->_pageDescription); ?>" />
-    <meta name="generator" content="<?php echo CConfig::get('name').' v'.CConfig::get('version'); ?>" />
+	<meta name="keywords" content="<?= CHtml::encode($this->_pageKeywords); ?>" />
+	<meta name="description" content="<?= CHtml::encode($this->_pageDescription); ?>" />
+    <meta name="generator" content="<?= CConfig::get('name').' v'.CConfig::get('version'); ?>" />
 	<!-- don't move it -->
-    <base href="<?php echo A::app()->getRequest()->getBaseUrl(); ?>" />
-    <title><?php echo CHtml::encode($this->_pageTitle); ?></title>    
+    <base href="<?= A::app()->getRequest()->getBaseUrl(); ?>" />
+    <title><?= CHtml::encode($this->_pageTitle); ?></title>    
 	<link rel="shortcut icon" href="images/apphp.ico" />    
 
-    <?php echo CHtml::cssFile('templates/default/css/style.css'); ?>
+    <?= CHtml::cssFile('templates/default/css/style.css'); ?>
     <?php if(A::app()->getLanguage('direction') == 'rtl') echo CHtml::cssFile('templates/default/css/style.rtl.css'); ?>
 
     <!-- jquery files -->
-	<?php //echo CHtml::scriptFile('http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'); ?>
-	<?php //echo CHtml::scriptFile('http://code.jquery.com/ui/1.10.2/jquery-ui.js'); ?>
-    <?php echo CHtml::scriptFile('js/vendors/jquery/jquery.js'); ?>
+	<?//= CHtml::scriptFile('http://ajax . googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'); ?>
+	<?//= CHtml::scriptFile('http://code.jquery.com/ui/1.10.2/jquery-ui.js'); ?>
+    <?= CHtml::scriptFile('js/vendors/jquery/jquery.js'); ?>
 
 	<!-- template files -->
-	<?php echo CHtml::scriptFile('templates/default/js/main.js'); ?>
+	<?= CHtml::scriptFile('templates/default/js/main.js'); ?>
 </head>
 <body>
     <div id="wrapper">
         
-        <?php include('header.php'); ?>        
+        <?php include('header.php'); ?>
 
         <div class="main-area">
             <div class="panel">                
                 <div class="central-panel">	
-                    <?php echo A::app()->view->getContent(); ?>
+                    <?= A::app()->view->getContent(); ?>
                 </div>    
                 <div class="side-panel">					
-					<?php echo FrontendMenu::draw('right', $this->_activeMenu); ?>    
+					<?= FrontendMenu::draw('right', $this->_activeMenu); ?>    
                 </div>                    
                 <div class="clear"></div>
             </div>

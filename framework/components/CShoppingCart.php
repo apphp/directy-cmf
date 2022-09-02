@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC:					PROTECTED:					PRIVATE:		
@@ -62,7 +62,7 @@ class CShoppingCart extends CComponent
 	function __construct()
 	{
 		// Grab the shopping cart array from the session and initialize it
-		$this->_cartContent = A::app()->getSession()->get('shopping_cart_content');
+		$this->_cartContent = A::app()->getSession()->get('shopping_cart_content', null);
 		if($this->_cartContent === null){
 			$this->_cartContent = array('cart_total' => 0, 'total_items' => 0);
 		}
@@ -394,7 +394,7 @@ class CShoppingCart extends CComponent
 		}
 
 		// Pass to the session cart content
-		A::app()->getSession()->set('cart_contents', $this->_cartContent);
+		A::app()->getSession()->set('shopping_cart_content', $this->_cartContent);
 	
 		return true;
 	}

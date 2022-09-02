@@ -40,17 +40,19 @@ class Languages extends CActiveRecord
 	 * Draws language selector
 	 * @param array $params
 	 *      'display' => 'names|keys|icons|dropdown|list',
+	 *      'class'	=> '',
+	 *      'forceDrawing' => false,
 	 * @return string - html code for languages selector
 	 */
 	public static function drawSelector($params = array())
 	{
-        // Values: 'display' => 'names|keys|icons',
+        // Values: 'display' => 'names|keys|icons|dropdown|list',
         $display = isset($params['display']) ? $params['display'] : 'icons';
 		$class = isset($params['class']) ? $params['class'] : '';
 		$forceDrawing = isset($params['forceDrawing']) ? (bool)$params['forceDrawing'] : false;
         
         $arrLanguages = array();
-        $languages = self::model()->findAll("is_active = 1 AND used_on IN ('front-end', 'global')");
+        $languages = self::model()->findAll(array('condition'=>"is_active = 1 AND used_on IN ('front-end', 'global')", 'orderBy'=>'sort_order ASC'));
         if(is_array($languages)){
         	foreach($languages as $lang){
 	            $arrLanguages[$lang['code']] = array('name'=>$lang['name_native'], 'icon'=>$lang['icon']);
@@ -140,7 +142,10 @@ class Languages extends CActiveRecord
                 if($defaultLang = Languages::model()->find('is_default = 1')){
                     $params = array(
                         'locale' => $defaultLang->lc_time_name,
-                        'direction' => $defaultLang->direction
+                        'direction' => $defaultLang->direction,
+						'icon' => $defaultLang->icon,
+						'name' => $defaultLang->name,
+						'name_native' => $defaultLang->name_native,
                     );
                     A::app()->setLanguage($defaultLang->code, $params);
                 }			

@@ -24,7 +24,7 @@ class EmailTemplatesController extends CController
         parent::__construct();
 
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 		
 		// Block access if admin has no active privilege to access email templates
 		if(!Admins::hasPrivilege('email_templates', array('view', 'edit'))){

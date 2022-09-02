@@ -9,6 +9,7 @@
  * getError                	_customFields 
  * getDefaultCurrency      
  * getDefaultCurrencyInfo
+ * drawSelector (static)
  *
  */
 
@@ -38,24 +39,35 @@ class Currencies extends CActiveRecord
 
   	/**
 	 * Draws currencies selector
+	 * @param array $params
+	 *      'display' => 'names|keys|symbols|dropdown|list',
+	 *      'class'	=> '',
+	 *      'forceDrawing' => false,
 	 * @return string - html code for currencies selector
 	 */
-	public static function drawSelector()
+	public static function drawSelector($params = array())
 	{
+        // Values: 'display' => 'names|keys|dropdown|list',
+        $display = isset($params['display']) ? $params['display'] : 'names';
+		$class = isset($params['class']) ? $params['class'] : '';
+		$forceDrawing = isset($params['forceDrawing']) ? (bool)$params['forceDrawing'] : false;
+
         $arrCurrencies = array();
         $templateName = A::app()->view->getTemplate();
         $currencies = self::model()->findAll("is_active = 1");
         if(is_array($currencies)){
         	foreach($currencies as $curr){
-	            $arrCurrencies[$curr['code']] = array('name'=>$curr['name']);
+	            $arrCurrencies[$curr['code']] = array('name'=>$curr['name'], 'symbol'=>$curr['symbol']);
 	        }
         }
 		
 		$output = '';
         $output = CWidget::create('CCurrencySelector', array(
-            'currencies' => $arrCurrencies,
-            'display' => 'code',
-            'currentCurrency' => A::app()->getCurrency(),
+            'currencies' 		=> $arrCurrencies,
+            'display' 			=> $display,
+            'currentCurrency' 	=> A::app()->getCurrency(),
+			'forceDrawing'		=> $forceDrawing,
+			'class'				=> $class
         ));
 		
         return $output;

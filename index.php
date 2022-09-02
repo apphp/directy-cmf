@@ -1,6 +1,6 @@
 <?php
 /**
- * Public index file
+ * Public web application index file
  *
  * @project ApPHP Directy CMF
  * @author ApPHP <info@apphp.com>
@@ -9,11 +9,11 @@
  * @license http://www.apphp.com/php-directy-cmf/
  */	  
 
-// change the following paths if necessary
+// Change the following paths if necessary
 defined('APPHP_PATH') || define('APPHP_PATH', dirname(__FILE__));
-// directory separator
+// Directory separator
 defined('DS') || define('DS', DIRECTORY_SEPARATOR);
-// production | debug | demo | test | hidden
+// Modes: production | debug | demo | test | hidden
 defined('APPHP_MODE') or define('APPHP_MODE', 'production'); 
 
 $apphp = dirname(__FILE__).'/framework/Apphp.php';

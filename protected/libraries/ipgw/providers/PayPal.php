@@ -9,6 +9,7 @@
  * $payPal = PaymentProvider::init('paypal');
  * echo $payPal->drawPaymentForm(array(
  *		'merchant_id' 	=> 'sales@email.me',
+ *		'form_type'		=> ''		// 'multiple' or ''
  *		'item_name' 	=> 'Item Name',
  *		'item_number' 	=> 'Item Number',
  *		'amount'		=> 9.90,
@@ -21,9 +22,9 @@
  *		'no_shipping'	=> '', 		// Do not prompt buyers for a shipping address.
  *		'address1'		=> 'st. Big Street, 1',
  *		'address2'		=> '',	
- *		'city'			=> 'Ney York',	
+ *		'city'			=> 'New York',	
  *		'zip'			=> '1001',
- *		'state'			=> 'Ney York',	
+ *		'state'			=> 'New York',	
  *		'country'		=> 'us',
  *		'first_name'	=> 'John',
  *		'last_name'		=> 'Smith',
@@ -31,9 +32,9 @@
  *		'phone'			=> '12345678',
  *
  *		'mode'			=> 1,		// 1- Real mode, 0 - Test mode
- *		'notify'		=> A::app()->getRequest()->getBaseUrl().'/paymentProviders/handlePayment/paypal',	// IPN processing link
- *		'cancel'		=> A::app()->getRequest()->getBaseUrl().'/paymentProviders/testCheckout',			// Cancel order link
- *		'cancel_return'	=> A::app()->getRequest()->getBaseUrl().'/paymentProviders/testCheckout',			// Cancel & return to site link
+ *		'notify'		=> A::app()->getRequest()->getBaseUrl().'/paymentProviders/handlePayment/paypal/model/module',	// IPN processing link
+ *		'cancel'		=> A::app()->getRequest()->getBaseUrl().'/paymentProviders/testCheckout',						// Cancel order link
+ *		'cancel_return'	=> A::app()->getRequest()->getBaseUrl().'/paymentProviders/testCheckout',						// Cancel & return to site link
  *		'back'			=> '',		// Back to Shopping Cart - defined by developer
  * )); 
  * 
@@ -57,11 +58,9 @@ class PayPal extends PaymentGateway
 	public function drawPaymentForm($params = array())
 	{		
 		$output 			= '';		
-		$mode 				= isset($params['mode']) ? $params['mode'] : 'real';
+		$mode 				= isset($params['mode']) ? $params['mode'] : 1;
 		
-		$formAction 		= $mode === 'real' ?
-										'https://www.paypal.com/cgi-bin/webscr' :
-										'https://www.sandbox.paypal.com/cgi-bin/webscr';
+		$formAction 		= $mode == 1 ? 'https://www.paypal.com/cgi-bin/webscr' : 'https://www.sandbox.paypal.com/cgi-bin/webscr';
 		$formType 			= isset($params['form_type']) ? $params['form_type'] : '';
 		$business 			= isset($params['merchant_id']) ? $params['merchant_id'] : '';
 		$itemName 			= isset($params['item_name']) ? $params['item_name'] : '';

@@ -2,9 +2,9 @@
 /**
  * PaymentProviders controller
  *
- * PUBLIC:                 	PRIVATE:
- * ---------------         	---------------
- * __construct              _checkActionAccess	
+ * PUBLIC:                  PRIVATE:
+ * ---------------          ---------------
+ * __construct              _checkActionAccess
  * indexAction
  * manageAction
  * addAction
@@ -18,242 +18,252 @@
  */
 
 class PaymentProvidersController extends CController
-{	
+{
     /**
-	 * Class default constructor
+     * Class default constructor
      */
-	public function __construct()
-	{
+    public function __construct()
+    {
         parent::__construct();
 
         // Set backend mode
         Website::setBackend();
 
         // Set meta tags according to active currencies
-    	Website::setMetaTags(array('title'=>A::t('app', 'Payment Providers Management')));
+        Website::setMetaTags(array('title'=>A::t('app', 'Payment Providers Management')));
 
-        $this->_cRequest = A::app()->getRequest();       
-		$this->_cSession = A::app()->getSession();
+        $this->_cRequest = A::app()->getRequest();
+        $this->_cSession = A::app()->getSession();
 
-		$this->_view->numberFormat = Bootstrap::init()->getSettings('number_format');
+        $this->_view->numberFormat = Bootstrap::init()->getSettings('number_format');
         $this->_view->actionMessage = '';
         $this->_view->errorField = '';
-		
-		$this->_view->usedOn = array('front-end'=>A::t('app', 'Front-end'), 'back-end'=>A::t('app', 'Back-end'), 'global'=>A::t('app', 'Global'));
-		$this->_view->modes = array('0'=>A::t('app', 'Test Mode'), '1'=>A::t('app', 'Real Mode'));
+
+        $this->_view->usedOn = array('front-end'=>A::t('app', 'Front-end'), 'back-end'=>A::t('app', 'Back-end'), 'global'=>A::t('app', 'Global'));
+        $this->_view->modes = array('0'=>A::t('app', 'Test Mode'), '1'=>A::t('app', 'Real Mode'));
     }
 
-   	/**
-	 * Controller default action handler
-	 */
+    /**
+     * Controller default action handler
+     */
     public function indexAction()
-	{
-        $this->redirect('paymentProviders/manage');        
-	}
-	
+    {
+        $this->redirect('paymentProviders/manage');
+    }
+
     /**
      * Manage payment providers action handler
      */
-	public function manageAction()
-	{
+    public function manageAction()
+    {
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+        CAuth::handleLogin(Website::getDefaultPage());
 
-		// Block access if admin has no active privilege to manage payment providers
+        // Block access if admin has no active privilege to manage payment providers
         Website::prepareBackendAction('view', 'payment_providers', 'backend/index');
 
-		if($this->_cSession->hasFlash('alert')){
+        if($this->_cSession->hasFlash('alert')){
             $alert = $this->_cSession->getFlash('alert');
             $alertType = $this->_cSession->getFlash('alertType');
-			
+
             $this->_view->actionMessage = CWidget::create(
                 'CMessage', array($alertType, $alert, array('button'=>true))
             );
-		}
-		
-    	$this->_view->render('paymentProviders/manage');        
-	}
-	
+        }
+
+        $this->_view->render('paymentProviders/manage');
+    }
+
     /**
      * Add new action handler
      */
     public function addAction()
     {
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+        CAuth::handleLogin(Website::getDefaultPage());
 
-		// Block access if admin has no active privilege to manage payment providers
+        // Block access if admin has no active privilege to manage payment providers
         Website::prepareBackendAction('edit', 'payment_providers', 'backend/index');
 
-		$this->_view->requiredFields = array('merchant_id'=>A::t('app', 'Merchant ID'), 'merchant_code'=>A::t('app', 'Merchant Code'), 'merchant_key'=>A::t('app', 'Merchant Key'));
-		
-		$this->_view->render('paymentProviders/add');
+        $this->_view->requiredFields = array('merchant_id'=>A::t('app', 'Merchant ID'), 'merchant_code'=>A::t('app', 'Merchant Code'), 'merchant_key'=>A::t('app', 'Merchant Key'));
+
+        $this->_view->render('paymentProviders/add');
     }
 
     /**
      * Edit payment providers action handler
-     * @param int $id 
+     * @param int $id
      */
     public function editAction($id = 0)
     {
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+        CAuth::handleLogin(Website::getDefaultPage());
 
-		// Block access if admin has no active privilege to manage payment providers
+        // Block access if admin has no active privilege to manage payment providers
         Website::prepareBackendAction('edit', 'payment_providers', 'backend/index');
 
-        $paymentProvider = $this->_checkActionAccess($id);        
+        $paymentProvider = $this->_checkActionAccess($id);
         $this->_view->paymentProvider = $paymentProvider;
 
         $this->_view->render('paymentProviders/edit');
     }
-	
+
     /**
      * Delete action handler
-     * @param int $id  
+     * @param int $id
      */
-	public function deleteAction($id)
-	{
+    public function deleteAction($id)
+    {
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+        CAuth::handleLogin(Website::getDefaultPage());
 
-		// Block access if admin has no active privilege to manage payment providers
+        // Block access if admin has no active privilege to manage payment providers
         Website::prepareBackendAction('edit', 'payment_providers', 'backend/index');
 
-    	$paymentProvider = PaymentProviders::model()->findByPk($id);
-    	if(!$paymentProvider){
-    		$this->redirect('paymentProviders/manage');
-    	}
-		
-		// Check if the country is default
-		if($paymentProvider->is_default){
-			$alert = A::t('app', 'Delete Default Alert');
-			$alertType = 'error';
-		}else if($paymentProvider->delete()){				
-			if($paymentProvider->getError()){
-				$alert = A::t('app', 'Delete Warning Message');
-				$alertType = 'warning';
-			}else{		
-				$alert = A::t('app', 'Delete Success Message');
-				$alertType = 'success';	
-			}		
-		}else{
-			if(APPHP_MODE == 'demo'){
-				$alert = CDatabase::init()->getErrorMessage();
-				$alertType = 'warning';
-		   	}else{
-				$alert = $paymentProvider->getError() ? $paymentProvider->getErrorMessage() : A::t('app', 'Delete Error Message');
-				$alertType = 'error';
-		   	}			
-		}
-		
-		$this->_cSession->setFlash('alert', $alert);
-		$this->_cSession->setFlash('alertType', $alertType);
+        $paymentProvider = PaymentProviders::model()->findByPk($id);
+        if(!$paymentProvider){
+            $this->redirect('paymentProviders/manage');
+        }
 
-		$this->redirect('paymentProviders/manage');		
-	}
-	
-	/**
-	 * Test checkout action handler
-	 * Ex.: paymentProviders/testCheckout
-	 * 		
-	 * @param string $type
-	 */
-	public function testCheckoutAction()
-	{
-		Website::setFrontend();
+        // Check if the country is default
+        if($paymentProvider->is_default){
+            $alert = A::t('app', 'Delete Default Alert');
+            $alertType = 'error';
+        }else if($paymentProvider->delete()){
+            if($paymentProvider->getError()){
+                $alert = A::t('app', 'Delete Warning Message');
+                $alertType = 'warning';
+            }else{
+                $alert = A::t('app', 'Delete Success Message');
+                $alertType = 'success';
+            }
+        }else{
+            if(APPHP_MODE == 'demo'){
+                $alert = CDatabase::init()->getErrorMessage();
+                $alertType = 'warning';
+            }else{
+                $alert = $paymentProvider->getError() ? $paymentProvider->getErrorMessage() : A::t('app', 'Delete Error Message');
+                $alertType = 'error';
+            }
+        }
 
-		if(APPHP_MODE != 'debug'){
-			$this->redirect(Website::getDefaultPage());		
-		}
-		
-		$this->_view->providers = PaymentProviders::model()->findAll('is_active = 1');
-		
-		$this->_view->render('paymentProviders/checkout');
-	}
+        $this->_cSession->setFlash('alert', $alert);
+        $this->_cSession->setFlash('alertType', $alertType);
 
-	/**
-	 * Test payment action handler
-	 * Ex.: paymentProviders/testPayment?type=online_order
-	 * 		paymentProviders/testPayment?type=online_credit_card
-	 * 		paymentProviders/testPayment?type=wire_transfer
-	 * 		paymentProviders/testPayment?type=paypal
-	 * 		
-	 */
-	public function testPaymentAction()
-	{
-		Website::setFrontend();
-		
-		if(APPHP_MODE != 'debug'){
-			$this->redirect(Website::getDefaultPage());		
-		}
+        $this->redirect('paymentProviders/manage');
+    }
 
-		CLoader::library('ipgw/PaymentProvider.php');
-		
-		$type = $this->_cRequest->get('type');
-		
-		// PayPal | Online | OnlineCheckOut | Wire 
-		$type = (!empty($type) && in_array($type, array('online_order', 'online_credit_card', 'wire_transfer', 'paypal'))) ? $type : 'paypal';	
-		
-		switch($type){			
-			case 'online_order':				
-				$this->_view->providerSettings = PaymentProviders::model()->find("code = 'online_order'");
-				break;
+    /**
+     * Test checkout action handler
+     * Ex.: paymentProviders/testCheckout
+     *
+     * @param string $type
+     */
+    public function testCheckoutAction()
+    {
+        Website::setFrontend();
 
-			case 'online_credit_card':				
-				$this->_view->providerSettings = PaymentProviders::model()->find("code = 'online_credit_card'");
-				break;
+        if(APPHP_MODE != 'debug'){
+            $this->redirect(Website::getDefaultPage());
+        }
 
-			case 'wire_transfer':				
-				$this->_view->providerSettings = PaymentProviders::model()->find("code = 'wire_transfer'");
-				break;
+        $this->_view->providers = PaymentProviders::model()->findAll('is_active = 1');
 
-			default:
-			case 'paypal':				
-				$this->_view->providerSettings = PaymentProviders::model()->find("code = 'paypal'");
-				break;
-		}
-		
-		$this->_view->provider = PaymentProvider::init($type);
-		$this->_view->back = 'paymentProviders/testCheckout';
-		$this->_view->type = $type;
-		
-		$this->_view->render('paymentProviders/payment');
-	}
+        $this->_view->render('paymentProviders/checkout');
+    }
 
-	/**
-	 * Test payment complete action handler
-	 * Ex.: paymentProviders/testPaymentComplete
-	 * 		
-	 * @param string $type
-	 */
-	public function testPaymentCompleteAction()
-	{
-		Website::setFrontend();
-		
-		if(APPHP_MODE != 'debug'){
-			$this->redirect(Website::getDefaultPage());		
-		}
+    /**
+     * Test payment action handler
+     * Ex.: paymentProviders/testPayment?type=online_order
+     *      paymentProviders/testPayment?type=online_credit_card
+     *      paymentProviders/testPayment?type=wire_transfer
+     *      paymentProviders/testPayment?type=paypal
+     *
+     */
+    public function testPaymentAction()
+    {
+        Website::setFrontend();
 
-		$this->_view->render('paymentProviders/paymentComplete');
-	}
+        if(APPHP_MODE != 'debug'){
+            $this->redirect(Website::getDefaultPage());
+        }
 
-	/**
-	 * Payments handler
-	 * Ex.: paymentProviders/handlePayment/provider/paypal/handler/modelName
-	 * 	    paymentProviders/handlePayment/paypal/modelName
-	 * 	    
-	 * @param string $provider
-	 */
-    public function handlePaymentAction($provider = '', $model = '')
+        CLoader::library('ipgw/PaymentProvider.php');
+
+        $type = $this->_cRequest->get('type');
+
+        // PayPal | Online | OnlineCheckOut | Wire
+        $type = (!empty($type) && in_array($type, array('online_order', 'online_credit_card', 'wire_transfer', 'paypal'))) ? $type : 'paypal';
+
+        switch($type){
+            case 'online_order':
+                $this->_view->providerSettings = PaymentProviders::model()->find("code = 'online_order'");
+                break;
+
+            case 'online_credit_card':
+                $this->_view->providerSettings = PaymentProviders::model()->find("code = 'online_credit_card'");
+                break;
+
+            case 'wire_transfer':
+                $this->_view->providerSettings = PaymentProviders::model()->find("code = 'wire_transfer'");
+                break;
+
+            default:
+            case 'paypal':
+                $this->_view->providerSettings = PaymentProviders::model()->find("code = 'paypal'");
+                break;
+        }
+
+        $this->_view->provider = PaymentProvider::init($type);
+        $this->_view->back = 'paymentProviders/testCheckout';
+        $this->_view->type = $type;
+
+        $this->_view->render('paymentProviders/payment');
+    }
+
+    /**
+     * Test payment complete action handler
+     * Ex.: paymentProviders/testPaymentComplete
+     *
+     * @param string $type
+     */
+    public function testPaymentCompleteAction()
+    {
+        Website::setFrontend();
+
+        if(APPHP_MODE != 'debug'){
+            $this->redirect(Website::getDefaultPage());
+        }
+
+        $this->_view->render('paymentProviders/paymentComplete');
+    }
+
+    /**
+     * Payments handler
+     * Ex.: paymentProviders/handlePayment/provider/paypal/handler/modelName/module/moduleName
+     *      paymentProviders/handlePayment/provider/paypal/handler/modelName
+     *      paymentProviders/handlePayment/paypal/modelName
+     *
+     * @param string $provider
+     */
+    public function handlePaymentAction($provider = '', $model = '', $module = '')
     {
         // Set frontend mode
         Website::setFrontend();
 
-        $model = $this->_cRequest->getQuery('handler');
-        $provider = $this->_cRequest->getQuery('provider');
+        $provider = empty($provider) ? $this->_cRequest->getQuery('provider') : $provider;
+        $model    = empty($model)    ? $this->_cRequest->getQuery('handler')  : $model;
+        $module   = empty($module)   ? $this->_cRequest->getQuery('module')   : $module;
+
         $log = APPHP_MODE == 'debug' ? true : false;
-        $model = !empty($model) ? ucfirst($model) : '';
+        if(!empty($module)){
+            $model = !empty($model) ? 'Modules\\'.ucfirst($module).'\Models\\'.ucfirst($model) : '';
+            if(@call_user_func_array($model.'::model', array()) === false){
+                $model = !empty($model) ? ucfirst($model) : '';
+            }
+        }else{
+            $model = !empty($model) ? ucfirst($model) : '';
+        }
         $alert = '';
         $alertType = '';
 
@@ -268,7 +278,7 @@ class PaymentProvidersController extends CController
 
             $alert = $result['message'];
             $orderInfo = array('payment_provider'=>$provider);
-			
+
             if($result['error'] != 0){
                 // Add here CMF logger
                 $alertType = 'error';
@@ -280,7 +290,7 @@ class PaymentProvidersController extends CController
                 $status = empty($result['order']) ? 'pending' : 'completed';
                 $orderInfo = $result['order'];
             }
-			
+
             if($handlerClass = @call_user_func_array($model.'::model', array())){
                 // Call to model for saving data in DB
                 if($handlerResult = @call_user_func_array(array($handlerClass, 'paymentHandler'), array($status, $orderInfo))){
@@ -288,6 +298,7 @@ class PaymentProvidersController extends CController
                     $alertType = 'success';
                     $alert = A::t('app', 'Status has been successfully changed!');
                 }else{
+                    $alertType = 'error';
                     $alert = @call_user_func_array(array($handlerClass, 'getErrorMessage'), array());
                 }
             }
@@ -296,6 +307,13 @@ class PaymentProvidersController extends CController
             //echo 'error .....';
             $alertType = 'error';
             $alert = 'Model Not Found or/and Provider not Found';
+        }
+
+        $paymentCompletePage = CConfig::get('paymentCompletePage');
+        if(!empty($paymentCompletePage)){
+            A::app()->getSession()->setFlash('alert', $alert);
+            A::app()->getSession()->setFlash('alertType', $alertType);
+            $this->redirect($paymentCompletePage.'/provider/'.$provider);
         }
 
         $this->_view->actionMessage = CWidget::create('CMessage', array($alertType, $alert, array()));

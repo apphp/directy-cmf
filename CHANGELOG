@@ -1,4 +1,23 @@
-Version 2.6.2 - 28 April, 2016
+Version 2.7.2 - 11 Dec, 2016
+----------------------------
+- New: added possibility to see advanced domain statistics in General / Site Settings / Site Info
+- New: added feature "mailing log" - possibility to log all outgoing emails
+- New: added Social Networks and Social Login management, possibility to login with social networks
+- New: added possibility to save Google API Key for maps General / Site Settings / Mapping APIs Settings
+- New: added new vendor Morris (pretty time-series line graphs)
+- New: added new vendor Toastr (jQuery Plugin for popup alerts)
+- New: added possibility to detect and use last visited page
+- New: added detection of min. required version of framework for module instalaltion
+- New: added possibility to define shortcodes as {module:name|id}
+- Enh: changes in Currencies model
+- Enh: Blocking unauthorized access to non-logged users
+- Enh: javascript files, css and images excluded from rule rewrites
+- Enh: Added README fiels for each JS vendor
+- Bug: fixed error in order of languages in drawing languages selector
+- Bug: fixed error on changing language in General > Settings > Visual Setting
+
+
+Version 2.6.2 - 28 Apr, 2016
 ----------------------------
 - New: jQuery Modal and Browser.Mobile plugins
 - New: jQuery plugin Chosen (Select Box Enhancer)
@@ -84,7 +103,7 @@ Version 2.2.1 - 29 Apr, 2014
 
 Version 2.1.2 - 01 Apr, 2014
 ----------------------------
-- New: added new feature to Backend - Force SSl mode
+- New: added new feature to Backend - Force SSL mode
 - New: added possibility to add/delete icons for submenus in Backend menu
 - New: added possibility to show installed module links in Backend menu
 - New: implemented accumulative update feature for modules

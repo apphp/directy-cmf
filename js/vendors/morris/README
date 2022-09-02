@@ -1,0 +1,32 @@
+Morris (pretty time-series line graphs)
+
+Usage:
+-----
+
+// Register Morris files
+A::app()->getClientScript()->registerScriptFile('js/vendors/morris/raphael-min.js', 1);
+A::app()->getClientScript()->registerCssFile('js/vendors/morris/morris.css');
+A::app()->getClientScript()->registerScriptFile('js/vendors/morris/morris.js', 1);
+
+<script>
+	Morris.Donut({
+	  element: 'graph3',
+	  data: [
+		{value: 70, label: 'foo'},
+		{value: 15, label: 'bar'},
+		{value: 10, label: 'baz'},
+		{value: 5, label: 'A really really long label'}
+	  ],
+		colors: [
+		'#0BA462',
+		'#B53980',
+		'#C69D67',
+		'#95BBD7'
+	  ],  
+	  formatter: function (x) { return x + "%"}
+	}).on('click', function(i, row){
+	  console.log(i, row);
+	});
+</script>
+
+SEE more examples on https://morrisjs.github.io/morris.js/bars.html

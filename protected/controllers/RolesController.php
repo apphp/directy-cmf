@@ -23,7 +23,7 @@ class RolesController extends CController
         parent::__construct();
         
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 			
         if(!CAuth::isLoggedInAs('owner', 'mainadmin')){
         	$this->redirect('backend/index');

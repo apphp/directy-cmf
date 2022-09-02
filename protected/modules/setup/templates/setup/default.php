@@ -2,30 +2,30 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-	<meta name="keywords" content="<?php echo CHtml::encode($this->_pageKeywords); ?>" />
-	<meta name="description" content="<?php echo CHtml::encode($this->_pageDescription); ?>" />
+	<meta name="keywords" content="<?= CHtml::encode($this->_pageKeywords); ?>" />
+	<meta name="description" content="<?= CHtml::encode($this->_pageDescription); ?>" />
     <meta name="author" content="ApPHP Company - Advanced Power of PHP">
     <meta name="generator" content="ApPHP MVC Framework - Setup Wizard">
-    <title><?php echo CHtml::encode($this->_pageTitle); ?></title>
+    <title><?= CHtml::encode($this->_pageTitle); ?></title>
 
-    <base href="<?php echo A::app()->getRequest()->getBaseUrl(); ?>" />
+    <base href="<?= A::app()->getRequest()->getBaseUrl(); ?>" />
     <link rel="shortcut icon" href="templates/setup/images/favicon.ico" />     
-    <?php echo CHtml::cssFile("templates/setup/css/main.css"); ?>
-	<?php echo CHtml::scriptFile('http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'); ?>
+    <?= CHtml::cssFile("templates/setup/css/main.css"); ?>
+	<?= CHtml::scriptFile('http://code.jquery.com/jquery-1.8.3.min.js'); ?>
 </head>
 <body>  
 <div id="container">
     <header>        
         <nav>
-            <?php echo A::t('setup', 'Setup Wizard'); ?><br>
-            <small><?php echo A::t('setup', 'This wizard will guide you through the installation process'); ?></small>
+            <?= A::t('setup', 'Setup Wizard'); ?><br>
+            <small><?= A::t('setup', 'This wizard will guide you through the installation process'); ?></small>
         </nav>
     </header>
     <section>
         <aside>
             <div>
-                <b><?php echo $this->_programName; ?></b><br>
-                <?php echo A::t('setup', 'version'); ?>: <?php echo $this->_programVersion; ?>
+                <b><?= $this->_programName; ?></b><br>
+                <?= A::t('setup', 'version'); ?>: <?= $this->_programVersion; ?>
             </div>            
     
             <?php
@@ -45,12 +45,12 @@
             ?>
         </aside>
         <article>
-            <?php echo A::app()->view->getContent(); ?>
+            <?= A::app()->view->getContent(); ?>
         </article>
     </section>    
     <footer>
-        <p class="copyright"><?php echo A::t('setup', 'Copyright'); ?> &copy; <?php echo date('Y'); ?> <?php echo $this->_programName; ?></p>
-        <p class="powered"><?php echo A::powered(); ?></p>
+        <p class="copyright"><?= A::t('setup', 'Copyright'); ?> &copy; <?= date('Y'); ?> <?= $this->_programName; ?></p>
+        <p class="powered"><?= A::powered(); ?></p>
     </footer>
 </div>    
 </body>

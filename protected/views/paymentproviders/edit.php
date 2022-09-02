@@ -9,10 +9,10 @@
     );    
 ?>
 
-<h1><?php echo A::t('app', 'Payment Providers Management'); ?></h1>
+<h1><?= A::t('app', 'Payment Providers Management'); ?></h1>
 
 <div class="bloc">
-    <div class="title"><?php echo A::t('app', 'Edit Payment Provider'); ?></div>
+    <div class="title"><?= A::t('app', 'Edit Payment Provider'); ?></div>
     <div class="content">        
 	<?php
 	
@@ -48,15 +48,16 @@
 			'requiredFieldsAlert'=>true,
 			'fields'			=> array(
 				'name'       		=> array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'text', 'maxLength'=>40), 'htmlOptions'=>array('maxLength'=>'40')),
-				'description'		=> array('type'=>'textarea', 'title'=>A::t('app', 'Description'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>false, 'type'=>'text', 'maxLength'=>255), 'htmlOptions'=>array('maxLength'=>'255', 'class'=>'small')),
-				'instructions'		=> array('type'=>'textarea', 'title'=>A::t('app', 'Instructions'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>2048), 'htmlOptions'=>array('maxLength'=>'2048')),
+				'description'		=> array('type'=>'textarea', 'title'=>A::t('app', 'Description').' ('.A::t('app', 'for internal use').')', 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>false, 'type'=>'text', 'maxLength'=>2048), 'htmlOptions'=>array('maxLength'=>'2048', 'class'=>'small')),
+				'instructions'		=> array('type'=>'textarea', 'title'=>A::t('app', 'Instructions').' ('.A::t('app', 'for external use').')', 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>2048), 'htmlOptions'=>array('maxLength'=>'2048')),
+				'code'       		=> array('type'=>'textbox', 'title'=>A::t('app', 'Code'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'unique'=>true, 'type'=>'seoLink', 'maxLength'=>20), 'htmlOptions'=>array('maxLength'=>'20')),
 				'used_on'			=> array('type'=>'select', 'title'=>A::t('app', 'Used On'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($usedOn)), 'data'=>$usedOn, 'emptyOption'=>true, 'viewType'=>'dropdownlist|checkboxes', 'multiple'=>false, 'storeType'=>'serialized|separatedValues', 'separator'=>';', 'htmlOptions'=>array('class'=>'chosen-select-filter')),
 				'mode'  			=> array('type'=>'select', 'title'=>A::t('app', 'Mode'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($modes)), 'data'=>$modes, 'emptyOption'=>true, 'viewType'=>'dropdownlist', 'multiple'=>false, 'storeType'=>'serialized|separatedValues', 'separator'=>';', 'htmlOptions'=>array('class'=>'chosen-select-filter')),
 				'merchant_id'       => array('type'=>'textbox', 'title'=>A::t('app', 'Merchant ID'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>40), 'htmlOptions'=>array('maxLength'=>'255'), 'disabled'=>!$required['merchant_id']),
 				'merchant_code'     => array('type'=>'textbox', 'title'=>A::t('app', 'Merchant Code'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>40), 'htmlOptions'=>array('maxLength'=>'60'), 'disabled'=>!$required['merchant_code']),
 				'merchant_key'      => array('type'=>'textbox', 'title'=>A::t('app', 'Merchant Key'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>40), 'htmlOptions'=>array('maxLength'=>'60'), 'disabled'=>!$required['merchant_key']),
-				'is_active'  		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'htmlOptions'=>($paymentProvider->is_default == 1 ? array('disabled'=>'disabled', 'uncheckValue'=>$paymentProvider->is_active) : array())),
-				'is_default' 		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'htmlOptions'=>($paymentProvider->is_default == 1 ? array('disabled'=>'disabled', 'uncheckValue'=>$paymentProvider->is_default) : array())),                    
+				'is_active'  		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'htmlOptions'=>($paymentProvider->is_default == 1 ? array('disabled'=>'disabled', 'uncheckValue'=>$paymentProvider->is_active) : array()), 'viewType'=>'custom'),
+				'is_default' 		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'htmlOptions'=>($paymentProvider->is_default == 1 ? array('disabled'=>'disabled', 'uncheckValue'=>$paymentProvider->is_default) : array()), 'viewType'=>'custom'),                    
 				'sort_order' 		=> array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'default'=>0, 'tooltip'=>'', 'validation'=>array('required'=>true, 'maxLength'=>'4', 'type'=>'numeric'), 'htmlOptions'=>array('maxLength'=>'4', 'class'=>'small')),
 			),
 			'buttons'			=> array(

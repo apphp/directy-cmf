@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED (static):			PRIVATE (static):
@@ -28,6 +28,9 @@
  * textField
  * passwordField
  * fileField
+ * colorField
+ * emailField
+ * searchField
  * getIdByName
  * dropDownList
  * listBox
@@ -110,6 +113,9 @@ class CHtml
             $htmlOptions['href'] = self::_escapeHex($htmlOptions['href']);
             unset($htmlOptions['escape']);
         }
+		if(isset($htmlOptions['target']) && strtolower($htmlOptions['target']) === '_blank' && empty($htmlOptions['rel'])){
+			$htmlOptions['rel'] = 'nofollow noopener';
+		}
 		return self::tag('a', $htmlOptions, $text);
 	}
 
@@ -130,21 +136,28 @@ class CHtml
 	/**
 	 * Encodes special characters into HTML entities
 	 * @param string $text
+	 * @param int $flag
 	 * @return string 
 	 */
-	public static function encode($text)
+	public static function encode($text, $flag = ENT_QUOTES)
 	{
-		return htmlspecialchars($text, ENT_QUOTES, A::app()->charset);
+		if(version_compare(phpversion(), '5.5', '<')){
+			// Generates error if text is  ASCII and A::app()->charset is UTF-8
+			return @htmlspecialchars($text, $flag, A::app()->charset);
+		}else{
+			return htmlspecialchars($text, $flag, A::app()->charset);
+		}
 	}
 
 	/**
 	 * Decodes special HTML entities back to the corresponding characters
 	 * @param string $text
+	 * @param int $flag
 	 * @return string
 	 */
-	public static function decode($text)
+	public static function decode($text, $flag = ENT_QUOTES)
 	{
-		return htmlspecialchars_decode($text, ENT_QUOTES);
+		return htmlspecialchars_decode($text, $flag);
 	}
 
 	/**
@@ -317,6 +330,45 @@ class CHtml
 	}    
 
 	/**
+	 * Generates a color input
+	 * @param string $name 
+	 * @param string $value 
+	 * @param array $htmlOptions 
+	 * @return string 
+	 * @see inputField
+	 */
+	public static function colorField($name, $value = '', $htmlOptions = array())
+	{
+		return self::_inputField('color', $name, $value, $htmlOptions);
+	}
+
+	/**
+	 * Generates a email input
+	 * @param string $name
+	 * @param string $value
+	 * @param array $htmlOptions
+	 * @return string
+	 * @see inputField
+	 */
+	public static function emailField($name, $value = '', $htmlOptions = array())
+	{
+		return self::_inputField('email', $name, $value, $htmlOptions);
+	}
+
+	/**
+	 * Generates a search input
+	 * @param string $name
+	 * @param string $value
+	 * @param array $htmlOptions
+	 * @return string
+	 * @see inputField
+	 */
+	public static function searchField($name, $value = '', $htmlOptions = array())
+	{
+		return self::_inputField('search', $name, $value, $htmlOptions);
+	}
+
+	/**
 	 * Generates a valid HTML ID based on name
 	 * @param string $name 
 	 * @return string 
@@ -423,7 +475,7 @@ class CHtml
 			  $htmlOptions['listWrapperClass'],
 			  $htmlOptions['multiple']);
 
-		if($multiple && substr($name,-2) !== '[]'){
+		if($multiple && substr($name, -2) !== '[]'){
 			$name .= '[]';
 		}
 
@@ -551,6 +603,11 @@ class CHtml
      */	
 	public static function dropDownList($name, $select = '', $data = array(), $htmlOptions = array(), $specialOptions = array())
 	{
+		$multiple = isset($htmlOptions['multiple']) ? (bool)$htmlOptions['multiple'] : false;
+		if($multiple && substr($name, -2) !== '[]'){
+			$name .= '[]';
+		}
+
 		$htmlOptions['name'] = $name;
 		if(!isset($htmlOptions['id'])) $htmlOptions['id'] = self::getIdByName($name);
 		else if($htmlOptions['id'] === false) unset($htmlOptions['id']);
@@ -587,7 +644,7 @@ class CHtml
 	{
 		if(!isset($htmlOptions['size'])) $htmlOptions['size'] = 4;
 		if(isset($htmlOptions['multiple'])){
-			if(substr($name,-2) !== '[]') $name .= '[]';
+			if(substr($name, -2) !== '[]') $name .= '[]';
 		}
 		return self::dropDownList($name, $select, $data, $htmlOptions);
 	}
@@ -700,8 +757,13 @@ class CHtml
 		if(!isset($htmlOptions['name'])){
 			if(!array_key_exists('name', $htmlOptions)) $htmlOptions['name'] = self::ID_PREFIX.self::$_count++;
 		}
+
 		if(!isset($htmlOptions['type'])) $htmlOptions['type'] = 'button';
-        $buttonTag = (isset($htmlOptions['buttonTag'])) ? $htmlOptions['buttonTag'] : 'input';
+		$buttonTag = 'input';
+		if(isset($htmlOptions['buttonTag'])){
+			$buttonTag = $htmlOptions['buttonTag'];
+			unset($htmlOptions['buttonTag']);
+		}
 	
         if($buttonTag == 'button'){
             if(isset($htmlOptions['value'])){

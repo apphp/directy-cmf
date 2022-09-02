@@ -14,9 +14,12 @@
  * sendEmail
  * prepareBackendAction
  * prepareLinkByFormat
- * getReferrerPage
+ * checkBan
+ * getRefererPage
  * getCurrentPage
  * getDefaultPage
+ * setLastVisitedPage
+ * getLastVisitedPage
  * 
  */
 
@@ -204,7 +207,7 @@ class Website extends CComponent
         $baseUrl = A::app()->getRequest()->getBaseUrl();
 
         // Block access to this action to non-logged users
-        CAuth::handleLogin('backend/login');
+        CAuth::handleLogin(self::getDefaultPage());
 
         // Block access if admin has no privileges to view modules
         if(!Admins::hasPrivilege('modules', 'view')){
@@ -260,7 +263,7 @@ class Website extends CComponent
 		}		
         
         // Set backend mode
-        Website::setBackend();        
+        self::setBackend();        
     }
 	
     /**
@@ -287,12 +290,55 @@ class Website extends CComponent
     }
 	
 	/**
-	 * Gets referrer URL
+	 * Checks if item is banned by different parameters
+	 * @param string $itemType
+	 * @param string $itemValue
+	 * @param array &$errors
+	 * @return bool
+	 */
+	public static function checkBan($itemType = '', $itemValue = '', &$errors = array())
+	{
+		$errors = array('alertType'=>'', 'alert'=>'');
+		
+		$isBanned = BanLists::model()->count(
+			"item_type = :item_type AND item_value = :item_value AND is_active = 1 AND (expires_at > :expires_at OR expires_at = '0000-00-00 00:00:00')",
+			array(':item_type'=>$itemType, ':item_value' => $itemValue, ':expires_at' => LocalTime::currentDateTime())
+		);
+		
+		if($isBanned){
+			$alert = '';
+			switch($itemType){
+				case 'ip_address':
+					$alert = A::t('app', 'This IP address is banned.');
+					break;
+				case 'username':
+					$alert = A::t('app', 'This username is banned.');
+					break;
+				case 'email_address':
+					$alert = A::t('app', 'This email is banned.');
+					break;
+				case 'email_domain':
+					$alert = A::t('app', 'This email domain is banned.');
+					break;
+				default:
+					$alert = A::t('app', 'This username, email or IP address is banned.');
+					break;					
+			}
+			
+			$errors['alertType'] = 'error';
+			$errors['alert'] = $alert;
+		}
+		
+		return $isBanned;
+	}
+
+	/**
+	 * Gets referer URL
 	 * @return string
 	 */
-	public static function getReferrerPage()
+	public static function getRefererPage()
 	{
-		return A::app()->getRequest()->getUrlReferrer();
+		return A::app()->getRequest()->getUrlReferer();
 	}
 
 	/**
@@ -320,5 +366,25 @@ class Website extends CComponent
 		
 		return $defaultPage;
 	} 	
+ 
+	/**
+	 * Sets last visited page
+	 */	
+	public static function setLastVisitedPage()
+	{
+		// Save current URL as last visited page
+		$currentPage = A::app()->router->getCurrentUrl();
+		if(!empty($currentPage) && !preg_match('/(login|loggedOut|registration|Home\/index|index\/index)/i', $currentPage)){
+			A::app()->getSession()->set('last_visited_page', $currentPage);
+		}
+	}
+	 
+	/**
+	 * Returns last visited page
+	 */	
+	public static function getLastVisitedPage()
+	{
+		return A::app()->getSession()->get('last_visited_page');
+	}
    
 }

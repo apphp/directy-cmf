@@ -6,7 +6,7 @@
  * ---------------         ---------------            ---------------
  * __construct             _relations                 
  * model (static)          _customFields
- *
+ * isBanned
  *
  */
 
@@ -46,6 +46,51 @@ class BanLists extends CActiveRecord
     protected function _customFields()
     {
         return array();
-    }    
-    
+    }
+	
+	/**
+	 * Checks if visitor is banned by different parameters
+	 * @param $itemType
+	 * @param $itemValue
+	 * @return bool
+	 */
+	public function isBanned($itemType = '', $itemValue = '')
+	{
+		switch($itemType){
+			
+			// @domain.com
+			case 'email_domain':
+				$itemValueAsParam = '%'.$itemValue.'%';	
+				break;
+
+			// 127.0.0.1
+			// username
+			// username@domain.com
+			case 'ip_address':
+			case 'username':
+			case 'email_address':
+			default:
+				$itemValueAsParam = $itemValue;
+				break;
+		}
+		
+		$isBanned = $this->_db->count(
+			"item_type = '".$itemType."' AND
+			item_value = :item_value AND
+			is_active = 1 AND
+			(expires_at > :expires_at OR expires_at = '0000-00-00 00:00:00')",
+			array(
+				':item_value' => $itemValue,
+				':expires_at' => LocalTime::currentDateTime()
+			)
+		);
+
+		//$msg = A::t('app', 'This IP address is banned.');
+		//$msg = A::t('app', 'This username is banned.');
+		//$msg = A::t('app', 'This email is banned.');
+		//$msg = A::t('app', 'This username, email or IP address is banned.');
+		
+		return $isBanned;
+	}
+   
 }

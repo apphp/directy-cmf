@@ -7,13 +7,17 @@
         array('label'=>A::t('app', 'General'), 'url'=>'backend/dashboard'),
         array('label'=>A::t('app', 'Dashboard')),
     );
+
+	// Register FancyBox files
+	A::app()->getClientScript()->registerScriptFile('js/vendors/toastr/toastr.min.js', 2);
+	A::app()->getClientScript()->registerCssFile('js/vendors/toastr/toastr.min.css');
 ?>
 
-<h1>Dashboard</h1>
+<h1><?= A::t('app', 'Dashboard'); ?></h1>
 
 <?php if(is_array($alerts) && count($alerts) > 0){ ?>
 <div class="bloc" id="blocAlerts">
-    <div class="title collapsible closable"><?php echo A::t('app', 'Alerts (action required)'); ?></div>
+    <div class="title collapsible closable"><?= A::t('app', 'Alerts (action required)'); ?></div>
     <div class="content">
         <?php
             foreach($alerts as $alert => $alertInfo){
@@ -27,22 +31,23 @@
 
 <?php if($dashboardHotkeys){ ?>
 <div class="bloc" id="blocHotKeys">
-    <div class="title collapsible"><?php echo A::t('app', 'Dashboard (hotkeys)'); ?></div>
+    <div class="title collapsible"><?= A::t('app', 'Dashboard (hotkeys)'); ?></div>
     <div class="content sortable-content">		
-        <?php if(Admins::hasPrivilege('site_settings', 'view')){ ?><a href="settings/" id="icon-backend" class="shortcut tooltip-link" title="<?php echo A::t('app', 'General Settings'); ?>"><?php echo CString::substr(A::t('app', 'Settings'), 12, false, true); ?><img src="templates/backend/images/shortcuts/settings.png" alt="settings" /></a><?php } ?>
-        <?php if(Admins::hasPrivilege('backend_menu', 'view')){ ?><a href="backendMenus/" id="icon-backend-menus" class="shortcut tooltip-link" title="<?php echo A::t('app', 'Backend Menu'); ?>"><?php echo CString::substr(A::t('app', 'Backend Menu'), 12, false, true); ?><img src="templates/backend/images/shortcuts/backend-menus.png" alt="backend menu" /></a><?php } ?>
-        <?php if(Admins::hasPrivilege('frontend_menu', 'view')){ ?><a href="frontendMenus/" id="icon-frontend-menus" class="shortcut tooltip-link" title="<?php echo A::t('app', 'Frontend Menu'); ?>"><?php echo CString::substr(A::t('app', 'Frontend Menu'), 12, false, true); ?><img src="templates/backend/images/shortcuts/frontend-menus.png" alt="frontend menu" /></a><?php } ?>
-        <?php if(Admins::hasPrivilege('locations', 'view')){ ?><a href="locations/" id="icon-locations" class="shortcut tooltip-link" title="<?php echo A::t('app', 'Locations'); ?>"><?php echo CString::substr(A::t('app', 'Locations'), 12, false, true); ?><img src="templates/backend/images/shortcuts/locations.png" alt="locations" /></a><?php } ?>
-		<?php if(Admins::hasPrivilege('currencies', 'view')){ ?><a href="currencies/" id="icon-currencies" class="shortcut tooltip-link" title="<?php echo A::t('app', 'Currencies'); ?>"><?php echo CString::substr(A::t('app', 'Currencies'), 12, false, true); ?><img src="templates/backend/images/shortcuts/currencies.png" alt="currencies" /></a><?php } ?>
-		<?php if(Admins::hasPrivilege('payment_providers', 'view')){ ?><a href="paymentProviders/" id="icon-payment-providers" class="shortcut tooltip-link" title="<?php echo A::t('app', 'Currencies'); ?>"><?php echo CString::substr(A::t('app', 'Currencies'), 12, false, true); ?><img src="templates/backend/images/shortcuts/payment-providers.png" alt="currencies" /></a><?php } ?>
-		<?php if(Admins::hasPrivilege('email_templates', 'view')){ ?><a href="emailTemplates/" id="icon-email-templates" class="shortcut tooltip-link" title="<?php echo A::t('app', 'Email Templates'); ?>"><?php echo CString::substr(A::t('app', 'Email Templates'), 12, false, true); ?><img src="templates/backend/images/shortcuts/email-templates.png" alt="email templates" /></a><?php } ?>		
-		<?php if(Admins::hasPrivilege('ban_lists', 'view')){ ?><a href="banLists/" id="icon-ban-lists" class="shortcut tooltip-link" title="<?php echo A::t('app', 'Ban Lists'); ?>"><?php echo CString::substr(A::t('app', 'Ban Lists'), 12, false, true); ?><img src="templates/backend/images/shortcuts/ban-lists.png" alt="ban lists" /></a><?php } ?>		
-		<?php if(CAuth::isLoggedInAs('owner','mainadmin')){ ?><a href="admins/" id="icon-admins" class="shortcut tooltip-link" title="<?php echo A::t('app', 'Admins'); ?>"><?php echo CString::substr(A::t('app', 'Admins'), 12, false, true); ?><img src="templates/backend/images/shortcuts/admins.png" alt="admins" /></a><?php } ?>
-		<?php if(CAuth::isLoggedInAs('owner','mainadmin')){ ?><a href="roles/" id="icon-roles" class="shortcut tooltip-link" title="<?php echo A::t('app', 'Roles & Privileges'); ?>"><?php echo CString::substr(A::t('app', 'Roles'), 12, false, true); ?><img src="templates/backend/images/shortcuts/roles.png" alt="roles" /></a><?php } ?>
-		<a href="admins/myAccount/" id="icon-my-account" class="shortcut tooltip-link" title="<?php echo A::t('app', 'My Account'); ?>"><?php echo CString::substr(A::t('app', 'My Account'), 12, false, true); ?><img src="templates/backend/images/shortcuts/my_account.png" alt="my account" /></a>
-        <?php if(Admins::hasPrivilege('languages', 'view')){ ?><a href="languages/" id="icon-languages" class="shortcut tooltip-link" title="<?php echo A::t('app', 'Languages'); ?>"><?php echo CString::substr(A::t('app', 'Languages'), 12, false, true); ?><img src="templates/backend/images/shortcuts/languages.png" alt="languages" /></a><?php } ?>
-        <?php if(Admins::hasPrivilege('vocabulary', 'view')){ ?><a href="vocabulary/" id="icon-vocabulary" class="shortcut tooltip-link" title="<?php echo A::t('app', 'Vocabulary'); ?>"><?php echo CString::substr(A::t('app', 'Vocabulary'), 12, false, true); ?><img src="templates/backend/images/shortcuts/vocabulary.png" alt="vocabulary" /></a><?php } ?>
-        <?php if(Admins::hasPrivilege('modules', 'view')){ ?><a href="modules/" id="icon-modules" class="shortcut tooltip-link" title="<?php echo A::t('app', 'Modules'); ?>"><?php echo CString::substr(A::t('app', 'Modules'), 12, false, true); ?><img src="templates/backend/images/shortcuts/modules.png" alt="modules" /></a><?php } ?>
+        <?php if(Admins::hasPrivilege('site_settings', 'view')){ ?><a href="settings/" id="icon-backend" class="shortcut tooltip-link" title="<?= A::t('app', 'General Settings'); ?>"><?= CString::substr(A::t('app', 'Settings'), 12, false, true); ?><img src="templates/backend/images/shortcuts/settings.png" alt="settings" /></a><?php } ?>
+        <?php if(Admins::hasPrivilege('backend_menu', 'view')){ ?><a href="backendMenus/" id="icon-backend-menus" class="shortcut tooltip-link" title="<?= A::t('app', 'Backend Menu'); ?>"><?= CString::substr(A::t('app', 'Backend Menu'), 12, false, true); ?><img src="templates/backend/images/shortcuts/backend-menus.png" alt="backend menu" /></a><?php } ?>
+        <?php if(Admins::hasPrivilege('frontend_menu', 'view')){ ?><a href="frontendMenus/" id="icon-frontend-menus" class="shortcut tooltip-link" title="<?= A::t('app', 'Frontend Menu'); ?>"><?= CString::substr(A::t('app', 'Frontend Menu'), 12, false, true); ?><img src="templates/backend/images/shortcuts/frontend-menus.png" alt="frontend menu" /></a><?php } ?>
+        <?php if(Admins::hasPrivilege('locations', 'view')){ ?><a href="locations/" id="icon-locations" class="shortcut tooltip-link" title="<?= A::t('app', 'Locations'); ?>"><?= CString::substr(A::t('app', 'Locations'), 12, false, true); ?><img src="templates/backend/images/shortcuts/locations.png" alt="locations" /></a><?php } ?>
+		<?php if(Admins::hasPrivilege('currencies', 'view')){ ?><a href="currencies/" id="icon-currencies" class="shortcut tooltip-link" title="<?= A::t('app', 'Currencies'); ?>"><?= CString::substr(A::t('app', 'Currencies'), 12, false, true); ?><img src="templates/backend/images/shortcuts/currencies.png" alt="currencies" /></a><?php } ?>
+		<?php if(Admins::hasPrivilege('payment_providers', 'view')){ ?><a href="paymentProviders/" id="icon-payment-providers" class="shortcut tooltip-link" title="<?= A::t('app', 'Payment Providers'); ?>"><?= CString::substr(A::t('app', 'Payment Providers'), 12, false, true); ?><img src="templates/backend/images/shortcuts/payment-providers.png" alt="payment providers" /></a><?php } ?>
+		<?php if(Admins::hasPrivilege('email_templates', 'view')){ ?><a href="emailTemplates/" id="icon-email-templates" class="shortcut tooltip-link" title="<?= A::t('app', 'Email Templates'); ?>"><?= CString::substr(A::t('app', 'Email Templates'), 12, false, true); ?><img src="templates/backend/images/shortcuts/email-templates.png" alt="email templates" /></a><?php } ?>
+		<?php if(Admins::hasPrivilege('mailing_log', 'view')){ ?><a href="mailingLog/" id="icon-mailing-log" class="shortcut tooltip-link" title="<?= A::t('app', 'Mailing Log'); ?>"><?= CString::substr(A::t('app', 'Mailing Log'), 12, false, true); ?><img src="templates/backend/images/shortcuts/mailing-log.png" alt="mailing log" /></a><?php } ?>
+		<?php if(Admins::hasPrivilege('ban_lists', 'view')){ ?><a href="banLists/" id="icon-ban-lists" class="shortcut tooltip-link" title="<?= A::t('app', 'Ban Lists'); ?>"><?= CString::substr(A::t('app', 'Ban Lists'), 12, false, true); ?><img src="templates/backend/images/shortcuts/ban-lists.png" alt="ban lists" /></a><?php } ?>		
+		<?php if(CAuth::isLoggedInAs('owner','mainadmin')){ ?><a href="admins/" id="icon-admins" class="shortcut tooltip-link" title="<?= A::t('app', 'Admins'); ?>"><?= CString::substr(A::t('app', 'Admins'), 12, false, true); ?><img src="templates/backend/images/shortcuts/admins.png" alt="admins" /></a><?php } ?>
+		<?php if(CAuth::isLoggedInAs('owner','mainadmin')){ ?><a href="roles/" id="icon-roles" class="shortcut tooltip-link" title="<?= A::t('app', 'Roles & Privileges'); ?>"><?= CString::substr(A::t('app', 'Roles'), 12, false, true); ?><img src="templates/backend/images/shortcuts/roles.png" alt="roles" /></a><?php } ?>
+		<a href="admins/myAccount/" id="icon-my-account" class="shortcut tooltip-link" title="<?= A::t('app', 'My Account'); ?>"><?= CString::substr(A::t('app', 'My Account'), 12, false, true); ?><img src="templates/backend/images/shortcuts/my_account.png" alt="my account" /></a>
+        <?php if(Admins::hasPrivilege('languages', 'view')){ ?><a href="languages/" id="icon-languages" class="shortcut tooltip-link" title="<?= A::t('app', 'Languages'); ?>"><?= CString::substr(A::t('app', 'Languages'), 12, false, true); ?><img src="templates/backend/images/shortcuts/languages.png" alt="languages" /></a><?php } ?>
+        <?php if(Admins::hasPrivilege('vocabulary', 'view')){ ?><a href="vocabulary/" id="icon-vocabulary" class="shortcut tooltip-link" title="<?= A::t('app', 'Vocabulary'); ?>"><?= CString::substr(A::t('app', 'Vocabulary'), 12, false, true); ?><img src="templates/backend/images/shortcuts/vocabulary.png" alt="vocabulary" /></a><?php } ?>
+        <?php if(Admins::hasPrivilege('modules', 'view')){ ?><a href="modules/" id="icon-modules" class="shortcut tooltip-link" title="<?= A::t('app', 'Modules'); ?>"><?= CString::substr(A::t('app', 'Modules'), 12, false, true); ?><img src="templates/backend/images/shortcuts/modules.png" alt="modules" /></a><?php } ?>
 		<?php
 			if(is_array($modulesToShow)){
 				foreach($modulesToShow as $module){
@@ -57,8 +62,8 @@
 <?php } ?>
 
 <?php if($dashboardNotifications){ ?>
-<div class="bloc<?php echo ($dashboardStatistics ? ' bloc-left' : ''); ?>" id="blocNotifications">
-    <div class="title collapsible"><?php echo A::t('app', 'Whats new'); ?></div>
+<div class="bloc<?= ($dashboardStatistics ? ' bloc-left' : ''); ?>" id="blocNotifications">
+    <div class="title collapsible"><?= A::t('app', 'Whats new'); ?></div>
     <div class="content">
 	<?php
 		$notificationsCount = 0;
@@ -82,13 +87,14 @@
 <?php } ?>
 
 <?php if($dashboardStatistics){ ?>
-<div class="bloc<?php echo ($dashboardNotifications ? ' bloc-right' : ''); ?>" id="blocStatistics">
+<div class="bloc<?= ($dashboardNotifications ? ' bloc-right' : ''); ?>" id="blocStatistics">
     <?php
         $tabStat1 = '<table>
         <tbody>
             <tr><td width="30%">'.A::t('app', 'Today').': </td><td><b>'.$todayDate.'</b></td></tr>
             <tr><td>'.A::t('app', 'Application').': </td><td><b>'.$scriptName.'</b></td></tr>
-            <tr><td>'.A::t('app', 'Version').': </td><td><b>'.$scriptVersion.'</b></td></tr>';
+            <tr><td>'.A::t('app', 'Version').': </td><td><b>'.$scriptVersion.'</b></td></tr>
+			<tr><td>'.A::t('app', 'Framework').': </td><td><b>'.A::t('app', 'ApPHP MVC Framework v').A::app()->version().'</b></td></tr>';
 			// Show active sessions
 			if($customStorage){
 				$tabStat1 .= '<tr><td>'.A::t('app', 'Active Sessions').': </td><td><b>'.$activeSessions.'</b></td></tr>';
@@ -103,8 +109,23 @@
         </table>';
         
         $tabStat3 = '<table>
-            <tr><td width="30%">'.A::t('app', 'Total Admins').': </td><td><b>'.$adminsCount.'</b></td></tr>
-            <tr><td>'.A::t('app', 'Last 5 Registered Admins').': </td><td><b>'.$lastAdminsList.'</b></td></tr>
+            <tr><td width="30%">'.A::t('app', 'Total Admins').': </td><td><b>'.$adminsCount.'</b></td></tr>';
+			
+			$tabStat3 .= '<tr><td>'.A::t('app', 'Last 5 Registered Admins').': </td><td>';
+			$count = 0;
+			foreach($lastAdminsList as $admin){
+				$tabStat3 .= $count++ ? ',' : '';
+				$tabStat3 .= '<a href="admins/manage?username='.CHtml::encode($admin).'&but_filter=Filter">'.$admin.'</a>';	
+			}
+			$tabStat3 .= '</td></tr>';
+			
+			$tabStat3 .= '<tr><td>'.A::t('app', 'Last 5 Changed Password').': </td><td>';			
+			$count = 0;
+			foreach($changedPasswordAdminsList as $admin){
+				$tabStat3 .= $count++ ? ',' : '';
+				$tabStat3 .= '<a href="admins/manage?username='.CHtml::encode($admin).'&but_filter=Filter">'.$admin.'</a>';	
+			}
+			$tabStat3 .= '</td></tr>
         </tbody>
         </table>';
 
@@ -131,4 +152,36 @@
 <?php } ?>
 
 <div class="cb"></div>
+<br><br>
 
+<?php
+
+A::app()->getClientScript()->registerScript(
+	'toastrMessage',
+	'// Menu message
+	var alertMessage = "'.A::te('app', 'Dashboard (hotkeys) order has beed changed!').'";
+	jQuery(document).ready(function(){
+		// Init		
+		toastr.options = {
+			"closeButton": true,
+			"debug": false,
+			"newestOnTop": false,
+			"progressBar": false,
+			"positionClass": "toast-top-right",
+			"preventDuplicates": false,
+			"onclick": null,
+			"showDuration": "300",
+			"hideDuration": "1000",
+			"timeOut": "5000",
+			"extendedTimeOut": "1000",
+			"showEasing": "swing",
+			"hideEasing": "linear",
+			"showMethod": "fadeIn",
+			"hideMethod": "fadeOut",
+			"rtl": '.(A::app()->getLanguage('direction') == 'rtl' ? 'true' : 'false').'
+		}
+	});',
+	1
+);
+
+?>

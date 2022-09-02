@@ -9,26 +9,26 @@
     );    
 ?>
     
-<h1><?php echo A::t('app', 'Templates Settings'); ?></h1>
+<h1><?= A::t('app', 'Templates Settings'); ?></h1>
 
 <div class="bloc">
 
-	<?php echo $tabs; ?>
+	<?= $tabs; ?>
 
 	<div class="content">
-		<?php echo $actionMessage; ?>
+		<?= $actionMessage; ?>
 
 		<div class="left-side">
 		<?php 
-		$templatesList = array();
-        if(is_array($allTemplates)){
-        	foreach($allTemplates as $temp){
-        		if(!in_array($temp, array('backend', 'setup'))){
-        			$templatesList[$temp] = ucfirst($temp);  			
-        		}
-        	}
-        }
-		echo CWidget::create('CFormView', array(
+			$templatesList = array();
+			if(is_array($allTemplates)){
+				foreach($allTemplates as $temp){
+					if(!in_array($temp, array('backend', 'setup'))){
+						$templatesList[$temp] = ucfirst($temp);  			
+					}
+				}
+			}
+			echo CWidget::create('CFormView', array(
 				'action'=>'settings/templates',
 				'method'=>'post',				
 				'htmlOptions'=>array(
@@ -48,24 +48,24 @@
 					'focus'=>array('field'=>$errorField)
 				),
 				'return'=>true,
-	        ));
-		?>        
+			));
+		?>
 	    </div>
 	
 	    <div class="central-part">
-			<img class="template" src="<?php echo $icon; ?>" alt="<?php echo A::t('app', 'Template Preview'); ?>">
+			<img class="template" src="<?= $icon; ?>" alt="<?= A::t('app', 'Template Preview'); ?>">
 		</div>
 		
 	    <div class="right-side">
 			<ul>
-				<li><b><?php echo A::t('app', 'Name'); ?>:</b> <i><?php echo $name; ?></i></li>
-				<li><b><?php echo A::t('app', 'Description'); ?>:</b> <i><?php echo $description; ?></i></li>
-				<li><b><?php echo A::t('app', 'Author'); ?>:</b> <i><?php echo $author; ?></i></li>
-				<li><b><?php echo A::t('app', 'License'); ?>:</b> <i><?php echo $license; ?></i></li>
-				<li><b><?php echo A::t('app', 'Version'); ?>:</b> <i><?php echo $version; ?></i></li>
-				<li><b><?php echo A::t('app', 'Layout'); ?>:</b> <i><?php echo $layout; ?></i></li>
-				<li><b><?php echo A::t('app', 'Text Direction'); ?>:</b> <i><?php echo $textDirection; ?></i></li>
-				<li><b><?php echo A::t('app', 'Menus'); ?>:</b> <i><?php echo $menus; ?></i></li>
+				<li><b><?= A::t('app', 'Name'); ?>:</b> <i><?= $name; ?></i></li>
+				<li><b><?= A::t('app', 'Description'); ?>:</b> <i><?= $description; ?></i></li>
+				<li><b><?= A::t('app', 'Author'); ?>:</b> <i><?= $author; ?></i></li>
+				<li><b><?= A::t('app', 'License'); ?>:</b> <i><?= $license; ?></i></li>
+				<li><b><?= A::t('app', 'Version'); ?>:</b> <i><?= $version; ?></i></li>
+				<li><b><?= A::t('app', 'Layout'); ?>:</b> <i><?= $layout; ?></i></li>
+				<li><b><?= A::t('app', 'Text Direction'); ?>:</b> <i><?= $textDirection; ?></i></li>
+				<li><b><?= A::t('app', 'Menus'); ?>:</b> <i><?= $menus; ?></i></li>
 			</ul>
 		</div>
 		<div class="clear"></div>

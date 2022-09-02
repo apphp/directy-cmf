@@ -4,10 +4,10 @@
 	$this->_activeMenu = $this->_controller.'/'.$this->_action;
 ?>
 
-<h1><?php echo A::t('setup', 'Administrator Account'); ?></h1>
-<p><?php echo A::t('setup', 'Administrator Account Notice'); ?></p>
+<h1><?= A::t('setup', 'Administrator Account'); ?></h1>
+<p><?= A::t('setup', 'Administrator Account Notice'); ?></p>
     
-<?php echo $actionMessage; ?>
+<?= $actionMessage; ?>
 <br>
 
 <?php

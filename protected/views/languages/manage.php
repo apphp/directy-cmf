@@ -3,15 +3,15 @@
 	
 	$this->_activeMenu = 'languages/';
     $this->_breadCrumbs = array(
-        array('label'=>A::t('app', 'Languages Settings'), 'url'=>'languages/'),
+        array('label'=>A::t('app', 'Language Settings'), 'url'=>'languages/'),
         array('label'=>A::t('app', 'Languages')),
     );    
 ?>
 
-<h1><?php echo A::t('app', 'Languages Management'); ?></h1>
+<h1><?= A::t('app', 'Languages Management'); ?></h1>
 
 <div class="bloc">
-    <div class="title"><?php echo A::t('app', 'Languages'); ?></div>
+    <div class="title"><?= A::t('app', 'Languages'); ?></div>
     <div class="content">
 		<?php 
 			echo $actionMessage; 

@@ -3,16 +3,16 @@
 	
 	$this->_activeMenu = 'languages/';
     $this->_breadCrumbs = array(
-        array('label'=>A::t('app', 'Languages Settings'), 'url'=>'languages/'),
+        array('label'=>A::t('app', 'Language Settings'), 'url'=>'languages/'),
         array('label'=>A::t('app', 'Languages'), 'url'=>'languages/manage'),
 		array('label'=>A::t('app', 'Add New Language')),
     );    
 ?>
 
-<h1><?php echo A::t('app', 'Languages Management'); ?></h1>
+<h1><?= A::t('app', 'Languages Management'); ?></h1>
 
 <div class="bloc">
-    <div class="title"><?php echo A::t('app', 'Add New Language'); ?></div>
+    <div class="title"><?= A::t('app', 'Add New Language'); ?></div>
     <div class="content">        
     <?php
 		echo CWidget::create('CDataForm', array(
@@ -44,8 +44,8 @@
 				),					
 				'sort_order' 	=> array('type'=>'textbox', 'title'=>A::t('app', 'Order'), 'default'=>$sortOrder, 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'2', 'class'=>'small')),
 				'used_on' 	 	=> array('type'=>'select', 'title'=>A::t('app', 'Used On'), 'default'=>'global', 'data'=>$usedOnList, 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($usedOnList))),
-				'is_default' 	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'validation'=>array('type'=>'set', 'source'=>array(0,1))),
-				'is_active'  	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>true, 'validation'=>array('type'=>'set', 'source'=>array(0,1))),
+				'is_default' 	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'viewType'=>'custom'),
+				'is_active'  	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>true, 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'viewType'=>'custom'),
 			),
 			'buttons'			=> array(
 			   'submit' 			=> array('type'=>'submit', 'value'=>A::t('app', 'Create'), 'htmlOptions'=>array('name'=>'')),

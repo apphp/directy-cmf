@@ -25,7 +25,7 @@ class BanListsController extends CController
         parent::__construct();
 
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 		
 		// Block access if admin has no active privilege to access ban lists
 		if(!Admins::hasPrivilege('ban_lists', array('view', 'edit'))){
@@ -42,7 +42,7 @@ class BanListsController extends CController
 
         $this->_view->actionMessage = '';
         $this->_view->errorField = '';
-		$this->_view->itemTypes = array('ip'=>A::t('app', 'IP Address'), 'email'=>A::t('app', 'Email'), 'username'=>A::t('app', 'Username'));
+		$this->_view->itemTypes = array('ip_address'=>A::t('app', 'IP Address'), 'email_address'=>A::t('app', 'Email Address'), 'email_domain'=>A::t('app', 'Email Domain'), 'username'=>A::t('app', 'Username'));
 
         // Fetch datetime format from settings table
         $this->_view->dateTimeFormat = Bootstrap::init()->getSettings('datetime_format');
@@ -101,7 +101,8 @@ class BanListsController extends CController
         $banList = $this->_checkActionAccess($id);
         
         $this->_view->id = $banList->id;
-		$this->_view->itemType = A::app()->getRequest()->getPost('item_type');
+		$itemType = A::app()->getRequest()->getPost('item_type');
+		$this->_view->itemType = !empty($itemType) ? $itemType : $banList->item_type;	
         $this->_view->render('banLists/edit');
     }
 

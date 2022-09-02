@@ -128,9 +128,10 @@ $(document).ready(function(){
     // INIT CHOSEN SELECTS
     // --------------------------------------
 	$('select').addClass('chosen-select-filter');
+ 	$('.chosen-select-filter').css({'padding': '10px'});
 	$('.chosen-select-filter').chosen({disable_search_threshold: 7});	
 	//$('.chosen-select').chosen({disable_search: true});
-	$('.chosen-search input, .chosen-select-filter input').attr("maxlength", 255);
+	$('.chosen-search input, .chosen-select-filter input').attr('maxlength', 255);
 
     // INIT TABS
     // --------------------------------------
@@ -170,6 +171,9 @@ $(document).ready(function(){
         update: function(event, ui) {
             var newOrder = $(this).sortable('toArray').join();
             $.cookie('sortableOrder', newOrder); /* { expires: 7} */
+			if(toastr != undefined){
+				toastr.success((alertMessage != undefined ? alertMessage : "Dashboard (hotkeys) order has beed changed!"));	
+			}
         }                                    
     });
     // restore saved order

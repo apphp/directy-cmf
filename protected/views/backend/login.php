@@ -5,7 +5,7 @@
 <div id="content" class="login">
     
     <img src="templates/backend/images/lock-closed.png" alt="icon" />
-    <h1><?php echo A::t('app', 'Admin Panel'); ?></h1>    
+    <h1><?= A::t('app', 'Admin Panel'); ?></h1>    
     <br>
     
     <?php

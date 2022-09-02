@@ -3,15 +3,15 @@
 <install version="1.0" type="template">
     <name>Bootstrap Template</name>
     <creationDate>08/05/2013</creationDate>
-    <lastChangedDate>24/11/2014</lastChangedDate>
+    <lastChangedDate>21/10/2016</lastChangedDate>
     <author>ApPHP</author>
     <authorEmail></authorEmail>
     <authorUrl></authorUrl>
     <copyright>ApPHP</copyright>
     <license>LGPL</license>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <description>ApPHP Directy CMF Bootstrap Template</description>
-    <layout>2 Column Static Layout</layout>
+    <layout>2 Column Responsive Layout</layout>
     <direction>Left-to-Right/Right-to-Left</direction>
     <icon>images/template_icon.png</icon>
     <menus>
@@ -27,10 +27,15 @@
             <filename>bg_footer.gif</filename>
         </images>    
         <css>
-            <filename>bootstrap.csss</filename>
+            <filename>bootstrap.css</filename>
+			<filename>bootstrap.min.css</filename>
+			<filename>style.css</filename>
         </css>
         <js>
             <filename>bootstrap.js</filename>
+			<filename>bootstrap.min.js</filename>
+			<filename>jquery.js</filename>
+			<filename>main.js</filename>
         </js>
         <filename>default.php</filename>
         <filename>info.xml</filename>

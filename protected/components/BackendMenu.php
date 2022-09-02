@@ -60,6 +60,8 @@ class BackendMenu extends CComponent
 					switch($item['url']){
 						case 'settings/':
 							if(!Admins::hasPrivilege('site_settings', 'view')) $show = false; break;
+						case 'socialNetworks/':
+							if(!Admins::hasPrivilege('social_networks', 'view')) $show = false; break;
 						case 'backendMenus/':
 							if(!Admins::hasPrivilege('backend_menu', 'view')) $show = false; break;
 						case 'frontendMenus/':
@@ -68,8 +70,8 @@ class BackendMenu extends CComponent
 							if(!Admins::hasPrivilege('locations', 'view')) $show = false; break;
 						case 'currencies/':
 							if(!Admins::hasPrivilege('currencies', 'view')) $show = false; break;
-						case 'emailTemplates/':
-							if(!Admins::hasPrivilege('email_templates', 'view')) $show = false; break;
+						case 'paymentProviders/':
+							if(!Admins::hasPrivilege('payment_providers', 'view')) $show = false; break;
 						case 'banLists/':
 							if(!Admins::hasPrivilege('ban_lists', 'view')) $show = false; break;
 						case 'admins/':
@@ -80,15 +82,27 @@ class BackendMenu extends CComponent
 							if(!Admins::hasPrivilege('languages', 'view')) $show = false; break;					
 						case 'vocabulary/':
 							if(!Admins::hasPrivilege('vocabulary', 'view')) $show = false; break;					
+						case 'emailTemplates/':
+							if(!Admins::hasPrivilege('email_templates', 'view')) $show = false; break;
+						case 'mailingLog/':
+							if(!Admins::hasPrivilege('mailing_log', 'view')) $show = false; break;
 						case 'modules/':
 							if(!Admins::hasPrivilege('modules', 'view_management')) $show = false; break;
 					}
 				}
 				
 				if($show){
+					
+					// Preview
+					if($item['id'] == 15){
+						$url = A::app()->getRequest()->getBaseUrl();
+					}else{
+						$url = ! empty($item['url']) ? $item['url'] : 'javascript:void(0)';	
+					}
+					
 					$items[$i] = array(
 						'label'  => $image.(!empty($item['module_code']) ? A::t($item['module_code'], $item['menu_name']) : $item['menu_name']),
-						'url' 	 => empty($item['url']) ? 'javascript:void(0)' : $item['url'],
+						'url' 	 => $url,
 						'id' 	 => 'menu-'.$parentId.$i,
 						'target' => $target,
 						'class'	 => ('menu-'.$parentId.$i === $openedMenu || $openedMenu == 'all') ? 'active' : '',
@@ -148,8 +162,8 @@ class BackendMenu extends CComponent
         $output .= CHtml::tag('span', array(), A::t('app', 'Hi').', '.CAuth::getLoggedName());
         $output .= CHtml::openTag('ul', array('class'=>'dropdown'));
         $output .= CHtml::tag('li', array('class'=>($activeMenu == 'backend/' ? 'active' : '')), CHtml::link('<i class="icon-dashboard"></i>'.A::t('app', 'Dashboard'), 'backend/dashboard'));
-        $output .= CHtml::tag('li', array('class'=>($activeMenu == 'settings/' ? 'active' : '')), CHtml::link('<i class="icon-settings"></i>'.A::t('app', 'Settings'), 'settings/general'));
         $output .= CHtml::tag('li', array('class'=>($activeMenu == 'admins/myAccount' ? 'active' : '')), CHtml::link('<i class="icon-account"></i>'.A::t('app', 'My Account'), 'admins/myAccount'));
+        $output .= CHtml::tag('li', array('class'=>($activeMenu == 'settings/' ? 'active' : '')), CHtml::link('<i class="icon-settings"></i>'.A::t('app', 'Settings'), 'settings/general'));
         //$output .= CHtml::tag('li', array(), CHtml::link('<i class="icon-logout"></i>'.A::t('app', 'Logout'), 'backend/logout'));
 		$output .= CHtml::tag('li', array('class'=>''), CHtml::link('<i class="icon-preview"></i>'.A::t('app', 'Preview'), Website::getDefaultPage(), array('target'=>'_blank')));
 		

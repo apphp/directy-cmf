@@ -14,7 +14,7 @@
     $this->_breadCrumbs = $breadCrumbs;
 ?>
 
-<h1><?php echo A::t('app', 'Backend Menu Management'); ?></h1>
+<h1><?= A::t('app', 'Backend Menu Management'); ?></h1>
 
 <div class="bloc">
 	<div class="title">

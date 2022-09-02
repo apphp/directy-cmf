@@ -8,10 +8,10 @@
     );    
 ?>
 
-<h1><?php echo A::t('app', 'Locations Management'); ?></h1>
+<h1><?= A::t('app', 'Locations Management'); ?></h1>
 
 <div class="bloc">
-    <div class="title"><?php echo A::t('app', 'Countries'); ?></div>
+    <div class="title"><?= A::t('app', 'Countries'); ?></div>
     <div class="content">
 	<?php 
 		echo $actionMessage; 

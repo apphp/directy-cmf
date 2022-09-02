@@ -9,10 +9,10 @@
     );    
 ?>
 
-<h1><?php echo A::t('app', 'Sub-Locations Management'); ?></h1>
+<h1><?= A::t('app', 'Sub-Locations Management'); ?></h1>
 
 <div class="bloc">
-    <div class="title"><?php echo A::t('app', 'States'); ?> <a class="back-link" href="locations/"><?php echo A::t('app', 'Back'); ?></a></div>
+    <div class="title"><?= A::t('app', 'States'); ?> <a class="back-link" href="locations/"><?= A::t('app', 'Back'); ?></a></div>
     <div class="content">
     <?php 
         echo $actionMessage; 

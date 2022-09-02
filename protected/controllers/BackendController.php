@@ -4,7 +4,7 @@
  *
  * PUBLIC:                 	PRIVATE:
  * ---------------         	---------------
- * __construct              _checkBan
+ * __construct              	
  * indexAction
  * dashboardAction
  * loginAction
@@ -14,9 +14,9 @@
 
 class BackendController extends CController
 {
-	private $checkBruteforce;
-	private $redirectDelay;
-	private $badLogins;		
+	private $_checkBruteforce;
+	private $_redirectDelay;
+	private $_badLogins;
 	
     /**
 	 * Class default constructor
@@ -83,21 +83,24 @@ class BackendController extends CController
 		$this->_view->scriptVersion = CConfig::get('version');
 
 		// Fetch last 5 admins
-		$lastAdmins = Admins::model()->findAll(array('order'=>'id DESC', 'limit'=>'5'));
-		$lastAdminsList = '';
+		$lastAdmins = Admins::model()->findAll(array('condition'=>"role != 'owner'", 'order'=>'id DESC', 'limit'=>'5'));
+		$lastAdminsList = array();
 		if(is_array($lastAdmins)){
 			foreach($lastAdmins as $admin){
-				$lastAdminsList = ($lastAdminsList == '') ? $admin['username'] : $lastAdminsList.', '.$admin['username'];	
+				$lastAdminsList[] = $admin['username'];	
 			}
 		}
 		$this->_view->lastAdminsList = $lastAdminsList;
 		
-		// Prepare active sessions
-		$this->_view->customStorage = CConfig::get('session.customStorage');
-		if($this->_view->customStorage){
-			$sessions = CDatabase::init()->select('SELECT COUNT(*) as cnt FROM '.CConfig::get('db.prefix').'sessions');
-			$this->_view->activeSessions = isset($sessions[0]['cnt']) ? $sessions[0]['cnt'] : '0';
+		// Fetch admins who changed password
+		$changedPasswordAdmins = Admins::model()->findAll(array('condition'=>"role != 'owner' AND password_changed_at > DATE_SUB(NOW(), INTERVAL 24 HOUR)", 'order'=>'id DESC', 'limit'=>'5'));
+		$changedPasswordAdminsList = array();
+		if(is_array($changedPasswordAdmins)){
+			foreach($changedPasswordAdmins as $admin){
+				$changedPasswordAdminsList[] = $admin['username'];	
+			}
 		}
+		$this->_view->changedPasswordAdminsList = $changedPasswordAdminsList;
 
 		// Prepare notifications 
 		$systemNotifications = array();		
@@ -143,42 +146,46 @@ class BackendController extends CController
 		$this->_view->username = $cRequest->getPost('username');
 		$this->_view->password = $cRequest->getPost('password');
         $this->_view->remember = $cRequest->getPost('remember');
-		$msg = A::t('app', 'Login Message');
-        $msgType = '';
+		$alert = A::t('app', 'Login Message');
+        $alertType = '';
+		$errors = array();
 		
 		//#000 
-		$this->checkBruteforce = CConfig::get('validation.bruteforce.enable');
-		$this->redirectDelay = (int)CConfig::get('validation.bruteforce.redirectDelay', 3);
-		$this->badLogins = (int)CConfig::get('validation.bruteforce.badLogins', 5);
+		$this->_checkBruteforce = CConfig::get('validation.bruteforce.enable');
+		$this->_redirectDelay = (int)CConfig::get('validation.bruteforce.redirectDelay', 3);
+		$this->_badLogins = (int)CConfig::get('validation.bruteforce.badLogins', 5);
 		
 		$admin = new Admins();			
 
 		// Check if access is blocked to this IP address
-		$userBanned = $this->_checkBan('ip', $cRequest->getUserHostAddress());
-
-		// -------------------------------------------------
-		// Perform auto-login "remember me"
-		// --------------------------------------------------
-        if(!$userBanned && !CAuth::isLoggedIn()){
-            parse_str(A::app()->getCookie()->get('auth'));
-            if(!empty($usr) && !empty($hash)){
-                $username = CHash::decrypt($usr, CConfig::get('password.hashKey'));
-                $password = $hash;
-
-				// Check if access is blocked to this username 
-				$userBanned = $this->_checkBan('username', $username);
-
-                if(!$userBanned && $admin->login($username, $password, true, true)){
-                    $this->redirect('backend/index');				
-                }
-            }            
-        }
-		
-		// -------------------------------------------------
-		// Handle form submission
-		// --------------------------------------------------
-		if($cRequest->getPost('act') == 'send'){			
-			if(!$userBanned){
+		$ipBanned = Website::checkBan('ip_address', $cRequest->getUserHostAddress(), $errors);
+        if($ipBanned){
+			// do nothing			
+			$this->_view->actionMessage = CWidget::create('CMessage', array($errors['alertType'], $errors['alert']));
+		}else{			
+			// -------------------------------------------------
+			// Perform auto-login "remember me"
+			// --------------------------------------------------
+			if(!CAuth::isLoggedIn()){
+				parse_str(A::app()->getCookie()->get('auth'));
+				if(!empty($usr) && !empty($hash)){
+					$username = CHash::decrypt($usr, CConfig::get('password.hashKey'));
+					$password = $hash;
+	
+					// Check if access is blocked to this username 
+					$usernameBanned = Website::checkBan('username', $username);
+					if($usernameBanned){
+						// do nothing
+					}else if(!$usernameBanned && $admin->login($username, $password, true, true)){
+						$this->redirect('backend/index');				
+					}
+				}            
+			}
+			
+			// -------------------------------------------------
+			// Handle form submission
+			// --------------------------------------------------
+			if($cRequest->getPost('act') == 'send'){			
 				// Perform login form validation
 				$result = CWidget::create('CFormValidation', array(
 					'fields'=>array(
@@ -189,13 +196,17 @@ class BackendController extends CController
 				));
 				
 				if($result['error']){
-					$msg = $result['errorMessage'];
-					$msgType = 'validation';                
+					$alert = $result['errorMessage'];
+					$alertType = 'validation';                
 					$this->_view->errorField = $result['errorField'];
 				}else{
 					// Check if access is blocked to this username 
-					$userBanned = $this->_checkBan('username', $this->_view->username);
-					if(!$userBanned){
+					$usernameBanned = Website::checkBan('username', $this->_view->username, $errors);
+					if($usernameBanned){
+						// do nothing			
+						$alert = $errors['alert'];
+						$alertType = $errors['alertType'];						
+					}else{
 						if($admin->login($this->_view->username, $this->_view->password, false, $this->_view->remember)){
 							if($this->_view->remember){
 								// Username may be decoded
@@ -206,59 +217,56 @@ class BackendController extends CController
 								A::app()->getCookie()->set('auth', 'usr='.$usernameHash.'&hash='.$passwordHash, (time() + 3600 * 24 * 14));
 							}
 							//#001 clean login attempts counter
-							if($this->checkBruteforce){
+							if($this->_checkBruteforce){
 								A::app()->getSession()->remove('loginAttempts');
 								A::app()->getCookie()->remove('loginAttemptsAuth');
 							}
 							$this->redirect('backend/dashboard');	
 						}else{
-							$msg = $admin->getErrorDescription();
-							$msgType = 'error';
+							$alert = $admin->getErrorDescription();
+							$alertType = 'error';
 							$this->_view->errorField = 'username';
 						}
-					}else{
-						$msg = A::t('app', 'This username is banned.');
-						$msgType = 'error';
 					}
 				}
 	
-				if(!empty($msg)){				
+				if(!empty($alert)){				
 					$this->_view->username = $cRequest->getPost('username');
 					$this->_view->password = $cRequest->getPost('password');
 					$this->_view->remember = $cRequest->getPost('remember', 'string');
-					$this->_view->actionMessage = CWidget::create('CMessage', array($msgType, $msg));
+					$this->_view->actionMessage = CWidget::create('CMessage', array($alertType, $alert));
 					
 					//#002 increment login attempts counter
-					if($this->checkBruteforce && $this->_view->username != '' && $this->_view->password != ''){
+					if($this->_checkBruteforce && $this->_view->username != '' && $this->_view->password != ''){
 						$logAttempts = A::app()->getSession()->get('loginAttempts', 1);
-						if($logAttempts < $this->badLogins){
+						if($logAttempts < $this->_badLogins){
 							A::app()->getSession()->set('loginAttempts', $logAttempts+1);
 						}else{
 							A::app()->getCookie()->set('loginAttemptsAuth', md5(uniqid()));
-							sleep($this->redirectDelay);
+							sleep($this->_redirectDelay);
 							$this->redirect('backend/login');
 						}					
 					}
 				}				
-			}			
-        }else{
-			//#003 validate login attempts coockie
-			if($this->checkBruteforce){
-				$logAttempts = A::app()->getSession()->get('loginAttempts', 1);
-				$logAttemptsAuthCookie = A::app()->getCookie()->get('loginAttemptsAuth');
-				$logAttemptsAuthPost = $cRequest->getPost('loginAttemptsAuth');
-				if($logAttempts >= $this->badLogins){
-					if($logAttemptsAuthCookie != '' && $logAttemptsAuthCookie == $logAttemptsAuthPost){
-						A::app()->getSession()->remove('loginAttempts');
-						A::app()->getCookie()->remove('loginAttemptsAuth');
-						$this->redirect('backend/login');
+			}else{
+				//#003 validate login attempts coockie
+				if($this->_checkBruteforce){
+					$logAttempts = A::app()->getSession()->get('loginAttempts', 1);
+					$logAttemptsAuthCookie = A::app()->getCookie()->get('loginAttemptsAuth');
+					$logAttemptsAuthPost = $cRequest->getPost('loginAttemptsAuth');
+					if($logAttempts >= $this->_badLogins){
+						if($logAttemptsAuthCookie != '' && $logAttemptsAuthCookie == $logAttemptsAuthPost){
+							A::app()->getSession()->remove('loginAttempts');
+							A::app()->getCookie()->remove('loginAttemptsAuth');
+							$this->redirect('backend/login');
+						}
 					}
 				}
+				
+				$this->_view->actionMessage = CWidget::create('CMessage', array('info', $alert));
 			}
-			
-            $this->_view->actionMessage = CWidget::create('CMessage', array('info', $msg));
-        }
-        
+		}
+       
 		$this->_view->render('backend/login');	        
     }
 
@@ -272,44 +280,7 @@ class BackendController extends CController
 		A::app()->getCookie()->remove('auth');
         // Clear cache
         if(CConfig::get('cache.enable')) CFile::emptyDirectory('protected/tmp/cache/');
-        $this->redirect('backend/login');        
+        $this->redirect('backend/login');
     }
-
-	/**
-	 * Checks if admin is banned ban by different parameters
-	 * @param $itemType
-	 * @param $itemValue
-	 * @return bool
-	 */
-	private function _checkBan($itemType = '', $itemValue = '')
-	{
-		$isBanned = BanLists::model()->count(
-			"item_type = '".$itemType."' AND item_value = :item_value AND is_active = 1 AND (expires_at > :expires_at OR expires_at = '0000-00-00 00:00:00')",
-			array(':item_value' => $itemValue, ':expires_at' => LocalTime::currentDateTime())
-		);
-		
-		if($isBanned){
-
-			$msg = '';
-			switch($itemType){
-				case 'ip':
-					$msg = A::t('app', 'This IP address is banned.');
-					break;
-				case 'username':
-					$msg = A::t('app', 'This username is banned.');
-					break;
-				case 'email':
-					$msg = A::t('app', 'This email is banned.');
-					break;
-				default:
-					$msg = A::t('app', 'This username, email or IP address is banned.');
-					break;					
-			}
-			
-			$this->_view->actionMessage = CWidget::create('CMessage', array('error', $msg));
-		}
-		
-		return $isBanned;
-	}
 
 }

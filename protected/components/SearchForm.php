@@ -43,13 +43,21 @@ class SearchForm extends CComponent
 	{
 		$output = '';
 		$cRequest = A::app()->getRequest();
+		$keywords = $cRequest->getQuery('keywords');
 		
-		$keywords = trim($cRequest->getQuery('keywords'));
+		// Don't search on array
+		if(is_array($keywords)){
+			return $output;
+		}
+		
+		$keywords = trim($keywords);
+		$inputClass = isset($params['input-class']) ? $params['input-class'] : 'input-medium search-query';
+		$buttonHtml = isset($params['button-html']) ? $params['button-html'] : CHtml::submitButton(A::t('app', 'Search'), array('class'=>'btn'));
 		
 		$output .= CHtml::openForm('search/find', 'get', array('class'=>'form-search'));
-		$output .= CHtml::textField('keywords', htmlentities($keywords), array('class'=>'input-medium search-query', 'placeholder'=>A::t('app', 'Search'), 'maxlength'=>'1024', 'autocomplete'=>'off'));
-		$output .= CHtml::hiddenField('search_category', '', array());
-		$output .= CHtml::submitButton(A::t('app', 'Search'), array('class'=>'btn'));
+		$output .= CHtml::hiddenField('search_category', '', array());		
+		$output .= CHtml::textField('keywords', htmlspecialchars($keywords), array('class'=>$inputClass, 'placeholder'=>A::te('app', 'Search'), 'maxlength'=>'1024', 'autocomplete'=>'off'));
+		$output .= $buttonHtml;
 		$output .= CHtml::closeForm();
 		
 		// Define events handling for search form

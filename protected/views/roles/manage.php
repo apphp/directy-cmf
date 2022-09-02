@@ -8,10 +8,10 @@
     );    
 ?>
 
-<h1><?php echo A::t('app', 'Roles Management'); ?></h1>
+<h1><?= A::t('app', 'Roles Management'); ?></h1>
 
 <div class="bloc">
-	<div class="title"><?php echo A::t('app', 'Roles'); ?></div>
+	<div class="title"><?= A::t('app', 'Roles'); ?></div>
     <div class="content">
 		<?php 
 			echo $actionMessage; 

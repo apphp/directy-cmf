@@ -9,10 +9,10 @@
     );    
 ?>
 
-<h1><?php echo A::t('app', 'Locations Management'); ?></h1>
+<h1><?= A::t('app', 'Locations Management'); ?></h1>
 
 <div class="bloc">
-    <div class="title"><?php echo A::t('app', 'Edit Country'); ?></div>
+    <div class="title"><?= A::t('app', 'Edit Country'); ?></div>
     <div class="content">
 	<?php
 		echo CWidget::create('CDataForm', array(
@@ -32,11 +32,11 @@
 			),
 			'fields'			=> array(
 				'code'       		=> array('type'=>'label', 'title'=>A::t('app', 'Code'), 'tooltip'=>''),
-				'is_active'  		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'htmlOptions'=>($country->is_default == 1 ? array('disabled'=>'disabled', 'uncheckValue'=>$country->is_active) : array())),
-				'is_default' 		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'htmlOptions'=>($country->is_default == 1 ? array('disabled'=>'disabled', 'uncheckValue'=>$country->is_default) : array())),                    
+				'is_active'  		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'htmlOptions'=>($country->is_default == 1 ? array('disabled'=>'disabled', 'uncheckValue'=>$country->is_active) : array()), 'viewType'=>'custom'),
+				'is_default' 		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'htmlOptions'=>($country->is_default == 1 ? array('disabled'=>'disabled', 'uncheckValue'=>$country->is_default) : array()), 'viewType'=>'custom'),  
 				'sort_order' 		=> array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'maxLength'=>'4', 'type'=>'numeric'), 'htmlOptions'=>array('maxLength'=>'4', 'class'=>'small')),
 			),
-			'translationInfo' 	=> array('relation'=>array('code', 'country_code'), 'languages'=>Languages::model()->findAll('is_active = 1')),
+			'translationInfo' 	=> array('relation'=>array('code', 'country_code'), 'languages'=>Languages::model()->findAll(array('condition'=>'is_active = 1', 'orderBy'=>'sort_order ASC'))),
 			'translationFields' => array(
 				'name' 				=> array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'any'), 'htmlOptions'=>array('title'=>'')),
 			),

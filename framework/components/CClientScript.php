@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC:					PROTECTED:					PRIVATE:		
@@ -97,7 +97,7 @@ class CClientScript extends CComponent
 	/**
 	 * Registers a required javascript file
 	 * @param string $url
-	 * @param integer $position 
+	 * @param integer $position		self::POS_HEAD|self::POS_BODY_BEGIN|self::POS_BODY_END
 	 */
 	public function registerScriptFile($url, $position = self::POS_HEAD)
 	{

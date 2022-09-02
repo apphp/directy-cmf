@@ -39,9 +39,16 @@ class SearchController extends CController
 		$cRequest = A::app()->getRequest();
 		
 		$searchCategory = $cRequest->getQuery('search_category');		
-		$keywords = trim(substr($cRequest->getQuery('keywords'), 0, 1024));		
-		// Filter unexpected characters
-		$keywords = str_replace(array('%', '_'), '', $keywords);
+
+		// Check if keywords is string
+		$keywords = $cRequest->getQuery('keywords');
+		if(is_string($keywords)){
+			$keywords = trim(substr($keywords, 0, 1024));		
+			// Filter unexpected characters
+			$keywords = str_replace(array('%', '_'), '', $keywords);			
+		}else{
+			$keywords = '';
+		}
 
 		$this->_view->keywords = $keywords;
 		$this->_view->searchCategories = Search::model()->getAllCategories();

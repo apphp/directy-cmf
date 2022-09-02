@@ -9,11 +9,11 @@
     );    
 ?>
     
-<h1><?php echo A::t('app', 'Email Settings'); ?></h1>
+<h1><?= A::t('app', 'Email Settings'); ?></h1>
 
 <div class="bloc">
 
-	<?php echo $tabs; ?>
+	<?= $tabs; ?>
 
 	<div class="content">
 	<?php		
@@ -46,7 +46,11 @@
                     'smtpPort'	 =>array('type'=>'textbox', 'value'=>($settings->smtp_port == '' ? CConfig::get('email.smtp.port') : $settings->smtp_port), 'title'=>A::t('app', 'SMTP Port'), 'tooltip'=>A::t('app', 'SMTP Port Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'5', 'class'=>'small'), 'appendCode'=>A::t('app', 'e.g., 465 or 587')),
                     'smtpUsername'	=>array('type'=>'textbox', 'value'=>($settings->smtp_username == '' ? CConfig::get('email.smtp.username') : $settings->smtp_username), 'title'=>A::t('app', 'SMTP Username'), 'tooltip'=>A::t('app', 'SMTP Username Tooltip'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxlength'=>'40'), 'appendCode'=>A::t('app', 'your full email address')),
                     'smtpPassword'	=>array('type'=>'password', 'value'=>($smtpPassword == '' ? CConfig::get('email.smtp.password') : $smtpPassword), 'title'=>A::t('app', 'SMTP Password'), 'tooltip'=>A::t('app', 'SMTP Password Tooltip'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxlength'=>'20', 'placeholder'=>'&#9679;&#9679;&#9679;&#9679;&#9679;'), 'appendCode'=>A::t('app', 'your email password')),
-                )
+                ),
+	         	'separatorEmailLog' => array(
+	                'separatorInfo' => array('legend'=>A::t('app', 'Email Log')),
+					'mailing_log'	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Enable Mail Logging'), 'tooltip'=>'', 'mandatoryStar'=>false, 'value'=>'1', 'checked'=>($settings->mailing_log ? true : false), 'htmlOptions'=>array(), 'viewType'=>'custom'),
+	            ),
 			),
 			'buttons'=> Admins::hasPrivilege('site_settings', 'edit') ? 
 				array(

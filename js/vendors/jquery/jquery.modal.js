@@ -16,7 +16,7 @@
  * 
  */
 function modal(e) {
-	return $.cModal(e)
+	return jQuery.cModal(e)
 }(function(e) {
 	e.cModal = function(t) {
 		var n = {
@@ -206,7 +206,7 @@ function modal(e) {
 						e(o).remove()
 					}
 					if (t.type == "prompt") {
-						$(".modal-prompt-input").focus()
+						jQuery(".modal-prompt-input").focus()
 					}
 					if (t.autoclose) {
 						var h = t.buttons || t.buttons != null ? e(r).text().length * 32 : 900;

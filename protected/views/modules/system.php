@@ -8,13 +8,13 @@
     );    		
 ?>
 
-<h1><?php echo A::t('app', 'System Modules')?></h1>	
+<h1><?= A::t('app', 'System Modules')?></h1>	
 
 <div class="bloc">
-	<?php echo $tabs; ?>
+	<?= $tabs; ?>
 	
     <div class="content">
-		<?php echo $actionMessage; ?>	
+		<?= $actionMessage; ?>	
 
 		<?php
 		$totalcount = count($modulesList) +  count($notInstalledModulesList);
@@ -23,15 +23,15 @@
 	    <table>
 		<thead>
 		<tr>
-			<th class="left" colspan="2" style="width:110px;"><?php echo A::t('app', 'Module Name'); ?></th>
-			<th class="left"><?php echo A::t('app', 'Description'); ?></th>
-			<th class="center" style="width:110px;"><?php echo A::t('app', 'Installed'); ?></th>
-			<th class="center" style="width:110px;"><?php echo A::t('app', 'Updated'); ?></th>
-			<th class="center" style="width:80px;"><?php echo A::t('app', 'Version'); ?></th>
-			<th class="center" style="width:85px;"><?php echo A::t('app', 'Status'); ?></th>
-			<th class="center" style="width:70px;"><?php echo A::t('app', 'Order'); ?></th>
+			<th class="left" colspan="2" style="width:110px;"><?= A::t('app', 'Module Name'); ?></th>
+			<th class="left"><?= A::t('app', 'Description'); ?></th>
+			<th class="center" style="width:110px;"><?= A::t('app', 'Installed'); ?></th>
+			<th class="center" style="width:110px;"><?= A::t('app', 'Updated'); ?></th>
+			<th class="center" style="width:75px;"><?= A::t('app', 'Version'); ?></th>
+			<th class="center" style="width:80px;"><?= A::t('app', 'Status'); ?></th>
+			<th class="center" style="width:65px;"><?= A::t('app', 'Order'); ?></th>
 			<?php if(Admins::hasPrivilege('modules', 'edit_management')){ ?>
-			<th class="actions"><?php echo A::t('app', 'Actions'); ?></th>
+			<th class="actions"><?= A::t('app', 'Actions'); ?></th>
 			<?php } ?>
 		</tr>
 		</thead>
@@ -54,10 +54,14 @@
 					echo '<td class="center">'.$module['sort_order'].'</td>';
 					
 					if(Admins::hasPrivilege('modules', 'edit_management')){
+						$removable = (CConfig::exists('modules.'.$module['code'].'.removable') && CConfig::get('modules.'.$module['code'].'.removable')) ? true : false;
                         $moduleVersion = $allModulesList[$module['code']]['version'];
 						echo '<td class="actions">';
                         if(!empty($moduleVersion) && $module['version'] < $moduleVersion) echo '<a href="modules/update/code/'.$module['code'].'" class="tooltip-link" title="'.A::t('app', 'Update to version {version}', array('{version}'=>$moduleVersion)).'"><img src="templates/backend/images/update.png" alt="update"></a>';
                         echo '<a class="tooltip-link" title="'.A::t('app', 'Edit this record').'" href="modules/edit/id/'.$module['id'].'"><img src="templates/backend/images/edit.png" alt="edit"></a>';
+						if($removable){    
+							echo '<a href="modules/uninstall/id/'.$module['id'].'" class="tooltip-link" data-module="'.$module['name'].'" title="'.A::t('app', 'Uninstall this module').'" onclick="return onUninstallClick(this);"><img src="templates/backend/images/uninstall.png" alt="uninstall"></a>';
+						}
                         echo '</td>';
 					}
 					echo '</tr>';
@@ -72,12 +76,22 @@
 						<td class="left">'.$module['description'].'</td>
 						<td class="center">'.A::t('app', 'not yet').'</td>
 						<td class="center">'.A::t('app', 'never').'</td>
-						<td class="center">'.$module['version'].'</td>
-						<td class="center"><img src="templates/backend/images/disabled.png" title="'.A::t('app', 'Disabled').'" class="tooltip-link" alt="tooltip" height="16px" /></td>
-						<td class="center"></td>';
+						<td class="center">'.$module['version'].'</td>';
 					
 					if(Admins::hasPrivilege('modules', 'edit_management')){
-						echo '<td class="actions"><a href="modules/install/code/'.$code.'">'.A::t('app', 'Install').'</a></td>';
+						if(version_compare($frameworkVersion, $module['framework']) >= 0){
+							echo '<td class="center"><img src="templates/backend/images/disabled.png" title="'.A::t('app', 'Disabled').'" class="tooltip-link" alt="tooltip" height="16px" /></td>';
+							echo '<td class="center"></td>';
+							echo '<td class="actions">';
+							if(!empty($module['framework']) && $module['framework'] > A::app()->getVersion()){
+								echo '<span class="tooltip-link" title="'.A::te('core', 'Framework v'.A::app()->getVersion().' or higher required').'">'.A::te('app', 'Disabled').' [?]</span>';
+							}else{
+								echo '<a href="modules/install/code/'.$code.'" title="'.A::te('app', 'Click to install this module').'">'.A::t('app', 'Install').'</a>';
+							}
+							echo '</td>';
+						}else{
+							echo '<td class="right" colspan="3">'.A::t('app', 'Framework min. v{version} required!', array('{version}'=>$module['framework'])).'</td>';
+						}						
 					}
 					echo '</tr>';
 				}
@@ -92,3 +106,12 @@
 		?>	
 	</div>
 </div>
+<?php
+A::app()->getClientScript()->registerScript(
+	'module_uninstall',
+	'function onUninstallClick(el){
+		return confirm("'.A::t('app', 'Module').': "+$(el).data("module")+"\n'.A::t('app', 'Module Uninstall Alert').'");
+	};',
+	0
+);
+?>

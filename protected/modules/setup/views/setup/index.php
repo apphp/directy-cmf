@@ -4,10 +4,10 @@
     $this->_activeMenu = $this->_controller.'/'.$this->_action;
 ?>
 
-<h1><?php echo A::t('setup', 'General'); ?></h1>
-<p><?php echo A::t('setup', 'Select your preferred language and click Next to get the Setup Wizard started.'); ?></p>
+<h1><?= A::t('setup', 'General'); ?></h1>
+<p><?= A::t('setup', 'Select your preferred language and click Next to get the Setup Wizard started.'); ?></p>
 
-<?php echo $actionMessage; ?>
+<?= $actionMessage; ?>
 <br>
 <?php
     echo CWidget::create('CFormView', array(

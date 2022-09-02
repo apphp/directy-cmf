@@ -20,7 +20,7 @@
 	
 ?>
 
-<h1><?php echo A::t('app', 'Test Checkout'); ?></h1>
+<h1><?= A::t('app', 'Test Checkout'); ?></h1>
 
 <div class="bloc">    
 	<br>
@@ -29,10 +29,10 @@
 		
 		<fieldset>
 			<legend>Product Details:</legend>
-			<label>Item Name: </label> 		<?php echo $product['item_name']; ?><br>
-			<label>Item Number: </label> 	<?php echo $product['item_number']; ?><br>
-			<label>Amount: </label> 		<?php echo $product['amount']; ?><br>
-			<label>Currency: </label> 		<?php echo $product['currency_code']; ?><br>
+			<label>Item Name: </label> 		<?= $product['item_name']; ?><br>
+			<label>Item Number: </label> 	<?= $product['item_number']; ?><br>
+			<label>Amount: </label> 		<?= $product['amount']; ?><br>
+			<label>Currency: </label> 		<?= $product['currency_code']; ?><br>
 		</fieldset>
 		<br>
 
@@ -51,7 +51,7 @@
 			</fieldset>
 			<br>
 			
-			<input type="submit" value="<?php echo A::t('app', 'Go To Payment'); ?>" />
+			<input type="submit" value="<?= A::t('app', 'Go To Payment'); ?>" />
 		</form>
     </div>
 </div>

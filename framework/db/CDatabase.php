@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * IMPORTANT:
@@ -20,9 +20,9 @@
  * getError (static)									_fatalErrorPageContent (static)
  * getErrorMessage (static)								_interpolateQuery 
  * cacheOn                                              _prepareParams
- * cacheOff                                             _enableCache
- * select                                               _formattedMicrotime
- * insert                                               
+ * cacheOff                                             _setCaching
+ * select                                               _isCacheAllowed
+ * insert                                               _formattedMicrotime
  * update                                               
  * delete
  * lastId
@@ -51,6 +51,8 @@ class CDatabase extends PDO
     private $_dbName;
     /** @var bool */ 
     private $_cache;
+    /** @var string */ 
+    private $_cacheType;
     /** @var int */ 
     private $_cacheLifetime;
     /** @var string */ 
@@ -119,9 +121,10 @@ class CDatabase extends PDO
 				$this->_dbPrefix = CConfig::get('db.prefix');
 				
 				$this->_cache = (CConfig::get('cache.enable')) ? true : false;
+				$this->_cacheType = in_array(CConfig::get('cache.type'), array('auto', 'manual')) ? CConfig::get('cache.type') : 'auto';
 				$this->_cacheLifetime = CConfig::get('cache.lifetime', 0); /* in minutes */
 				$this->_cacheDir = CConfig::get('cache.path'); /* protected/tmp/cache/ */
-				if($this->_cache) CDebug::addMessage('general', 'cache', 'enabled');
+				if($this->_cache) CDebug::addMessage('general', 'cache', 'enabled ('.$this->_cacheType.') ');
 			}
         }        
     }    
@@ -141,7 +144,7 @@ class CDatabase extends PDO
 	 */
     public function cacheOn()
     {
-        $this->_enableCache(true);
+        $this->_setCaching(true);
     }
     
 	/**
@@ -149,7 +152,7 @@ class CDatabase extends PDO
 	 */
     public function cacheOff()
     {
-        $this->_enableCache(false);
+        $this->_setCaching(false);
     }
     
     /**
@@ -161,16 +164,16 @@ class CDatabase extends PDO
      * @return mixed - an array containing all of the result set rows
      * Ex.: Array([0] => Array([id] => 11, [name] => John), ...)
      */
-    public function select($sql, $params = array(), $fetchMode = PDO::FETCH_ASSOC, $cacheId = '')
+    public function select($sql, $params = array(), $fetchMode = PDO::FETCH_ASSOC, $cacheId = '', $cacheResult = false)
     {
 		$startTime = $this->_formattedMicrotime();
 		
         $sth = $this->prepare($sql);
-        $cacheContent = '';
+        $cacheContent = null;
         $error = false;
 
 		try{
-            if($this->_cache){
+            if($this->_isCacheAllowed($cacheResult)){
                 $param = !empty($cacheId) ? $cacheId : (is_array($params) ? implode('|',$params) : '');
                 $cacheContent = CCache::getContent(
                     $this->_cacheDir.md5($sql.$param).'.cch',
@@ -181,6 +184,7 @@ class CDatabase extends PDO
             if(!$cacheContent){                
                 if(is_array($params)){
                     foreach($params as $key => $value){
+						if(is_array($value)) continue;
                         list($key, $param) = $this->_prepareParams($key);
                         $sth->bindValue($key, $value, $param);
                     }
@@ -188,7 +192,7 @@ class CDatabase extends PDO
                 $sth->execute();
                 $result = $sth->fetchAll($fetchMode);
                 
-                if($this->_cache) CCache::setContent($result, $this->_cacheDir);
+                if($this->_isCacheAllowed($cacheResult)) CCache::setContent($result, $this->_cacheDir);
             }else{
                 $result = $cacheContent;
             }            
@@ -572,7 +576,7 @@ class CDatabase extends PDO
         }
 
 		try{
-            if($this->_cache){
+            if($this->_isCacheAllowed(true)){
                 $cacheContent = CCache::getContent(
                     $this->_cacheDir.md5($sql).'.cch',
                     $this->_cacheLifetime
@@ -583,7 +587,7 @@ class CDatabase extends PDO
                 $sth = $this->query($sql);
                 $result = $sth->fetchAll();
                 
-                if($this->_cache) CCache::setContent($result, $this->_cacheDir);
+                if($this->_isCacheAllowed(true)) CCache::setContent($result, $this->_cacheDir);
             }else{
                 $result = $cacheContent;
             }            
@@ -611,9 +615,17 @@ class CDatabase extends PDO
      */
 	public function getVersion()
 	{
-		$version = $this->getAttribute(PDO::ATTR_SERVER_VERSION);
-		// Clean version number from alphabetic characters
-		return preg_replace('/[^0-9,.]/', '', $version);
+		$version = A::t('core', 'Unknown');
+		if(self::$_instance != null && !empty($this->_dbName)){
+			$version = @self::getAttribute(PDO::ATTR_SERVER_VERSION);
+			if(empty($version)){
+				$version = $this->query('select version()')->fetchColumn();
+			}
+			// Clean version number from alphabetic characters
+			$version = preg_replace('/[^0-9,.]/', '', $version);
+		}
+		
+		return $version;
 	}
 	
 	/**	
@@ -722,7 +734,8 @@ class CDatabase extends PDO
      */
     private function _interpolateQuery($sql, $params = array())
     {
-        $keys = array();        
+        $keys = array();
+		$count = 0;
         if(!is_array($params)) return $sql;
     
         // Build regular expression for each parameter
@@ -789,11 +802,20 @@ class CDatabase extends PDO
 	 * Sets cache state 
 	 * @param bool $enabled
 	 */
-    private function _enableCache($enabled)
+    private function _setCaching($enabled)
     {
-        $this->_cache = ($enabled) ? true : false;
-        if(!$this->_cache) CDebug::addMessage('general', 'cache', 'disabled');
+        $this->_cache = $this->_isCacheAllowed($enabled);
+        ///if(!$this->_cache) CDebug::addMessage('general', 'cache', 'disabled');
     }
+	
+	/**
+	 * Check cache state 
+	 * @param bool
+	 */
+    private function _isCacheAllowed($cacheResult = false)
+    {
+		return ($this->_cache && ($this->_cacheType == 'auto' || ($this->_cacheType == 'manual' && $cacheResult == true)));
+    }	
 	
 	/**
 	 * Get formatted microtime

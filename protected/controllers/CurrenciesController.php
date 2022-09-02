@@ -63,7 +63,17 @@ class CurrenciesController extends CController
 			A::app()->setCurrency($currency_code, $params);
         }
         
-		$this->redirect(Website::getDefaultPage());
+		$referrerPage = Website::getRefererPage();
+		$defaultPage = Website::getDefaultPage();
+		$currentPage = Website::getCurrentPage();
+		$baseUrl = A::app()->getRequest()->getBaseUrl();
+		
+		// If referrer page exists and it comes from current domain redirect to referrer URL, otherwise to default page		
+		if(!empty($referrerPage) && preg_match('/'.preg_quote($baseUrl, '/').'/', $referrerPage)){
+			$this->redirect($referrerPage, true);
+		}else{
+			$this->redirect($defaultPage);
+		}
     }
     
     /**
@@ -72,7 +82,7 @@ class CurrenciesController extends CController
 	public function manageAction()
 	{
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 		
 		// Block access if admin has no active privilege to manage currencies
         if(!Admins::hasPrivilege('currencies', array('view', 'edit'))){
@@ -97,7 +107,7 @@ class CurrenciesController extends CController
 	public function addAction()
 	{
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 		
 		// Block access if admin has no active privilege to add currencies
         Website::prepareBackendAction('edit', 'currencies', 'currencies/manage');
@@ -114,7 +124,7 @@ class CurrenciesController extends CController
 	public function editAction($id = 0)
 	{
 		// Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 		
 		// Block access if admin has no active privilege to edit currencies
         Website::prepareBackendAction('edit', 'currencies', 'currencies/manage');

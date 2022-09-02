@@ -3,19 +3,20 @@
 
     $this->_activeMenu = $this->_controller.'/'.$this->_action;
     $baseUrl = A::app()->getRequest()->getBaseUrl();
+	$backendUrl = $baseUrl.'backend/login';
 ?>
 
-<h1><?php echo A::t('setup', 'Completed'); ?></h1>
+<h1><?= A::t('setup', 'Completed'); ?></h1>
 
-<?php echo $actionMessage; ?>
+<?= $actionMessage; ?>
     
 <p>
-    <?php echo A::t('setup', 'Your website is available at'); ?> <a href="<?php echo $baseUrl; ?>"><?php echo $baseUrl; ?></a>
+    <?= A::t('setup', 'Your website is available at'); ?> <a href="<?= $baseUrl; ?>"><?= $baseUrl; ?></a>
     <br><br>
-    <?php echo A::t('setup', 'You may login to Admin Panel'); ?>:<br>
-    <?php echo A::t('setup', 'Username is'); ?>: <i><?php echo $username; ?></i>
+    <?= A::t('setup', 'You may login to Admin Panel'); ?>: <a href="<?= $backendUrl; ?>"><?= $backendUrl; ?></a><br>
+    <?= A::t('setup', 'Username is'); ?>: <i><?= $username; ?></i>
     <br>
-    <?php echo A::t('setup', 'Password is'); ?>: <i><?php echo $password; ?></i>
+    <?= A::t('setup', 'Password is'); ?>: <i><?= $password; ?></i>
     <br><br>
 </p>
 

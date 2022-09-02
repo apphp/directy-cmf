@@ -75,7 +75,12 @@ class Admins extends CActiveRecord
 	{
     	if($id > 0){
     		// Update admin
-			if($this->birth_date == '') $this->birth_date = '0000-00-00';
+			if($this->birth_date == ''){
+				$this->birth_date = '0000-00-00';
+			}
+			if($this->password !== '' && A::app()->getRequest()->getPost('password') !== ''){
+				$this->password_changed_at = LocalTime::currentDateTime();
+			}
         	$this->updated_at = LocalTime::currentDateTime();
         }else{
         	// Insert new admin
@@ -173,7 +178,7 @@ class Admins extends CActiveRecord
 						$session->set('loggedAvatar', ($admin->avatar ? $admin->avatar : 'no_image.png'));
 						$session->set('loggedEmail', $admin->email);
 						$session->set('loggedLastVisit', $admin->last_visited_at);
-						$session->set('loggedLanguage', ($admin->language_code ? $admin->language_code : Languages::getDefaultLanguage()));
+						$session->set('loggedLanguage', ($admin->language_code ? $admin->language_code : Languages::model()->getDefaultLanguage()));
 						$session->set('loggedRole', $admin->role);
 						
 						// We don't want to save this data in session - just in this object to minimum use

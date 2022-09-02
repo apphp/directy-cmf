@@ -15,13 +15,13 @@
     $this->_breadCrumbs = $breadCrumbs;
 ?>
 
-<h1><?php echo A::t('app', 'Backend Menu Management'); ?></h1>
+<h1><?= A::t('app', 'Backend Menu Management'); ?></h1>
 
 <div class="bloc">
-	<div class="title"><?php echo A::t('app', 'Edit Menu'); ?></div>
+	<div class="title"><?= A::t('app', 'Edit Menu'); ?></div>
     <div class="content">
         
-    <?php echo $actionMessage; ?>
+    <?= $actionMessage; ?>
     
     <?php
         $allowImageOptions = (!$parentId) ? false : true;
@@ -43,8 +43,8 @@
 			'fields'				=> array(
 				'url'		  	=> array('type'=>'label', 'title'=>A::t('app', 'URL')),
 				'parent_name' 	=> array('type'=>'label', 'title'=>A::t('app', 'Parent'), 'definedValues'=>array(''=>$parentName)),
-				'is_system'   	=> array('type'=>'checkbox', 'title'=>A::t('app', 'System'), 'htmlOptions'=>array('disabled'=>'disabled')),
-				'is_visible'  	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Visible'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>array()),                    
+				'is_system'   	=> array('type'=>'label', 'title'=>A::t('app', 'System'), 'definedValues'=>array('0'=>A::t('shoppingcart', 'No'), '1'=>A::t('shoppingcart', 'Yes')), 'htmlOptions'=>array()),
+				'is_visible'  	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Visible'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>array(), 'viewType'=>'custom'),
 				'sort_order'  	=> array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'4', 'class'=>'small')),
 
                 'icon'				=> array(
@@ -56,7 +56,7 @@
                     'fileOptions'   => array('showAlways'=>false, 'class'=>'file', 'size'=>'25', 'filePath'=>'templates/backend/images/icons/')
                 ),
 			),
-			'translationInfo' 		=> array('relation'=>array('id', 'menu_id'), 'languages'=>Languages::model()->findAll('is_active = 1')),
+			'translationInfo' 		=> array('relation'=>array('id', 'menu_id'), 'languages'=>Languages::model()->findAll(array('condition'=>'is_active = 1', 'orderBy'=>'sort_order ASC'))),
 			'translationFields' => array(
 				'name' 	=> array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>125), 'htmlOptions'=>array('title'=>'')),
 			),

@@ -53,7 +53,7 @@ class OnlineOrder extends PaymentGateway
 	{		
 		$output 			= '';
 		
-		$mode 				= isset($params['mode']) ? $params['mode'] : 'real';
+		$mode 				= isset($params['mode']) ? $params['mode'] : 1;
 		
 		$itemName 			= isset($params['item_name']) ? $params['item_name'] : '';
 		$itemNumber 		= isset($params['item_number']) ? $params['item_number'] : '001';
@@ -78,11 +78,11 @@ class OnlineOrder extends PaymentGateway
 		$returnUrl			= isset($params['return']) ? $params['return'] : '';
 		$cancelReturnUrl	= isset($params['cancel_return']) ? $params['cancel_return'] : '';				
 		$backUrl			= isset($params['back']) ? $params['back'] : '';
-		$formAction 		= $mode == 'real' ? $notifyUrl : $notifyUrl;
+		$formAction 		= $mode == 1 ? $notifyUrl : $notifyUrl;
 
 		$output .= CHtml::openForm($formAction, 'post', array('name'=>'payform')).self::NL;
 		
-		$output .= '<input type="submit" value="'.A::te('Pay Now').'" name="btnSubmit" />'.self::NL;
+		$output .= '<input type="submit" value="'.A::te('app', 'Pay Now').'" name="btnSubmit" />'.self::NL;
 
 		if((!empty($backUrl))){
 			$output .= '&nbsp; - '.A::t('app', 'or').' - &nbsp;'.self::NL;

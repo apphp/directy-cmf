@@ -124,19 +124,25 @@ class SetupController extends CController
         $this->_view->isCriticalError = false;
         
         $phpInfo = $this->_getPhpInfo();
+        $phpCoreIndex = version_compare(phpversion(), '5.3.0', '<') ? 'PHP Core' : 'Core';
+        // For PHP v5.6 or later
+        if(!isset($phpInfo[$phpCoreIndex]) && version_compare(phpversion(), '5.6.0', '>=') ){
+            $phpCoreIndex = 'HTTP Headers Information';
+        }
 		
         // check all required settings        
         $pdoExtension = $this->_checkPdoExtension($phpInfo);
         $modeRewrite = $this->_checkModRewrite();
+		$shortOpenTag = isset($phpInfo[$phpCoreIndex]['short_open_tag'][0]) ? strtolower($phpInfo[$phpCoreIndex]['short_open_tag'][0]) : false;
         
         if(version_compare(phpversion(), '5.2.3', '<')){	
             $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'This program requires at least <b>PHP version 5.2.3</b> installed. You cannot proceed current installation.'));
             $this->_view->isCriticalError = true;
         }else if(!is_writable(APPHP_PATH.'/protected/config/')){
-            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/protected/config/</b> is not writable! You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));
+            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/protected/config/</b> is not writable! <br>You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));
             $this->_view->isCriticalError = true;
         }else if(!is_writable(APPHP_PATH.'/images/modules/')){
-            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/images/modules/</b> is not writable! You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));
+            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/images/modules/</b> is not writable! <br>You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));
             $this->_view->isCriticalError = true;
         }else if(!$modeRewrite){
             $this->_view->notifyMessage = CWidget::create('CMessage', array('warning', 'This program requires "<b>mod_rewrite</b>" module to use friendly URLs, but it is not enabled or its status unknown. You may proceed current installation on yuor own risk.'));
@@ -144,6 +150,9 @@ class SetupController extends CController
         }else if($this->_pdoExtensionRequired && !$pdoExtension){
             $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'This program requires "<b>PDO</b>" extension enabled. You cannot proceed current installation.'));
             $this->_view->isCriticalError = true;
+        }else if($shortOpenTag != 'on' && version_compare(phpversion(), '5.4.0', '<')){
+			$this->_view->notifyMessage = CWidget::create('CMessage', array('warning', 'This program requires "<b>Short Open Tag</b>" enabled. You cannot proceed current installation.'));
+			$this->_view->isCriticalError = true;
         }
 
         $this->_view->phpVersion = function_exists('phpversion') ? '<span class="found">'.phpversion().'</span>' : '<span class="unknown">Unknown</span>';
@@ -157,10 +166,9 @@ class SetupController extends CController
         $this->_view->pdoExtension = $pdoExtension ? '<span class="found">enabled</span>' : '<span class="disabled">disabled</span>';
         $this->_view->modeRewrite = $modeRewrite ? '<span class="found">enabled</span>' : '<span class="disabled">disabled</span>';
         
-        $phpCoreIndex = ((version_compare(phpversion(), '5.3.0', '<'))) ? 'PHP Core' : 'Core';
-        $this->_view->aspTags   = isset($phpInfo[$phpCoreIndex]) ? '<span class="found">'.$phpInfo[$phpCoreIndex]['asp_tags'][0].'</span>' : '<span class="unknown">Unknown</span>';
+		$this->_view->aspTags = isset($phpInfo[$phpCoreIndex]['asp_tags']) ? '<span class="found">'.$phpInfo[$phpCoreIndex]['asp_tags'][0].'</span>' : '<span class="unknown">Unknown</span>';
         $this->_view->safeMode = isset($phpInfo[$phpCoreIndex]['safe_mode']) ? '<span class="found">'.$phpInfo[$phpCoreIndex]['safe_mode'][0].'</span>' : '<span class="unknown">Unknown</span>';
-        $this->_view->shortOpenTag = isset($phpInfo[$phpCoreIndex]) ? '<span class="found">'.$phpInfo[$phpCoreIndex]['short_open_tag'][0].'</span>' : '<span class="unknown">Unknown</span>';
+        $this->_view->shortOpenTag = !empty($shortOpenTag) ? '<span class="found">'.$phpInfo[$phpCoreIndex]['short_open_tag'][0].'</span>' : '<span class="unknown">Unknown</span>';
 
         $this->_view->sessionSupport = isset($phpInfo['session']['Session Support']) ? $phpInfo['session']['Session Support'] : 'Unknown';
         $this->_view->sessionSupport = ($this->_view->sessionSupport == "enabled") ? '<span class="found">'.$this->_view->sessionSupport.'</span>' : '<span class="disabled">'.$this->_view->sessionSupport.'</span>';
@@ -349,8 +357,8 @@ class SetupController extends CController
             }else{
                 $encryption = isset($this->_configMain['password']['encryption']) ? $this->_configMain['password']['encryption'] : false;
                 $encryptAlgorithm = isset($this->_configMain['password']['encryptAlgorithm']) ? $this->_configMain['password']['encryptAlgorithm'] : '';
-                $encryptionSalt = isset($this->_configMain['password']['encryptionSalt']) ? (bool)$this->_configMain['password']['encryptionSalt'] : false;
-				$salt = ($encryption && $encryptionSalt) ? CHash::salt() : '';
+                $encryptSalt = isset($this->_configMain['password']['encryptSalt']) ? (bool)$this->_configMain['password']['encryptSalt'] : false;
+				$salt = ($encryption && $encryptSalt) ? CHash::salt() : '';
                 $components = isset($this->_configMain['components']) ? $this->_configMain['components'] : '';
         
                 // Replace placeholders

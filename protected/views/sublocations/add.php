@@ -9,10 +9,10 @@
     );    
 ?>
 
-<h1><?php echo A::t('app', 'Sub-Locations Management'); ?></h1>
+<h1><?= A::t('app', 'Sub-Locations Management'); ?></h1>
 
 <div class="bloc">
-    <div class="title"><?php echo A::t('app', 'Add New State'); ?> <a class="back-link" href="subLocations/manage/country/<?php echo $selectedCountry->id; ?>"><?php echo A::t('app', 'Back'); ?></a></div>
+    <div class="title"><?= A::t('app', 'Add New State'); ?> <a class="back-link" href="subLocations/manage/country/<?= $selectedCountry->id; ?>"><?= A::t('app', 'Back'); ?></a></div>
     <div class="content">        
 	<?php
 		echo CWidget::create('CDataForm', array(
@@ -30,10 +30,10 @@
 			'fields'			=> array(
 				'country_code'		=> array('type'=>'data', 'default'=>$selectedCountry->code),
 				'code'        		=> array('type'=>'textbox', 'title'=>A::t('app', 'Code'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'alpha', 'maxLength'=>'2', 'unique'=>false), 'htmlOptions'=>array('maxLength'=>'2', 'class'=>'small')),
-				'is_active'   		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>true, 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>array()),
+				'is_active'   		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>true, 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>array(), 'viewType'=>'custom'),
 				'sort_order' 		=> array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'default'=>0, 'tooltip'=>'', 'validation'=>array('required'=>true, 'maxLength'=>'2', 'type'=>'numeric'), 'htmlOptions'=>array('maxLength'=>'2', 'class'=>'small')),
 			),
-			'translationInfo' 	=> array('relation'=>array('id', 'state_id'), 'languages'=>Languages::model()->findAll('is_active = 1')),
+			'translationInfo' 	=> array('relation'=>array('id', 'state_id'), 'languages'=>Languages::model()->findAll(array('condition'=>'is_active = 1', 'orderBy'=>'sort_order ASC'))),
 			'translationFields' => array(
 				'name' 				=> array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>70), 'htmlOptions'=>array('title'=>'')),
 			),

@@ -26,7 +26,7 @@ class FrontendMenusController extends CController
         parent::__construct();
         
         // Block access to this controller to non-logged users
-        CAuth::handleLogin('backend/login');
+        CAuth::handleLogin(Website::getDefaultPage());
         
         // Block access if admin has no active privilege to access frontend menu
         if(!Admins::hasPrivilege('frontend_menu', array('view', 'edit'))){
@@ -181,7 +181,7 @@ class FrontendMenusController extends CController
 		$this->_view->parentName = A::t('app', 'Top Level Menu');
 		$this->_view->moduleCode = '';
 		$this->_view->menuType = '';
-		$this->_view->isAactive = '';
+		$this->_view->isActive = '';
 		
 		$menu = FrontendMenus::model()->findByPk($id);
         if(!$menu){
@@ -190,7 +190,7 @@ class FrontendMenusController extends CController
 		
 		$this->_view->moduleCode = $menu->module_code;
 		$this->_view->menuType = $menu->menu_type;
-		$this->_view->isAactive = $menu->is_active;
+		$this->_view->isActive = $menu->is_active;
 		$this->_view->menuName = $menu->menu_name;
 
 		$parentMenu = FrontendMenus::model()->findbyPk($menu->parent_id);

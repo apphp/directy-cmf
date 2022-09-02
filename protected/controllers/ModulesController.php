@@ -29,7 +29,7 @@ class ModulesController extends CController
         parent::__construct();
 
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 		
 		// Block access if admin has no active privilege to view modules and modules management pages
 		if(!Admins::hasPrivilege('modules', 'view') && !Admins::hasPrivilege('modules', 'view_management')){
@@ -52,6 +52,7 @@ class ModulesController extends CController
         $this->_view->actionMessage = '';
         $this->_view->errorField = '';
 		$this->_view->notInstalledModulesList = array();
+		$this->_view->frameworkVersion = A::app()->version();
 	}
         
 	/**
@@ -424,11 +425,11 @@ class ModulesController extends CController
 		}
 		$this->_view->actionMessage .= CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
 			
-        $this->_view->modulesList = $this->_getApplicationModules();
-		$this->_view->notInstalledModulesList = $this->_getNotInstalledModules();
+		$this->_view->modulesList = ($moduleType == 'application') ? $this->_getApplicationModules() : $this->_getSystemModules();
+		$this->_view->notInstalledModulesList = $this->_getNotInstalledModules(($moduleType == 'application' ? 'application' : 'system'));
         $this->_view->allModulesList = $this->_getModules('application');        
-		$this->_view->tabs = $this->_prepareTab(($moduleType == 'application') ? 'application' : 'system');
-		$this->_view->render('modules/'.(($moduleType == 'application') ? 'application' : 'system'));
+		$this->_view->tabs = $this->_prepareTab($moduleType == 'application' ? 'application' : 'system');
+		$this->_view->render('modules/'.($moduleType == 'application' ? 'application' : 'system'));
 	}
 
 	/**
@@ -449,6 +450,11 @@ class ModulesController extends CController
        	if(!$module){
 			$this->redirect('modules/index');
        	}
+		
+		// Get module type
+		$moduleType = $module->is_system ? 'system' : 'application';
+		$removable = (CConfig::exists('modules.'.$module->code.'.removable') && CConfig::get('modules.'.$module->code.'.removable')) ? true : false;
+		
         if(APPHP_MODE == 'demo'){
 			$alert = A::t('core', 'This operation is blocked in Demo Mode!');
 			$alertType = 'warning';
@@ -456,8 +462,8 @@ class ModulesController extends CController
             // Check if the module is already installed
        		$alert = A::t('app', 'Module Not Installed Message');
        		$alertType = 'warning';
-		}else if($module->is_system){
-            // Check if the module is system module
+		}else if(!$removable){
+            // Check if the module is removable
        		$alert = A::t('app', 'Operation Blocked Error Message');
        		$alertType = 'error';       	
 		}else{
@@ -526,18 +532,19 @@ class ModulesController extends CController
 				}
 			}	
 		}
+		
 		if(empty($alert)){
 			// Success
 			$alert = A::t('app', 'Module Uninstallation Success Message', array('{module}'=>$module->name));
        		$alertType = 'success';
-		}
+		}		
 		$this->_view->actionMessage = CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
 					
-        $this->_view->modulesList = $this->_getApplicationModules();
-		$this->_view->notInstalledModulesList = $this->_getNotInstalledModules();
-        $this->_view->allModulesList = $this->_getModules('application');        
-    	$this->_view->tabs = $this->_prepareTab('application');
-		$this->_view->render('modules/application');
+		$this->_view->modulesList = ($moduleType == 'application') ? $this->_getApplicationModules() : $this->_getSystemModules();
+		$this->_view->notInstalledModulesList = $this->_getNotInstalledModules(($moduleType == 'application' ? 'application' : 'system'));
+        $this->_view->allModulesList = $this->_getModules(($moduleType == 'application' ? 'application' : 'system'));
+    	$this->_view->tabs = $this->_prepareTab(($moduleType == 'application' ? 'application' : 'system'));
+		$this->_view->render('modules/'.($moduleType == 'application' ? 'application' : 'system'));
 	}
 		
 	/**
@@ -644,9 +651,10 @@ class ModulesController extends CController
                         // Check the module type
                         if($moduleType == '' || ($moduleType != '' && $xml->moduleType == $moduleType)){
                             $modulesList[$moduleCode] = array(
-                                'name' => isset($xml->name) ? $xml->name : A::t('app', 'Unknown'),
-                                'description' => isset($xml->description) ? $xml->description : A::t('app', 'Unknown'),
-                                'version' => isset($xml->version) ? $xml->version : A::t('app', 'Unknown'),
+                                'name' 			=> isset($xml->name) ? $xml->name : A::t('app', 'Unknown'),
+                                'description' 	=> isset($xml->description) ? $xml->description : A::t('app', 'Unknown'),
+                                'version' 		=> isset($xml->version) ? $xml->version : A::t('app', 'Unknown'),
+								'framework' 	=> isset($xml->requirements->framework) ? $xml->requirements->framework : '',
                             );
                         }
                     }
@@ -791,7 +799,7 @@ class ModulesController extends CController
                             // Subdirectory exists
                             $destSubPath = $file->getName().'/';
                             if(basename($destPath) != trim($destSubPath, '/')) continue;
-                            $return['msg_success'] .= $file->filename;                                
+                            $return['msg_success'] .= $file->filename;
                             $this->_copyFile(APPHP_PATH.$src.$destSubPath, $dest, $file->filename, $return);
                             $found = true;
                         // By files in directory    

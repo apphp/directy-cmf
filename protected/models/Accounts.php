@@ -10,6 +10,7 @@
  * login
  * getPasswordSalt
  * getErrorDescription
+ * registrationSocial
  *
  */
 
@@ -129,8 +130,8 @@ class Accounts extends CActiveRecord
 					$session->set('loggedName', $account->username);
 					$session->set('loggedEmail', $account->email);
 					$session->set('loggedLastVisit', $account->last_visited_at);
-					if($account->iscolumnExists('avatar')) $session->set('loggedAvatar', $account->avatar);
-					$session->set('loggedLanguage', ($account->language_code ? $account->language_code : Languages::getDefaultLanguage()));
+					if($account->isColumnExists('avatar')) $session->set('loggedAvatar', $account->avatar);
+					$session->set('loggedLanguage', ($account->language_code ? $account->language_code : Languages::model()->getDefaultLanguage()));
 					$session->set('loggedRole', $account->role);
 							  
 					// We don't want to save this data in session - just in this object to minimum use
@@ -186,6 +187,16 @@ class Accounts extends CActiveRecord
 	{
 		return $this->_errorDescription;
 	}
+
+    /*
+     * Social Registration
+     * @param array $params
+     * @return void
+     */
+    public function registrationSocial($params = array())
+    {
+        
+    }
 
     /**
      * Returns the static model of the specified AR class

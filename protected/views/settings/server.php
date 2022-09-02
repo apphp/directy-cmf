@@ -9,11 +9,11 @@
     );   
 ?>
     
-<h1><?php echo A::t('app', 'Server Info'); ?></h1>
+<h1><?= A::t('app', 'Server Info'); ?></h1>
 
 <div class="bloc">
 
-	<?php echo $tabs; ?>
+	<?= $tabs; ?>
 
 	<div class="content">
 	<?php		
@@ -21,38 +21,38 @@
 	?>
 	
 	<fieldset>
-		<legend><?php echo A::t('app', 'General Settings'); ?></legend>
+		<legend><?= A::t('app', 'General Settings'); ?></legend>
 		<ul>
-			<li><b><?php echo A::t('app', 'PHP Version'); ?>:</b> <i><?php echo $phpVersion; ?></i></li>
-			<li><b><?php echo $dbDriver.' '.A::t('app', 'Version'); ?>:</b> <i><?php echo $mysqlVersion; ?></i></li>
-			<li><b><?php echo A::t('app', 'System'); ?>:</b> <i><?php echo $system; ?></i></li>
-			<li><b><?php echo A::t('app', 'Build Date'); ?>:</b> <i><?php echo $buildDate; ?></i></li>
-			<li><b><?php echo A::t('app', 'Server API'); ?>:</b> <i><?php echo $serverApi; ?></i></li>
-			<li><b><?php echo A::t('app', 'Virtual Directory Support'); ?>:</b> <i><?php echo $vdSupport; ?></i></li>
-            <li><b><?php echo A::t('app', 'Mode_Rewrite'); ?>:</b> <i><?php echo $modeRewrite; ?></i></li>
-			<li><b><?php echo A::t('app', 'Safe Mode'); ?>:</b> <i><?php echo $safeMode; ?></i></li>
-			<li><b><?php echo A::t('app', 'Post Max Size'); ?>:</b> <i><?php echo $postMaxSize; ?></i></li>
-			<li><b><?php echo A::t('app', 'Upload Max Filesize'); ?>:</b> <i><?php echo $uploadMaxSize; ?></i></li>
+			<li><b><?= A::t('app', 'PHP Version'); ?>:</b> <i><?= $phpVersion; ?></i></li>
+			<li><b><?= $dbDriver.' '.A::t('app', 'Version'); ?>:</b> <i><?= $mysqlVersion; ?></i></li>
+			<li><b><?= A::t('app', 'System'); ?>:</b> <i><?= $system; ?></i></li>
+			<li><b><?= A::t('app', 'Build Date'); ?>:</b> <i><?= $buildDate; ?></i></li>
+			<li><b><?= A::t('app', 'Server API'); ?>:</b> <i><?= $serverApi; ?></i></li>
+			<li><b><?= A::t('app', 'Virtual Directory Support'); ?>:</b> <i><?= $vdSupport; ?></i></li>
+            <li><b><?= A::t('app', 'Mode_Rewrite'); ?>:</b> <i><?= $modeRewrite; ?></i></li>
+			<li><b><?= A::t('app', 'Safe Mode'); ?>:</b> <i><?= $safeMode; ?></i></li>
+			<li><b><?= A::t('app', 'Post Max Size'); ?>:</b> <i><?= $postMaxSize; ?></i></li>
+			<li><b><?= A::t('app', 'Upload Max Filesize'); ?>:</b> <i><?= $uploadMaxSize; ?></i></li>
 		</ul>		
 	</fieldset>	
 	<fieldset>
-		<legend><?php echo A::t('app', 'Important PHP Settings'); ?></legend>
+		<legend><?= A::t('app', 'Important PHP Settings'); ?></legend>
 		<ul>				
-			<li><b><?php echo A::t('app', 'Asp Tags'); ?>:</b> <i><?php echo $aspTags; ?></i></li>
-			<li><b><?php echo A::t('app', 'Short Open Tag'); ?>:</b> <i><?php echo $shortOpenTag; ?></i></li>				
-			<li><b><?php echo A::t('app', 'Session Support'); ?>:</b> <i><?php echo $sessionSupport; ?></i></li>
-			<li><b><?php echo A::t('app', 'Magic Quotes GPC'); ?>:</b> <i><?php echo $magicQuotesGpc; ?></i></li>
-			<li><b><?php echo A::t('app', 'Magic Quotes RunTime'); ?>:</b> <i><?php echo $magicQuotesRuntime; ?></i></li>
-			<li><b><?php echo A::t('app', 'Magic Quotes SyBase'); ?>:</b> <i><?php echo $magicQuotesSybase; ?></i></li>
+			<li><b><?= A::t('app', 'Asp Tags'); ?>:</b> <i><?= $aspTags; ?></i></li>
+			<li><b><?= A::t('app', 'Short Open Tag'); ?>:</b> <i><?= $shortOpenTag; ?></i></li>				
+			<li><b><?= A::t('app', 'Session Support'); ?>:</b> <i><?= $sessionSupport; ?></i></li>
+			<li><b><?= A::t('app', 'Magic Quotes GPC'); ?>:</b> <i><?= $magicQuotesGpc; ?></i></li>
+			<li><b><?= A::t('app', 'Magic Quotes RunTime'); ?>:</b> <i><?= $magicQuotesRuntime; ?></i></li>
+			<li><b><?= A::t('app', 'Magic Quotes SyBase'); ?>:</b> <i><?= $magicQuotesSybase; ?></i></li>
 		</ul>		
 	</fieldset>
 	<fieldset>
-		<legend><?php echo A::t('app', 'SMTP Settings'); ?></legend>
+		<legend><?= A::t('app', 'SMTP Settings'); ?></legend>
 		<ul>
-			<li><b><?php echo A::t('app', 'SMTP'); ?>:</b> <i><?php echo $smtp; ?></i></li>
-			<li><b><?php echo A::t('app', 'SMTP Port'); ?>:</b> <i><?php echo $smtpPort; ?></i></li>
-			<li><b><?php echo A::t('app', 'Sendmail From'); ?>:</b> <i><?php echo $sendmailFrom; ?></i></li>
-			<li><b><?php echo A::t('app', 'Sendmail Path'); ?>:</b> <i><?php echo $sendmailPath; ?></i></li>
+			<li><b><?= A::t('app', 'SMTP'); ?>:</b> <i><?= $smtp; ?></i></li>
+			<li><b><?= A::t('app', 'SMTP Port'); ?>:</b> <i><?= $smtpPort; ?></i></li>
+			<li><b><?= A::t('app', 'Sendmail From'); ?>:</b> <i><?= $sendmailFrom; ?></i></li>
+			<li><b><?= A::t('app', 'Sendmail Path'); ?>:</b> <i><?= $sendmailPath; ?></i></li>
 		</ul>
 	</fieldset>	
 	</div>

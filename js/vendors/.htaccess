@@ -1,0 +1,11 @@
+#  Block access to README and PHP files
+<FILES ~ "README|\.php$">  
+    Order allow,deny  
+    Deny from all  
+</FILES>
+#  Allow access to imageupload files for TinyMCE
+<FILES ~ "upload\.php$">  
+    Order allow,deny  
+    Allow from all
+</FILES>
+

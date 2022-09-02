@@ -45,7 +45,7 @@ class LocationsController extends CController
 	public function manageAction()
 	{			
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 
 		// Block access if admin has no active privilege to manage locations
 		if(!Admins::hasPrivilege('locations', array('view', 'edit'))){
@@ -74,7 +74,7 @@ class LocationsController extends CController
 	public function addAction()
 	{		
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 		
 		// Block access if admin has no active privilege to add locations
         Website::prepareBackendAction('edit', 'locations', 'locations/manage');
@@ -94,7 +94,7 @@ class LocationsController extends CController
 	public function editAction($id = 0)
 	{		
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 		
 		// Block access if admin has no active privilege to edit locations
         Website::prepareBackendAction('edit', 'locations', 'locations/manage');
@@ -120,7 +120,7 @@ class LocationsController extends CController
 	public function deleteAction($id = 0)
 	{
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');
+		CAuth::handleLogin(Website::getDefaultPage());
 
 		// Block access if admin has no active privilege to delete locations
         Website::prepareBackendAction('edit', 'locations', 'locations/manage');

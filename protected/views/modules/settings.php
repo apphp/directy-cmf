@@ -11,10 +11,10 @@
 	$spinnersCount = 0;
 ?>
 
-<h1><?php echo A::t('app', 'Module Settings').' / '.$module->name; ?></h1>	
+<h1><?= A::t('app', 'Module Settings').' / '.$module->name; ?></h1>	
 
 <div class="bloc">
-	<?php echo $tabs; ?>
+	<?= $tabs; ?>
 	
     <div class="content">        
    	<?php 
@@ -35,9 +35,9 @@
 			<table id="tblModulesSettings">
 			<thead>
 			<tr>
-				<th class="left" style="width:180px;"><?php echo A::t('app', 'Name'); ?></th>
-				<th class="left"><?php echo A::t('app', 'Description'); ?></th>
-				<th class="right" style="width:235px;"><?php echo A::t('app', 'Value'); ?>&nbsp;&nbsp;</th>
+				<th class="left" style="width:180px;"><?= A::t('app', 'Name'); ?></th>
+				<th class="left"><?= A::t('app', 'Description'); ?></th>
+				<th class="right" style="width:235px;"><?= A::t('app', 'Value'); ?>&nbsp;&nbsp;</th>
 			</tr>
 			</thead>
             </table>
@@ -60,8 +60,8 @@
                 $currentGroup = $setting['property_group'];
                 ?>
 				<tr>
-					<td class="left" style="width:180px;"><?php echo CHtml::label($settingName, $fieldName); ?></td>
-					<td class="left"><?php echo A::t($setting['module_code'], $setting['description']); ?></td>
+					<td class="left" style="width:180px;"><?= CHtml::label($settingName, $fieldName); ?></td>
+					<td class="left"><?= A::t($setting['module_code'], $setting['description']); ?></td>
 					<td class="right" width="300px"> 
 					<?php
                     echo $hiddenField;
@@ -130,8 +130,8 @@
 			
 			<?php if(Admins::hasPrivilege('modules', 'edit_management')){ ?>
 			<div class="buttons-wrapper">
-				<input value="<?php echo A::t('app', 'Update'); ?>" type="submit">
-				<input class="button white" onclick="$(location).attr('href','modules/<?php echo ($module->is_system ? 'system' : 'application');?>');" value="<?php echo A::t('app', 'Cancel'); ?>" type="button">
+				<input value="<?= A::t('app', 'Update'); ?>" type="submit">
+				<input class="button white" onclick="$(location).attr('href','modules/<?= ($module->is_system ? 'system' : 'application');?>');" value="<?= A::t('app', 'Cancel'); ?>" type="button">
 			</div>
 			<?php } ?>
 		<?php 

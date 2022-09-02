@@ -3,7 +3,7 @@
 return array(
     // Application data
     'name' => 'ApPHP Directy CMF',
-    'version' => '2.6.2',
+    'version' => '2.7.2',
     
     // Installation settings
     'installationKey' => '<INSTALLATION_KEY>',
@@ -34,10 +34,10 @@ return array(
     ),
     
     // Validations
-	// Define 'exclude' controllers array, ex.: array('PaymentProviders', 'Checkout')
+	// Define array of 'excluded' controllers, ex.: array('PaymentProviders', 'Checkout')
     'validation' => array(
-        'csrf' 		 => array('enable' => true, 'exclude' => array()),
-        'bruteforce' => array('enable' => true, 'badLogins' => 5, 'redirectDelay' => 3),
+        'csrf' => array('enable' => true, 'exclude' => array('PaymentProviders')),
+        'bruteforce' => array('enable' => true, 'badLogins' => 5, 'redirectDelay' => 3)
     ),
 
     // Output compression
@@ -61,9 +61,21 @@ return array(
 
     // Cache settings 
     'cache' => array(
-        'enable' => false, 
-        'lifetime' => 20,  /* in minutes */
+        'enable' => false,
+		'type' => 'auto', 			/* 'auto' or 'manual' */
+        'lifetime' => 20,  			/* in minutes */
         'path' => 'protected/tmp/cache/'
+    ),
+
+    // Logger settings 
+    'log' => array(
+		'enable' => false, 
+        'path' => 'protected/tmp/logs/',
+		'fileExtension' => 'php', 	
+        'dateFormat' => 'Y-m-d H:i:s',
+        'threshold' => 1,
+		'filePermissions' => 0644,
+		'lifetime' => 30			/* in days */
     ),
 
     // RSS Feed settings 
@@ -74,10 +86,23 @@ return array(
     // Datetime settings
     'defaultTimeZone' => 'UTC',
     
-    // Application settings
-    'defaultTemplate' => 'default',
-	'defaultController' => 'Index',
-    'defaultAction' => 'index',
+    // Template default settings  
+	'template' => array(
+		'default' => 'default'			
+	),
+	
+	// Layout default settings  
+	'layout' => array(
+		'enable' => true, 
+		'default' => 'default'
+	),
+	
+    // Application default settings  
+	'defaultController' => 'Index',		/* may be overridden by module settings */
+    'defaultAction' => 'index',			/* may be overridden by module settings */
+	
+	// Application payment complete page (controller/action - may be overridden by module settings)
+	'paymentCompletePage' => '',
     
     // Application components
     'components' => array(
@@ -86,6 +111,7 @@ return array(
         'FrontendMenu' => array('enable' => true, 'class' => 'FrontendMenu'),               
         'LocalTime' => array('enable' => true, 'class' => 'LocalTime'),
 		'SearchForm' => array('enable' => true, 'class' => 'SearchForm'),
+		'SocialLogin' => array('enable' => true, 'class' => 'SocialLogin'),
         'Website' => array('enable' => true, 'class' => 'Website'),
     ),
 
@@ -108,11 +134,18 @@ return array(
     'urlManager' => array(
         'urlFormat' => 'shortPath',  /* get | path | shortPath */
         'rules' => array(
-			//'paymentProviders/handlePayment/provider/([a-zA-Z0-9\_]+)' => 'paymentProviders/handlePayment/provider/{$0}',
-			'paymentProviders/handlePayment/([a-zA-Z0-9\_]+)' => 'paymentProviders/handlePayment/provider/{$0}',
-			//'paymentProviders/handlePayment/([a-zA-Z0-9\_]+)/handler/([a-zA-Z0-9\_]+)' => 'paymentProviders/handlePayment/provider/{$0}/handler/{1}',
-			'paymentProviders/handlePayment/([a-zA-Z0-9\_]+)/([a-zA-Z0-9\_]+)' => 'paymentProviders/handlePayment/provider/{$0}/handler/{1}',
-            //'controller/action/value1/value2' => 'controller/action/param1/value1/param2/value2',
+			// Required by payments module. If you remove these rules - make sure you define full path URL for pyment providers
+			//'paymentProviders/handlePayment/provider/([a-zA-Z0-9\_]+)/handler/([a-zA-Z0-9\_]+)/module/([a-zA-Z0-9\_]+)[\/]?$' => 'paymentProviders/handlePayment/provider/{$0}/handler/{$1}/module/{$2}',
+			'paymentProviders/handlePayment/([a-zA-Z0-9\_]+)/([a-zA-Z0-9\_]+)/([a-zA-Z0-9\_]+)[\/]?$' => 'paymentProviders/handlePayment/provider/{$0}/handler/{$1}/module/{$2}',
+			//'paymentProviders/handlePayment/provider/([a-zA-Z0-9\_]+)/handler/([a-zA-Z0-9\_]+)[\/]?$' => 'paymentProviders/handlePayment/provider/{$0}/handler/{$1}',
+			'paymentProviders/handlePayment/([a-zA-Z0-9\_]+)/([a-zA-Z0-9\_]+)[\/]?$' => 'paymentProviders/handlePayment/provider/{$0}/handler/{$1}',
+			//'paymentProviders/handlePayment/provider/([a-zA-Z0-9\_]+)[\/]?$' => 'paymentProviders/handlePayment/provider/{$0}',
+			'paymentProviders/handlePayment/([a-zA-Z0-9\_]+)[\/]?$' => 'paymentProviders/handlePayment/provider/{$0}',
+            // Required by dynamic pages, if you want to use user-friendly URLs
+			//'controller/action/value1/value2' => 'controller/action/param1/value1/param2/value2',
+			//'sitepages/show/example-page-1' => 'sitepages/show/name/about-us',
+			//'value1' => 'controller/action/param1/value1',
+			//'about-us' => 'sitepages/show/name/about-us',
         ),
     ),
     

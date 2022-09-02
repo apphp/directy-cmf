@@ -9,10 +9,10 @@
     );    
 ?>
 
-<h1><?php echo A::t('app', 'Currencies Management'); ?></h1>
+<h1><?= A::t('app', 'Currencies Management'); ?></h1>
 
 <div class="bloc">
-    <div class="title"><?php echo A::t('app', 'Add New Currency'); ?></div>
+    <div class="title"><?= A::t('app', 'Add New Currency'); ?></div>
     <div class="content">        
     <?php
         echo CWidget::create('CDataForm', array(
@@ -39,8 +39,8 @@
                 'symbol_place' 		=> array('type'=>'select', 'title'=>A::t('app', 'Symbol Place'), 'tooltip'=>'', 'default'=>'after', 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array('before', 'after')), 'data'=>array('before'=>A::t('app', 'before'), 'after'=>A::t('app', 'after')), 'htmlOptions'=>array()),
                 'decimals'   		=> array('type'=>'select', 'title'=>A::t('app', 'Decimals'), 'tooltip'=>'', 'default'=>'2', 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array('0','1','2','3','4')), 'data'=>array('0','1','2','3','4'), 'htmlOptions'=>array()),
 				'sort_order' 		=> array('type'=>'textbox', 'title'=>A::t('app', 'Order'), 'default'=>$sortOrder, 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'2', 'class'=>'small')),
-				'is_default' 		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'validation'=>array('type'=>'set', 'source'=>array(0,1))),
-				'is_active'  		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>true, 'validation'=>array('type'=>'set', 'source'=>array(0,1))),
+				'is_default' 		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'viewType'=>'custom'),
+				'is_active'  		=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>true, 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'viewType'=>'custom'),
             ),
             'buttons'			=> array(
 			   'submit' 			=> array('type'=>'submit', 'value'=>A::t('app', 'Create'), 'htmlOptions'=>array('name'=>'')),

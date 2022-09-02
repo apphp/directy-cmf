@@ -7,10 +7,11 @@
  * __construct              _prepareTab
  * indexAction			   	_checkAlexaRank
  * generalAction			_checkGoogleRank
- * visualAction			   	_checkHash
- * localAction			   	_hashURL
- * emailAction				_strToNum
- * templatesAction			_yesNoArray
+ * visualAction			   	_checkIndexedPages
+ * localAction			   	_checkHash
+ * emailAction				_hashURL
+ * templatesAction			_strToNum
+ * mappingApiAction			_yesNoArray
  * serverAction				_noYesArray
  * siteAction				_testDateFormat 
  * cronAction				_testTimeFormat
@@ -36,7 +37,7 @@ class SettingsController extends CController
         parent::__construct();
         
         // Block access to this controller to non-logged users
-		CAuth::handleLogin('backend/login');		
+		CAuth::handleLogin(Website::getDefaultPage());		
 	        
 		// Block access if admin has no active privileges to access site settings
 		if(!Admins::hasPrivilege('site_settings', 'view')){
@@ -67,7 +68,7 @@ class SettingsController extends CController
 		$this->_arrTimeFormats[''] = A::t('app', 'Custom...');
 		
 		$this->_arrDateTimeFormats = CLocale::getDateTimeFormats();
-		$this->_arrDateTimeFormats[''] = A::t('app', 'Custom...');		
+		$this->_arrDateTimeFormats[''] = A::t('app', 'Custom...');
 	}	
 
 	/**
@@ -141,6 +142,7 @@ class SettingsController extends CController
     	$this->_view->noYesArray = $this->_noYesArray();
 
         $this->_view->cacheEnable = CConfig::get('cache.enable');
+		$this->_view->cacheType = CConfig::get('cache.type');
         $this->_view->cacheLifetime = CConfig::get('cache.lifetime');
         $this->_view->cachePath = CConfig::get('cache.path');
 		
@@ -238,7 +240,7 @@ class SettingsController extends CController
     public function visualAction()
     {    	 
     	// All active languages list for dropdown box
-        $languages = Languages::model()->findAll('is_active = 1');
+        $languages = Languages::model()->findAll(array('condition'=>'is_active = 1', 'orderBy'=>'sort_order ASC'));
         $langList = array();
        	if(is_array($languages)){
        		foreach($languages as $lang){
@@ -305,17 +307,17 @@ class SettingsController extends CController
     	}else{	
     		// View the settings        	
 	    	if($this->_cRequest->getPost('act') == 'changeLang'){
-				
 				// Block access if admin has no active privilege to edit site settings
 				if(!Admins::hasPrivilege('site_settings', 'edit')){
 					$this->redirect('backend/index');
 				}
-				
 	    		// Language changed
 	    		$selectedLanguage = $this->_cRequest->getPost('selectedLanguage');
 	    	}else{
-	    		// Default is current active language
-		    	$selectedLanguage = A::app()->getLanguage();		
+				// Default is current active language
+				$selectedLanguage = $this->_cSession->hasFlash('selectedLanguage')
+					? $this->_cSession->getFlash('selectedLanguage')
+					: A::app()->getLanguage();
 	    	}
 	    	
 			// Find site descriptions according to the selected language
@@ -491,14 +493,22 @@ class SettingsController extends CController
 			'smtpMailer'=>'smtpMailer'
     	);
     	
+		// Settings form submit
 		if(in_array($this->_cRequest->getPost('act'), array('test', 'send'))){
-			// Settings form submit
 			     		
      		// Block access if admin has no active privilege to edit site settings
      		if(!Admins::hasPrivilege('site_settings', 'edit')){
      			$this->redirect('backend/index');
      		}
+
+			// Update
+			$updateMalingLog = '';
+			$mailingLog = (int)$this->_cRequest->getPost('mailing_log');
+			if($this->_settings->mailing_log != $mailingLog){
+				$updateMalingLog = $mailingLog;
+			}
 			
+			$this->_settings->mailing_log = $mailingLog;
      		$this->_settings->mailer = $this->_cRequest->getPost('mailer');
 			$this->_settings->general_email = $this->_cRequest->getPost('email');
             $this->_settings->general_email_name = $this->_cRequest->getPost('email_name');
@@ -578,6 +588,12 @@ class SettingsController extends CController
 						if($this->_settings->save()){
 							$this->_alert = A::t('app', 'Settings Update Success Message');
 							$this->_alertType = 'success';
+							
+							if($updateMalingLog !== ''){
+								$menu = BackendMenus::model()->find("url = 'mailingLog/'");
+								$menu->is_visible = $updateMalingLog;
+								$menu->save();
+							}
 						}else{
 							$this->_alert = A::t('app', 'Settings Update Error Message');
 							$this->_view->errorField = '';
@@ -590,7 +606,7 @@ class SettingsController extends CController
 				$this->_view->smtpPassword = '';
 			}
 
-			if(!empty($this->_alert)){
+			if(!empty($this->_alert) && $this->_alertType == 'success'){
 				$this->_cSession->setFlash('alert', $this->_alert);
 				$this->_cSession->setFlash('alertType', $this->_alertType);
 				$this->redirect('settings/email');				
@@ -660,6 +676,8 @@ class SettingsController extends CController
 		}else if($this->_cRequest->getPost('act') == 'changeTemp'){
 			// Template selection changed
 			$this->_view->selectedTemplate = $this->_cRequest->getPost('template');
+			$this->_alert = A::t('app', 'Save Changes Warning Message');
+			$this->_alertType = 'warning';
 		}else{
 			$this->_view->selectedTemplate = $this->_settings->template;				
 		}
@@ -710,6 +728,80 @@ class SettingsController extends CController
 		$this->_view->render('settings/templates');
 	}
 
+	public function mappingApiAction()
+    {
+		// Settings form submit
+		if($this->_cRequest->getPost('act') == 'send'){
+
+			// Block access if admin has no active privilege to edit site settings
+			if(!Admins::hasPrivilege('site_settings', 'edit')){
+				$this->redirect('backend/index');
+			}
+				
+			$this->_view->mappingApiType = $this->_cRequest->getPost('mapping_api_type');				
+			$this->_view->mappingApiKey = $this->_cRequest->getPost('mapping_api_key');
+			
+			$result = CWidget::create('CFormValidation', array(
+				'fields'=>array(
+					'mapping_api_type' =>array('title'=>A::t('app', 'Mapping API Type'), 'validation'=>array('required'=>true, 'type'=>'fileName', 'maxLength'=>32)),
+					'mapping_api_key' =>array('title'=>A::t('app', 'Mapping API Key'), 'validation'=>array('required'=>false, 'type'=>'fileName', 'maxLength'=>32)),
+				),
+			));
+
+			if($result['error']){
+				$this->_alert = $result['errorMessage'];
+				$this->_view->errorField = $result['errorField'];
+				$this->_alertType = 'validation';
+			}else{
+				$this->_settings->mapping_api_type = $this->_view->mappingApiType;
+				$this->_settings->mapping_api_key = $this->_view->mappingApiKey;
+
+				if(APPHP_MODE == 'demo'){
+					$this->_alert = A::t('core', 'This operation is blocked in Demo Mode!');
+					$this->_alertType = 'warning';
+				}else{
+					if($this->_settings->save()){
+						$this->_view->mappingType = $this->_settings->mapping_api_type;
+						$this->_view->mappingTypeKey = $this->_settings->mapping_api_key;
+						$this->_alert = A::t('app', 'Settings Update Success Message');
+						$this->_alertType = 'success';
+					}else{
+						$this->_alert = A::t('app', 'Settings Update Error Message');
+						$this->_view->errorField = '';
+						$this->_alertType = 'error';
+					}
+				}
+			}
+			
+			if(!empty($this->_alert)){
+				$this->_cSession->setFlash('alert', $this->_alert);
+				$this->_cSession->setFlash('alertType', $this->_alertType);
+				$this->redirect('settings/mappingApi');
+			}	
+		}else{
+			$this->_view->mappingType = $this->_settings->mapping_api_type;
+			$this->_view->mappingTypeKey = $this->_settings->mapping_api_key;
+			
+			if($this->_settings->mapping_api_key == ''){
+				$this->_alert = A::t('app', 'Mapping API Key is empty! It may lead to unstable work of map components.');
+				$this->_alertType = 'warning';
+			}
+		}
+
+		// Prepare alert message
+		if($this->_cSession->hasFlash('alert')){
+			$this->_alert = $this->_cSession->getFlash('alert');
+			$this->_alertType = $this->_cSession->getFlash('alertType');
+		}
+
+		if(!empty($this->_alert)){
+			$this->_view->actionMessage = CWidget::create('CMessage', array($this->_alertType, $this->_alert, array('button'=>true)));
+		}
+
+    	$this->_view->tabs = $this->_prepareTab('mappingapi');
+    	$this->_view->render('settings/mappingapi');
+	}
+
 	/**
 	 * Server info action handler
 	 */
@@ -731,6 +823,10 @@ class SettingsController extends CController
 		}
         
         $phpCoreIndex = ((version_compare(phpversion(), '5.3.0', '<'))) ? 'PHP Core' : 'Core';
+        // For PHP v5.6 or later
+        if(!isset($phpInfo[$phpCoreIndex]) && version_compare(phpversion(), '5.6.0', '>=') ){
+            $phpCoreIndex = 'HTTP Headers Information';
+        }
         $mysqlVersion = CDatabase::init()->getVersion();
 
 	    $this->_view->phpVersion 	= function_exists('phpversion') ? phpversion() : A::t('app', 'Unknown');
@@ -739,7 +835,7 @@ class SettingsController extends CController
 		$this->_view->mysqlVersion  = !empty($mysqlVersion) ? $mysqlVersion : A::t('app', 'Unknown');		
 		$this->_view->aspTags 		= isset($phpinfo[$phpCoreIndex]['asp_tags']) ? $phpinfo[$phpCoreIndex]['asp_tags'][0] : A::t('app', 'Unknown');
 		$this->_view->safeMode 		= isset($phpinfo[$phpCoreIndex]['safe_mode']) ? $phpinfo[$phpCoreIndex]['safe_mode'][0] : A::t('app', 'Unknown');
-		$this->_view->shortOpenTag  = isset($phpinfo[$phpCoreIndex]['short_open_tag']) ? $phpinfo[$phpCoreIndex]['short_open_tag'][0] : A::t('app', 'Unknown');
+		$this->_view->shortOpenTag  = isset($phpinfo[$phpCoreIndex]['short_open_tag'][0]) ? $phpinfo[$phpCoreIndex]['short_open_tag'][0] : A::t('app', 'Unknown');
 		$this->_view->vdSupport 	= isset($phpinfo['phpinfo']['Virtual Directory Support']) ? $phpinfo['phpinfo']['Virtual Directory Support'] : A::t('app', 'Unknown');
 		$this->_view->modeRewrite 	= $this->_checkModRewrite() ? A::t('app', 'On') : A::t('app', 'Off');
 		$this->_view->system 		= isset($phpinfo['phpinfo']['System']) ? $phpinfo['phpinfo']['System'] : A::t('app', 'Unknown');
@@ -768,30 +864,74 @@ class SettingsController extends CController
 	 */
 	public function siteAction()
     {
-   		$this->_view->domain = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : A::t('app', 'Unknown');
+   		$domain = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : A::t('app', 'Unknown');
 		
+		// Allow changes for site owner only
 		if($this->_cRequest->getPost('act') == 'send'){
-			// Update button clicked - update the ranks
-    		$this->_settings->google_rank = (int)$this->_checkGoogleRank($this->_view->domain);
-    		$this->_settings->alexa_rank = number_format((float)$this->_checkAlexaRank($this->_view->domain));
-			
-			if(APPHP_MODE == 'demo'){
-				$this->_alert = A::t('core', 'This operation is blocked in Demo Mode!');
-				$this->_alertType = 'warning';
-			}else{
-				if($this->_settings->save()){
-					$this->_alert = A::t('app', 'Site Info Success Message');
-					$this->_alertType = 'success';
+			if(CAuth::isLoggedInAs('owner')){				
+				$domain = CString::substr($this->_cRequest->getPost('website_domain', '', ''), 255);
+				$domain = preg_replace('/(www\.|http:\/\/|https:\/\/|ftp:\/\/)/i', '', $domain);			
+				
+				// Update button clicked - update the ranks
+				if(!empty($domain)){
+					if(APPHP_MODE !== 'demo'){				
+						///$this->_settings->google_rank = (int)$this->_checkGoogleRank($domain);
+						$this->_settings->alexa_rank = number_format((float)$this->_checkAlexaRank($domain));
+						if($indexedPages = $this->_checkIndexedPages($domain, 'google')){
+							$this->_settings->indexed_pages_google = $indexedPages;	
+						}
+						if($indexedPages = $this->_checkIndexedPages($domain, 'bing')){
+							$this->_settings->indexed_pages_bing = $indexedPages;
+						}
+						if($indexedPages = $this->_checkIndexedPages($domain, 'yahoo')){
+							$this->_settings->indexed_pages_yahoo = $indexedPages;	
+						}
+						if($indexedPages = $this->_checkIndexedPages($domain, 'yandex')){
+							$this->_settings->indexed_pages_yandex = $indexedPages;	
+						}
+						if($indexedPages = $this->_checkIndexedPages($domain, 'baidu')){
+							$this->_settings->indexed_pages_baidu = $indexedPages;	
+						}
+						if($indexedPages = $this->_checkIndexedPages($domain, 'goo')){
+							$this->_settings->indexed_pages_goo = $indexedPages;	
+						}
+					}
 				}else{
-					$this->_alert = A::t('app', 'Site Info Error Message');
-					$this->_alertType = 'error';
+					$this->_settings->alexa_rank = 0;
+					$this->_settings->indexed_pages_google = 0;
+					$this->_settings->indexed_pages_bing = 0;
+					$this->_settings->indexed_pages_yahoo = 0;
+					$this->_settings->indexed_pages_yandex = 0;
+					$this->_settings->indexed_pages_baidu = 0;
+					$this->_settings->indexed_pages_goo = 0;
 				}
+				
+				$this->_settings->site_last_updated = LocalTime::currentDateTime();
+				$this->_settings->website_domain = $domain;
+				
+				if(APPHP_MODE == 'demo'){
+					$this->_alert = A::t('core', 'This operation is blocked in Demo Mode!');
+					$this->_alertType = 'warning';
+				}else{
+					if($this->_settings->save()){
+						$this->_alert = A::t('app', 'Site Info Success Message');
+						$this->_alertType = 'success';
+					}else{
+						$this->_alert = A::t('app', 'Site Info Error Message');
+						$this->_alertType = 'error';
+					}
+				}
+			}else{
+				$this->_alert = A::t('app', 'You have no privileges to make changes on this page');
+				$this->_alertType = 'warning';
 			}
+			
 			if(!empty($this->_alert)){
 				$this->_view->actionMessage = CWidget::create('CMessage', array($this->_alertType, $this->_alert, array('button'=>true)));
 			}
 		}
 		
+		$this->_view->dateTimeFormat = Bootstrap::init()->getSettings('datetime_format');
 		$this->_view->settings = $this->_settings;
 		$this->_view->tabs = $this->_prepareTab('site');		
 		$this->_view->render('settings/site');
@@ -894,9 +1034,10 @@ class SettingsController extends CController
 				A::t('app', 'Local Settings')  	 =>array('href'=>'settings/local', 'id'=>'tab3', 'content'=>'', 'active'=>($activeTab == 'local' ? true : false)),
 				A::t('app', 'Email Settings')  	 =>array('href'=>'settings/email', 'id'=>'tab4', 'content'=>'', 'active'=>($activeTab == 'email' ? true : false)),
 				A::t('app', 'Templates & Styles')=>array('href'=>'settings/templates', 'id'=>'tab5', 'content'=>'', 'active'=>($activeTab == 'templates' ? true : false)),
-				A::t('app', 'Server Info')  	 =>array('href'=>'settings/server', 'id'=>'tab6', 'content'=>'', 'active'=>($activeTab == 'server' ? true : false)),
-				A::t('app', 'Site Info')  		 =>array('href'=>'settings/site', 'id'=>'tab7', 'content'=>'', 'active'=>($activeTab == 'site' ? true : false)),
-				A::t('app', 'Cron Jobs')  		 =>array('href'=>'settings/cron', 'id'=>'tab8', 'content'=>'', 'active'=>($activeTab == 'cron' ? true : false)),
+				A::t('app', 'Mapping APIs')		 =>array('href'=>'settings/mappingApi', 'id'=>'tab6', 'content'=>'', 'active'=>($activeTab == 'mappingapi' ? true : false)),
+				A::t('app', 'Server Info')  	 =>array('href'=>'settings/server', 'id'=>'tab7', 'content'=>'', 'active'=>($activeTab == 'server' ? true : false)),
+				A::t('app', 'Site Info')  		 =>array('href'=>'settings/site', 'id'=>'tab8', 'content'=>'', 'active'=>($activeTab == 'site' ? true : false)),
+				A::t('app', 'Cron Jobs')  		 =>array('href'=>'settings/cron', 'id'=>'tab9', 'content'=>'', 'active'=>($activeTab == 'cron' ? true : false)),
 			),
 			'return'=>true,
 		));
@@ -904,7 +1045,7 @@ class SettingsController extends CController
 
 	/**
 	 * Returns Alexa Page Rank
-	 * 		@param $url
+	 * @param $url
 	 */
 	private function _checkAlexaRank($url)
 	{
@@ -923,7 +1064,8 @@ class SettingsController extends CController
 		}
 		$str = explode($search_for, $part);
 		$str_1 = (isset($str[1])) ? $str[1] : '';
-		$str = array_shift(explode('"/>', $str_1));
+		$explode = explode('"/>', $str_1);
+		$str = array_shift($explode);
 		$str = explode('TEXT="', $str);
 		$str_2 = (isset($str[1])) ? $str[1] : '';
 		return $str_2;
@@ -931,12 +1073,13 @@ class SettingsController extends CController
 	
 	/**
 	 * Returns Google Page Rank
-	 * 		@param $url
+	 * @param $url
 	 */
 	private function _checkGoogleRank($url)
 	{
 		$pagerank = '-1';
 		$nl = "\r\n";
+		
 		$fp = fsockopen('toolbarqueries.google.com', 80, $errno, $errstr, 30);
 		if(!$fp){
 			//echo '$errstr ($errno)<br />\n';
@@ -958,6 +1101,61 @@ class SettingsController extends CController
 		}
 		return $pagerank;
 	}
+	
+	/**
+	 * Returns search engines indexed pages
+	 * @param $url
+	 */
+	private function _checkIndexedPages($url, $searchEngine = 'google')
+	{
+		$indexedPages = 0;
+		$nl = "\r\n";
+		
+		// Non empty URL
+		if(!empty($url)){
+			if($searchEngine == 'google'){
+				$content = @$this->_cRequest->getUrlContent('https://www.google.com/search?filter=0&q=site:'.$url);
+				$pos = strpos($content, 'id="resultStats"');
+				if($pos !== false){
+					$text = substr($content, $pos+15, 15);
+					$indexedPages = preg_replace('/[^0-9,]/', '', $text);					
+				}
+			}else if($searchEngine == 'bing'){
+				$content = $this->_cRequest->getUrlContent('http://www.bing.com/search?scope=web&setmkt=en-US&setlang=match&FORM=W5WA&q=site:'.$url);
+				$pos = strpos($content, 'class="sb_count"');
+				if($pos !== false){
+					$text = substr($content, $pos+15, 17);
+					$indexedPages = preg_replace('/[^0-9,]/', '', $text);
+				}
+			}else if($searchEngine == 'yahoo'){
+				$content = @$this->_cRequest->getUrlContent('https://search.yahoo.com/search?fr=sfp&p=site:'.$url);
+				$pos = strpos($content, 'results</span>'); 
+				if($pos !== false){
+					$text = substr($content, $pos-10, 15);
+					$indexedPages = preg_replace('/[^0-9,]/', '', $text);
+				}
+			}else if($searchEngine == 'yandex'){
+				$content = @$this->_cRequest->getUrlContent('http://yandex.ru/yandsearch?text=site:'.$url.'&lr=10418');
+				$pos = strpos($content, 'serp-adv__found"'); 
+				if($pos !== false){
+					$text = substr($content, $pos+12, 17);
+					$indexedPages = preg_replace('/[^0-9,]/', '', $text);
+				}
+			}else if($searchEngine == 'baidu'){
+				$content = @$this->_cRequest->getUrlContent('http://www.baidu.com/s?ie=utf-8&wd=site:'.$url);
+				preg_match('/<div class="c-span21 c-span-last">(.*?)<\/div>/i', $content, $matches);
+				if(isset($matches[0])){
+					$matches[0] = strip_tags($matches[0]);
+					$indexedPages = preg_replace('/[^0-9,]/', '', $matches[0]);
+				}
+			}else if($searchEngine == 'goo'){
+				$indexedPages = 0;
+			}
+		}
+		
+		return $indexedPages;
+	}
+	
 	/**
 	 * Checks hash for url
 	 * @param $hashnum

@@ -5,5 +5,5 @@
 ?>
 
 <p>
-    <?php echo $errorMessage; ?>  
+    <?= $errorMessage; ?>  
 </p>

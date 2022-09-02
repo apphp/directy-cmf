@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2015 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE:		
@@ -222,7 +222,7 @@ class CLocale
 				case 'h:i A':	/*  01:47 PM */
 				case 'g:i A':	/*  1:47 PM */
 
-					$search = array('%h', '%g', '%i', '%a');
+					$search = array('%h', '%g', '%i', '%A');
 					$replace = array($hour12, (int)$hour12, $minute, strtoupper($amPm));
 					break;
 

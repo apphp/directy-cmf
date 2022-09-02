@@ -19,10 +19,10 @@
 	A::app()->getClientScript()->registerScriptFile('templates/backend/js/menu.js');
 ?>
 
-<h1><?php echo A::t('app', 'Frontend Menu Management')?></h1>	
+<h1><?= A::t('app', 'Frontend Menu Management')?></h1>	
 
 <div class="bloc">
-	<div class="title"><?php echo A::t('app', 'Edit Menu'); ?></div>
+	<div class="title"><?= A::t('app', 'Edit Menu'); ?></div>
     <div class="content">        
 	<?php
 		$fields = array();
@@ -48,7 +48,7 @@
 
 		$fields['parent_id']  = array('type'=>'data', 'default'=>$parentId);
 		$fields['sort_order'] = array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'tooltip'=>'', 'default'=>'0', 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'3', 'class'=>'small'));
-		$fields['is_active']  = array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'htmlOptions'=>array('uncheckValue'=>$isAactive));
+		$fields['is_active']  = array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'viewType'=>'custom');
 		
 		if($parentId){
 			$fields['placement'] = array('type'=>'data', 'default'=>'');
@@ -72,7 +72,7 @@
 			),
 			'requiredFieldsAlert' => true,
 			'fields'			=> $fields,
-			'translationInfo' 	=> array('relation'=>array('id', 'menu_id'), 'languages'=>Languages::model()->findAll('is_active = 1')),
+			'translationInfo' 	=> array('relation'=>array('id', 'menu_id'), 'languages'=>Languages::model()->findAll(array('condition'=>'is_active = 1', 'orderBy'=>'sort_order ASC'))),
 			'translationFields' => array(
 				'name' 				=> array('type'=>'textbox', 'title'=>A::t('app', 'Menu Title'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'any'), 'htmlOptions'=>array('title'=>'', 'class'=>'middle')),
 			),
@@ -87,8 +87,8 @@
 		));
 	?>
 	
-	<div id="dialog" class="dialog-window" title="<?php echo $dialogTitle; ?>">
-	<?php echo $dialogContent; ?>
+	<div id="dialog" class="dialog-window" title="<?= $dialogTitle; ?>">
+	<?= $dialogContent; ?>
 	</div>
 
     </div>

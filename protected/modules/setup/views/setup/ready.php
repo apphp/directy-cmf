@@ -4,8 +4,8 @@
     $this->_activeMenu = $this->_controller.'/'.$this->_action;
 ?>
 
-<h1><?php echo (A::app()->getSession()->get('setupType') == 'update' ? A::t('setup', 'Ready to Install Updates') : A::t('setup', 'Ready to Install')); ?></h1>
-<p><?php echo A::t('setup', 'Ready to Install Notice'); ?></p>
+<h1><?= (A::app()->getSession()->get('setupType') == 'update' ? A::t('setup', 'Ready to Install Updates') : A::t('setup', 'Ready to Install')); ?></h1>
+<p><?= A::t('setup', 'Ready to Install Notice'); ?></p>
 
 <?php
     if(is_array($componentsList)){
