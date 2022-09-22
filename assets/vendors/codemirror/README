@@ -1,0 +1,26 @@
+CodeMirror (JavaScript component)
+
+Usage:
+-----
+
+<?php
+	// Register CodeMirror files
+	A::app()->getClientScript()->registerCssFile('assets/vendors/codemirror/codemirror.css');
+	A::app()->getClientScript()->registerScriptFile('assets/vendors/codemirror/codemirror.js');
+	A::app()->getClientScript()->registerScriptFile('assets/vendors/codemirror/clike.js');
+?>
+
+	<label for="frmVocabulary_fileContent">Content:</label>
+	<textarea maxlength="50000" class="full" id="frmVocabulary_fileContent" name="fileContent">
+		&#039;-- select --&#039; =&gt; &#039;-- select --&#039;,
+	</textarea>
+
+<?php
+	A::app()->getClientScript()->registerScript(
+		'vocabularyEditor',
+		'var editor = CodeMirror.fromTextArea(
+			document.getElementById("frmVocabulary_fileContent"),
+			{ lineNumbers: true, '.(A::app()->getLanguage('direction') == 'rtl' ? 'rtlMoveVisually: true,' : '').' mode: "text/x-csrc", indentUnit: 4, indentWithTabs: true, enterMode: "keep", tabMode: "shift" }
+		);'
+	);
+?>

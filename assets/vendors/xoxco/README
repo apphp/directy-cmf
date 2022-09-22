@@ -1,0 +1,10 @@
+Tags Input (jQuery Plugin)
+
+Usage:
+-----
+
+<?php A::app()->getClientScript()->registerCssFile('assets/vendors/xoxco/jquery.tagsinput.css'); ?>
+<?php A::app()->getClientScript()->registerScriptFile('assets/vendors/xoxco/jquery.tagsinput.js'); ?>
+<?php A::app()->getClientScript()->registerScriptFile('assets/modules/mblog/js/tags.js'); ?>
+
+<input id="tag_edit" type="text" name="tag_edit" class="tags" maxlength="255" value="<?= CHtml::encode($postTag); ?>" />

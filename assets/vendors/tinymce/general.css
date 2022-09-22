@@ -1,0 +1,21 @@
+.mceLayout { width:650px }
+.mceLayout TD.mceToolbar { padding:0px; border-bottom:0; }
+.mceLayout TD.mceStatusbar { padding:0px; border-top:0; }
+.mceLayout TD.mceIframeContainer { padding:0px; }
+
+.mceToolbar:hover { background-color:#f0f0f0;}
+.mceToolbar:hover TD { background-color:#f0f0f0;} 
+.mceStatusbar:hover { background-color:#f0f0f0;}
+
+.mceMenuItemTitle:hover { border:0px; }
+.mce_formatPreview:hover { border:0px; }
+.mceMenuItem TD a { margin-left:-5px; border:0px; }
+.mceMenuItem TD:hover { border:0px;  }
+
+.mceColorSplitMenu TR TD { width:13px; height:13px; border:0px; }
+.mceColorSplitMenu TR:hover td{ background-color:#ffffff; border:0px; }
+.mceColorSplitMenu TR:hover td a { cursor:pointer; }
+.mceColorSplitMenu TR TD:hover { border:0px; }
+.mceColorSplitMenu TR:nth-child(2n+1) td{ background-color:#ffffff; }
+
+.mceMenuItemSeparator:hover { border:0px } 

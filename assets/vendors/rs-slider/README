@@ -1,0 +1,17 @@
+RS-Slider 
+
+Usage:
+-----
+
+1. Install Banners module.
+
+2. To draw banner use:
+<?php
+	echo BannersComponent::drawSlider(array(
+		'type' 			=> 'revolution',
+		'width' 		=> '1170',
+		'height' 		=> '500',
+		'navigation' 	=> 'true',
+		'delay'			=> 7000
+	));
+?>

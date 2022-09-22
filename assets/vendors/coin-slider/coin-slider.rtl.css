@@ -1,0 +1,11 @@
+/*
+	Coin Slider jQuery plugin RTL CSS styles
+	http://workshop.rs/projects/coin-slider
+	Created: by ApPHP
+	Last changes: 03.03.2014
+*/
+.cs-buttons { }
+.cs-buttons a { float: right; margin-left: 0px; margin-right: 5px; }
+.cs-title { text-align: right; }
+.cs-prev { right:0px; left:auto; }
+.cs-next { left:0px; right:auto; }

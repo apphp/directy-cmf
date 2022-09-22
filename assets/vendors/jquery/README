@@ -1,0 +1,42 @@
+1. jQuery (JavaScript library)
+
+Usage:
+-----
+
+<!-- jQuery files -->
+<?php //echo CHtml::scriptFile('http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'); ?>
+<?php //echo CHtml::scriptFile('http://code.jquery.com/ui/1.10.2/jquery-ui.js'); ?>
+<?= CHtml::scriptFile('assets/vendors/jquery/jquery.js'); ?>
+
+<script>
+	$(document).ready(function(){
+	    console.log("ready!");
+	});
+</script>
+
+
+
+2. jQuery User Interface Plugin (JavaScript library)
+
+Usage:
+-----
+
+<?php
+	// <!-- jQuery ui files -->
+	// Use registerScriptFile() because we want to prevent loading jquery-ui.min.js twice (also used in framework widgets)
+	A::app()->getClientScript()->registerScriptFile('assets/vendors/jquery/jquery-ui.min.js',2);
+	//echo CHtml::scriptFile('assets/vendors/jquery/jquery-ui.min.js');
+	
+	A::app()->getClientScript()->registerCssFile('assets/vendors/jquery/jquery-ui.min.css');
+?>
+
+<div id="dialog" class="dialog-window" title="Dialog Title">
+	text
+</div>
+
+<script>
+	$(document).ready(function(){
+	    $('#dialog').dialog({maxHeight:400,width:320,maxWidth:600});
+	});
+</script>
+

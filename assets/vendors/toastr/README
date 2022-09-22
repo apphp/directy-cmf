@@ -1,0 +1,45 @@
+Toastr (jQuery Plugin)
+
+Demo - http://codeseven.github.io/toastr/demo.html
+
+Usage:
+-----
+
+<!-- Register Toastr files -->
+<?php A::app()->getClientScript()->registerScriptFile('assets/vendors/toastr/toastr.min.js', 2); ?>
+<?php A::app()->getClientScript()->registerCssFile('assets/vendors/toastr/toastr.min.css'); ?>
+
+<?php
+
+A::app()->getClientScript()->registerScript(
+	'toastrMessage',
+	'jQuery(document).ready(function(){
+		// Init
+		toastr.options = {
+			"closeButton": false,
+			"debug": false,
+			"newestOnTop": false,
+			"progressBar": false,
+			"positionClass": "toast-top-right",
+			"preventDuplicates": false,
+			"onclick": null,
+			"showDuration": "300",
+			"hideDuration": "1000",
+			"timeOut": "5000",
+			"extendedTimeOut": "1000",
+			"showEasing": "swing",
+			"hideEasing": "linear",
+			"showMethod": "fadeIn",
+			"hideMethod": "fadeOut",
+			"rtl": '.(A::app()->getLanguage('direction') == 'rtl' ? 'true' : 'false').'
+		}
+		
+		// Command:
+		toastr["success"]("Are you the six fingered man?");
+		// Or
+		toastr.success("Are you the six fingered man?");
+	});',
+	1
+);
+
+?>

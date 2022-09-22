@@ -1,0 +1,22 @@
+jQuery Timepicker (jQuery Plugin)
+
+Demo - http://jonthornton.github.io/jquery-timepicker/
+
+Usage:
+-----
+
+<!-- Register timepicker files -->
+<?php A::app()->getClientScript()->registerScriptFile('assets/vendors/timepicker/jquery.timepicker.min.js', 2); ?>
+<?php A::app()->getClientScript()->registerCssFile('assets/vendors/timepicker/jquery.timepicker.min.css'); ?>
+
+<?php
+
+A::app()->getClientScript()->registerScript(
+	'timepickerExample',
+	'jQuery(document).ready(function(){
+		$(".timepicker").timepicker({ "timeFormat": "H:i:s" });
+ 	});',
+	1
+);
+
+?>

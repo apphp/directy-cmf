@@ -1,0 +1,55 @@
+Morris (pretty time-series line graphs)
+
+Usage:
+-----
+
+// Register Morris files
+A::app()->getClientScript()->registerScriptFile('assets/vendors/morris/raphael-min.js', 1);
+A::app()->getClientScript()->registerCssFile('assets/vendors/morris/morris.css');
+A::app()->getClientScript()->registerScriptFile('assets/vendors/morris/morris.js', 1);
+
+<script>
+	Morris.Donut({
+	  element: 'graph3',
+	  data: [
+		{value: 70, label: 'foo'},
+		{value: 15, label: 'bar'},
+		{value: 10, label: 'baz'},
+		{value: 5, label: 'A really really long label'}
+	  ],
+		colors: [
+		'#0BA462',
+		'#B53980',
+		'#C69D67',
+		'#95BBD7'
+	  ],  
+	  formatter: function (x) { return x + "%"}
+	}).on('click', function(i, row){
+	  console.log(i, row);
+	});
+	
+	
+	Morris.Area({
+	  element: 'graphOrderIncome',
+	  data: [
+		  {"elapsed": "Jan", "value": 0},
+		  {"elapsed": "Feb", "value": 0},
+		  {"elapsed": "Mar", "value": 2},
+		  {"elapsed": "Apr", "value": 1},
+		  {"elapsed": "May", "value": 0},
+		  {"elapsed": "Jun", "value": 0},
+		  {"elapsed": "Jul", "value": 0},
+		  {"elapsed": "Aug", "value": 0},
+		  {"elapsed": "Sep", "value": 0},
+		  {"elapsed": "Oct", "value": 0},
+		  {"elapsed": "Nov", "value": 0},
+		  {"elapsed": "Dec", "value": 0},
+	  ],
+	  xkey: 'elapsed',
+	  ykeys: ['value'],
+	  labels: ['value'],
+	  parseTime: false
+	});	
+</script>
+
+SEE more examples on https://morrisjs.github.io/morris.js/bars.html

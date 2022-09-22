@@ -1,0 +1,960 @@
+﻿
+/* Form - iOS Override */
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"],
+textarea {
+    -webkit-appearance: none;
+}
+
+.form-control::-webkit-input-placeholder,
+input[type="text"]::-webkit-input-placeholder,
+input[type="password"]::-webkit-input-placeholder,
+input[type="datetime"]::-webkit-input-placeholder,
+input[type="datetime-local"]::-webkit-input-placeholder,
+input[type="date"]::-webkit-input-placeholder,
+input[type="month"]::-webkit-input-placeholder,
+input[type="time"]::-webkit-input-placeholder,
+input[type="week"]::-webkit-input-placeholder,
+input[type="number"]::-webkit-input-placeholder,
+input[type="email"]::-webkit-input-placeholder,
+input[type="url"]::-webkit-input-placeholder,
+input[type="search"]::-webkit-input-placeholder,
+input[type="tel"]::-webkit-input-placeholder,
+input[type="color"]::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+    color: #bdbdbd;
+}
+
+.form-control::-moz-placeholder,
+input[type="text"]::-moz-placeholder,
+input[type="password"]::-moz-placeholder,
+input[type="datetime"]::-moz-placeholder,
+input[type="datetime-local"]::-moz-placeholder,
+input[type="date"]::-moz-placeholder,
+input[type="month"]::-moz-placeholder,
+input[type="time"]::-moz-placeholder,
+input[type="week"]::-moz-placeholder,
+input[type="number"]::-moz-placeholder,
+input[type="email"]::-moz-placeholder,
+input[type="url"]::-moz-placeholder,
+input[type="search"]::-moz-placeholder,
+input[type="tel"]::-moz-placeholder,
+input[type="color"]::-moz-placeholder,
+textarea::-moz-placeholder {
+    color: #bdbdbd;
+}
+
+.form-control:-ms-input-placeholder,
+input[type="text"]:-ms-input-placeholder,
+input[type="password"]:-ms-input-placeholder,
+input[type="datetime"]:-ms-input-placeholder,
+input[type="datetime-local"]:-ms-input-placeholder,
+input[type="date"]:-ms-input-placeholder,
+input[type="month"]:-ms-input-placeholder,
+input[type="time"]:-ms-input-placeholder,
+input[type="week"]:-ms-input-placeholder,
+input[type="number"]:-ms-input-placeholder,
+input[type="email"]:-ms-input-placeholder,
+input[type="url"]:-ms-input-placeholder,
+input[type="search"]:-ms-input-placeholder,
+input[type="tel"]:-ms-input-placeholder,
+input[type="color"]:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+    color: #bdbdbd;
+}
+
+/* Form - Bootstrap Override */
+.btn-lg,
+.btn-group-lg > .btn {
+    line-height: 1.334;
+}
+
+select.input-sm, select.input-lg {
+    line-height: 1;
+}
+
+/* Form - Custom Fields */
+.required {
+    display: inline-block;
+    color: #d2322d;
+    font-size: 0.8em;
+    font-weight: bold;
+    position: relative;
+    top: -0.2em;
+}
+
+label.error {
+    color: #B94A48;
+    margin-top: 2px;
+}
+
+/* Form - Group Override */
+.form-group:after {
+    clear: both;
+    display: block;
+    content: '';
+}
+
+.form-group:last-child, .form-group:last-of-type {
+    margin-bottom: 0;
+}
+
+/* Form - Bordered */
+.form-bordered .form-group {
+    border-bottom: 1px solid #eff2f7;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.form-bordered .form-group:last-child, .form-bordered .form-group:last-of-type {
+    border-bottom: none !important;
+    padding-bottom: 0px !important;
+    margin-bottom: 0px !important;
+}
+
+
+/* Form - Vertical Group / Stacked */
+.form-group-vertical {
+    position: relative;
+    white-space: nowrap;
+}
+
+.form-group-vertical .form-control {
+    border-radius: 0;
+    margin-top: -1px;
+    z-index: 1;
+}
+
+.form-group-vertical .form-control:first-child, .form-group-vertical .form-control:first-of-type {
+    border-radius: 4px 4px 0 0;
+}
+
+.form-group-vertical .form-control:last-child, .form-group-vertical .form-control:last-of-type {
+    border-radius: 0 0 4px 4px;
+}
+
+.form-group-vertical .form-control:focus {
+    position: relative;
+    z-index: 2;
+}
+
+.form-group-vertical .input-group {
+    margin-top: -1px;
+}
+
+.form-group-vertical .input-group .form-control {
+    margin-top: 0;
+}
+
+.form-group-vertical .input-group:first-child .input-group-addon, .form-group-vertical .input-group:first-of-type .input-group-addon {
+    border-radius: 4px 0 0 0;
+}
+
+.form-group-vertical .input-group:first-child .form-control, .form-group-vertical .input-group:first-of-type .form-control {
+    border-radius: 0 4px 0 0;
+}
+
+.form-group-vertical .input-group:last-child .input-group-addon, .form-group-vertical .input-group:last-of-type .input-group-addon {
+    border-radius: 0 0 0 4px;
+}
+
+.form-group-vertical .input-group:last-child .form-control, .form-group-vertical .input-group:last-of-type .form-control {
+    border-radius: 0 0 4px 0;
+}
+
+.form-group-vertical .input-group.input-group-icon:first-child .input-group-addon, .form-group-vertical .input-group.input-group-icon:first-of-type .input-group-addon {
+    border-radius: 4px 4px 0 0;
+}
+
+.form-group-vertical .input-group.input-group-icon:first-child .form-control, .form-group-vertical .input-group.input-group-icon:first-of-type .form-control {
+    border-radius: 4px 4px 0 0;
+}
+
+.form-group-vertical .input-group.input-group-icon:last-child .input-group-addon, .form-group-vertical .input-group.input-group-icon:last-of-type .input-group-addon {
+    border-radius: 0 0 4px 4px;
+}
+
+.form-group-vertical .input-group.input-group-icon:last-child .form-control, .form-group-vertical .input-group.input-group-icon:last-of-type .form-control {
+    border-radius: 0 0 4px 4px;
+}
+
+/* Form - Input Override */
+.input-lg {
+    border-radius: 4px;
+}
+
+/* Form - Input Icon */
+.input-group-icon,
+.input-search {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.input-group-icon input.form-control,
+.input-search input.form-control {
+    font-size: 12px;
+    font-size: 1.2rem;
+    padding-right: 36px;
+}
+
+.input-group-icon input.form-control:first-child, .input-group-icon input.form-control:last-child,
+.input-search input.form-control:first-child,
+.input-search input.form-control:last-child {
+    border-radius: 4px;
+}
+
+.input-group-icon .input-group-btn,
+.input-search .input-group-btn {
+    border-radius: 500px;
+    width: 0;
+}
+
+.input-group-icon .input-group-btn:first-child, .input-group-icon .input-group-btn:last-child,
+.input-search .input-group-btn:first-child,
+.input-search .input-group-btn:last-child {
+    border-radius: 500px;
+}
+
+.input-group-icon .input-group-btn button,
+.input-search .input-group-btn button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    border: 0;
+    z-index: 3;
+    background: transparent;
+}
+
+.input-group-icon .input-group-btn button:active,
+.input-search .input-group-btn button:active {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.input-group-icon .input-group-btn:last-child button,
+.input-search .input-group-btn:last-child button {
+    left: auto;
+    right: 0;
+}
+
+.input-group-icon .input-group-btn + input.form-control,
+.input-search .input-group-btn + input.form-control {
+    padding-right: 12px;
+    padding-left: 36px;
+}
+
+.input-group-icon .input-group-addon,
+.input-search .input-group-addon {
+    position: relative;
+    padding: 0;
+    border: 0 none;
+    width: 0;
+}
+
+.input-group-icon .input-group-addon span.icon,
+.input-search .input-group-addon span.icon {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    border: 0;
+    z-index: 3;
+    width: auto;
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
+    padding: 10px 12px;
+    background: transparent;
+    line-height: 1.42857143;
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    pointer-events: none;
+}
+
+.input-group-icon .input-group-addon span.icon.icon-lg,
+.input-search .input-group-addon span.icon.icon-lg {
+    padding: 10px 14px;
+    font-size: 18px;
+}
+
+.input-group-icon .input-group-addon:last-child span.icon,
+.input-search .input-group-addon:last-child span.icon {
+    left: auto;
+    right: 0;
+}
+
+.input-group-icon .input-group-addon + input.form-control,
+.input-search .input-group-addon + input.form-control {
+    padding-right: 12px;
+    padding-left: 36px;
+}
+
+
+/* Form - Round Input */
+input.input-rounded {
+    -webkit-border-radius: 500px;
+    border-radius: 500px;
+}
+
+.input-group-rounded input.form-control,
+.input-search input.form-control {
+    -webkit-border-radius: 500px;
+    border-radius: 500px;
+}
+
+.input-group-rounded input.form-control:first-child, .input-group-rounded input.form-control:last-child,
+.input-search input.form-control:first-child,
+.input-search input.form-control:last-child {
+    border-radius: 500px;
+}
+
+.input-group-rounded .input-group-addon:first-child,
+.input-search .input-group-addon:first-child {
+    border-radius: 500px 0 0 500px;
+}
+
+.input-group-rounded .input-group-addon:last-child,
+.input-search .input-group-addon:last-child {
+    border-radius: 0 500px 500px 0;
+}
+
+/* Form - Custom Checkbox */
+.checkbox-custom {
+    position: relative;
+    padding: 0 0 0 25px;
+    margin-bottom: 7px;
+    margin-top: 0;
+}
+
+.checkbox-custom.checkbox-inline {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.form-group .checkbox-custom.checkbox-inline {
+    margin-top: 7px;
+    padding-top: 0;
+}
+
+.checkbox-custom:last-child, .checkbox-custom:last-of-type {
+    margin-bottom: 0;
+}
+
+.checkbox-custom input[type="checkbox"] {
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: 3px;
+    margin: -6px 0 0 0;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.checkbox-custom input[type="checkbox"]:checked + label:after {
+    position: absolute;
+    display: inline-block;
+    font-family: 'FontAwesome';
+    content: '\F00C';
+    top: 50%;
+    left: 4px;
+    margin-top: -5px;
+    font-size: 11px;
+    line-height: 1;
+    width: 16px;
+    height: 16px;
+    color: #333;
+}
+
+.checkbox-custom input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+}
+
+.checkbox-custom input[type="checkbox"]:disabled:checked + label:after {
+    color: #999;
+}
+
+.checkbox-custom input[type="checkbox"]:disabled + label {
+    cursor: not-allowed;
+}
+
+.checkbox-custom input[type="checkbox"]:disabled + label:before {
+    background-color: #eee;
+}
+
+.checkbox-custom label {
+    cursor: pointer;
+    margin-bottom: 0;
+    text-align: left;
+    line-height: 1.2;
+}
+
+.checkbox-custom label:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin-top: -9px;
+    width: 19px;
+    height: 18px;
+    display: inline-block;
+    border-radius: 2px;
+    border: 1px solid #bbb;
+    background: #fff;
+}
+
+.checkbox-custom label + label.error {
+    display: block;
+}
+
+.checkbox-primary input[type="checkbox"]:checked + label:after {
+    color: #fff;
+}
+
+.checkbox-primary label:before {
+    background: #cccccc;
+    border-color: #bfbfbf;
+}
+
+.checkbox-text-primary input[type="checkbox"]:checked + label:after {
+    color: #cccccc;
+}
+
+.checkbox-success input[type="checkbox"]:checked + label:after {
+    color: #fff;
+}
+
+.checkbox-success label:before {
+    background: #47a447;
+    border-color: #3f923f;
+}
+
+.checkbox-text-success input[type="checkbox"]:checked + label:after {
+    color: #47a447;
+}
+
+.checkbox-warning input[type="checkbox"]:checked + label:after {
+    color: #fff;
+}
+
+.checkbox-warning label:before {
+    background: #ed9c28;
+    border-color: #e89113;
+}
+
+.checkbox-text-warning input[type="checkbox"]:checked + label:after {
+    color: #ed9c28;
+}
+
+.checkbox-danger input[type="checkbox"]:checked + label:after {
+    color: #fff;
+}
+
+.checkbox-danger label:before {
+    background: #d2322d;
+    border-color: #bd2d29;
+}
+
+.checkbox-text-danger input[type="checkbox"]:checked + label:after {
+    color: #d2322d;
+}
+
+.checkbox-info input[type="checkbox"]:checked + label:after {
+    color: #fff;
+}
+
+.checkbox-info label:before {
+    background: #5bc0de;
+    border-color: #46b8da;
+}
+
+.checkbox-text-info input[type="checkbox"]:checked + label:after {
+    color: #5bc0de;
+}
+
+/* Form - Custom Radio */
+.radio-custom {
+    position: relative;
+    padding: 0 0 0 25px;
+    margin-bottom: 7px;
+    margin-top: 0;
+}
+
+.radio-custom.radio-inline {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.form-group .radio-custom.radio-inline {
+    margin-top: 7px;
+    padding-top: 0;
+}
+
+.radio-custom:last-child, .radio-custom:last-of-type {
+    margin-bottom: 0;
+}
+
+.radio-custom input[type="radio"] {
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: 3px;
+    margin: -6px 0 0 0;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.radio-custom input[type="radio"]:checked + label:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 4px;
+    margin-top: -5px;
+    display: inline-block;
+    font-size: 11px;
+    line-height: 1;
+    width: 10px;
+    height: 10px;
+    background-color: #444;
+    border-radius: 50px;
+    -webkit-box-shadow: 0px 0px 1px #444;
+    box-shadow: 0px 0px 1px #444;
+}
+
+.radio-custom input[type="radio"]:disabled {
+    cursor: not-allowed;
+}
+
+.radio-custom input[type="radio"]:disabled:checked + label:after {
+    color: #999;
+}
+
+.radio-custom input[type="radio"]:disabled + label {
+    cursor: not-allowed;
+}
+
+.radio-custom input[type="radio"]:disabled + label:before {
+    background-color: #eee;
+}
+
+.radio-custom label {
+    cursor: pointer;
+    margin-bottom: 0;
+    text-align: left;
+    line-height: 1.2;
+}
+
+.radio-custom label:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin-top: -9px;
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    border-radius: 50px;
+    border: 1px solid #bbb;
+    background: #fff;
+}
+
+.radio-custom label + label.error {
+    display: block;
+}
+
+.radio-primary input[type="radio"]:checked + label:after {
+    background: #cccccc;
+    -webkit-box-shadow: 0px 0px 1px #cccccc;
+    box-shadow: 0px 0px 1px #cccccc;
+}
+
+.radio-success input[type="radio"]:checked + label:after {
+    background: #47a447;
+    -webkit-box-shadow: 0px 0px 1px #47a447;
+    box-shadow: 0px 0px 1px #47a447;
+}
+
+.radio-warning input[type="radio"]:checked + label:after {
+    background: #ed9c28;
+    -webkit-box-shadow: 0px 0px 1px #ed9c28;
+    box-shadow: 0px 0px 1px #ed9c28;
+}
+
+.radio-danger input[type="radio"]:checked + label:after {
+    background: #d2322d;
+    -webkit-box-shadow: 0px 0px 1px #d2322d;
+    box-shadow: 0px 0px 1px #d2322d;
+}
+
+.radio-info input[type="radio"]:checked + label:after {
+    background: #5bc0de;
+    -webkit-box-shadow: 0px 0px 1px #5bc0de;
+    box-shadow: 0px 0px 1px #5bc0de;
+}
+
+/* Form - Error Container */
+div.validation-message ul {
+    display: none;
+    list-style: none;
+    margin: -15px -15px 15px -15px;
+    padding: 15px;
+    border-bottom: 1px solid #FFCBCB;
+    background: #FFEFEF;
+}
+
+div.validation-message ul label.error {
+    display: block;
+    padding-left: 22px;
+    position: relative;
+}
+
+div.validation-message ul label.error:before {
+    font-family: 'FontAwesome';
+    content: '\f00d';
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 16px;
+    color: #D9534F;
+    display: inline-block;
+}
+
+/* Datepicker - Input Group Addon */
+.input-daterange .input-group-addon {
+    min-width: 36px;
+}
+
+/* Datepicker - Base */
+.datepicker {
+    padding: 10px;
+    margin: 0 auto;
+    line-height: 1.1em;
+}
+
+.datepicker.datepicker-inline {
+    line-height: 1.7em;
+    width: 100%;
+}
+
+.datepicker table {
+    width: 100%;
+}
+
+.datepicker table tr td {
+    border-radius: 0;
+}
+
+.datepicker table thead tr th {
+    cursor: pointer;
+    font-size: 13px;
+    font-size: 1.3rem;
+    text-align: center;
+    font-weight: normal;
+}
+
+.datepicker table thead tr th.prev {
+    content: '\f0d9';
+    font-family: FontAwesome;
+}
+
+.datepicker table thead tr th.next {
+    content: '\f0da';
+    font-family: FontAwesome;
+}
+
+.datepicker table td {
+    text-align: center;
+    font-size: 12px;
+    font-size: 1.2rem;
+}
+
+.datepicker table td.day {
+    -webkit-transition: background-color 0.1s ease-in 0.1s, color 0.1s ease-in 0.1s;
+    -moz-transition: background-color 0.1s ease-in 0.1s, color 0.1s ease-in 0.1s;
+    transition: background-color 0.1s ease-in 0.1s, color 0.1s ease-in 0.1s;
+    cursor: pointer;
+}
+
+/* Datepicker - Skin Default */
+.datepicker thead tr:first-child th:hover,
+.datepicker tfoot tr th:hover,
+.datepicker table tr td span:hover {
+    background: #cccccc;
+    color: white;
+}
+
+.datepicker table tbody tr td span.old,
+.datepicker table tbody tr td span.new {
+    color: #CCC;
+}
+
+.datepicker table tbody tr td span.old:hover,
+.datepicker table tbody tr td span.new:hover {
+    color: white;
+}
+
+.datepicker table tbody tr td.day:hover {
+    background: #cccccc;
+    color: white;
+}
+
+.datepicker table tbody tr td.day.active {
+    background: #b3b3b3;
+    color: white;
+}
+
+.datepicker table tbody tr td.day.new {
+    color: #777777;
+}
+
+.datepicker table tbody tr td.day.new:hover {
+    color: white;
+}
+
+/* Datepicker - Skin Primary */
+.datepicker.datepicker-primary {
+    min-width: 255px;
+}
+
+.datepicker.datepicker-primary.datepicker-inline {
+    background: #fff;
+    border: 1px solid #eee;
+}
+
+.datepicker.datepicker-primary table thead tr:first-child {
+    background-color: #cccccc;
+    color: white;
+}
+
+.datepicker.datepicker-primary table thead tr:first-child th:hover {
+    background-color: #b3b3b3;
+}
+
+.datepicker.datepicker-primary table thead tr:first-child th:first-child {
+    border-radius: 4px 0 0 0;
+}
+
+.datepicker.datepicker-primary table thead tr:first-child th:last-child {
+    border-radius: 0 4px 0 0;
+}
+
+.datepicker.datepicker-primary table thead tr:last-child {
+    background-color: #d9d9d9;
+    color: white;
+}
+
+.datepicker.datepicker-primary table thead tr:last-child th:hover {
+    background-color: #cccccc;
+}
+
+.datepicker.datepicker-primary table thead tr th {
+    border-radius: 0;
+}
+
+.spinner-buttons.btn-group-vertical .btn {
+    height: 18px;
+    margin: 0 0 0 -1px;
+    padding-left: 6px;
+    padding-right: 6px;
+    text-align: center;
+    width: 22px;
+    line-height: 14px;
+}
+
+.spinner-buttons.btn-group-vertical .btn i {
+    margin-top: -2px;
+}
+
+.spinner-buttons.btn-group-vertical .btn:first-child {
+    border-radius: 0 4px 0 0 !important;
+}
+
+.spinner-buttons.btn-group-vertical .btn:last-child {
+    border-radius: 0 0 4px !important;
+    margin-top: -1px;
+    height: 17px;
+}
+
+
+
+/* Datepicker - Input Group Addon */
+.input-daterange .input-group-addon {
+	min-width: 36px;
+}
+
+/* Datepicker - Base */
+.datepicker {
+	padding: 10px;
+	margin: 0 auto;
+	line-height: 1.1em;
+}
+
+.datepicker.datepicker-inline {
+	line-height: 1.7em;
+	width: 100%;
+}
+
+.datepicker table {
+	width: 100%;
+}
+
+.datepicker table tr td {
+	border-radius: 0;
+}
+
+.datepicker table thead tr th {
+	cursor: pointer;
+	font-size: 13px;
+	font-size: 1.3rem;
+	text-align: center;
+	font-weight: normal;
+}
+
+.datepicker table thead tr th.prev {
+	content: '\f0d9';
+	font-family: FontAwesome;
+}
+
+.datepicker table thead tr th.next {
+	content: '\f0da';
+	font-family: FontAwesome;
+}
+
+.datepicker table td {
+	text-align: center;
+	font-size: 12px;
+	font-size: 1.2rem;
+}
+
+.datepicker table td.day {
+	-webkit-transition: background-color 0.1s ease-in 0.1s, color 0.1s ease-in 0.1s;
+	-moz-transition: background-color 0.1s ease-in 0.1s, color 0.1s ease-in 0.1s;
+	transition: background-color 0.1s ease-in 0.1s, color 0.1s ease-in 0.1s;
+	cursor: pointer;
+}
+
+/* Datepicker - Skin Default */
+.datepicker thead tr:first-child th:hover,
+.datepicker tfoot tr th:hover,
+.datepicker table tr td span:hover {
+	background: #cccccc;
+	color: white;
+}
+
+.datepicker table tbody tr td span.old,
+.datepicker table tbody tr td span.new {
+	color: #CCC;
+}
+
+.datepicker table tbody tr td span.old:hover,
+.datepicker table tbody tr td span.new:hover {
+	color: white;
+}
+
+.datepicker table tbody tr td.day:hover {
+	background: #cccccc;
+	color: white;
+}
+
+.datepicker table tbody tr td.day.active {
+	background: #b3b3b3;
+	color: white;
+}
+
+.datepicker table tbody tr td.day.new {
+	color: #777777;
+}
+
+.datepicker table tbody tr td.day.new:hover {
+	color: white;
+}
+
+/* Datepicker - Skin Dark */
+.datepicker.datepicker-dark {
+	background: #33363F;
+}
+
+.datepicker.datepicker-dark table thead tr th.datepicker-switch {
+	color: white;
+}
+
+.datepicker.datepicker-dark table thead tr th.dow {
+	color: #777777;
+}
+
+.datepicker.datepicker-dark table tbody tr td span.old,
+.datepicker.datepicker-dark table tbody tr td span.new {
+	color: #444;
+}
+
+.datepicker.datepicker-dark table tbody tr td span.old:hover,
+.datepicker.datepicker-dark table tbody tr td span.new:hover {
+	color: white;
+}
+
+.datepicker.datepicker-dark table tbody tr td.day {
+	color: white;
+}
+
+.datepicker.datepicker-dark table tbody tr td.day:hover {
+	background: #cccccc;
+	color: white;
+}
+
+.datepicker.datepicker-dark table tbody tr td.day.active {
+	background: #b3b3b3;
+	color: white;
+}
+
+.datepicker.datepicker-dark table tbody tr td.day.new {
+	color: #777777;
+}
+
+.datepicker.datepicker-dark table tbody tr td.day.new:hover {
+	color: white;
+}
+
+.datepicker.dropdown-menu th,
+.datepicker.dropdown-menu td {
+  padding: 4px 5px;
+}
+
+
+/* DatePicker: Primary */
+.datepicker.datepicker-primary table thead tr:first-child {
+	background-color: #0088cc;
+}
+
+.datepicker.datepicker-primary table thead tr:first-child th:hover {
+	background-color: #006699;
+}
+
+.datepicker.datepicker-primary table thead tr:last-child {
+	background-color: #0099e6;
+}
+
+.datepicker.datepicker-primary table thead tr:last-child th:hover {
+	background-color: #0088cc;
+}
+
+.datepicker.datepicker-primary table tbody tr td.day:hover {
+	background: #0088cc;
+}
+
+.datepicker.datepicker-primary table tbody tr td.day.active {
+	background: #0088cc;
+}
+

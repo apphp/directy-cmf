@@ -1,0 +1,15 @@
+TipTip (Tooltip jQuery plug-in)
+
+Usage:
+-----
+
+<!-- tooltip files -->
+<?= CHtml::scriptFile('assets/vendors/tooltip/jquery.tipTip.min.js'); ?>
+<?= CHtml::cssFile('assets/vendors/tooltip/tipTip.css'); ?>
+
+
+<!-- Link -->
+<a class="tooltip-link" title="Enter text for this tooltip." href="#"></a>
+<!-- Help Icon -->
+<a class="tooltip-icon" title="Enter text for this tooltip."></a>
+

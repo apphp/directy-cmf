@@ -1,0 +1,15 @@
+TinyMCE (WYSIWYG editor)
+
+Usage:
+-----
+
+<!-- register tinymce files -->
+<?php A::app()->getClientScript()->registerScriptFile('assets/vendors/tinymce/tiny_mce.js'); ?>
+<?php A::app()->getClientScript()->registerScriptFile('assets/vendors/tinymce/config.js'); ?>
+<?php A::app()->getClientScript()->registerCssFile('assets/vendors/tinymce/general.css'); ?>
+
+<textarea id="page_text" name="page_text" class="full" maxlength="10000"></textarea>
+
+<?php
+	A::app()->getClientScript()->registerScript('setTinyMceEditor', 'setEditor("page_text",'.(($errorField == 'page_text') ? 'true' : 'false').');', 2);
+?>
