@@ -41,7 +41,7 @@
 					'type'          => 'imageupload',
 					'title'         => A::t('app', 'Icon Image Label'),
 					'validation'    => array('required'=>false, 'type'=>'image', 'maxSize'=>'100k', 'targetPath'=>'images/flags/', 'mimeType'=>'image/jpeg, image/png, image/gif, image/jpg', 'fileName'=>''),
-					'imageOptions'  => array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'imageClass'=>'icon'),
+					'imageOptions'  => array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'showImageDimensions'=>true, 'imageClass'=>'icon'),
 					'deleteOptions' => array('showLink'=>true, 'linkUrl'=>'languages/edit/id/'.$language->id.'/icon/delete', 'linkText'=>A::t('app', 'Delete')),
 					'fileOptions'   => array('showAlways'=>false, 'class'=>'file', 'size'=>'25', 'filePath'=>'images/flags/')
 				),

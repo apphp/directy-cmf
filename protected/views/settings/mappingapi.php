@@ -32,7 +32,7 @@
 				'fields'=>array(
 					'act'      		   => array('type'=>'hidden', 'value'=>'send'),
 					'mapping_api_type' => array('type'=>'select', 'value'=>$mappingType, 'title'=>A::t('app', 'Mapping API Type'), 'tooltip'=>A::t('app', ''), 'data'=>$mappingTypes, 'mandatoryStar'=>true, 'htmlOptions'=>array('__submit'=>'$(this).closest("form").find("input[name=act]").val("changeTemp");$(this).closest("form").submit();')),
-					'mapping_api_key'  => array('type'=>'textbox', 'value'=>$mappingTypeKey, 'title'=>A::t('app', 'Mapping API Key'), 'tooltip'=>'', 'mandatoryStar'=>false, 'htmlOptions'=>array('maxLength'=>'70')),
+					'mapping_api_key'  => array('type'=>'textbox', 'value'=>$mappingTypeKey, 'title'=>A::t('app', 'Mapping API Key'), 'tooltip'=>'', 'mandatoryStar'=>false, 'htmlOptions'=>array('maxLength'=>'50')),
 				),				
 				'buttons'=>Admins::hasPrivilege('site_settings', 'edit') ? 
 					array(

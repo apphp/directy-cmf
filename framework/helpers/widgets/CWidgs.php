@@ -94,12 +94,12 @@ class CWidgs
 		$result = null;
 		
 		if($parts == 1){
-			if(isset(self::$_params[$paramParts[0]])){
+			if(array_key_exists($paramParts[0], self::$_params)){
 				if($validation == 'is_array'){
 					if(is_array(self::$_params[$paramParts[0]])){
 						$result = self::$_params[$paramParts[0]];
 					}
-				}else if($validation == 'in_array'){
+				}elseif($validation == 'in_array'){
 					if(in_array(self::$_params[$paramParts[0]], $validationData)){
 						$result = self::$_params[$paramParts[0]];
 					}				
@@ -107,12 +107,12 @@ class CWidgs
 					$result = self::$_params[$paramParts[0]];
 				}				
 			}
-		}else if($parts == 2){
-			if(isset(self::$_params[$paramParts[0]][$paramParts[1]])){
+		}elseif($parts == 2){
+			if(array_key_exists($paramParts[0], self::$_params) && array_key_exists($paramParts[1], self::$_params[$paramParts[0]])){
 				$result = self::$_params[$paramParts[0]][$paramParts[1]];
 			}			
-		}else if($parts == 3){
-			if(isset(self::$_params[$paramParts[0]][$paramParts[1]][$paramParts[2]])){
+		}elseif($parts == 3){
+			if(array_key_exists($paramParts[0], self::$_params) && array_key_exists($paramParts[1], self::$_params[$paramParts[0]]) && array_key_exists($paramParts[2], self::$_params[$paramParts[0]][$paramParts[1]])){
 				$result = self::$_params[$paramParts[0]][$paramParts[1]][$paramParts[2]];
 			}			
 		}
@@ -140,7 +140,7 @@ class CWidgs
 		$result = null;
 		
 		if($parts == 1){
-			if(isset($array[$paramParts[0]])){
+			if(array_key_exists($paramParts[0], $array)){
 				if($validation == 'is_array'){
 					if(is_array($result = $array[$paramParts[0]])){
 						$result = $array[$paramParts[0]];
@@ -149,8 +149,8 @@ class CWidgs
 					$result = $array[$paramParts[0]];
 				}				
 			}
-		}else if($parts == 2){
-			if(isset($array[$paramParts[0]][$paramParts[1]])){
+		}elseif($parts == 2){
+			if(array_key_exists($paramParts[0], $array) && array_key_exists($paramParts[1], $array[$paramParts[0]])){
 				$result = $array[$paramParts[0]][$paramParts[1]];
 			}			
 		}
@@ -159,7 +159,7 @@ class CWidgs
 	}
 	
 	/**
-	 * Cehck if specified key exists in a given array 
+	 * Checks if specified key exists in a given array 
 	 * This implement by converting the key to lower case first if {@link caseSensitive} is false
 	 * @param mixed $key the key
 	 * @param array &$array
@@ -167,6 +167,10 @@ class CWidgs
 	 */	
 	protected static function issetKey($key, &$array = array())
 	{
+		if(empty($array) || !is_array($array)){
+			return false;
+		}
+
 		if(!self::$_caseSensitive){
 			$key = (self::$_case === CASE_UPPER) ? strtoupper($key) : strtolower($key);
 		}
@@ -174,12 +178,13 @@ class CWidgs
 		$paramParts = explode('.', $key);
 		$parts = count($paramParts);
 		
+		// Take the performance advantage of isset() while keeping the NULL element correctly detected
 		if($parts == 1){
-			return isset($array[$paramParts[0]]) ? true : false;
-		}else if($parts == 2){
-			return isset($array[$paramParts[0]][$paramParts[1]]) ? true : false;
+			return isset($array[$paramParts[0]]) || array_key_exists($paramParts[0], $array) ? true : false;
+		}elseif($parts == 2){
+			return isset($array[$paramParts[0]][$paramParts[1]]) || (array_key_exists($paramParts[0], $array) && is_array($array[$paramParts[0]]) && array_key_exists($paramParts[1], $array[$paramParts[0]])) ? true : false;
         }else{
-            return isset($array[$key]) ? true : false;
+			return isset($array[$key]) || array_key_exists($key, $array) ? true : false;
 		}
 	}
 
@@ -196,7 +201,7 @@ class CWidgs
 			$key = (self::$_case === CASE_UPPER) ? strtoupper($key) : strtolower($key);
 		}
 		
-		if(isset($array[$key])){
+		if(array_key_exists($key, $array)){
 			unset($array[$key]);
 		}
 	}

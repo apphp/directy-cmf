@@ -29,7 +29,7 @@
                 'filters'		=> array(),
                 'fields'		=> array(
                     'name'         => array('title'=>A::t('app', 'Payment Provider'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left', 'width'=>'150px'),
-                    'description'  => array('title'=>A::t('app', 'Description'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left'),
+                    'description'  => array('title'=>A::t('app', 'Description'), 'type'=>'label', 'maxLength'=>85, 'showTooltip'=>true, 'class'=>'left', 'headerClass'=>'left'),
                 	'used_on'	   => array('title'=>A::t('app', 'Used On'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>$usedOn, 'width'=>'110px'),
 					'mode'   	   => array('title'=>A::t('app', 'Mode'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>$modes, 'width'=>'110px'),
 					'sort_order'   => array('title'=>A::t('app', 'Sort Order'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'85px'),

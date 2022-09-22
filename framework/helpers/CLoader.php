@@ -92,7 +92,7 @@ class CLoader
 						include(APPHP_PATH.DS.$fullPath);
 						$buffer = ob_get_contents();
 						ob_end_clean();
-
+						
                         return $buffer;
 					}else{
 						include_once(APPHP_PATH.DS.$fullPath);	
@@ -111,9 +111,8 @@ class CLoader
     public static function config($module = '', $name = '')
     {
         if(!empty($module) && !empty($name)){
-
             $configFile = APPHP_PATH.DS.'protected'.DS.'modules'.DS.$module.DS.'config'.DS.$name.'.php';
-
+			
             if(file_exists($configFile)){
                 return include($configFile);
             }

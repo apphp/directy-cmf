@@ -156,17 +156,31 @@ class SocialNetworksController extends CController
         if(!Admins::hasPrivilege('social_networks', 'edit')){
             $this->redirect('socialNetworks/manage');
         }
-        $socialNetwork = SocialNetworks::model()->findbyPk((int)$id);
 
+		$alert = '';
+		$alertType = '';
+
+        $socialNetwork = SocialNetworks::model()->findbyPk((int)$id);
         if(!empty($socialNetwork)){
-            if(SocialNetworks::model()->updateByPk($socialNetwork->id, array('is_active'=>($socialNetwork->is_active == 1 ? '0' : '1')))){
-                A::app()->getSession()->setFlash('alert', A::t('app', 'Status has been successfully changed!'));
-                A::app()->getSession()->setFlash('alertType', 'success');
-            }else{
-                A::app()->getSession()->setFlash('alert', A::t('app', 'Status changing error'));
-                A::app()->getSession()->setFlash('alertType', 'error');
-            }
+			if(APPHP_MODE == 'demo'){
+				$alert = A::t('app', 'This operation is blocked in Demo Mode!');
+				$alertType = 'warning';
+			}else{
+				if(SocialNetworks::model()->updateByPk($socialNetwork->id, array('is_active'=>($socialNetwork->is_active == 1 ? '0' : '1')))){
+					$alert = A::t('app', 'Status has been successfully changed!');
+					$alertType = 'success';
+				}else{
+					$alert = A::t('app', 'Status changing error');
+					$alertType = 'error';
+				}
+			}
         }
+
+		if(!empty($alert) && !empty($alertType)){
+			A::app()->getSession()->setFlash('alert', $alert);
+			A::app()->getSession()->setFlash('alertType', $alertType);
+		}
+
         $this->redirect('socialNetworks/manage');
     }
 
@@ -188,8 +202,7 @@ class SocialNetworksController extends CController
         if(!empty($socialNetwork)){
             $icon = $socialNetwork->icon;
             $imagePath = 'images/social_networks/'.$icon;
-            if($socialNetwork->delete())
-            {
+            if($socialNetwork->delete()){
                 if($icon ? CFile::deleteFile($imagePath) : true){
                     $alert = A::t('app', 'Icon successfully deleted');
                     $alertType = 'success';
@@ -253,12 +266,10 @@ class SocialNetworksController extends CController
         }
         $socialLogin = $this->_checkSocialLoginAccess($id);
 
-        $alert = A::app()->getSession()->getFlash('alert');
-        $alertType = A::app()->getSession()->getFlash('alertType');
-
         if($image == 'delete'){
             $iconPath = 'images/social_login/'.$socialLogin->button_image;
             $socialLogin->button_image = '';
+			$alert = $alertType = '';
 
             // Save the changes in admins table
             if($socialLogin->save()){
@@ -280,10 +291,9 @@ class SocialNetworksController extends CController
                 }
             }
 
-        }
-
-        if(!empty($alertType)){
-            $this->_view->actionMessage = CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
+			if(!empty($alertType)){
+				$this->_view->actionMessage = CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
+			}
         }
 
         $this->_view->tabs = $this->_prepareTab('login');
@@ -305,19 +315,32 @@ class SocialNetworksController extends CController
             $this->redirect('socialNetworks/login');
         }
         
+		$alert = '';
+		$alertType = '';
+
 		$socialLogin = SocialNetworksLogin::model()->findbyPk((int)$id);
         if(!empty($socialLogin)){
-			if($socialLogin->application_id == ''){
-                A::app()->getSession()->setFlash('alert', A::t('app', 'Change of status is not possible due to the fact that the Application ID is empty!'));
-                A::app()->getSession()->setFlash('alertType', 'error');				
-			}else if($socialLogin->application_id && SocialNetworksLogin::model()->updateByPk($socialLogin->id, array('is_active'=>($socialLogin->is_active == 1 ? '0' : '1')))){
-                A::app()->getSession()->setFlash('alert', A::t('app', 'Status has been successfully changed!'));
-                A::app()->getSession()->setFlash('alertType', 'success');
-            }else{
-                A::app()->getSession()->setFlash('alert', A::t('app', 'Status changing error'));
-                A::app()->getSession()->setFlash('alertType', 'error');
-            }
+			if(APPHP_MODE == 'demo'){
+				$alert = A::t('app', 'This operation is blocked in Demo Mode!');
+				$alertType = 'warning';
+			}else{
+				if($socialLogin->application_id == ''){
+					$alert = A::t('app', 'Change of status is not possible due to the fact that the Application ID is empty!');
+					$alertType = 'error';
+				}elseif($socialLogin->application_id && SocialNetworksLogin::model()->updateByPk($socialLogin->id, array('is_active'=>($socialLogin->is_active == 1 ? '0' : '1')))){
+					$alert = A::t('app', 'Status has been successfully changed!');
+					$alertType = 'success';
+				}else{
+					$alert = A::t('app', 'Status changing error');
+					$alertType = 'error';
+				}			
+			}
         }
+		
+		if(!empty($alert) && !empty($alertType)){
+			A::app()->getSession()->setFlash('alert', $alert);
+			A::app()->getSession()->setFlash('alertType', $alertType);
+		}
 		
         $this->redirect('socialNetworks/login');
     }
@@ -365,37 +388,39 @@ class SocialNetworksController extends CController
                     COauth::login($type);
                 }
             }
-        }else if(!empty($opauthInfo)){
+        }elseif(!empty($opauthInfo)){
             $this->_view->allowRememberMe = 0;
 
             if(isset($opauthInfo['error'])){
                 $alertType = 'error';
                 $alert = $opauthInfo['error']['message'];
-            }else if(isset($opauthInfo['auth']) && is_array($opauthInfo['auth'])){
+            }elseif(isset($opauthInfo['auth']) && is_array($opauthInfo['auth'])){
                 $provider = strtolower($opauthInfo['auth']['provider']);
                 $uid = isset($opauthInfo['auth']['uid']) ? $opauthInfo['auth']['uid'] : '';
                 $authInfo = isset($opauthInfo['auth']['info']) ? $opauthInfo['auth']['info'] : array();
+				$errors = array();
+				
                 if($provider == 'google'){
                     $username = $uid.'_gl';
                     $firstName = isset($authInfo['first_name']) ? $authInfo['first_name'] : '';
                     $lastName = isset($authInfo['last_name']) ? $authInfo['last_name'] : '';
                     $email = isset($authInfo['email']) ? $authInfo['email'] : '';
                     $image = isset($authInfo['image']) ? $authInfo['image'] : '';
-                }else if($provider == 'facebook'){
+                }elseif($provider == 'facebook'){
                     $username = $uid.'_fb';
                     $explName = isset($authInfo['name']) ? explode(' ', $authInfo['name']) : array();
                     $firstName = isset($authInfo['first_name']) ? $authInfo['first_name'] : (isset($explName[0]) ? $explName[0] : '');
                     $lastName = isset($authInfo['last_name']) ? $authInfo['last_name'] : (isset($explName[1]) ? $explName[1] : '');
                     $email = isset($authInfo['email']) ? $authInfo['email'] : $uid.'-fb@facebook.com';
                     $image = isset($authInfo['image']) ? $authInfo['image'] : '';
-                }else if($provider == 'twitter'){
+                }elseif($provider == 'twitter'){
                     $username = $uid.'_tw';
                     $explName = isset($authInfo['name']) ? explode(' ', $authInfo['name']) : array();
                     $firstName = isset($authInfo['first_name']) ? $authInfo['first_name'] : (isset($explName[0]) ? $explName[0] : '');
                     $lastName = isset($authInfo['last_name']) ? $authInfo['last_name'] : (isset($explName[1]) ? $explName[1] : '');
                     $email = isset($authInfo['email']) ? $authInfo['email'] : $uid.'-tw@twitter.com';
                     $image = isset($authInfo['image']) ? $authInfo['image'] : '';
-                }else if($provider == 'linkedin'){
+                }elseif($provider == 'linkedin'){
                     $username = $uid.'_ln';
                     $explName = isset($authInfo['name']) ? explode(' ', $authInfo['name']) : array();
                     $firstName = isset($authInfo['first_name']) ? $authInfo['first_name'] : (isset($explName[0]) ? $explName[0] : '');
@@ -407,6 +432,9 @@ class SocialNetworksController extends CController
                 if((empty($uid) && !empty($email)) || empty($model) || !class_exists($model)){
                     $alertType = 'error';
                     $alert = A::t('app', 'Input incorrect parameters');
+				}elseif(Website::checkBan('email_address', $email, $errors)){
+					$alert = $errors['alert'];
+					$alertType = $errors['alertType'];
                 }else{
                     $user = @call_user_func(array($model, 'model'));
                     if(empty($user)){

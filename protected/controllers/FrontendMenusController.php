@@ -11,7 +11,8 @@
  * addAction         		_getPagesLinks
  * editAction               _getModulesLinks
  * deleteAction             _getModulesBlock
- *                          _getDialogContent 
+ *                          _getDialogContent
+ *                          _getModulesList
  *                          _prepareSubMenuCounts
  *
  */
@@ -52,6 +53,7 @@ class FrontendMenusController extends CController
     	$this->_view->placementsList = $this->_getPlacementsList();
 		// Show all possible menu placements
 		$this->_view->placementsFilterList = $this->_getPlacementsList('all');
+		$this->_view->modulesFilterList = $this->_getModulesList();
     	$this->_view->accessLevelsList = $this->_getAccessLevelsList();
 		$this->_view->linkTargetsList = $this->_getLinkTargetsList();
 		$this->_view->menuTypesList = $this->_getMenuTypesList();
@@ -331,7 +333,7 @@ class FrontendMenusController extends CController
     private function _getPagesLinks()
     {
 		$result = array();
-        if(Modules::model()->exists("code = 'cms' AND is_installed = 1")){            
+        if(Modules::model()->isInstalled('cms')){
 			$pages = Pages::model()->findAll(array('condition'=>'publish_status = 1', 'order'=>'sort_order ASC')); 
 			foreach($pages as $key => $val){
 				$result[$val['id']] = array('id'=>$val['id'], 'link'=>'pages/view/id/'.$val['id'], 'title'=>$val['page_header']);
@@ -369,6 +371,20 @@ class FrontendMenusController extends CController
     }	
 
     /**
+     * Returns an array with available modules
+     */
+    private function _getModulesList()
+    {
+		$result = array();
+		if($modules = Modules::model()->findAll(array('order'=>'name ASC'))){
+			foreach($modules as $key => $val){
+				$result[$val['code']] = $val['name'];
+			}
+        }
+		return $result;
+    }	
+
+    /**
      * Returns a dialog content according to selected menu type
      * @param string $menuType
      * @param string $viewType
@@ -387,7 +403,7 @@ class FrontendMenusController extends CController
 			}else{
 				$output['content'] = A::t('app', 'No module links available');
 			}			
-		}else if($menuType == 'moduleblock'){
+		}elseif($menuType == 'moduleblock'){
 			$modulesBlock = $this->_view->modulesBlock;
 			$output['title'] = 'Module Blocks';
 			if(count($modulesBlock) > 0){				

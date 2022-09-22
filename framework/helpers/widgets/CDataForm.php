@@ -48,8 +48,8 @@ class CDataForm extends CWidgs
      *   - 'successCallback' - callback methods of controller (must be public methods)
      *   - 'callback'=>array('function'=>'functionName', 'params'=>$functionParams)
      *      callback of closure function that is called when item created (available for "labels" and "html" only), $record - current record
-     *      <  5.3.0 function functionName($record, $params){ return record['field_name']; }
-     *      >= 5.3.0 $functionName = function($record, $params){ return record['field_name']; }
+     *      <  5.3.0 function functionName($record, $params){ return $record['field_name']; }
+     *      >= 5.3.0 $functionName = function($record, $params){ return $record['field_name']; }
      *      Ex.: function callbackFunction($record, $params){...}
      *   - separatorName must starts from word 'separator'
      *   - select classes: 'class'=>'chosen-select-filter' or 'class'=>'chosen-select'
@@ -105,7 +105,7 @@ class CDataForm extends CWidgs
      *              'tooltip'		 	=> '',
      *              'default'		 	=> '',
      *              'validation'	 	=> array('required'=>true, 'type'=>'image', 'targetPath'=>'templates/backend/images/accounts/', 'maxSize'=>'100k', 'maxWidth'=>'120px', 'maxHeight'=>'90px', 'mimeType'=>'image/jpeg, image/png', 'fileName'=>CHash::getRandomString(10), 'filePrefix'=>'', 'filePostfix'=>'', 'htmlOptions'=>array()),
-	 *          	'imageOptions'	 	=> array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'imageClass'=>'avatar'),
+	 *          	'imageOptions'	 	=> array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'showImageDimensions'=>true, 'imageClass'=>'avatar'),
 	 *          	'thumbnailOptions'	=> array('create'=>true, 'directory'=>'', 'field'=>'', 'postfix'=>'_thumb', 'width'=>'', 'height'=>''),
 	 *          	'deleteOptions'	 	=> array('showLink'=>true, 'linkUrl'=>'admins/edit/avatar/delete', 'linkText'=>'Delete'),
 	 *          	'rotateOptions'		=> array('showLinks'=>true, 'linkRotateLeft'=>'admins/edit/rotate/left', 'linkRotateRigth'=>'admin/edit/rotate/right', 'iconRotateLeft'=>'templates/backend/images/rotateLeft.png', 'iconRotateRight'=>'templates/backend/images/rotateRight.png'),
@@ -126,7 +126,7 @@ class CDataForm extends CWidgs
      *          'field_20'=>array('type'=>'html',  		'title'=>'Title 20', 'default'=>'', 'tooltip'=>'', 'definedValues'=>array(), 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false, 'callback'=>array('function'=>$functionName, 'params'=>$functionParams)),
      *          'field_21'=>array('type'=>'link',   	'title'=>'Title 21', 'tooltip'=>'', 'linkUrl'=>'path/to/param', 'linkText'=>'', 'htmlOptions'=>array()),
      *          'field_22'=>array('type'=>'videoLink',  'title'=>'Title 22', 'tooltip'=>'', 'default'=>'', 'preview'=>false, 'validation'=>array('required'=>false, 'type'=>'url'), 'htmlOptions'=>array()),
-     *          'field_23'=>array('type'=>'datetime', 	'title'=>'Title 23', 'default'=>'', 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'date'), 'htmlOptions'=>array(), 'definedValues'=>array(), 'format'=>'', 'buttonTrigger'=>true, 'minDate'=>'', 'maxDate'=>''),
+     *          'field_23'=>array('type'=>'datetime', 	'title'=>'Title 23', 'default'=>'', 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'date'), 'htmlOptions'=>array(), 'definedValues'=>array(), 'format'=>'', 'buttonTrigger'=>true, 'minDate'=>'', 'maxDate'=>'', 'yearRange'=>'-100:+0'),
      *          'field_24'=>array('type'=>'hidden', 	'default'=>'', 'htmlOptions'=>array()),
      *          'field_25'=>array('type'=>'data', 		'default'=>''),
      *       ),
@@ -168,7 +168,7 @@ class CDataForm extends CWidgs
 		$successCallbackEdit 	= self::params('successCallback.edit', '');
 		$cancelUrl 				= self::params('cancelUrl', '');
 		$method 				= self::params('method', 'post');
-        $htmlOptions 			= self::params('htmlOptions', array(), 'is_array');
+        $htmlOptions 			= (array)self::params('htmlOptions', array(), 'is_array');
 		$requiredFieldsAlert 	= self::params('requiredFieldsAlert', false);
 		$fieldSets				= self::params('fieldSets', array(), 'is_array');
 		$fieldWrapperTag		= self::params('fieldWrapper.tag', 'div');
@@ -267,7 +267,8 @@ class CDataForm extends CWidgs
                     if(!self::issetKey($field, $recordsAssoc)) continue;
                     $vfUnique = (bool)self::keyAt('validation.unique', $fieldInfo, false);
 					$vfUniqueCondition = self::keyAt('validation.uniqueCondition', $fieldInfo, '');
-                    $vfValue = ($operationType == 'edit') ? $cRequest->getPost($field) : $cRequest->getPost($field);
+                    ///$vfValue = ($operationType == 'edit') ? $cRequest->getPost($field) : $cRequest->getPost($field);
+					$vfValue = $cRequest->getPost($field);
 					if($vfUnique && $vfValue !== ''){
 						$fieldTitle = self::keyAt('title', $fieldInfo, '');
 						$sqlCount = $tableName.'.'.$field.' = :code'.(($operationType == 'edit') ? ' AND '.$tableName.'.id != :id' : '');
@@ -294,16 +295,16 @@ class CDataForm extends CWidgs
                             $fieldValue = $cRequest->getPost($field);
 							if(self::issetKey('htmlOptions.disabled', $fieldInfo) || (self::issetKey('disabled', $fieldInfo) && $fieldInfo['disabled'] === true)){
                                 unset($recordsAssoc[$field]);
-                            }else if($validationType == 'float' && $validationFormat == 'european'){
+                            }elseif($validationType == 'float' && $validationFormat == 'european'){
                                 $fieldValue = CNumber::americanFormat($fieldValue, array('thousandSeparator'=>false));
-                            }else if($fieldType == 'checkbox' && $fieldValue == ''){
+                            }elseif($fieldType == 'checkbox' && $fieldValue == ''){
                                 // Set default value to specific fields: checkbox (if it's empty), encrypted fields and image
                                 $fieldValue = 0;
-                            }else if($fieldType == 'image'){
+                            }elseif($fieldType == 'image'){
                                 unset($recordsAssoc[$field]);
-                            }else if($fieldType == 'data'){
+                            }elseif($fieldType == 'data'){
                                 $fieldValue = self::keyAt('default', $fieldInfo, '');
-                            }else if($fieldType == 'imageupload'){
+                            }elseif($fieldType == 'imageupload'){
                                 if(!empty($_FILES[$field]['name'])){
                                     $targetPath = self::keyAt('validation.targetPath', $fieldInfo, '');
                                     $fileName = self::keyAt('validation.fileName', $fieldInfo, '');
@@ -337,7 +338,7 @@ class CDataForm extends CWidgs
                                         // Delete file if we make thumbnail on the same file
                                         if($thumbnailField == $field){
                                             CFile::deleteFile($path.$thumbnailDirectory.$fieldValue);
-                                        }else if($thumbnailField != ''){
+                                        }elseif($thumbnailField != ''){
                                             // Thumbnail created update database table
                                             $records->set($thumbnailField, $thumbFileRealName);
                                         }                                        
@@ -346,7 +347,7 @@ class CDataForm extends CWidgs
                                     $fieldValue = '';
                                     unset($recordsAssoc[$field]);
                                 }
-                            }else if($fieldType == 'fileupload'){
+                            }elseif($fieldType == 'fileupload'){
                                 if(!empty($_FILES[$field]['name'])){
                                     $targetPath = self::keyAt('validation.targetPath', $fieldInfo, '');
                                     $fileName = self::keyAt('validation.fileName', $fieldInfo, '');
@@ -366,7 +367,7 @@ class CDataForm extends CWidgs
                                     $fieldValue = '';
                                     unset($recordsAssoc[$field]);
                                 }
-                            }else if($fieldType == 'password'){
+                            }elseif($fieldType == 'password'){
                                 $fieldEncryption = (bool)self::keyAt('encryption.enabled', $fieldInfo, false);
                                 if($fieldEncryption){
                                     $encryptAlgorithm = self::keyAt('encryption.encryptAlgorithm', $fieldInfo, '');
@@ -377,7 +378,7 @@ class CDataForm extends CWidgs
                                         $fieldValue = CHash::create($encryptAlgorithm, $fieldValue, $encryptSalt);
                                     }							
                                 }
-							}else if($fieldType == 'select' && in_array($viewType, array('checkboxes', 'dropdownlist'))){
+							}elseif($fieldType == 'select' && in_array($viewType, array('checkboxes', 'dropdownlist'))){
 								$multiple = (bool)self::keyAt('multiple', $fieldInfo, false);
 								if($multiple){
 									$storeType = self::keyAt('storeType', $fieldInfo, 'separatedValues');
@@ -385,18 +386,18 @@ class CDataForm extends CWidgs
 									if(is_array($fieldValue)){
 										if($storeType == 'serialized'){									
 											$fieldValue = serialize($fieldValue);
-										}else if(is_array($fieldValue)){
+										}elseif(is_array($fieldValue)){
 											$fieldValue = implode($separator, $fieldValue);
 										}
 									}
 								}
-                            }else if($fieldValue === ''){
+                            }elseif($fieldValue === ''){
                                 if($operationType == 'add'){
                                     if(self::issetKey('default', $fieldInfo)) $fieldValue = $fieldInfo['default'];
-                                    else if(self::issetKey('defaultAddMode', $fieldInfo)) $fieldValue = $fieldInfo['defaultAddMode'];
-                                }else if($operationType == 'edit'){
+                                    elseif(self::issetKey('defaultAddMode', $fieldInfo)) $fieldValue = $fieldInfo['defaultAddMode'];
+                                }elseif($operationType == 'edit'){
 									if(self::issetKey('default', $fieldInfo)) $fieldValue = $fieldInfo['default'];
-                                    else if(self::issetKey('defaultEditMode', $fieldInfo)) $fieldValue = $fieldInfo['defaultEditMode'];
+                                    elseif(self::issetKey('defaultEditMode', $fieldInfo)) $fieldValue = $fieldInfo['defaultEditMode'];
                                 }    
                             }
                             
@@ -471,7 +472,7 @@ class CDataForm extends CWidgs
                             if($cRequest->isPostExists('btnUpdateClose')){
                                 header('location: '.$baseUrl.$successUrl);
                                 exit;
-                            }else if($cRequest->isPostExists('btnUpdate')){
+                            }elseif($cRequest->isPostExists('btnUpdate')){
                                 // Do nothing
                             }else{
                                 if($operationType == 'add') $successUrl = str_replace('{id}', $primaryKey, $successUrl);
@@ -488,7 +489,7 @@ class CDataForm extends CWidgs
                             $msg = CDatabase::init()->getErrorMessage();
                             if(!$msg) $msg = A::t('core', 'This operation is blocked in Demo Mode!');
                             $msgType = 'warning';					
-                        }else if($records->getError()){
+                        }elseif($records->getError()){
                             $msg = $records->getErrorMessage();
                             $msgType = 'error';					
                         }else{
@@ -630,9 +631,9 @@ class CDataForm extends CWidgs
 		if(in_array($cRequest->getPost('APPHP_FORM_ACT'), self::$_allowedActs)){						
 			if(preg_match('/imageupload|fileupload|label/i', $fieldType)){
 				$fieldInfo['value'] = self::keyAt($fieldInd, $recordsAssoc, '');
-			}else if(self::issetKey('htmlOptions.disabled', $fieldInfo)){
+			}elseif(self::issetKey('htmlOptions.disabled', $fieldInfo)){
 				$fieldInfo['value'] = self::keyAt($fieldInd, $recordsAssoc, '');
-			}else if($fieldType == 'hidden'){
+			}elseif($fieldType == 'hidden'){
 				$fieldInfo['value'] = self::keyAt('default', $fieldInfo, '');
 			}else{
 				$fieldInfo['value'] = $cRequest->getPost($fieldInd);
@@ -650,18 +651,18 @@ class CDataForm extends CWidgs
 				$fieldValue = self::keyAt($fieldInd, $recordsAssoc, '');
                 if($fieldType == 'password'){
 					$fieldInfo['value'] = '';
-                }else if($validationType == 'float' && $validationFormat == 'european'){
+                }elseif($validationType == 'float' && $validationFormat == 'european'){
                     $fieldInfo['value'] = CNumber::europeanFormat(self::keyAt($fieldInd, $recordsAssoc), '');		
-				}else if(empty($fieldValue) && self::issetKey('defaultEditMode', $fieldInfo)){
+				}elseif(empty($fieldValue) && self::issetKey('defaultEditMode', $fieldInfo)){
                     $fieldInfo['value'] = self::keyAt('defaultEditMode', $fieldInfo, '');                
-				}else if(in_array($fieldType, array('label', 'html'))){
+				}elseif(in_array($fieldType, array('label', 'html'))){
 					// Call of closure function on item creating event
 					$callbackFunction = self::keyAt('callback.function', $fieldInfo);
 					$callbackParams = self::keyAt('callback.params', $fieldInfo, array());
 					if(!empty($callbackFunction)){
 						if(is_callable($callbackFunction)){
 							// Calling a function
-							// For PHP_VERSION >= 5.3.0 you may use
+							// For PHP_VERSION | phpversion() >= 5.3.0 you may use
 							// $fieldValue = $callbackFunction($fieldValue, $callbackParams);
 							$fieldInfo['value'] = call_user_func($callbackFunction, $fieldValue, $callbackParams);
 						}
@@ -676,7 +677,7 @@ class CDataForm extends CWidgs
 		
 		if($fieldType == 'videolink'){
 			$formViewParams['preview'] = self::keyAt('preview', $fieldInfo, '');
-		}else if(preg_match('/imageupload|fileupload/i', $fieldType)){
+		}elseif(preg_match('/imageupload|fileupload/i', $fieldType)){
 			// Save to show on CFormView field label
 			$fieldInfo['maxSize'] = $maxSize;
 		}

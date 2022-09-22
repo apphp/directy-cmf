@@ -122,7 +122,7 @@ class RolesController extends CController
 		if($roleModel->is_system){
 			$alert = A::t('app', 'Delete System Role Alert');
 			$alertType = 'error';
-		}else if($roleModel->delete()){				
+		}elseif($roleModel->delete()){				
 			if($roleModel->getError()){
 				$alert = A::t('app', 'Delete Warning Message');
 				$alertType = 'warning';

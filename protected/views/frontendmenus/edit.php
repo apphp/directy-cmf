@@ -15,7 +15,7 @@
 	$breadCrumbs[] = array('label'=>A::t('app', 'Edit Menu'));
     $this->_breadCrumbs = $breadCrumbs;
 	
-	A::app()->getClientScript()->registerCssFile('js/vendors/jquery/jquery-ui.min.css');
+	A::app()->getClientScript()->registerCssFile('assets/vendors/jquery/jquery-ui.min.css');
 	A::app()->getClientScript()->registerScriptFile('templates/backend/js/menu.js');
 ?>
 
@@ -31,7 +31,7 @@
 		$fields['access_level'] = array('type'=>'select', 'title'=>A::t('app', 'Access'), 'data'=>$accessLevelsList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($accessLevelsList)));
 		$fields['menu_type']    = array('type'=>'select', 'title'=>A::t('app', 'Menu Type'), 'data'=>$menuTypesList, 'validation'=>array('required'=>false, 'type'=>'set', 'source'=>array_keys($menuTypesList)), 'htmlOptions'=>array('onchange'=>'changeMenuType(this)'));
 
-		$appendCode = '<a href="javascript:void(0)" onclick="$(\'#dialog\').dialog({maxHeight:400,width:320,maxWidth:600});" title="'.A::t('app', 'Set Link').'"><img style="margin-bottom:-7px;" src="js/vendors/jquery/images/set_link.png" alt="Set Link" /></a>';
+		$appendCode = '<a href="javascript:void(0)" onclick="$(\'#dialog\').dialog({maxHeight:400,width:320,maxWidth:600});" title="'.A::t('app', 'Set Link').'"><img style="margin-bottom:-7px;" src="assets/vendors/jquery/images/set_link.png" alt="Set Link" /></a>';
 		if($menuType == 'modulelink'){
 			$fields['link_target'] = array('type'=>'data', 'default'=>'_self');
 			$fields['link_url']    = array('type'=>'textbox', 'title'=>A::t('app', 'Link URL'), 'tooltip'=>'', 'validation'=>array('required'=>false, 'type'=>'any'), 'htmlOptions'=>array('readonly'=>true, 'maxlength'=>'255', 'class'=>'large'), 'appendCode'=>$appendCode);

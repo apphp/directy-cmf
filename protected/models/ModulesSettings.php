@@ -7,7 +7,6 @@
  * __construct                                    	  	_loadSettings 
  * model (static)
  * param (static)
- * get (static)
  * update
  * getSettings
  * getShortcodes
@@ -57,13 +56,15 @@ class ModulesSettings extends CActiveRecord
 	
 	/**
 	 *	Returns module settings parameter
+	 *	Ex.: ModulesSettings::model()->param('moduleName', 'paramName')
 	 *	@param string $module
 	 *	@param string $param
 	 *	@param string $type
+	 *	@return mixed
 	 */
 	public static function param($module = '', $param = '', $type = 'value')
 	{
-		return isset(self::$_arrModuleSettings[$module][$param][$type]) ? self::$_arrModuleSettings[$module][$param][$type] : '';
+		return isset(self::$_arrModuleSettings[$module][$param][$type]) ? self::$_arrModuleSettings[$module][$param][$type] : null;
 	}
 	
 	/**
@@ -94,7 +95,7 @@ class ModulesSettings extends CActiveRecord
 	}
 
 	/**
-	 * Loads all modules settings 1 time
+	 * Loads settings of all modules one time
 	 */
 	private function _loadSettings()
 	{

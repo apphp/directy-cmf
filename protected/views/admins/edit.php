@@ -40,13 +40,13 @@
 					'first_name'    	=> array('type'=>'textbox', 'title'=>A::t('app', 'First Name'), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>32), 'htmlOptions'=>array('maxlength'=>'32')),
 					'last_name'     	=> array('type'=>'textbox', 'title'=>A::t('app', 'Last Name'), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>32), 'htmlOptions'=>array('maxlength'=>'32')),
 					'display_name'  	=> array('type'=>'textbox', 'title'=>A::t('app', 'Display Name'), 'validation'=>array('required'=>false, 'type'=>'mixed', 'maxLength'=>50), 'htmlOptions'=>array('maxlength'=>'50')),
-					'birth_date'    	=> array('type'=>'datetime', 'title'=>A::t('app', 'Birth Date'), 'defaultEditMode'=>'0000-00-00', 'validation'=>array('required'=>false, 'type'=>'date', 'maxLength'=>10, 'minValue'=>'1900-00-00', 'maxValue'=>date('Y-m-d')), 'htmlOptions'=>array('maxlength'=>'10', 'style'=>'width:100px'), 'definedValues'=>array('0000-00-00'=>'')),
+					'birth_date'    	=> array('type'=>'datetime', 'title'=>A::t('app', 'Birth Date'), 'defaultEditMode'=>null, 'validation'=>array('required'=>false, 'type'=>'date', 'maxLength'=>10, 'minValue'=>'1900-00-00', 'maxValue'=>date('Y-m-d')), 'maxDate'=>'1', 'yearRange'=>'-100:+0', 'htmlOptions'=>array('maxlength'=>'10', 'style'=>'width:100px')),
 					'language_code' 	=> array('type'=>'select', 'title'=>A::t('app', 'Preferred Language'), 'data'=>$langList, 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($langList))),
 					'avatar' 		=> array(
 						'type'          => 'imageupload',
 						'title'         => A::t('app', 'Avatar'),
 						'validation'    => array('required'=>false, 'type'=>'image', 'maxSize'=>'150k', 'maxWidth'=>'200px', 'maxHeight'=>'200px', 'targetPath'=>'templates/backend/images/accounts/', 'mimeType'=>'image/jpeg, image/jpg, image/png, image/gif', 'fileName'=>'adm_'.CHash::getRandomString(10)),
-						'imageOptions'  => array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'imageClass'=>'avatar'),
+						'imageOptions'  => array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'showImageDimensions'=>true, 'imageClass'=>'avatar'),
 						'deleteOptions' => array('showLink'=>true, 'linkUrl'=>'admins/edit/id/'.$admin->id.'/avatar/delete', 'linkText'=>A::t('app', 'Delete')),
 						'fileOptions'   => array('showAlways'=>false, 'class'=>'file', 'size'=>'25', 'filePath'=>'templates/backend/images/accounts/')
 					),
@@ -67,10 +67,10 @@
 				),
 				'separatorOther' 	=> array(
 					'separatorInfo' 	=> array('legend'=>A::t('app', 'Other')),
-					'created_at'	  	=> array('type'=>'label', 'title'=>A::t('app', 'Time Created'), 'definedValues'=>array('0000-00-00 00:00:00'=>A::t('app', 'Unknown')), 'format'=>$dateTimeFormat),
-					'updated_at'	  	=> array('type'=>'label', 'title'=>A::t('app', 'Last Changed'), 'definedValues'=>array('0000-00-00 00:00:00'=>A::t('app', 'Never')), 'format'=>$dateTimeFormat),
-					'password_changed_at' => array('type'=>'label', 'title'=>A::t('app', 'Last Password Changed'), 'definedValues'=>array('0000-00-00 00:00:00'=>A::t('app', 'Never')), 'format'=>$dateTimeFormat),
-					'last_visited_at' 	=> array('type'=>'label', 'title'=>A::t('app', 'Last Visit'), 'definedValues'=>array('0000-00-00 00:00:00'=>A::t('app', 'Never')), 'format'=>$dateTimeFormat),
+					'created_at'	  	=> array('type'=>'label', 'title'=>A::t('app', 'Date Created'), 'definedValues'=>array(null=>A::t('app', 'Unknown')), 'format'=>$dateTimeFormat),
+					'updated_at'	  	=> array('type'=>'label', 'title'=>A::t('app', 'Last Changed'), 'definedValues'=>array(null=>A::t('app', 'Never')), 'format'=>$dateTimeFormat),
+					'password_changed_at' => array('type'=>'label', 'title'=>A::t('app', 'Last Password Changed'), 'definedValues'=>array(null=>A::t('app', 'Never')), 'format'=>$dateTimeFormat),
+					'last_visited_at' 	=> array('type'=>'label', 'title'=>A::t('app', 'Last Visit'), 'definedValues'=>array(null=>A::t('app', 'Never')), 'format'=>$dateTimeFormat),
 	            ),
 			),
 			'buttons'	=>	array(

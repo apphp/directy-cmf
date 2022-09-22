@@ -20,13 +20,13 @@ class CFormView extends CWidgs
 	
 	/** @const string */
     const NL = "\n";
-    /** @var string */
+    /** @var int */
     private static $_rowCount = 0;
-    /** @var string */
+    /** @var int */
     private static $_pickerCount = 0;
-    /** @var string */
+    /** @var int */
     private static $_autocompleteCount = 0;
-    /** @var string */
+    /** @var int */
     private static $_colorCount = 0;
 
     /**
@@ -74,7 +74,7 @@ class CFormView extends CWidgs
      *           'field_9'=>array('type'=>'label',    'title'=>'Field 9', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'definedValues'=>array(), 'format'=>'', 'stripTags'=>false, 'htmlOptions'=>array()),
      *          'field_10'=>array('type'=>'link',     'title'=>'Field 10', 'tooltip'=>'', 'mandatoryStar'=>true, 'linkUrl'=>'path/to/param', 'linkText'=>'', 'videoPreview'=>false, 'htmlOptions'=>array()),
      *          'field_11'=>array('type'=>'videolink','title'=>'Field 11','tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'preview'=>false, 'htmlOptions'=>array('maxLength'=>'50')),
-     *          'field_12'=>array('type'=>'datetime', 'title'=>'Field 12', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'definedValues'=>array(), 'format'=>'', 'minDate'=>'', 'maxDate'=>'', 'buttonTrigger'=>true, 'htmlOptions'=>array()),
+     *          'field_12'=>array('type'=>'datetime', 'title'=>'Field 12', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'definedValues'=>array(), 'format'=>'', 'minDate'=>'', 'maxDate'=>'', 'yearRange'=>'-100:+0', 'buttonTrigger'=>true, 'htmlOptions'=>array()),
      *          'field_13'=>array('type'=>'checkbox', 'title'=>'Field 13', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'checked'=>true, 'htmlOptions'=>array(), 'viewType'=>'|custom'),
      *          'field_14'=>array('type'=>'select',   'title'=>'Field 14', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'data'=>array(), 'emptyOption'=>false, 'emptyValue'=>'', 'viewType'=>'dropdownlist|checkboxes', 'multiple'=>false, 'storeType'=>'serialized|separatedValues', 'separator'=>';', 'htmlOptions'=>array('class'=>'chosen-select-filter')),
      *          'field_15'=>array('type'=>'color',    'title'=>'Field 15', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'htmlOptions'=>array('maxLength'=>'50')),
@@ -82,7 +82,7 @@ class CFormView extends CWidgs
      *          'field_17'=>array('type'=>'radioButton', 'title'=>'Field 17', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'checked'=>'true', 'htmlOptions'=>array()),
      *          'field_18'=>array('type'=>'radioButtonList', 'title'=>'Field 18', 'tooltip'=>'', 'mandatoryStar'=>true, 'checked'=>0, 'data'=>array(), 'htmlOptions'=>array()),
 	 *          'field_19'=>array('type'=>'imageUpload', 'title'=>'Field 19', 'tooltip'=>'', 'mandatoryStar'=>false, 'value'=>'', 
-	 *          	'imageOptions' =>array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'imageClass'=>'avatar'),
+	 *          	'imageOptions' =>array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'showImageDimensions'=>true, 'imageClass'=>'avatar'),
 	 *          	'deleteOptions'=>array('showLink'=>true, 'linkUrl'=>'admins/edit/avatar/delete', 'linkText'=>'Delete'),
 	 *          	'rotateOptions'=>array('showLinks'=>true, 'linkRotateLeft'=>'admins/edit/rotate/left', 'linkRotateRigth'=>'admin/edit/rotate/right', 'iconRotateLeft'=>'templates/backend/images/rotateLeft.png', 'iconRotateRight'=>'templates/backend/images/rotateRight.png'),
 	 *          	'fileOptions'=>array('showAlways'=>false, 'class'=>'file', 'size'=>'25', 'filePath'=>'templates/backend/files/accounts/')
@@ -146,20 +146,28 @@ class CFormView extends CWidgs
                     if(self::keyAt('type', $iFieldInfo) === 'data' || (bool)self::keyAt('disabled', $iFieldInfo) === true){
 						unset($fields[$field][$iField]);
 					}
+					
+					// Automatically add enctype according if "file" field found
+					if(!$fileFieldFound && isset($iFieldInfo['type']) && in_array(strtolower($iFieldInfo['type']), array('file', 'fileupload', 'imageupload'))){
+						$fileFieldFound = true;
+						if(empty($htmlOptions['enctype'])){
+							$htmlOptions['enctype'] = 'multipart/form-data';
+						}
+					}
                 }                
             }else{
 				if(self::keyAt('type', $fieldInfo) === 'data' || (bool)self::keyAt('disabled', $fieldInfo) === true){
 					unset($fields[$field]);
 				}
-            }
-			
-			// Automatically add enctype according if "file" field found
-			if(!$fileFieldFound && isset($fieldInfo['type']) && in_array($fieldInfo['type'], array('file', 'fileupload', 'imageupload'))){
-				$fileFieldFound = true;
-				if(empty($htmlOptions['enctype'])){
-					$htmlOptions['enctype'] = 'multipart/form-data';
+				
+				// Automatically add enctype according if "file" field found
+				if(!$fileFieldFound && isset($fieldInfo['type']) && in_array(strtolower($fieldInfo['type']), array('file', 'fileupload', 'imageupload'))){	
+					$fileFieldFound = true;
+					if(empty($htmlOptions['enctype'])){
+						$htmlOptions['enctype'] = 'multipart/form-data';
+					}
 				}
-			}
+            }			
 		}
 		
 		// Automatically clean enctype if no "file" fields found
@@ -218,7 +226,7 @@ class CFormView extends CWidgs
 				'events'=>array(),
 				'return'=>true,
 			));
-		}else if($fieldSetType == 'tabsList'){
+		}elseif($fieldSetType == 'tabsList'){
 			// Collapsible 
 			$output .= CWidget::create('CTabs', array(
 				'tabsWrapper'=>array('tag'=>'div', 'class'=>''),
@@ -290,7 +298,7 @@ class CFormView extends CWidgs
 		$definedValues 	= self::keyAt('definedValues', $fieldInfo, '');
         $mandatoryStar 	= self::keyAt('mandatoryStar', $fieldInfo, false);
 		$autocomplete 	= self::keyAt('autocomplete', $fieldInfo, array(), 'is_array');
-        $htmlOptions 	= self::keyAt('htmlOptions', $fieldInfo, array(), 'is_array');
+        $htmlOptions 	= (array)self::keyAt('htmlOptions', $fieldInfo, array(), 'is_array');
 		$prependCode 	= self::keyAt('prependCode', $fieldInfo, '');
 		$appendCode 	= self::keyAt('appendCode', $fieldInfo, '');
 		$appendLabel 	= '';
@@ -301,7 +309,7 @@ class CFormView extends CWidgs
 		// Encode special characters into HTML entities
 		if(is_array($value)){
 			$value = array_map(array('CHtml', 'encode'), $value);
-		}else if($type != 'textarea'){
+		}elseif($type != 'textarea'){
 			$value = CHtml::encode($value);
 		}
         
@@ -371,7 +379,7 @@ class CFormView extends CWidgs
                 
 				if(is_array($definedValues) && self::issetKey($value, $definedValues)){ /* don't use here self::keyAt */
                     $value = $definedValues[$value];
-                }else if($format != '' && $format != 'american' && $format != 'european'){
+                }elseif($format != '' && $format != 'american' && $format != 'european'){
                     $value = date($format, strtotime($value));
                 }
 
@@ -395,13 +403,14 @@ class CFormView extends CWidgs
 				$buttonTrigger = self::keyAt('buttonTrigger', $fieldInfo, true);
                 $minDate = (int)self::keyAt('minDate', $fieldInfo, ''); /* max days before current date */
                 $maxDate = (int)self::keyAt('maxDate', $fieldInfo, ''); /* max days from current date */
+				$yearRange = self::keyAt('yearRange', $fieldInfo, '');  /* ex.: "-100:+2" */
 				if(is_array($definedValues) && self::issetKey($value, $definedValues)){ /* don't use here self::keyAt */
 					$value = $definedValues[$value];				
 				}
                 if(!self::issetKey('autocomplete', $htmlOptions)) $htmlOptions['autocomplete'] = 'off';
 				$fieldHtml = CHtml::textField($field, $value, $htmlOptions);
 				
-				A::app()->getClientScript()->registerCssFile('js/vendors/jquery/jquery-ui.min.css');
+				A::app()->getClientScript()->registerCssFile('assets/vendors/jquery/jquery-ui.min.css');
 				// UI:
 				//		dateFormat: dd/mm/yy | d M, y | mm/dd/yy  | yy-mm-dd 
 				// Bootstrap:
@@ -412,12 +421,13 @@ class CFormView extends CWidgs
 						'datepicker_'.self::$_pickerCount++,
 						'jQuery("#'.$fieldId.'").datepicker({
 							showOn: "button",
-							buttonImage: "js/vendors/jquery/images/calendar.png",
+							buttonImage: "assets/vendors/jquery/images/calendar.png",
 							buttonImageOnly: true,
 							showWeek: false,
 							firstDay: 1,
 							'.($minDate ? 'minDate: '.$minDate.',' : '').'
 							'.($maxDate ? 'maxDate: '.$maxDate.',' : '').'
+							'.($yearRange ? 'yearRange: "'.$yearRange.'",' : '').'
 							autoclose: true,
 							format: "'.($format == 'yy-mm-dd' ? 'yyyy-mm-dd' : $format).'",
 							dateFormat: "'.$format.'",
@@ -522,6 +532,7 @@ class CFormView extends CWidgs
 				}				
 				$showImageName = (bool)self::keyAt('imageOptions.showImageName', $fieldInfo, false);
 				$showImageSize = (bool)self::keyAt('imageOptions.showImageSize', $fieldInfo, false);
+				$showImageDimensions = (bool)self::keyAt('imageOptions.showImageDimensions', $fieldInfo, false);
 				$imageClass = self::keyAt('imageOptions.imageClass', $fieldInfo, '');
 				$imageHtmlOptions = array();
 				if(!empty($imageClass)) $imageHtmlOptions['class'] = $imageClass;
@@ -538,7 +549,7 @@ class CFormView extends CWidgs
                 $iconRotateLeft = isset($fieldInfo['rotateOptions']['iconRotateLeft']) ? $fieldInfo['rotateOptions']['iconRotateLeft'] : '';
                 $rotateText = '';
 				// File options
-				$fileHtmlOptions = self::keyAt('fileOptions', $fieldInfo, '');
+				$fileHtmlOptions = self::keyAt('fileOptions', $fieldInfo, array());
 				$showAlways = (bool)self::keyAt('fileOptions.showAlways', $fieldInfo, false);
 				if($showAlways) unset($fileHtmlOptions['showAlways']);
 								
@@ -564,8 +575,19 @@ class CFormView extends CWidgs
                 }
 				// Image text 
 				if($showImageName && !empty($value)) $imageText .= $value.' ';
-				if($showImageSize && !empty($value)){
-					$imageText .= ' ('.CFile::getFileSize($filePath.$value, 'kb').' Kb) ';
+				// Image size and dimensions
+				if(!empty($value)){					
+					if($showImageSize || $showImageDimensions) $imageText .= ' (';
+					$imageFileSize = '';
+					if($showImageSize && !empty($value)){
+						$imageFileSize = CFile::getFileSize($filePath.$value, 'kb').' Kb';
+						$imageText .= $imageFileSize;
+					}
+					if($showImageDimensions && !empty($value)){
+						$imageDimensions = CFile::getImageDimensions($filePath.$value);
+						$imageText .= (!empty($imageFileSize) ? ', ' : '').$imageDimensions['width'].'x'.$imageDimensions['height'];
+					}
+					if($showImageSize || $showImageDimensions) $imageText .= ') ';
 				}
 				// Delete link
 				if($showDeleteLink && !empty($value) && APPHP_MODE !== 'demo'){
@@ -693,10 +715,10 @@ class CFormView extends CWidgs
 				$autocompleteReturnId = self::keyAt('returnId', $autocomplete, true);
 
 				if($autocompleteEnabled){
-					A::app()->getClientScript()->registerCssFile('js/vendors/jquery/jquery-ui.min.css');
+					A::app()->getClientScript()->registerCssFile('assets/vendors/jquery/jquery-ui.min.css');
 					// Already included in backend default.php
 					if(A::app()->view->getTemplate() != 'backend'){
-						A::app()->getClientScript()->registerScriptFile('js/vendors/jquery/jquery-ui.min.js', 2);
+						A::app()->getClientScript()->registerScriptFile('assets/vendors/jquery/jquery-ui.min.js', 2);
 					}
 					
                     $params = '';
@@ -805,20 +827,20 @@ class CFormView extends CWidgs
             $output .= $fieldHtml.self::NL;    
         }else{
             $output .= CHtml::openTag($fieldWrapperTag, array('class'=>$fieldWrapperClass, 'id'=>($autoGenerateId) ? $formName.'_row_'.self::$_rowCount++ : ''));
-			$output .= $prependCode;
+			// old placement: $output .= $prependCode;
             if($title){
 				$for = self::keyAt('id', $htmlOptions, false);
 				$tooltipText = !empty($tooltip) ? ' '.CHtml::link('', false, array('class'=>'tooltip-icon', 'title'=>$tooltip)) : '';
 				$output .= CHtml::label($title.(trim($title) !== '' ? ':' : '').$tooltipText.(($mandatoryStar) ? CHtml::$afterRequiredLabel : '').$appendLabel, $for);
-				
             }
+			$output .= $prependCode;
             $output .= $fieldHtml;
 			$output .= $appendCode;
             $output .= CHtml::closeTag($fieldWrapperTag).self::NL;                
         }
+		
         return $output;
     }
-    
  
     /**
      * Draws HTML form buttons

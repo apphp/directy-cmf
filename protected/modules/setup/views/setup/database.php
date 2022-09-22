@@ -29,4 +29,16 @@
         'return'=>true,
     )); 
 ?>
-<br> 
+<br>
+	
+<?php
+	A::app()->getClientScript()->registerScript(
+		'setup-database',
+		'// Reload page
+		jQuery(\'select[name="dbConnectType"]\').on("change", function(){
+			jQuery(this).closest("form").submit();
+		});
+		',
+		2
+	);
+?>

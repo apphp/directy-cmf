@@ -1,14 +1,25 @@
+# Rewrite URL rules
 <IfModule mod_rewrite.c>
     RewriteEngine On
     
+	# Exclude images from rewriting rules
+	RewriteCond %{REQUEST_URI} !(\.gif|\.jpg|\.jpeg|\.png|\.bmp)$ [NC]
+	# Exclude fonts from rewriting rules
+	RewriteCond %{REQUEST_URI} !(\.eot|\.woff|\.woff2|\.svg)$ [NC]
+	# Exclude css files from rewriting rules
+	RewriteCond %{REQUEST_URI} !(\.css)$ [NC] 
+	# Exclude Javascript files from rewriting rules
+	RewriteCond %{REQUEST_URI} !(\.js)$ [NC]
+
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-l
- 
+	
     # Rewrite all other URLs to index.php/URL
     RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
 </IfModule>
 
+# Error document
 <IfModule !mod_rewrite.c>
 	ErrorDocument 404 index.php
 </IfModule>

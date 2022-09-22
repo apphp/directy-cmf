@@ -20,7 +20,7 @@
     <?php
         echo $actionMessage;
         $fields = array(
-            'icon'         => array('title'=>A::t('app', 'Icon'), 'type'=>'image', 'align'=>'', 'width'=>'40px', 'class'=>'left', 'headerClass'=>'left', 'isSortable'=>false, 'imagePath'=>'images/social_networks/', 'defaultImage'=>'no_icon.png', 'imageHeight'=>'24px', 'alt'=>''),
+            'icon'         => array('title'=>A::t('app', 'Icon'), 'type'=>'image', 'align'=>'', 'width'=>'40px', 'class'=>'left', 'headerClass'=>'left', 'isSortable'=>false, 'imagePath'=>'images/social_networks/', 'defaultImage'=>'no_icon.png', 'imageHeight'=>'24px', 'alt'=>'', 'showImageInfo'=>true),
             'name'         => array('title'=>A::t('app', 'Name'), 'type'=>'label', 'align'=>'', 'width'=>'150px', 'class'=>'left', 'headerClass'=>'left', 'isSortable'=>true, 'htmlOptions'=>array()),
             'link'         => array('title'=>A::t('app', 'Link'), 'type'=>'link', 'align'=>'', 'width'=>'', 'class'=>'left', 'headerClass'=>'left', 'isSortable'=>false, 'linkUrl'=>'{link}', 'definedValues'=>array(), 'linkText'=>'{link}', 'htmlOptions'=>array('target'=>'_blank')),
             'is_active'    => array('title'=>A::t('app', 'Active'), 'type'=>'enum', 'align'=>'', 'width'=>'80px', 'class'=>'center', 'headerClass'=>'center', 'isSortable'=>true, 'source'=>array(0=>'<span class="label-gray">'.A::t('app', 'No').'</span>', 1=>'<span class="label-green">'.A::t('app', 'Yes').'</span>')),
@@ -35,7 +35,7 @@
         CWidget::create('CGridView', array(
             'model'=>'SocialNetworks',
             'actionPath'=>'socialNetworks/add',
-            'condition'=>CConfig::get('db.prefix').'social_networks.site_id = 1',
+            'condition'=>'',
             'passParameters'=>true,
             'defaultOrder'=>array('sort_order'=>'ASC'),
             'pagination'=>array('enable'=>true, 'pageSize'=>20),

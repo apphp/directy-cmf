@@ -4,7 +4,7 @@
 ?>
 
 <?php if(A::app()->view->getTemplate() != 'backend'){ ?>
-	<h1 class="title"><?= A::t('app', 'Error No Privileges'); ?></h1>
+	<h1 class="title title-error"><?= A::t('app', 'Error No Privileges'); ?></h1>
 <?php } ?>
 
 <div class="block-body">                       

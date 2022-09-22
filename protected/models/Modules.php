@@ -4,8 +4,13 @@
  *
  * PUBLIC:                 	PROTECTED:                 	PRIVATE:
  * ---------------         	---------------            	---------------
- * __construct             	_relations
+ * __construct             	_relations					_loadData
  * model (static)          	_afterSave
+ * reLoadData
+ * reOrder
+ * param (static)
+ * isInstalled (static)
+ * getModules
  *
  */
 
@@ -14,6 +19,8 @@ class Modules extends CActiveRecord
 
     /** @var string */    
     protected $_table = 'modules';
+	/** @var array */    
+	private static $_arrModule = array();
 
     /**
 	 * Class default constructor
@@ -21,6 +28,7 @@ class Modules extends CActiveRecord
     public function __construct()
     {
         parent::__construct();
+		$this->_loadData();
     }
 
     /**
@@ -53,9 +61,80 @@ class Modules extends CActiveRecord
             }else{
                 BackendMenus::model()->deleteMenu($this->_columns['code']);
             }                
-        }else if($this->_columns['show_in_menu'] == 1){            
+        }elseif($this->_columns['show_in_menu'] == 1){            
             BackendMenus::model()->addMenu($this->_columns['code'], $this->_columns['name']);
         }
 	}
     
+	/**
+	 * Re-orders modules in table after one of modules was uninstalled
+	 * @param string $moduleType
+	 * @return bool
+	 */
+	public function reOrder($moduleType = 'application')
+	{
+		$records = $this->findAll('is_system = '.($moduleType == 'system' ? 1 :0));
+		
+		$count = 0;
+		foreach($records as $record){
+			$this->updateByPk($record['id'], array('sort_order'=>++$count));
+		}
+	}
+	
+	/**
+	 * Re-loads data of all modules one time
+	 */
+	public function reLoadData()
+	{
+		self::$_arrModule = array();
+		$this->_loadData();
+	}	
+	
+	/**
+	 *	Returns module data parameter
+	 *	Ex.: Modules::model()->param('moduleName', 'paramName')
+	 *	@param string $module
+	 *	@param string $param
+	 *	@return mixed
+	 */
+	public static function param($module = '', $param = '')
+	{
+		return isset(self::$_arrModule[$module][$param]) ? self::$_arrModule[$module][$param] : null;
+	}
+	
+	/**
+	 *	Checks if module is installed
+	 *	Ex.: Modules::model()->isInstalled('moduleName')
+	 *	@param string $module
+	 *	@return bool
+	 */
+	public static function isInstalled($module = '')
+	{
+		return isset(self::$_arrModule[$module]['is_installed']) ? (bool)self::$_arrModule[$module]['is_installed'] : false;
+	}	
+
+	/**
+	 * Get all modules data
+	 */
+	public function getModules()
+	{
+		return self::$_arrModule;
+	}
+
+	/**
+	 * Loads data of all modules one time
+	 */
+	private function _loadData()
+	{
+		$modules = $this->findAll();
+		foreach($modules as $key => $val){			
+			self::$_arrModule[$val['code']] = array(
+				'is_installed' 	=> $val['is_installed'],
+				'is_active' 	=> $val['is_active'],
+				'version' 		=> $val['version'],
+				'has_test_data' => $val['has_test_data'],
+			);
+		}
+	}
+
 }

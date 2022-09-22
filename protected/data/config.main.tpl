@@ -3,13 +3,13 @@
 return array(
     // Application data
     'name' => 'ApPHP Directy CMF',
-    'version' => '2.7.2',
+    'version' => '2.8.6',
     
     // Installation settings
     'installationKey' => '<INSTALLATION_KEY>',
 
     // Password keys settings (for database passwords only - don't change it)
-    // md5, sha1, sha256, whirlpool, etc
+    // md5, sha1 (not recommended), sha256, whirlpool, etc
 	'password' => array(
         'encryption' => true,
         'encryptAlgorithm' => 'sha256',
@@ -40,10 +40,17 @@ return array(
         'bruteforce' => array('enable' => true, 'badLogins' => 5, 'redirectDelay' => 3)
     ),
 
+    // Exception handling
+	// Define exceptions exceptions in application
+	'exceptionHandling' => array(
+		'enable' => true, 
+		'level' => 'global'
+	),
+
     // Output compression
 	'compression' => array(
-		'enable' => true, 
-		'method' => 'gzip'
+		'gzip' => array('enable' => true),
+		'html' => array('enable' => false),
 	),
 
     // Session settings
@@ -92,14 +99,15 @@ return array(
 	),
 	
 	// Layout default settings  
-	'layout' => array(
-		'enable' => true, 
+	'layouts' => array(
+		'enable' => false, 
 		'default' => 'default'
 	),
 	
-    // Application default settings  
-	'defaultController' => 'Index',		/* may be overridden by module settings */
-    'defaultAction' => 'index',			/* may be overridden by module settings */
+    // Application default settings
+	'defaultErrorController' => 'Error',				/* may be overridden by module settings */
+	'defaultController' => 'Index',						/* may be overridden by module settings */
+    'defaultAction' => 'index',							/* may be overridden by module settings */
 	
 	// Application payment complete page (controller/action - may be overridden by module settings)
 	'paymentCompletePage' => '',

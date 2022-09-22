@@ -35,6 +35,10 @@ class Bootstrap extends CComponent
                 // Allow viewing
             }else{
                 $siteInfo = SiteInfo::model()->find('language_code = :lang', array(':lang'=>A::app()->getLanguage()));
+                A::app()->view->sitePhone = $siteInfo ? $siteInfo->site_phone : '';
+                A::app()->view->siteFax = $siteInfo ? $siteInfo->site_fax : '';
+                A::app()->view->siteEmail = $siteInfo ? $siteInfo->site_email : '';
+				A::app()->view->siteAddress = $siteInfo ? $siteInfo->site_address : '';
                 A::app()->view->siteTitle = $siteInfo ? $siteInfo->header : '';
                 A::app()->view->slogan = $siteInfo ? $siteInfo->slogan : '';
                 A::app()->view->footer = $siteInfo ? $siteInfo->footer : '';
@@ -93,11 +97,11 @@ class Bootstrap extends CComponent
         if(A::app()->getLanguage('', false) == '' || $force){
             if($defaultLang = Languages::model()->find('is_default = 1')){
                 $params = array(
+					'name' => $defaultLang->name,
+					'name_native' => $defaultLang->name_native,
                     'locale' => $defaultLang->lc_time_name,
                     'direction' => $defaultLang->direction,
 					'icon' => $defaultLang->icon,
-					'name' => $defaultLang->name,
-					'name_native' => $defaultLang->name_native,
                 );
                 A::app()->setLanguage($defaultLang->code, $params);    
             }			
@@ -112,6 +116,7 @@ class Bootstrap extends CComponent
 		if(A::app()->getSession()->get('currency_code') == ''){
 			if($defaultCurrency = Currencies::model()->find('is_default = 1')){
                 $params = array(
+					'name' => $defaultCurrency->name,
                     'symbol' => $defaultCurrency->symbol,
                     'symbol_place' => $defaultCurrency->symbol_place,                    
                     'decimals' => $defaultCurrency->decimals,
@@ -131,11 +136,11 @@ class Bootstrap extends CComponent
         
         if($this->_settings->ssl_mode == 1){
             $sslEnabled = true; 
-        }else if($this->_settings->ssl_mode == 2 && CAuth::isLoggedInAsAdmin()){
+        }elseif($this->_settings->ssl_mode == 2 && CAuth::isLoggedInAsAdmin()){
             $sslEnabled = true; 
-        }else if($this->_settings->ssl_mode == 3 && CAuth::isLoggedInAs('user','customer','client')){
+        }elseif($this->_settings->ssl_mode == 3 && CAuth::isLoggedInAs('user','customer','client')){
             $sslEnabled = true;            
-        //}else if($this->_settings->ssl_mode == 4){
+        //}elseif($this->_settings->ssl_mode == 4){
         //$sslEnabled = true; 
         }
 
@@ -170,8 +175,8 @@ class Bootstrap extends CComponent
 	public function getSettings($param = '')
 	{
         $settings = $this->_settings->getFieldsAsArray();
-        if(!empty($param) && isset($settings[$param])){
-            return $settings[$param];
+		if($param !== ''){
+            return isset($settings[$param]) ? $settings[$param] : '';
         }else{
             return $this->_settings;
         }

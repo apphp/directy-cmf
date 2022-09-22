@@ -11,11 +11,12 @@
  * editAction				_prepareTab 
  * installAction            _prepareSettingsTab
  * updateAction             _readModuleXml 
- * uninstallAction          _runSqlFile 
- * settingsAction           _processInfoXml 
- *                          _getSubDirectories
+ * uninstallAction          _runSqlFile
+ * deleteTestDataAction		_processInfoXml 
+ * settingsAction           _getSubDirectories
  *                          _copyFile
  *                          _deleteFile  
+ *                          
  */
 
 class ModulesController extends CController
@@ -132,6 +133,16 @@ class ModulesController extends CController
 		if(!$module){
 			$this->redirect('modules/view');
 		}
+		
+		if($this->_cSession->hasFlash('alert')){
+            $alert = $this->_cSession->getFlash('alert');
+            $alertType = $this->_cSession->getFlash('alertType');
+			
+            $this->_view->actionMessage = CWidget::create(
+                'CMessage', array($alertType, $alert, array('button'=>true))
+            );
+		}
+		
 		$this->_view->module = $module;		
 		$this->_view->render('modules/edit');
 	}
@@ -163,9 +174,45 @@ class ModulesController extends CController
 			$valuesArray = array();
 			$fields = array();
 			if(is_array($moduleSettings)){
+				// Prepare array with posted (new) values of settings
+				$triggerSettings = array();
+				foreach($moduleSettings as $setting){
+					$triggerSettings[$setting['property_key']] = $cRequest->getPost('value_'.$setting['id']);
+				}
+
 				foreach($moduleSettings as $setting){
 					$valuesArray[$setting['id']] = $cRequest->getPost('value_'.$setting['id']);
 				
+					// Check if trigger condition exists and run it
+					// Example for trigger definition:
+					//  serialize(array(
+					//		'trigger'=>array('key'=>'send_admin_email_notification', 'operation'=>'!=', 'value'=>'0'),
+					//		'action'=>array('field'=>'is_required', 'value'=>'1')
+					//  ));
+					if(!empty($setting['trigger_condition'])){
+						$triggerCondition = unserialize($setting['trigger_condition']);
+						$triggerKey = isset($triggerCondition['trigger']['key']) ? $triggerCondition['trigger']['key'] : '';
+						$triggerOperation = isset($triggerCondition['trigger']['operation']) ? $triggerCondition['trigger']['operation'] : '';
+						$triggerValue = isset($triggerCondition['trigger']['value']) ? $triggerCondition['trigger']['value'] : '';
+						$actionField = isset($triggerCondition['action']['field']) ? $triggerCondition['action']['field'] : '';
+						$actionValue = isset($triggerCondition['action']['value']) ? $triggerCondition['action']['value'] : '';
+						
+						if(isset($triggerSettings[$triggerKey])){
+							switch($triggerOperation){
+								case '!=':
+									if($triggerSettings[$triggerKey]['property_value'] != $triggerValue){
+										$setting[$actionField] = $actionValue;
+									}									
+									break;
+								default:
+									if($triggerSettings[$triggerKey]['property_value'] == $triggerValue){
+										$setting[$actionField] = $actionValue;
+									}
+									break;
+							}
+						}
+					}
+
 					// Array of fields for form validation
 					// TODO: validate each value according to its type (property_type)
 					$validationType = 'any';
@@ -288,7 +335,7 @@ class ModulesController extends CController
         if(APPHP_MODE == 'demo'){
 			$alert = A::t('core', 'This operation is blocked in Demo Mode!');			
 			$alertType = 'warning';
-       	}else if(Modules::model()->exists('code = :code AND is_installed = 1', array(':code'=>$code))){
+       	}elseif(Modules::model()->isInstalled($code)){
        		$alert = A::t('app', 'Module Already Installed Message');
        		$alertType = 'warning';
        		$moduleType = 'application';
@@ -301,7 +348,7 @@ class ModulesController extends CController
 				// If failed to read XML file, $xml will contain error message 
 				$alert = A::t('app', 'XML File Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$code.'/info.xml', 30, 50)));
 				$alertType = 'error';				
-			//}else if($xml->moduleType == 'system'){
+			//}elseif($xml->moduleType == 'system'){
 				// check if this module is a system module
 				//$alert = A::t('app', 'Operation Blocked Error Message');
 				//$alertType = 'error';
@@ -321,14 +368,21 @@ class ModulesController extends CController
 					$alertSuccess .= '<br><br>'.A::t('app', 'Adding information to database').' ... <span style="color:darkgreen;">'.A::t('app', 'OK').'</span>';
 					$alertSuccess .= '<br>'.A::t('app', 'Copying files and directories');
                     
+					// Create module directory
+					if(!file_exists('assets/modules/'.$code)){
+						mkdir('assets/modules/'.$code);
+					}
+					
                     $result = $this->_processInfoXml($xml, $code);
                     $alert .= $result['msg'];
                     $alertSuccess .= $result['msg_success'];
                     $alertType .= $result['error_type'];
 				}
 			}
-		}	
+		}
+		
 		if($installed){
+			Modules::model()->reLoadData();
 			$this->_view->actionMessage .= CWidget::create('CMessage', array('success', $alertSuccess, array('button'=>true)));
 		}
 		$this->_view->actionMessage .= CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
@@ -363,7 +417,7 @@ class ModulesController extends CController
         if(APPHP_MODE == 'demo'){
 			$alert = A::t('core', 'This operation is blocked in Demo Mode!');			
 			$alertType = 'warning';
-		}else if(Modules::model()->exists('code = :code AND is_installed = 1'.(!empty($moduleVersion) ? ' AND version >= \''.$moduleVersion.'\'' : ''), array(':code'=>$code))){
+		}elseif(Modules::model()->isInstalled($code) && (!empty($moduleVersion) ? Modules::model()->param($code, 'version') >= $moduleVersion : true)){
        		$alert = A::t('app', 'Module Already Updated Message', array('{module}'=>$code));
        		$alertType = 'error';
        		$moduleType = 'application';
@@ -378,7 +432,7 @@ class ModulesController extends CController
 				// If failed to read XML file, $xml will contain error message                
 				$alert = A::t('app', 'XML File Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$code.'/info.xml', 30, 50)));
 				$alertType = 'error';				
-			//}else if($xml->moduleType == 'system'){
+			//}elseif($xml->moduleType == 'system'){
 			//	// check if this module is a system module
 			//	$alert = A::t('app', 'Operation Blocked Error Message');
 			//	$alertType = 'error';
@@ -399,6 +453,7 @@ class ModulesController extends CController
                             break;
                         }                        
                     }
+					
                     if(!$count){
                         // Run single file
                         $alertSql = $this->_runSqlFile(APPHP_PATH.'/protected/modules/'.$code.'/data/'.$sqlUpdateFiles);
@@ -407,6 +462,7 @@ class ModulesController extends CController
                             $alertType = 'error';
                         }                        
                     }
+					
                     if(!$alertType){
                         $updated = true;
                         $alertSuccess = A::t('app', 'Module Updating Success Message', array('{module}'=>$name, '{version}'=>$moduleLastVersion));
@@ -419,8 +475,10 @@ class ModulesController extends CController
                     }
                 }
 			}
-		}	
+		}
+		
 		if($updated){
+			Modules::model()->reLoadData();
 			$this->_view->actionMessage .= CWidget::create('CMessage', array('success', $alertSuccess, array('button'=>true)));
 		}
 		$this->_view->actionMessage .= CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
@@ -458,11 +516,11 @@ class ModulesController extends CController
         if(APPHP_MODE == 'demo'){
 			$alert = A::t('core', 'This operation is blocked in Demo Mode!');
 			$alertType = 'warning';
-		}else if(!$module->is_installed){
+		}elseif(!$module->is_installed){
             // Check if the module is already installed
        		$alert = A::t('app', 'Module Not Installed Message');
        		$alertType = 'warning';
-		}else if(!$removable){
+		}elseif(!$removable){
             // Check if the module is removable
        		$alert = A::t('app', 'Operation Blocked Error Message');
        		$alertType = 'error';       	
@@ -483,6 +541,12 @@ class ModulesController extends CController
 				}else{
                     // Remove module from backend menu (if exists)
                     BackendMenus::model()->deleteMenu($module->code);
+					
+					// Re-load module data
+					Modules::model()->reLoadData();
+					
+					// Re-order modules
+					Modules::model()->reOrder($moduleType);
                     
 					// Remove module files
 					$alert = A::t('app', 'Module Uninstallation Success Message', array('{module}'=>$module->name));
@@ -496,7 +560,7 @@ class ModulesController extends CController
                         if(isset($folder['byDirectory']) && strtolower($folder['byDirectory']) == 'true'){
                             // Remove by whole directory
                             $deletedFiles .= '<br> - dir.: '.$folder['installationPath'].'*';
-                            if(!CFile::emptyDirectory(trim($folder['installationPath']))){
+							if(!CFile::deleteDirectory(trim($folder['installationPath']), true)){	
                                 $alert .= (!empty($alert) ? '<br>' : '').A::t('app', 'Module Uninstallation Warning Message', array('{module}'=>$module->name));
                                 $deletedFiles .= ' ... <span style="color:darkred;">'.A::t('app', 'Failed').'</span>';
                                 $alertType = 'warning';									
@@ -528,6 +592,17 @@ class ModulesController extends CController
                             }
                         }
 					}
+					
+					// Remove module directory in assets/
+					$deletedFiles .= '<br> - dir.: assets/modules/'.$module->code.'/';
+					if(!CFile::deleteDirectory('assets/modules/'.$module->code, true)){	
+						$alert .= (!empty($alert) ? '<br>' : '').A::t('app', 'Module Uninstallation Warning Message', array('{module}'=>$module->name));
+						$deletedFiles .= ' ... <span style="color:darkred;">'.A::t('app', 'Failed').'</span>';
+						$alertType = 'warning';									
+					}else{
+						$deletedFiles .= ' ... <span style="color:darkgreen;">'.A::t('app', 'OK').'</span>';
+					}
+					
 					$alert .= '<br>'.A::t('app', 'Removing files and directories').$deletedFiles;
 				}
 			}	
@@ -547,6 +622,73 @@ class ModulesController extends CController
 		$this->_view->render('modules/'.($moduleType == 'application' ? 'application' : 'system'));
 	}
 		
+    /**
+     * Delete all test data
+     * @param int $id the module id 
+     * @return void
+     */
+    public function deleteTestDataAction($id)
+    {
+		// Block access if admin has no active privilege to edit on modules management page
+     	if(Admins::hasPrivilege('modules', 'view_management') && !Admins::hasPrivilege('modules', 'edit_management')){
+     		$this->redirect('backend/index');
+     	}
+		
+     	$alert = '';
+		$alertType = '';
+		
+		$module = Modules::model()->findByPk((int)$id);
+       	if(!$module){
+			$this->redirect('modules/index');
+       	}
+		
+        if(APPHP_MODE == 'demo'){
+			$alert = A::t('core', 'This operation is blocked in Demo Mode!');
+			$alertType = 'warning';
+		}elseif(!$module->is_installed){
+            // Check if the module is already installed
+       		$alert = A::t('app', 'Module Not Installed Message');
+       		$alertType = 'warning';
+		}else{
+			// No "test data" - nothing todo, so redirect to edit mode
+			if(!$module->has_test_data){
+				$this->redirect('modules/edit/id/'.$id);
+			}
+
+			$sqlFile = APPHP_PATH.'/protected/modules/'.$module->code.'/data/delete.test.mysql.sql';
+			$ignoreErrors = false;
+			$alert = A::t('app', 'All test data has been successfully deleted!');
+			$alertType = 'success';
+			
+			// Get sql schema content
+			if(file_exists($sqlFile)){
+				$sqlDump = file($sqlFile);
+				if(!empty($sqlDump)){
+					// Replace placeholders
+					$sqlDump = str_ireplace('<DB_PREFIX>', CConfig::get('db.prefix'), $sqlDump);
+					// Run the sql
+					$model = new Setup();
+					$result = $model->install($sqlDump, true, $ignoreErrors);
+					if(!$result || $ignoreErrors){
+						$alert = $model->getErrorMessage();
+						$alertType = 'error';
+					}
+				}else{
+					$alert = A::t('app', 'File Empty Error Message', array('{file}'=>CFile::createShortenName(trim($sqlFile, "<br />\r\n"), 30, 50)));
+					$alertType = 'error';
+				}
+			}else{
+				$alert = A::t('app', 'File Opening Error Message', array('{file}'=>CFile::createShortenName(trim($sqlFile, "<br />\r\n"), 30, 50)));
+				$alertType = 'error';
+			}			
+		}
+		
+        A::app()->getSession()->setFlash('alert', $alert);
+        A::app()->getSession()->setFlash('alertType', $alertType);
+		
+		$this->redirect('modules/edit/id/'.$id);
+	}
+
 	/**
 	 * Reads the module info.xml file
 	 * @param string $moduleCode the module code
@@ -645,7 +787,7 @@ class ModulesController extends CController
             if($enable){
                 $moduleCode = strtolower($code);
                 // Check if this module is installed
-                if(!Modules::model()->exists('code = :code AND is_installed = 1', array(':code'=>$moduleCode))){
+                if(!Modules::model()->isInstalled($moduleCode)){
                     $xml = $this->_readModuleXml($moduleCode);    				
                     if(is_object($xml)){
                         // Check the module type

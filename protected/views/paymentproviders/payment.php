@@ -91,7 +91,7 @@
 				));
 			?>
 		
-		<?php }else if($type == 'online_order'){ ?>
+		<?php }elseif($type == 'online_order'){ ?>
 		
 			<?php 	
 				echo $provider->drawPaymentForm(array(
@@ -124,7 +124,7 @@
 				));
 			?>
 		
-		<?php }else if($type == 'online_credit_card'){ ?>
+		<?php }elseif($type == 'online_credit_card'){ ?>
 		
 			<?php 	
 				echo $provider->drawPaymentForm(array(
@@ -157,7 +157,7 @@
 				));
 			?>
 
-		<?php }else if($type == 'wire_transfer'){ ?>
+		<?php }elseif($type == 'wire_transfer'){ ?>
 		
 			<?php 	
 				echo $provider->drawPaymentForm(array(

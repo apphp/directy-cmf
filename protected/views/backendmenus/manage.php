@@ -36,7 +36,7 @@
 			'passParameters'=>true,
 			'filters'=>array(),
 			'fields'=>array(
-				'icon'        	 => array('title'=>'', 'type'=>'image', 'align'=>'', 'width'=>'30px', 'class'=>'left', 'headerClass'=>'', 'isSortable'=>false, 'imagePath'=>'templates/backend/images/icons/', 'defaultImage'=>$parentIcon, 'imageWidth'=>'16px', 'imageHeight'=>'', 'alt'=>''),
+				'icon'        	 => array('title'=>'', 'type'=>'image', 'align'=>'', 'width'=>'30px', 'class'=>'left', 'headerClass'=>'', 'isSortable'=>false, 'imagePath'=>'templates/backend/images/icons/', 'defaultImage'=>$parentIcon, 'imageWidth'=>'16px', 'imageHeight'=>'', 'alt'=>'', 'showImageInfo'=>true),
 				'menu_name'    	 => array('title'=>A::t('app', 'Name'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left', 'width'=>''),
 				'url'			 => array('title'=>A::t('app', 'URL'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left', 'width'=>'', 'disabled'=>(!$parentId ? true : false)),
 				'is_system'      => array('title'=>A::t('app', 'System'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>array('0'=>'<span class="badge-gray">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'width'=>'110px'),

@@ -107,7 +107,7 @@ class Search extends CModel
 		
 		if(is_array($categories) && !empty($keywords)){
 			foreach($categories as $key => $val){
-				// For PHP_VERSION >= 5.3.0 you may use
+				// For PHP_VERSION | phpversion() >= 5.3.0 you may use
 				// $callbackClass = $val['callback_class']::model()->search();
 				if($callbackClass = @call_user_func_array($val['callback_class'].'::model', array())){
 					if($categoryResult = @call_user_func_array(array($callbackClass, $val['callback_method']), array($keywords, ($singleCategory ? 1000 : $val['items_count'])))){

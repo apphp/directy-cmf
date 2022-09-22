@@ -29,7 +29,7 @@
                 'filters'=>array(),
                 'fields'=>array(
                     'name_native' => array('title'=>A::t('app', 'Language Name'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left'),
-                    'icon'        => array('title'=>A::t('app', 'Icon'), 'type'=>'image', 'align'=>'', 'width'=>'100px', 'class'=>'center', 'headerClass'=>'center', 'isSortable'=>false, 'imagePath'=>'images/flags/', 'defaultImage'=>'no_image.png', 'imageWidth'=>'16px', 'imageHeight'=>'', 'alt'=>''),
+                    'icon'        => array('title'=>A::t('app', 'Icon'), 'type'=>'image', 'align'=>'', 'width'=>'100px', 'class'=>'center', 'headerClass'=>'center', 'isSortable'=>false, 'imagePath'=>'images/flags/', 'defaultImage'=>'no_image.png', 'imageWidth'=>'16px', 'imageHeight'=>'', 'alt'=>'', 'showImageInfo'=>true),
                     'code'        => array('title'=>A::t('app', 'Code'), 'type'=>'label', 'class'=>'center upper-case', 'headerClass'=>'center', 'width'=>'100px'),
                 	'direction'   => array('title'=>A::t('app', 'Direction'), 'type'=>'label', 'class'=>'center upper-case', 'headerClass'=>'center', 'width'=>'100px'),
                 	'sort_order'  => array('title'=>A::t('app', 'Sort Order'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'100px'),

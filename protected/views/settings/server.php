@@ -41,9 +41,11 @@
 			<li><b><?= A::t('app', 'Asp Tags'); ?>:</b> <i><?= $aspTags; ?></i></li>
 			<li><b><?= A::t('app', 'Short Open Tag'); ?>:</b> <i><?= $shortOpenTag; ?></i></li>				
 			<li><b><?= A::t('app', 'Session Support'); ?>:</b> <i><?= $sessionSupport; ?></i></li>
-			<li><b><?= A::t('app', 'Magic Quotes GPC'); ?>:</b> <i><?= $magicQuotesGpc; ?></i></li>
-			<li><b><?= A::t('app', 'Magic Quotes RunTime'); ?>:</b> <i><?= $magicQuotesRuntime; ?></i></li>
-			<li><b><?= A::t('app', 'Magic Quotes SyBase'); ?>:</b> <i><?= $magicQuotesSybase; ?></i></li>
+			<?php if(version_compare(phpversion(), '5.3.0', '<')): ?>
+				<li><b><?= A::t('app', 'Magic Quotes GPC'); ?>:</b> <i><?= $magicQuotesGpc; ?></i></li>
+				<li><b><?= A::t('app', 'Magic Quotes RunTime'); ?>:</b> <i><?= $magicQuotesRuntime; ?></i></li>
+				<li><b><?= A::t('app', 'Magic Quotes SyBase'); ?>:</b> <i><?= $magicQuotesSybase; ?></i></li>
+			<?php endif; ?>
 		</ul>		
 	</fieldset>
 	<fieldset>

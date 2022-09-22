@@ -132,7 +132,7 @@ class EmailTemplatesController extends CController
 		if($template->is_system){
 			$alert = A::t('app', 'Delete System Template Alert');
 			$alertType = 'error';
-		}else if($template->delete()){				
+		}elseif($template->delete()){				
 			if($template->getError()){
 				$alert = A::t('app', 'Delete Warning Message');
 				$alertType = 'warning';

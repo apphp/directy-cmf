@@ -68,7 +68,7 @@ class AdminsController extends CController
 
 				if(CAuth::isLoggedInAs('owner') && $role['code'] == 'owner'){
 					continue;
-				}else if(CAuth::isLoggedInAs('mainadmin') && ($role['code'] == 'mainadmin' || $role['code'] == 'owner')){
+				}elseif(CAuth::isLoggedInAs('mainadmin') && ($role['code'] == 'mainadmin' || $role['code'] == 'owner')){
 					continue;
 				}else{
 					$rolesList[$role['code']] = $role['name'];
@@ -228,7 +228,7 @@ class AdminsController extends CController
     		$alert = A::t('app', 'Operation Blocked Error Message');
     		$alertType = 'error';
     	// Delete the admin
-    	}else if($admin->delete()){
+    	}elseif($admin->delete()){
         	$alert = A::t('app', 'Delete Success Message');		
 			// Delete admin images
 			$hash = CConfig::get('installationKey') ? CConfig::get('installationKey') : 'admins_';

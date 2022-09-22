@@ -28,20 +28,58 @@ input:-moz-placeholder { color:#bbb; }
 
 /* HELPERS
 ---------------------------------------------------------- */
-.hide { display:none; }
+.hidden, .hide { display:none; }
 .display-none { display:none; }
-.align-right { float:right; }
-.align-left { float:left; }
-.cb, .clear { clear:both; }
+.float-right { float:right; }
+.float-left { float:left; }
+.align-right { text-align:right; }
+.align-left { text-align:left; }
+.cb, .clear, .clearfix { clear:both; }
 .relative { position:relative; }
 .lower-case { text-transform:lowercase; }
 .upper-case { text-transform:uppercase; }
 .capitalize { text-transform:capitalize; }
+
+/* OFFSETS
+---------------------------------------------------------- */
+.pt5 { padding-top:5px; }
+.pt10 { padding-top:10px; }
+.pt20 { padding-top:20px; }
+.pb5 { padding-bottom:5px; }
 .pb10 { padding-bottom:10px; }
 .pb20 { padding-bottom:20px; }
+.pl5 { padding-left:5px; }
+.pl10 { padding-left:10px; }
+.pl20 { padding-left:20px; }
+.pr5 { padding-right:5px; }
+.pr10 { padding-right:10px; }
+.pr20 { padding-right:20px; }
+.pv5 { padding-top:5px; padding-bottom:5px; }
+.pv10 { padding-top:10px; padding-bottom:10px; }
+.pv20 { padding-top:20px; padding-bottom:20px; }
+.ph5 { padding-left:5px; padding-right:5px; }
+.ph10 { padding-left:10px; padding-right:10px; }
+.ph20 { padding-left:20px; padding-right:20px; }
+
+.mt5 { margin-top:5px !important; }
+.mt10 { margin-top:10px !important; }
+.mt20 { margin-top:20px !important; }
+.mb5 { margin-bottom:5px !important; }
+.mb10 { margin-bottom:10px !important; }
+.mb20 { margin-bottom:20px !important; }
 .ml5 { margin-left:5px !important; }
-.mlr5 { margin-left:5px !important; margin-right:5px !important; }
-.mlr10 { margin-left:10px !important; margin-right:10px !important; }
+.ml10 { margin-left:10px !important; }
+.ml20 { margin-left:20px !important; }
+.mr5 { margin-right:5px !important; }
+.mr10 { margin-right:10px !important; }
+.mr20 { margin-right:20px !important; }
+.mv5 { margin-top:5px !important; margin-bottom:5px !important; }
+.mv10 { margin-top:10px !important; margin-bottom:10px !important; }
+.mv20 { margin-top:20px !important; margin-bottom:20px !important; }
+.mh5 { margin-left:5px !important; margin-right:5px !important; }
+.mh10 { margin-left:10px !important; margin-right:10px !important; }
+.mh20 { margin-left:20px !important; margin-right:20px !important; }
+
 
 /* BADGES
 ---------------------------------------------------------- */
@@ -370,16 +408,17 @@ form div.buttons-wrapper    { margin-top:25px; margin-bottom:5px; }
 form div.bw-top             { margin-top:5px; margin-bottom:20px; }
 form div.bw-bottom          { margin-top:25px; margin-bottom:5px; }
 form label                  { display:block; width:190px; float:left; margin-top:5px; line-height:17px; verflow-y:hidden; }
-form label.small            { width:100px; }
-form label.middle           { width:240px; }
-form label.large            { width:300px; }
-form label.shortcodes       { height:auto; width:140px; cursor:text; margin-bottom:20px; }
+form label.small            { width:100px !important; }
+form label.middle           { width:240px !important; }
+form label.large            { width:300px !important; }
+form label.shortcodes       { height:auto; width:150px; cursor:text; margin-bottom:20px; }
 form label.label-description{ width:auto; }
 form label span.required    { color:darkred; font-weight:bold;  }
 form span label             { float:left; width:auto; margin:0 10px 0 5px; height:25px; line-height:25px; }
 form span input[type=radio] { float:left; margin:0px; height:25px; line-height:25px;  border:0;}
 form input[type=password],
-form input[type=text]       { width:210px; padding:4px; margin-right:10px; font-family:inherit; }
+form input[type=text],
+form input[type=email]      { width:210px; padding:4px; margin-right:10px; font-family:inherit; }
 form input.email		    { width:230px; margin-right:10px; }
 form button[type=submit],    
 form input[type=submit]     { width:auto; padding:4px 9px; display:inline; }
@@ -476,7 +515,7 @@ img.icon-xbig   	{ width:240px; }
 /* DASHBOARD SETTINGS
 ---------------------------------------------------------- */
 img.template 		{ width:240px; height:180px; border:1px solid #ccc; }
-div.left-side 		{ float:left; width:300px; }
+div.left-side 		{ float:left; width:310px; }
 div.left-side select { min-width:100px; }
 div.central-part 	{ float:left; margin-left:10px; padding-left:10px; border-left-width:1px; border-left-style:solid; border-left-color:#c7c7e7; margin-top:15px; margin-bottom:10px; }
 div.right-side 		{ margin-left:563px; padding-left:10px; margin-top:15px; }
@@ -589,8 +628,10 @@ ul.checkboxes-list li input { margin-left:10px; }
 .chosen-single:hover { text-decoration:none !important; color:#000 !important; }
 .chosen-container-single .chosen-single span { margin-right:20px !important; }
 .chosen-drop { z-index:2000;  }
+.chosen-container-single .chosen-search input[type=text] { width: 100% !important; }
 
 /* EVALUATION STARS
 ---------------------------------------------------------- */
+label.stars { width:80px !important; }
 label.stars, label.stars label { display:inline-block; background:url(../images/stars.png) 0 -16px repeat-x; width:80px; height:16px; margin:0px; padding:0px; }
 label.stars label { background-position:0 0; }

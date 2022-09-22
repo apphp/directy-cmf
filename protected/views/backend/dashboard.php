@@ -9,8 +9,8 @@
     );
 
 	// Register FancyBox files
-	A::app()->getClientScript()->registerScriptFile('js/vendors/toastr/toastr.min.js', 2);
-	A::app()->getClientScript()->registerCssFile('js/vendors/toastr/toastr.min.css');
+	A::app()->getClientScript()->registerScriptFile('assets/vendors/toastr/toastr.min.js', 2);
+	A::app()->getClientScript()->registerCssFile('assets/vendors/toastr/toastr.min.css');
 ?>
 
 <h1><?= A::t('app', 'Dashboard'); ?></h1>
@@ -36,6 +36,7 @@
         <?php if(Admins::hasPrivilege('site_settings', 'view')){ ?><a href="settings/" id="icon-backend" class="shortcut tooltip-link" title="<?= A::t('app', 'General Settings'); ?>"><?= CString::substr(A::t('app', 'Settings'), 12, false, true); ?><img src="templates/backend/images/shortcuts/settings.png" alt="settings" /></a><?php } ?>
         <?php if(Admins::hasPrivilege('backend_menu', 'view')){ ?><a href="backendMenus/" id="icon-backend-menus" class="shortcut tooltip-link" title="<?= A::t('app', 'Backend Menu'); ?>"><?= CString::substr(A::t('app', 'Backend Menu'), 12, false, true); ?><img src="templates/backend/images/shortcuts/backend-menus.png" alt="backend menu" /></a><?php } ?>
         <?php if(Admins::hasPrivilege('frontend_menu', 'view')){ ?><a href="frontendMenus/" id="icon-frontend-menus" class="shortcut tooltip-link" title="<?= A::t('app', 'Frontend Menu'); ?>"><?= CString::substr(A::t('app', 'Frontend Menu'), 12, false, true); ?><img src="templates/backend/images/shortcuts/frontend-menus.png" alt="frontend menu" /></a><?php } ?>
+		<?php if(Admins::hasPrivilege('social_networks', 'view')){ ?><a href="socialNetworks/" id="icon-backend-menus" class="shortcut tooltip-link" title="<?= A::t('app', 'Social Networks'); ?>"><?= CString::substr(A::t('app', 'Social Networks'), 12, false, true); ?><img src="templates/backend/images/shortcuts/social-networks.png" alt="social networks/" /></a><?php } ?>
         <?php if(Admins::hasPrivilege('locations', 'view')){ ?><a href="locations/" id="icon-locations" class="shortcut tooltip-link" title="<?= A::t('app', 'Locations'); ?>"><?= CString::substr(A::t('app', 'Locations'), 12, false, true); ?><img src="templates/backend/images/shortcuts/locations.png" alt="locations" /></a><?php } ?>
 		<?php if(Admins::hasPrivilege('currencies', 'view')){ ?><a href="currencies/" id="icon-currencies" class="shortcut tooltip-link" title="<?= A::t('app', 'Currencies'); ?>"><?= CString::substr(A::t('app', 'Currencies'), 12, false, true); ?><img src="templates/backend/images/shortcuts/currencies.png" alt="currencies" /></a><?php } ?>
 		<?php if(Admins::hasPrivilege('payment_providers', 'view')){ ?><a href="paymentProviders/" id="icon-payment-providers" class="shortcut tooltip-link" title="<?= A::t('app', 'Payment Providers'); ?>"><?= CString::substr(A::t('app', 'Payment Providers'), 12, false, true); ?><img src="templates/backend/images/shortcuts/payment-providers.png" alt="payment providers" /></a><?php } ?>
@@ -52,7 +53,7 @@
 			if(is_array($modulesToShow)){
 				foreach($modulesToShow as $module){
 					if(!Admins::hasPrivilege('modules', 'view')) continue;				
-					echo '<a href="modules/settings/code/'.$module['code'].'/" id="icon-'.$module['code'].'" class="shortcut tooltip-link" title="'.$module['name'].'">'.CString::substr($module['name'], 12, false, true).'<img src="images/modules/'.$module['code'].'/'.$module['icon'].'" alt="icon" /></a>';
+					echo '<a href="modules/settings/code/'.$module['code'].'/" id="icon-'.$module['code'].'" class="shortcut tooltip-link" title="'.$module['name'].'">'.CString::substr($module['name'], 12, false, true).'<img src="assets/modules/'.$module['code'].'/images/'.$module['icon'].'" alt="icon" /></a>';
 				}
 			}
 		?>

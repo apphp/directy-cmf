@@ -78,7 +78,7 @@ class BanLists extends CActiveRecord
 			"item_type = '".$itemType."' AND
 			item_value = :item_value AND
 			is_active = 1 AND
-			(expires_at > :expires_at OR expires_at = '0000-00-00 00:00:00')",
+			(expires_at IS NULL OR expires_at > :expires_at)",
 			array(
 				':item_value' => $itemValue,
 				':expires_at' => LocalTime::currentDateTime()

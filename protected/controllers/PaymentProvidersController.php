@@ -14,6 +14,7 @@
  * testPaymentAction
  * testPaymentCompleteAction
  * handlePaymentAction
+ * successPaymentAction
  *
  */
 
@@ -129,7 +130,7 @@ class PaymentProvidersController extends CController
         if($paymentProvider->is_default){
             $alert = A::t('app', 'Delete Default Alert');
             $alertType = 'error';
-        }else if($paymentProvider->delete()){
+        }elseif($paymentProvider->delete()){
             if($paymentProvider->getError()){
                 $alert = A::t('app', 'Delete Warning Message');
                 $alertType = 'warning';
@@ -296,7 +297,7 @@ class PaymentProvidersController extends CController
                 if($handlerResult = @call_user_func_array(array($handlerClass, 'paymentHandler'), array($status, $orderInfo))){
                     // here result
                     $alertType = 'success';
-                    $alert = A::t('app', 'Status has been successfully changed!');
+                    $alert = A::t('app', 'Thank You! Your order has been successfully completed.');
                 }else{
                     $alertType = 'error';
                     $alert = @call_user_func_array(array($handlerClass, 'getErrorMessage'), array());
@@ -304,7 +305,6 @@ class PaymentProvidersController extends CController
             }
         }else{
             // Add here CMF logger
-            //echo 'error .....';
             $alertType = 'error';
             $alert = 'Model Not Found or/and Provider not Found';
         }
@@ -321,8 +321,22 @@ class PaymentProvidersController extends CController
     }
 
     /**
+     * Action handler for return success payment
+     * @return void
+     */
+    public function successPaymentAction()
+    {
+        // set frontend settings
+        Website::setFrontend();
+
+        $this->_view->actionMessage = CWidget::create('CMessage', array('success', A::t('app', 'Thank You! Your order has been successfully completed.'), array()));
+        $this->_view->render('paymentProviders/paymentComplete');
+    }
+
+    /**
      * Check if passed record ID is valid
      * @param int $id
+     * @return PaymentProviders
      */
     private function _checkActionAccess($id = 0)
     {
@@ -332,5 +346,4 @@ class PaymentProvidersController extends CController
         }
         return $paymentProvider;
     }
-
 }

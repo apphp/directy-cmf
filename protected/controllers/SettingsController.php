@@ -158,17 +158,17 @@ class SettingsController extends CController
             if(APPHP_MODE == 'demo'){
                 $this->_alert = A::t('core', 'This operation is blocked in Demo Mode!');
                 $this->_alertType = 'warning';
-            }else if(CFile::isDirectoryEmpty('protected/tmp/cache/')){
+            }elseif(CFile::isDirectoryEmpty('protected/tmp/cache/')){
                 $this->_alert = A::t('app', 'No cache files found');
                 $this->_alertType = 'error';                
-            }else if(CFile::emptyDirectory('protected/tmp/cache/')){
+            }elseif(CFile::emptyDirectory('protected/tmp/cache/')){
                 $this->_alert = A::t('app', 'Clear Cache Success Message');
                 $this->_alertType = 'success';
             }else{
                 $this->_alert = A::t('app', 'Clear Cache Error Message');
                 $this->_alertType = 'error';
             }            
-        }else if($this->_cRequest->getPost('act') == 'send'){
+        }elseif($this->_cRequest->getPost('act') == 'send'){
     		// Settings form submit
             
      		// Block access if admin has no active privilege to edit site settings
@@ -265,23 +265,31 @@ class SettingsController extends CController
 
 	    	$this->_view->selectedLanguage = $siteInfo->language_code;		
         	// Get selected site descriptions
-    		$siteInfo->header = $this->_cRequest->getPost('siteHeader');
+    		$siteInfo->site_phone = $this->_cRequest->getPost('site_phone');
+    		$siteInfo->site_fax = $this->_cRequest->getPost('site_fax');
+			$siteInfo->site_email = $this->_cRequest->getPost('site_email');
+    		$siteInfo->site_address = $this->_cRequest->getPost('site_address');			
+    		$siteInfo->header = $this->_cRequest->getPost('header');
     		$siteInfo->slogan = $this->_cRequest->getPost('slogan');
     		$siteInfo->footer = $this->_cRequest->getPost('footer');
-    		$siteInfo->meta_title = $this->_cRequest->getPost('metaTagTitle');
-    		$siteInfo->meta_keywords = $this->_cRequest->getPost('metaTagKeywords');
-    		$siteInfo->meta_description = $this->_cRequest->getPost('metaTagDescription');
+    		$siteInfo->meta_title = $this->_cRequest->getPost('meta_title');
+    		$siteInfo->meta_keywords = $this->_cRequest->getPost('meta_keywords');
+    		$siteInfo->meta_description = $this->_cRequest->getPost('meta_description');
     		$this->_view->siteInfo = $siteInfo;
     		
 		   	$result = CWidget::create('CFormValidation', array(
 				'fields'=>array(
-                	'selectedLanguage'=>array('title'=>A::t('app', 'Language'), 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($this->_view->langList))),
-					'siteHeader'	=>array('title'=>A::t('app', 'Header Text'), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>100)),
-					'slogan'		=>array('title'=>A::t('app', 'Slogan'), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
-					'footer'		=>array('title'=>A::t('app', 'Footer Text'), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
-					'metaTagTitle'		=>array('title'=>A::te('app', 'Tag TITLE'), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>250)),
-					'metaTagKeywords'	=>array('title'=>A::te('app', 'Meta tag KEYWORDS'), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
-					'metaTagDescription'=>array('title'=>A::te('app', 'Meta tag DESCRIPTION'), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
+                	'selectedLanguage'	=> array('title'=>A::t('app', 'Language'), 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($this->_view->langList))),
+					'site_phone'		=> array('title'=>A::t('app', 'Phone'), 'validation'=>array('required'=>false, 'type'=>'phoneString', 'maxLength'=>50)),
+					'site_fax'			=> array('title'=>A::t('app', 'Fax'), 'validation'=>array('required'=>false, 'type'=>'phoneString', 'maxLength'=>50)),
+					'site_email'		=> array('title'=>A::t('app', 'Email'), 'validation'=>array('required'=>false, 'type'=>'email', 'maxLength'=>100)),
+					'site_address'		=> array('title'=>A::t('app', 'Address'), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
+					'header'			=> array('title'=>A::t('app', 'Header Text'), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>100)),
+					'slogan'			=> array('title'=>A::t('app', 'Slogan'), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
+					'footer'			=> array('title'=>A::t('app', 'Footer Text'), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
+					'meta_title'		=> array('title'=>A::te('app', 'Tag TITLE'), 'validation'=>array('required'=>true, 'type'=>'any', 'maxLength'=>250)),
+					'meta_keywords'		=> array('title'=>A::te('app', 'Meta tag KEYWORDS'), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
+					'meta_description'	=> array('title'=>A::te('app', 'Meta tag DESCRIPTION'), 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>250)),
 				),
 	   		));
     		if($result['error']){
@@ -393,7 +401,7 @@ class SettingsController extends CController
 			$this->_alert = A::t('app', 'Save Changes Warning Message');
 			$this->_alertType = 'warning';
 			$this->_view->actionMessage = CWidget::create('CMessage', array($this->_alertType, $this->_alert, array('button'=>true)));							
-		}else if($this->_cRequest->getPost('act') == 'send'){							     		
+		}elseif($this->_cRequest->getPost('act') == 'send'){							     		
 
      		// Block access if admin has no active privilege to edit site settings
      		if(!Admins::hasPrivilege('site_settings', 'edit')){
@@ -673,7 +681,7 @@ class SettingsController extends CController
 				$this->_cSession->setFlash('alertType', $this->_alertType);
 				$this->redirect('settings/templates');				
 			}	
-		}else if($this->_cRequest->getPost('act') == 'changeTemp'){
+		}elseif($this->_cRequest->getPost('act') == 'changeTemp'){
 			// Template selection changed
 			$this->_view->selectedTemplate = $this->_cRequest->getPost('template');
 			$this->_alert = A::t('app', 'Save Changes Warning Message');
@@ -744,7 +752,7 @@ class SettingsController extends CController
 			$result = CWidget::create('CFormValidation', array(
 				'fields'=>array(
 					'mapping_api_type' =>array('title'=>A::t('app', 'Mapping API Type'), 'validation'=>array('required'=>true, 'type'=>'fileName', 'maxLength'=>32)),
-					'mapping_api_key' =>array('title'=>A::t('app', 'Mapping API Key'), 'validation'=>array('required'=>false, 'type'=>'fileName', 'maxLength'=>32)),
+					'mapping_api_key' =>array('title'=>A::t('app', 'Mapping API Key'), 'validation'=>array('required'=>false, 'type'=>'fileName', 'maxLength'=>50)),
 				),
 			));
 
@@ -815,7 +823,7 @@ class SettingsController extends CController
 			$array_keys = array_keys($phpinfo);
 			if(strlen($match[1])){
 				$phpinfo[$match[1]] = array();
-			}else if(isset($match[3])){
+			}elseif(isset($match[3])){
 				$phpinfo[end($array_keys)][$match[2]] = isset($match[4]) ? array($match[3], $match[4]) : $match[3];
 			}else{
 				$phpinfo[end($array_keys)][] = $match[2];
@@ -851,9 +859,11 @@ class SettingsController extends CController
 		$this->_view->sendmailPath 	= (ini_get('sendmail_path') != '') ? ini_get('sendmail_path') : A::t('app', 'Unknown');
 
 		$this->_view->sessionSupport = isset($phpinfo['session']['Session Support']) ? $phpinfo['session']['Session Support'] :  A::t('app', 'Unknown');
-		$this->_view->magicQuotesGpc = ini_get('magic_quotes_gpc') ? A::t('app', 'On') : A::t('app', 'Off');
-		$this->_view->magicQuotesRuntime = ini_get('magic_quotes_runtime') ? A::t('app', 'On') : A::t('app', 'Off');
-		$this->_view->magicQuotesSybase = ini_get('magic_quotes_sybase') ? A::t('app', 'On') : A::t('app', 'Off');
+		if(version_compare(phpversion(), '5.3.0', '<')){
+			$this->_view->magicQuotesGpc = ini_get('magic_quotes_gpc') ? A::t('app', 'On') : A::t('app', 'Off');
+			$this->_view->magicQuotesRuntime = ini_get('magic_quotes_runtime') ? A::t('app', 'On') : A::t('app', 'Off');
+			$this->_view->magicQuotesSybase = ini_get('magic_quotes_sybase') ? A::t('app', 'On') : A::t('app', 'Off');
+		}
     	
 		$this->_view->tabs = $this->_prepareTab('server');		
 		$this->_view->render('settings/server');
@@ -870,30 +880,35 @@ class SettingsController extends CController
 		if($this->_cRequest->getPost('act') == 'send'){
 			if(CAuth::isLoggedInAs('owner')){				
 				$domain = CString::substr($this->_cRequest->getPost('website_domain', '', ''), 255);
-				$domain = preg_replace('/(www\.|http:\/\/|https:\/\/|ftp:\/\/)/i', '', $domain);			
+				$domain = preg_replace('/(www\.|http:\/\/|https:\/\/|ftp:\/\/| )/i', '', $domain);
+				$isDomainValid = true;
 				
 				// Update button clicked - update the ranks
 				if(!empty($domain)){
 					if(APPHP_MODE !== 'demo'){				
-						///$this->_settings->google_rank = (int)$this->_checkGoogleRank($domain);
-						$this->_settings->alexa_rank = number_format((float)$this->_checkAlexaRank($domain));
-						if($indexedPages = $this->_checkIndexedPages($domain, 'google')){
-							$this->_settings->indexed_pages_google = $indexedPages;	
-						}
-						if($indexedPages = $this->_checkIndexedPages($domain, 'bing')){
-							$this->_settings->indexed_pages_bing = $indexedPages;
-						}
-						if($indexedPages = $this->_checkIndexedPages($domain, 'yahoo')){
-							$this->_settings->indexed_pages_yahoo = $indexedPages;	
-						}
-						if($indexedPages = $this->_checkIndexedPages($domain, 'yandex')){
-							$this->_settings->indexed_pages_yandex = $indexedPages;	
-						}
-						if($indexedPages = $this->_checkIndexedPages($domain, 'baidu')){
-							$this->_settings->indexed_pages_baidu = $indexedPages;	
-						}
-						if($indexedPages = $this->_checkIndexedPages($domain, 'goo')){
-							$this->_settings->indexed_pages_goo = $indexedPages;	
+						if(CValidator::isDomainName($domain)){							
+							///$this->_settings->google_rank = (int)$this->_checkGoogleRank($domain);
+							$this->_settings->alexa_rank = number_format((float)$this->_checkAlexaRank($domain));
+							if($indexedPages = $this->_checkIndexedPages($domain, 'google')){
+								$this->_settings->indexed_pages_google = $indexedPages;	
+							}
+							if($indexedPages = $this->_checkIndexedPages($domain, 'bing')){
+								$this->_settings->indexed_pages_bing = $indexedPages;
+							}
+							if($indexedPages = $this->_checkIndexedPages($domain, 'yahoo')){
+								$this->_settings->indexed_pages_yahoo = $indexedPages;	
+							}
+							if($indexedPages = $this->_checkIndexedPages($domain, 'yandex')){
+								$this->_settings->indexed_pages_yandex = $indexedPages;	
+							}
+							if($indexedPages = $this->_checkIndexedPages($domain, 'baidu')){
+								$this->_settings->indexed_pages_baidu = $indexedPages;	
+							}
+							if($indexedPages = $this->_checkIndexedPages($domain, 'goo')){
+								$this->_settings->indexed_pages_goo = $indexedPages;	
+							}
+						}else{
+							$isDomainValid = false;
 						}
 					}
 				}else{
@@ -913,12 +928,17 @@ class SettingsController extends CController
 					$this->_alert = A::t('core', 'This operation is blocked in Demo Mode!');
 					$this->_alertType = 'warning';
 				}else{
-					if($this->_settings->save()){
-						$this->_alert = A::t('app', 'Site Info Success Message');
-						$this->_alertType = 'success';
+					if($isDomainValid){
+						if($this->_settings->save()){
+							$this->_alert = A::t('app', 'Site Info Success Message');
+							$this->_alertType = 'success';
+						}else{
+							$this->_alert = A::t('app', 'Site Info Error Message');
+							$this->_alertType = 'error';
+						}
 					}else{
-						$this->_alert = A::t('app', 'Site Info Error Message');
-						$this->_alertType = 'error';
+						$this->_alert = A::t('app', 'Invalid domain name has been submitted! Please re-enter.');
+						$this->_alertType = 'warning';
 					}
 				}
 			}else{
@@ -1120,35 +1140,35 @@ class SettingsController extends CController
 					$text = substr($content, $pos+15, 15);
 					$indexedPages = preg_replace('/[^0-9,]/', '', $text);					
 				}
-			}else if($searchEngine == 'bing'){
+			}elseif($searchEngine == 'bing'){
 				$content = $this->_cRequest->getUrlContent('http://www.bing.com/search?scope=web&setmkt=en-US&setlang=match&FORM=W5WA&q=site:'.$url);
 				$pos = strpos($content, 'class="sb_count"');
 				if($pos !== false){
 					$text = substr($content, $pos+15, 17);
 					$indexedPages = preg_replace('/[^0-9,]/', '', $text);
 				}
-			}else if($searchEngine == 'yahoo'){
+			}elseif($searchEngine == 'yahoo'){
 				$content = @$this->_cRequest->getUrlContent('https://search.yahoo.com/search?fr=sfp&p=site:'.$url);
 				$pos = strpos($content, 'results</span>'); 
 				if($pos !== false){
 					$text = substr($content, $pos-10, 15);
 					$indexedPages = preg_replace('/[^0-9,]/', '', $text);
 				}
-			}else if($searchEngine == 'yandex'){
+			}elseif($searchEngine == 'yandex'){
 				$content = @$this->_cRequest->getUrlContent('http://yandex.ru/yandsearch?text=site:'.$url.'&lr=10418');
 				$pos = strpos($content, 'serp-adv__found"'); 
 				if($pos !== false){
 					$text = substr($content, $pos+12, 17);
 					$indexedPages = preg_replace('/[^0-9,]/', '', $text);
 				}
-			}else if($searchEngine == 'baidu'){
+			}elseif($searchEngine == 'baidu'){
 				$content = @$this->_cRequest->getUrlContent('http://www.baidu.com/s?ie=utf-8&wd=site:'.$url);
 				preg_match('/<div class="c-span21 c-span-last">(.*?)<\/div>/i', $content, $matches);
 				if(isset($matches[0])){
 					$matches[0] = strip_tags($matches[0]);
 					$indexedPages = preg_replace('/[^0-9,]/', '', $matches[0]);
 				}
-			}else if($searchEngine == 'goo'){
+			}elseif($searchEngine == 'goo'){
 				$indexedPages = 0;
 			}
 		}
@@ -1256,7 +1276,7 @@ class SettingsController extends CController
 	 */
 	private function _testDateFormat($format)
 	{
-		if(version_compare(PHP_VERSION, '5.3.0', '>=')){
+		if(version_compare(phpversion(), '5.3.0', '>=')){
 			$testDate = CTime::dateParseFromFormat($format, date($format));
 			return checkdate($testDate['month'], $testDate['day'], $testDate['year']);	
 		}else{
@@ -1271,7 +1291,7 @@ class SettingsController extends CController
 	 */
 	private function _testTimeFormat($format)
 	{
-		if(version_compare(PHP_VERSION, '5.3.0', '>=')){
+		if(version_compare(phpversion(), '5.3.0', '>=')){
 			$testTime = CTime::dateParseFromFormat($format, date($format));
 			return ($testTime['error_count'] == 0 && is_int($testTime['hour']) && is_int($testTime['minute']) && is_int($testTime['second']));
 		}else{

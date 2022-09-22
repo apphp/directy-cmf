@@ -137,7 +137,7 @@ class LocationsController extends CController
 		if($country->is_default){
 			$alert = A::t('app', 'Delete Default Alert');
 			$alertType = 'error';
-		}else if($country->delete()){				
+		}elseif($country->delete()){				
 			if($country->getError()){
 				$alert = A::t('app', 'Delete Warning Message');
 				$alertType = 'warning';

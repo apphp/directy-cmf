@@ -142,7 +142,7 @@ class tmhOAuth {
   private function safe_encode($data) {
     if (is_array($data)) {
       return array_map(array($this, 'safe_encode'), $data);
-    } else if (is_scalar($data)) {
+    } elseif (is_scalar($data)) {
       return str_ireplace(
         array('+', '%7E'),
         array(' ', '~'),
@@ -163,7 +163,7 @@ class tmhOAuth {
   private function safe_decode($data) {
     if (is_array($data)) {
       return array_map(array($this, 'safe_decode'), $data);
-    } else if (is_scalar($data)) {
+    } elseif (is_scalar($data)) {
       return rawurldecode($data);
     } else {
       return '';

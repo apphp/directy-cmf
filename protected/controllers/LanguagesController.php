@@ -56,11 +56,11 @@ class LanguagesController extends CController
         // Check for existing $lang in DB
         if($result = Languages::model()->find("code = :code AND used_on IN ('front-end','global') AND is_active = 1", array(':code'=>$lang))){
             $params = array(
+				'name' => $result->name,
+				'name_native' => $result->name_native,
                 'locale' => $result->lc_time_name,
                 'direction' => $result->direction,
 				'icon' => $result->icon,
-				'name' => $result->name,
-				'name_native' => $result->name_native,
             );
             A::app()->setLanguage($lang, $params);
         }
@@ -200,7 +200,7 @@ class LanguagesController extends CController
 		if($language->is_default){
 			$alert = A::t('app', 'Delete Default Alert');
 			$alertType = 'error';
-		}else if($language->delete()){				
+		}elseif($language->delete()){				
 			// Delete messages folder for this language
 			CFile::deleteDirectory('protected/messages/'.$language->code);	
 			if($language->getError()){

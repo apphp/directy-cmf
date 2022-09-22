@@ -21,9 +21,9 @@
 		
 		if($itemType == 'email_address'){
 			$fields['item_value'] = array('type'=>'textbox', 'title'=>A::t('app', 'Item'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'email', 'maxLength'=>'100'), 'htmlOptions'=>array('maxLength'=>'100', 'class'=>'normal'));
-		}else if($itemType == 'email_domain'){
+		}elseif($itemType == 'email_domain'){
 			$fields['item_value'] = array('type'=>'textbox', 'title'=>A::t('app', 'Item'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'text', 'maxLength'=>'100'), 'htmlOptions'=>array('maxLength'=>'100', 'class'=>'normal'));
-		}else if($itemType == 'username'){
+		}elseif($itemType == 'username'){
 			$fields['item_value'] = array('type'=>'textbox', 'title'=>A::t('app', 'Item'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'mixed', 'maxLength'=>'40'), 'htmlOptions'=>array('maxLength'=>'40', 'class'=>'normal'));
 		}else{
 			$fields['item_value'] = array('type'=>'textbox', 'title'=>A::t('app', 'Item'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'ip', 'maxLength'=>'15'), 'htmlOptions'=>array('maxLength'=>'15', 'class'=>'normal'));
@@ -31,7 +31,7 @@
 		
 		$fields['reason'] = array('type'=>'textarea', 'title'=>'Ban Reason', 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>255), 'htmlOptions'=>array('maxLength'=>'255'));
 		//$fields['started_at'] = array('type'=>'data', 'default'=>LocalTime::currentDate());
-		$fields['expires_at'] = array('type'=>'datetime', 'title'=>A::t('app', 'Expires'), 'defaultEditMode'=>'0000-00-00', 'validation'=>array('required'=>false, 'type'=>'date', 'maxLength'=>10, 'minValue'=>date('Y-m-d'), 'maxValue'=>''), 'htmlOptions'=>array('maxlength'=>'10', 'style'=>'width:100px'), 'definedValues'=>array('0000-00-00'=>''));
+		$fields['expires_at'] = array('type'=>'datetime', 'title'=>A::t('app', 'Expires'), 'defaultEditMode'=>null, 'validation'=>array('required'=>false, 'type'=>'date', 'maxLength'=>10, 'minValue'=>date('Y-m-d'), 'maxValue'=>''), 'htmlOptions'=>array('maxlength'=>'10', 'style'=>'width:100px'));
 		$fields['is_active'] = array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>true, 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'viewType'=>'custom');
 	
         echo CWidget::create('CDataForm', array(

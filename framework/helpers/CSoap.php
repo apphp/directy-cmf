@@ -159,14 +159,14 @@ class CSoap
                 if(self::$_style){
                     if(strtolower(self::$_style) == 'rpc'){
                         $settingParams['style'] = SOAP_RPC;
-                    }else if(strtolower(self::$_style) == 'document'){
+                    }elseif(strtolower(self::$_style) == 'document'){
                         $settingParams['style'] = SOAP_DOCUMENT;
                     }
                 }
                 if(self::$_use){
                     if(strtolower(self::$_use) == 'encoded'){
                         $settingParams['use'] = SOAP_ENCODED;
-                    }else if(strtolower(self::$_use) == 'literal'){
+                    }elseif(strtolower(self::$_use) == 'literal'){
                         $settingParams['use'] = SOAP_LITERAL;
                     }
                 }

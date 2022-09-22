@@ -26,12 +26,17 @@
 		<ul>
 			<li>
 				<strong><?= A::t('app', 'Site Domain'); ?>:</strong>
+				<br>
 				<?php
 					if(CAuth::isLoggedInAs('owner')):
-						echo CHtml::textField('website_domain', $settings->website_domain, array('class'=>'middle', 'placeholder'=>A::t('app', 'Enter your domain here, ex.: domain.com'), 'maxlength'=>'255', 'autocomplete'=>'off'));
+						echo CHtml::textField('website_domain', $settings->website_domain, array('class'=>'domain-name middle'.($settings->website_domain != '' ? ' hide' : ''), 'readonly'=>false, 'placeholder'=>A::t('app', 'Enter your domain here, ex.: domain.com'), 'maxlength'=>'255', 'autocomplete'=>'off'));
+						if($settings->website_domain != ''):
+							echo '<label class="lbl-domain-name">'.$settings->website_domain.'</label>';
+							echo '[ <a href="javascript:void(0);" class="settings-link" data-edit="'.A::t('app', 'Edit').'" data-cancel="'.A::t('app', 'Cancel').'">'.A::t('app', 'Edit').'</a> ]';
+						endif;
 					else:
 						echo $settings->website_domain;
-					endif; 
+					endif;
 				?>
 			</li>
 		</ul>		
@@ -67,3 +72,28 @@
 	?>
 	</div>
 </div>   
+
+<?php if(CAuth::isLoggedInAs('owner') && $settings->website_domain != ''): ?>
+<style>
+	.lbl-domain-name { width:auto; margin-right:10px }
+	.settings-link { margin-top:5px !important; display:inline-block; }
+</style>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('a.settings-link').click(function () {
+			var $textField = $('.domain-name'),
+				domainVal = $textField.val() != '' ? $textField.val() : '- empty -';
+			if(!$textField.hasClass('editable')){
+				$(this).html($(this).data('cancel'));
+				$textField.show().focus();
+				$('.lbl-domain-name').remove();
+			}else{
+				$(this).html($(this).data('edit'));
+				$textField.after('<label class="lbl-domain-name">'+domainVal+'</label>');
+				$textField.hide();
+			}
+			$textField.toggleClass('editable')
+		});
+	});
+</script>
+<?php endif; ?>

@@ -10,21 +10,21 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>admins` (
   `first_name` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `last_name` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `email` varchar(100) CHARACTER SET latin1 NOT NULL,
-  `birth_date` date NOT NULL DEFAULT '0000-00-00',
+  `birth_date` date NULL DEFAULT NULL,
   `language_code` VARCHAR(2) CHARACTER SET LATIN1 NOT NULL DEFAULT '',
   `avatar` varchar(125) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `personal_info` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `role` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'admin' COMMENT '''owner'',''mainadmin'',''admin'' or other',
-  `created_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `updated_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `password_changed_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `last_visited_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created_at` datetime NULL DEFAULT NULL,
+  `updated_at` datetime NULL DEFAULT NULL,
+  `password_changed_at` datetime NULL DEFAULT NULL,
+  `last_visited_at` datetime NULL DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
 
 INSERT INTO `<DB_PREFIX>admins` (`id`, `username`, `password`, `salt`, `token_expires_at`, `display_name`, `first_name`, `last_name`, `email`, `birth_date`, `language_code`, `avatar`, `personal_info`, `role`, `created_at`, `updated_at`, `password_changed_at`, `last_visited_at`, `is_active`) VALUES
-(1, '<USERNAME>', '<PASSWORD>', '<SALT>', '', '', '', '', '<EMAIL>', '0000-00-00', 'en', '', '', 'owner', '<CREATED_AT>', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '0000-00-00 00:00:00', 1);
+(1, '<USERNAME>', '<PASSWORD>', '<SALT>', '', '', '', '', '<EMAIL>', NULL, 'en', '', '', 'owner', '<CREATED_AT>', NULL, NULL, NULL, 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>accounts`;
@@ -38,13 +38,13 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>accounts` (
   `email` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `language_code` varchar(2) CHARACTER SET latin1 NOT NULL DEFAULT 'en',
   `avatar` varchar(125) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `created_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created_at` datetime NULL DEFAULT NULL,
   `created_ip` varchar(15) CHARACTER SET latin1 NOT NULL,
-  `last_visited_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_visited_at` datetime NULL DEFAULT NULL,
   `last_visited_ip` varchar(15) CHARACTER SET latin1 NOT NULL DEFAULT '000.000.000.000',
-  `password_changed_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `password_changed_at` datetime NULL DEFAULT NULL,
   `notifications` tinyint(1) NOT NULL DEFAULT '0',
-  `notifications_changed_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `notifications_changed_at` datetime NULL DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 - registration pending, 1 - active account',
   `is_removed` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'for logical removal',
   `comments` text COLLATE utf8_unicode_ci NOT NULL,
@@ -118,16 +118,16 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>settings` (
   `indexed_pages_yandex` varchar(10) CHARACTER SET latin1 NOT NULL,
   `indexed_pages_baidu` varchar(10) CHARACTER SET latin1 NOT NULL,
   `indexed_pages_goo` varchar(10) CHARACTER SET latin1 NOT NULL,
-  `site_last_updated` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `site_last_updated` datetime NULL DEFAULT NULL,
   `cron_type` enum('batch','non-batch','stop') CHARACTER SET latin1 NOT NULL DEFAULT 'stop',
-  `cron_run_last_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `cron_run_last_time` datetime NULL DEFAULT NULL,
   `cron_run_period` enum('minute','hour') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'hour',
   `cron_run_period_value` smallint(6) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `<DB_PREFIX>settings` (`id`, `template`, `ssl_mode`, `date_format`, `time_format`, `datetime_format`, `time_zone`, `daylight_saving`, `week_startday`, `number_format`, `general_email`, `general_email_name`, `mailer`, `smtp_auth`, `smtp_secure`, `smtp_host`, `smtp_port`, `smtp_username`, `smtp_password`, `mailing_log`, `rss_feed`, `rss_feed_type`, `rss_items_per_feed`, `search_items_per_page`, `search_is_highlighted`, `is_offline`, `offline_message`, `analytics_level`, `analytics_code`, `dashboard_hotkeys`, `dashboard_notifications`, `dashboard_statistics`, `mapping_api_type`, `mapping_api_key`, `website_domain`, `google_rank`, `alexa_rank`, `indexed_pages_google`, `indexed_pages_bing`, `indexed_pages_yahoo`, `indexed_pages_yandex`, `indexed_pages_baidu`, `indexed_pages_goo`, `site_last_updated`, `cron_type`, `cron_run_last_time`, `cron_run_period`, `cron_run_period_value`) VALUES
-(1, 'default', 0, 'F d Y', 'H:i:s', 'Y-m-d H:i:s', 'UTC', 1, 1, 'american', 'info@email.me', '', 'phpMail', 1, 'ssl', '', '', '', '', 0, 1, 'rss2', 10, 20, 1, 0, 'Our website is currently offline for maintenance. Please visit us later.', 1, '', 1, 1, 1, 'google_maps', '', '', '', '', '', '', '', '', '', '', '0000-00-00 00:00:00', 'non-batch', '0000-00-00 00:00:00', 'minute', 1);
+(1, 'default', 0, 'F d Y', 'H:i:s', 'Y-m-d H:i:s', 'UTC', 1, 1, 'american', 'info@email.me', '', 'phpMail', 1, 'ssl', '', '', '', '', 0, 1, 'rss2', 10, 20, 1, 0, 'Our website is currently offline for maintenance. Please visit us later.', 1, '', 1, 1, 1, 'google_maps', '', '', '', '', '', '', '', '', '', '', NULL, 'non-batch', NULL, 'minute', 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>site_info`;
@@ -135,6 +135,10 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>site_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `language_code` varchar(2) CHARACTER SET latin1 NOT NULL,
   `logo` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `site_phone` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `site_fax` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `site_email` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `site_address` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `header` text COLLATE utf8_unicode_ci NOT NULL,
   `slogan` text COLLATE utf8_unicode_ci NOT NULL,
   `footer` text COLLATE utf8_unicode_ci NOT NULL,
@@ -145,8 +149,8 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>site_info` (
   KEY `language_code` (`language_code`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
 
-INSERT INTO `<DB_PREFIX>site_info` (`id`, `language_code`, `logo`, `header`, `slogan`, `footer`, `meta_title`, `meta_description`, `meta_keywords`) VALUES
-(1, 'en', '', 'PHP Directy CMF', 'Welcome to PHP Directy CMF!', 'PHP Directy CMF © <a class="footer_link" target="_new" href="http://www.apphp.com/php-directy-cmf/index.php">ApPHP</a>', 'PHP Directy CMF', 'Directy CMF', 'php cmf, php framework, php content management framework, php cms');
+INSERT INTO `<DB_PREFIX>site_info` (`id`, `language_code`, `logo`, `site_phone`, `site_fax`, `site_email`, `site_address`, `header`, `slogan`, `footer`, `meta_title`, `meta_description`, `meta_keywords`) VALUES
+(1, 'en', '', '1(800) 123 456', '', 'info@email.me', '', 'PHP Directy CMF', 'Welcome to PHP Directy CMF!', 'PHP Directy CMF © <a class="footer_link" target="_new" href="http://www.apphp.com/php-directy-cmf/index.php">ApPHP</a>', 'PHP Directy CMF', 'Directy CMF', 'php cmf, php framework, php content management framework, php cms');
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>modules`;
@@ -163,8 +167,9 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>modules` (
   `is_installed` tinyint(1) NOT NULL DEFAULT '0',
   `is_system` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '0',
-  `installed_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `updated_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `installed_at` datetime NULL DEFAULT NULL,
+  `updated_at` datetime NULL DEFAULT NULL,
+  `has_test_data` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0 - no, 1 - yes',
   `sort_order` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
@@ -183,6 +188,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>module_settings` (
   `property_source` varchar(255) CHARACTER SET latin1 NOT NULL COMMENT 'for ''enum'' and ''range'' property types',
   `property_length` varchar(3) CHARACTER SET latin1 NOT NULL DEFAULT '' COMMENT 'for ''string'' and ''text'' property types',
   `append_text` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'append text to module propery on module settings page',
+  `trigger_condition` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'includes serialized trigger condition and action fields',
   `is_required` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `code_key_value` (`module_code`,`property_key`,`property_value`),
@@ -925,7 +931,7 @@ DROP TABLE IF EXISTS `<DB_PREFIX>currencies`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>currencies` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `symbol` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
+  `symbol` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `code` varchar(3) CHARACTER SET latin1 NOT NULL,
   `rate` double(10,4) NOT NULL DEFAULT '1.0000',
   `decimals` tinyint(1) NOT NULL DEFAULT '2',
@@ -1125,9 +1131,9 @@ INSERT INTO `<DB_PREFIX>backend_menus` (`id`, `parent_id`, `url`, `module_code`,
 (5, 0, '', '', 'modules.png', 1, 1, 5),
 (6, 1, 'backend/', '', '', 1, 1, 1),
 (7, 1, 'settings/', '', '', 1, 1, 2),
-(8, 1, 'socialNetworks/', '', '', 1, 1, 3),
-(9, 1, 'backendMenus/', '', '', 1, 1, 4),
-(10, 1, 'frontendMenus/', '', '', 1, 1, 5),
+(8, 1, 'backendMenus/', '', '', 1, 1, 3),
+(9, 1, 'frontendMenus/', '', '', 1, 1, 4),
+(10, 1, 'socialNetworks/', '', '', 1, 1, 5),
 (11, 1, 'banLists/', '', '', 1, 1, 6),
 (12, 1, 'locations/', '', '', 1, 1, 7),
 (13, 1, 'currencies/', '', '', 1, 1, 8),
@@ -1160,9 +1166,9 @@ INSERT INTO `<DB_PREFIX>backend_menu_translations` (`id`, `menu_id`, `language_c
 (5, 5, 'en', 'Modules'),
 (6, 6, 'en', 'Dashboard'),
 (7, 7, 'en', 'Site Settings'),
-(8, 8, 'en', 'Social Networks'),
-(9, 9, 'en', 'Backend Menu'),
-(10, 10, 'en', 'Frontend Menu'),
+(8, 8, 'en', 'Backend Menu'),
+(9, 9, 'en', 'Frontend Menu'),
+(10, 10, 'en', 'Social Networks'),
 (11, 11, 'en', 'Ban Lists'),
 (12, 12, 'en', 'Locations'),
 (13, 13, 'en', 'Currencies'),
@@ -1259,7 +1265,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>rss_channels` (
   `channel_description` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `last_items` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `items_count` tinyint(1) NOT NULL DEFAULT '10',
-  `updated_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 
@@ -1296,9 +1302,9 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>ban_lists` (
   `item_value` varchar(100) CHARACTER SET latin1 NOT NULL,
   `reason` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `activity_counter` int(10) NOT NULL DEFAULT '0',
-  `last_activity_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `started_at` date NOT NULL DEFAULT '0000-00-00',
-  `expires_at` date NOT NULL DEFAULT '0000-00-00',
+  `last_activity_at` datetime NULL DEFAULT NULL,
+  `started_at` date NULL DEFAULT NULL,
+  `expires_at` date NULL DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `ban_item_type` (`item_type`)
@@ -1313,7 +1319,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>system_notifications` (
   `type` enum('info','success','warning','error') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'info',
   `title` varchar(125) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `content` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `created_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created_at` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `module_code` (`module_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
@@ -1326,9 +1332,9 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>mailing_log` (
   `email_to` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
   `email_subject` varchar(125) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `email_content` text COLLATE utf8_unicode_ci NOT NULL,
-  `sent_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `sent_at` datetime NULL DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0 - error, 1- successfully sent',
-  `status_description` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `status_description` varchar(512) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 
@@ -1356,13 +1362,13 @@ INSERT INTO `<DB_PREFIX>payment_providers` (`id`, `code`, `name`, `description`,
 (1, 'online_order', 'Online Order', '''Online Order'' is designed to allow the customer to make an order on the site without any advance payment. It may be used like POA - "Pay on Arrival" order for hotel bookings, car rental etc. The administrator receives a notification about placing the order and can complete the order by himself.', '', '', '', '', '', 'global', 1, 0, 1, 1),
 (2, 'online_credit_card', 'Online Credit Card', '''Online Credit Card'' is designed to allow the customer to make an order on the site with payment by credit card. The administrator receives a credit card info and can complete the order by himself (in case he''s allowed to do Offline Credit Card Processing).', '', '', '', '', '', 'global', 1, 1, 0, 1),
 (3, 'wire_transfer', 'Wire Transfer', '''Wire Transfer'' is designed to allow the customer to perform a purchase on the site without any advance payment. The administrator receives a notification about placing this reservation and can complete it after the customer will pay a required sum to the provided bank account. After the customer send a payment with wire transfer and it successfully received, the status of purchase may be changes to ''paid''.', 'Bank name: {BANK NAME HERE}<br>Swift code: {CODE HERE}<br>Routing in Transit# or ABA#: {ROUTING HERE}<br>Account number *: {ACCOUNT NUMBER HERE}<br><br>*The account number must be in the IBAN format which may be obtained from the branch handling the customer''''s account or may be seen at the top the customer''''s bank statement', '', '', '', '', 'global', 1, 2, 0, 1),
-(4, 'paypal', 'PayPal', 'To make PayPal processing system works on your site you have to perform the following steps:<br><br>Create an account on PayPal: https://www.paypal.com<br>After account is created, log into and select from the top menu: My Account -> Profile<br>On Profile Summary page select from the Selling Preferences column: Instant Payment Notification (IPN) Preferences.<br>Turn ''On'' IPN by selecting Receive IPN messages (Enabled) and write into Notification URL: {site}/paymentProviders/handlePayment/paypal/orders, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/handlePayment/paypal/orders or<br>http://your_domain.com/site_directory/paymentProviders/handlePayment/paypal/orders<br>Then go to My Account -> Profile -> Website Payment Preferences, turn Auto Return ''On'' and write into Return URL: {site}/paymentProviders/handlePayment/paypal/orders, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/handlePayment/paypal/orders', '', 'merchant_id', 'sales@test.com', '', '', 'global', 1, 3, 0, 1);
+(4, 'paypal', 'PayPal', 'To make PayPal processing system works on your site you have to perform the following steps:<br><br>Create an account on PayPal: https://www.paypal.com<br>After account is created, log into and select from the top menu: My Account -> Profile<br>On Profile Summary page select from the Selling Preferences column: Instant Payment Notification (IPN) Preferences.<br>Turn ''On'' IPN by selecting Receive IPN messages (Enabled) and write into Notification URL: {site}/paymentProviders/handlePayment/paypal/orders, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/handlePayment/paypal/orders or<br>http://your_domain.com/site_directory/paymentProviders/handlePayment/paypal/orders<br>Then go to My Account -> Profile -> Website Payment Preferences, turn Auto Return ''On'' and write into Return URL: {site}/paymentProviders/successPayment, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/successPayment', '', 'merchant_id', 'sales@test.com', '', '', 'global', 1, 3, 0, 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>social_networks`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>social_networks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `site_id` int(11) NOT NULL DEFAULT '0',
+  `code` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `icon` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `link` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -1371,15 +1377,15 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>social_networks` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=9;
 
-INSERT INTO `<DB_PREFIX>social_networks` (`id`, `site_id`, `icon`, `name`, `link`, `sort_order`, `is_active`) VALUES
-(1, 1, 'facebook.png', 'Facebook', 'http://facebook.com/', 1, 1),
-(2, 1, 'google_plus.png', 'Google+', 'https://plus.google.com/', 2, 1),
-(3, 1, 'twitter.png', 'Twitter', 'http://twitter.com/', 3, 1),
-(4, 1, 'youtube.png', 'YouTube', 'http://youtube.com/', 4, 1),
-(5, 1, 'skype.png', 'Skype', 'http://web.skype.com/', 5, 0),
-(6, 1, 'pinterest.png', 'Pinterest', 'http://pinterest.com/', 6, 0),
-(7, 1, 'linkedin.png', 'LinkedIn', 'http://linkedin.com/', 7, 0),
-(8, 1, 'instagram.png', 'Instagram', 'http://instagram.com/', 8, 0);
+INSERT INTO `<DB_PREFIX>social_networks` (`id`, `code`, `icon`, `name`, `link`, `sort_order`, `is_active`) VALUES
+(1, 'facebook', 'facebook.png', 'Facebook', 'http://facebook.com/', 1, 1),
+(2, 'google-plus', 'google-plus.png', 'Google+', 'https://plus.google.com/', 2, 1),
+(3, 'twitter', 'twitter.png', 'Twitter', 'http://twitter.com/', 3, 1),
+(4, 'youtube', 'youtube.png', 'YouTube', 'http://youtube.com/', 4, 1),
+(5, 'skype', 'skype.png', 'Skype', 'http://web.skype.com/', 5, 0),
+(6, 'pinterest', 'pinterest.png', 'Pinterest', 'http://pinterest.com/', 6, 0),
+(7, 'linkedin', 'linkedin.png', 'LinkedIn', 'http://linkedin.com/', 7, 0),
+(8, 'instagram', 'instagram.png', 'Instagram', 'http://instagram.com/', 8, 0);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>social_networks_login`;

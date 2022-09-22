@@ -41,7 +41,7 @@ class SetupController extends CController
         $this->_view->_programName = isset($this->_configMain['name']) ? $this->_configMain['name'] : '';
         $this->_view->_programVersion = isset($this->_configMain['version']) ? $this->_configMain['version'] : '';
 
-        // block access to setup files when application is already installed
+        // Block access to setup files when application is already installed
         $configMain = APPHP_PATH.'/protected/config/main.php';
         if(file_exists($configMain)){            
             $this->_view->errorMessage = CWidget::create('CMessage', array('error', 'You\'re not authorized to view this page.'));
@@ -52,9 +52,12 @@ class SetupController extends CController
         $this->_view->setMetaTags('description', 'Setup Wizard for ApPHP MVC Framework Applications');
         $this->_view->setMetaTags('keywords', 'ApPHP MVC Framework, setup, setup wizard, installation wizard');
 		
-		ini_set('magic_quotes_runtime', 0);
-		ini_set('magic_quotes_gpc', 0);
-		ini_set('magic_quotes_sybase', 0);
+		// Disable these directives only for PHP < 5.3, in greater versions of PHP they are deprecated
+		if(version_compare(phpversion(), '5.3.0', '<')){
+			ini_set('magic_quotes_runtime', 0);
+			ini_set('magic_quotes_gpc', 0);
+			ini_set('magic_quotes_sybase', 0);
+		}
     }
     
 	/**
@@ -113,10 +116,10 @@ class SetupController extends CController
 	 */
 	public function requirementsAction()
 	{        
-        // check if previous step was passed
+        // Check if previous step was passed
         if($this->_cSession->get('step') < 1){
             $this->redirect('setup/index');
-        }else if(A::app()->getRequest()->getPost('act') == 'send'){
+        }elseif(A::app()->getRequest()->getPost('act') == 'send'){
             $this->redirect('setup/database');    
         }
         
@@ -130,7 +133,7 @@ class SetupController extends CController
             $phpCoreIndex = 'HTTP Headers Information';
         }
 		
-        // check all required settings        
+        // Check all required settings        
         $pdoExtension = $this->_checkPdoExtension($phpInfo);
         $modeRewrite = $this->_checkModRewrite();
 		$shortOpenTag = isset($phpInfo[$phpCoreIndex]['short_open_tag'][0]) ? strtolower($phpInfo[$phpCoreIndex]['short_open_tag'][0]) : false;
@@ -138,19 +141,19 @@ class SetupController extends CController
         if(version_compare(phpversion(), '5.2.3', '<')){	
             $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'This program requires at least <b>PHP version 5.2.3</b> installed. You cannot proceed current installation.'));
             $this->_view->isCriticalError = true;
-        }else if(!is_writable(APPHP_PATH.'/protected/config/')){
+        }elseif(!is_writable(APPHP_PATH.'/protected/config/')){
             $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/protected/config/</b> is not writable! <br>You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));
             $this->_view->isCriticalError = true;
-        }else if(!is_writable(APPHP_PATH.'/images/modules/')){
-            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/images/modules/</b> is not writable! <br>You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));
+        }elseif(!is_writable(APPHP_PATH.'/assets/modules/')){
+            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/assets/modules/</b> is not writable! <br>You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));
             $this->_view->isCriticalError = true;
-        }else if(!$modeRewrite){
+        }elseif(!$modeRewrite){
             $this->_view->notifyMessage = CWidget::create('CMessage', array('warning', 'This program requires "<b>mod_rewrite</b>" module to use friendly URLs, but it is not enabled or its status unknown. You may proceed current installation on yuor own risk.'));
             $this->_view->isCriticalError = false;
-        }else if($this->_pdoExtensionRequired && !$pdoExtension){
+        }elseif($this->_pdoExtensionRequired && !$pdoExtension){
             $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'This program requires "<b>PDO</b>" extension enabled. You cannot proceed current installation.'));
             $this->_view->isCriticalError = true;
-        }else if($shortOpenTag != 'on' && version_compare(phpversion(), '5.4.0', '<')){
+        }elseif($shortOpenTag != 'on' && version_compare(phpversion(), '5.4.0', '<')){
 			$this->_view->notifyMessage = CWidget::create('CMessage', array('warning', 'This program requires "<b>Short Open Tag</b>" enabled. You cannot proceed current installation.'));
 			$this->_view->isCriticalError = true;
         }
@@ -165,17 +168,22 @@ class SetupController extends CController
 
         $this->_view->pdoExtension = $pdoExtension ? '<span class="found">enabled</span>' : '<span class="disabled">disabled</span>';
         $this->_view->modeRewrite = $modeRewrite ? '<span class="found">enabled</span>' : '<span class="disabled">disabled</span>';
-        
-		$this->_view->aspTags = isset($phpInfo[$phpCoreIndex]['asp_tags']) ? '<span class="found">'.$phpInfo[$phpCoreIndex]['asp_tags'][0].'</span>' : '<span class="unknown">Unknown</span>';
+		if(version_compare(phpversion(), '7.0.0', '<')){
+			$this->_view->aspTags = isset($phpInfo[$phpCoreIndex]['asp_tags']) ? '<span class="found">'.$phpInfo[$phpCoreIndex]['asp_tags'][0].'</span>' : '<span class="unknown">Unknown</span>';
+		}else{
+			$this->_view->aspTags = '';
+		}
         $this->_view->safeMode = isset($phpInfo[$phpCoreIndex]['safe_mode']) ? '<span class="found">'.$phpInfo[$phpCoreIndex]['safe_mode'][0].'</span>' : '<span class="unknown">Unknown</span>';
         $this->_view->shortOpenTag = !empty($shortOpenTag) ? '<span class="found">'.$phpInfo[$phpCoreIndex]['short_open_tag'][0].'</span>' : '<span class="unknown">Unknown</span>';
 
         $this->_view->sessionSupport = isset($phpInfo['session']['Session Support']) ? $phpInfo['session']['Session Support'] : 'Unknown';
         $this->_view->sessionSupport = ($this->_view->sessionSupport == "enabled") ? '<span class="found">'.$this->_view->sessionSupport.'</span>' : '<span class="disabled">'.$this->_view->sessionSupport.'</span>';
         
-        $this->_view->magicQuotesGpc = ini_get('magic_quotes_gpc') ? '<span class="found">On</span>' : '<span class="disabled">Off</span>';
-        $this->_view->magicQuotesRuntime = ini_get('magic_quotes_runtime') ? '<span class="found">On</span>' : '<span class="disabled">Off</span>';
-        $this->_view->magicQuotesSybase = ini_get('magic_quotes_sybase') ? '<span class="found">On</span>' : '<span class="disabled">Off</span>';									
+		if(version_compare(phpversion(), '5.3.0', '<')){
+			$this->_view->magicQuotesGpc = ini_get('magic_quotes_gpc') ? '<span class="found">On</span>' : '<span class="disabled">Off</span>';
+			$this->_view->magicQuotesRuntime = ini_get('magic_quotes_runtime') ? '<span class="found">On</span>' : '<span class="disabled">Off</span>';
+			$this->_view->magicQuotesSybase = ini_get('magic_quotes_sybase') ? '<span class="found">On</span>' : '<span class="disabled">Off</span>';									
+		}
         
         $this->_view->smtp = (ini_get("SMTP") != '') ? '<span class="found">'.ini_get('SMTP').'</span>' : '<span class="unknown">Unknown</span>';
         $this->_view->smtpPort = (ini_get('smtp_port') != '') ? '<span class="found">'.ini_get('smtp_port').'</span>' : '<span class="unknown">Unknown</span>';
@@ -197,7 +205,10 @@ class SetupController extends CController
         if($this->_cRequest->getPost('act') == 'send'){
             $this->_view->setupType = $this->_cRequest->getPost('setupType', 'string');
             $this->_view->dbDriver = $this->_cRequest->getPost('dbDriver', 'string');
+			$this->_view->dbConnectType = $this->_cRequest->getPost('dbConnectType', 'string');
             $this->_view->dbHost = $this->_cRequest->getPost('dbHost', 'string');
+			$this->_view->dbPort = $this->_cRequest->getPost('dbPort', 'int');
+			$this->_view->dbSocket = $this->_cRequest->getPost('dbSocket', 'string');
             $this->_view->dbName = $this->_cRequest->getPost('dbName', 'string');
             $this->_view->dbUser = $this->_cRequest->getPost('dbUser', 'string');
             $this->_view->dbPassword = $this->_cRequest->getPost('dbPassword', 'string');
@@ -205,41 +216,48 @@ class SetupController extends CController
         }else{
             $this->_view->setupType = $this->_cSession->get('setupType', 'install');
             $this->_view->dbDriver = $this->_cSession->get('dbDriver', 'mysql');
+			$this->_view->dbConnectType = $this->_cSession->get('dbConnectType', 'host');
             $this->_view->dbHost = $this->_cSession->get('dbHost', 'localhost');
+			$this->_view->dbPort = $this->_cSession->get('dbPort', '');
+			$this->_view->dbSocket = $this->_cSession->get('dbSocket', '');
             $this->_view->dbName = $this->_cSession->get('dbName');
             $this->_view->dbUser = $this->_cSession->get('dbUser');
             $this->_view->dbPassword = $this->_cSession->get('dbPassword');
             $this->_view->dbPrefix = $this->_cSession->get('dbPrefix');            
         }
-        
+		
         $this->_view->actionMessage = '';
 		$dbDrivers = array('mysql'=>'MySql');
+		$dbConnectTypes = array('host'=>A::t('setup', 'host'), 'socket'=>A::t('setup', 'socket'));
         $msg = '';
 
         $separatorGeneralFields = array(
             'separatorInfo' => array('legend'=>'General Settings'),
-            'setupType'  =>array('type'=>'dropdownlist', 'value'=>$this->_view->setupType, 'title'=>A::t('setup', 'Setup Type'), 'mandatoryStar'=>false, 'data'=>array('install'=>A::t('setup', 'New Installation'), 'update'=>A::t('setup', 'Update')), 'htmlOptions'=>array(), 'validation'=>array('required'=>true, 'type'=>'text', 'source'=>array('install'))),
-            'dbDriver'   =>array('type'=>'dropdownlist', 'value'=>$this->_view->dbDriver, 'title'=>A::t('setup', 'Database Driver'), 'mandatoryStar'=>true, 'data'=>$dbDrivers, 'htmlOptions'=>array(), 'validation'=>array('required'=>true, 'type'=>'text', 'source'=>array_keys($dbDrivers))),
-            'dbPrefix'   =>array('type'=>'textbox', 'value'=>$this->_view->dbPrefix, 'title'=>A::t('setup', 'Database (tables) Prefix'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxLength'=>'10', 'autocomplete'=>'off'), 'validation'=>array('required'=>false, 'type'=>'variable')),
+            'setupType'  	=> array('type'=>'dropdownlist', 'value'=>$this->_view->setupType, 'title'=>A::t('setup', 'Setup Type'), 'mandatoryStar'=>false, 'data'=>array('install'=>A::t('setup', 'New Installation'), 'update'=>A::t('setup', 'Update')), 'htmlOptions'=>array(), 'validation'=>array('required'=>true, 'type'=>'text', 'source'=>array('install'))),
+            'dbDriver'   	=> array('type'=>'dropdownlist', 'value'=>$this->_view->dbDriver, 'title'=>A::t('setup', 'Database Driver'), 'mandatoryStar'=>true, 'data'=>$dbDrivers, 'htmlOptions'=>array('style'=>'width:85px'), 'validation'=>array('required'=>true, 'type'=>'text', 'source'=>array_keys($dbDrivers))),
+            'dbPrefix'   	=> array('type'=>'textbox', 'value'=>$this->_view->dbPrefix, 'title'=>A::t('setup', 'Database (tables) Prefix'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxLength'=>'10', 'autocomplete'=>'off'), 'validation'=>array('required'=>false, 'type'=>'variable')),
         );
         $separatorConenctionSettingsFields = array(
             'separatorInfo' => array('legend'=>'Connection Settings'),
-            'dbHost'     =>array('type'=>'textbox', 'value'=>$this->_view->dbHost, 'title'=>A::t('setup', 'Database Host'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'60', 'autocomplete'=>'off'), 'validation'=>array('required'=>true, 'type'=>'text')),
-            'dbName'     =>array('type'=>'textbox', 'value'=>$this->_view->dbName, 'title'=>A::t('setup', 'Database Name'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'20', 'autocomplete'=>'off'), 'validation'=>array('required'=>true, 'type'=>'text')),
-            'dbUser'     =>array('type'=>'textbox', 'value'=>$this->_view->dbUser, 'title'=>A::t('setup', 'Database User'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'20', 'autocomplete'=>'off'), 'validation'=>array('required'=>true, 'type'=>'text')),
-            'dbPassword' =>array('type'=>'password', 'value'=>$this->_view->dbPassword, 'title'=>A::t('setup', 'Database Password'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxLength'=>'20', 'autocomplete'=>'off'), 'validation'=>array('required'=>false, 'type'=>'text')),
+            'dbConnectType' => array('type'=>'dropdownlist', 'value'=>$this->_view->dbConnectType, 'title'=>A::t('setup', 'Connection Type'), 'mandatoryStar'=>true, 'data'=>$dbConnectTypes, 'htmlOptions'=>array('style'=>'width:85px'), 'validation'=>array('required'=>true, 'type'=>'text', 'source'=>array_keys($dbConnectTypes))),
+			'dbSocket'   	=> array('type'=>'textbox', 'value'=>$this->_view->dbSocket, 'title'=>A::t('setup', 'Database Socket'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'60', 'autocomplete'=>'off', 'placeholder'=>'/tmp/mysql.sock'), 'validation'=>array('required'=>($this->_view->dbConnectType == 'socket' ? true : false), 'type'=>'text'), 'disabled'=>($this->_view->dbConnectType == 'socket' ? false : true)),
+            'dbHost'     	=> array('type'=>'textbox', 'value'=>$this->_view->dbHost, 'title'=>A::t('setup', 'Database Host'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'60', 'autocomplete'=>'off', 'placeholder'=>'e.g. localhost'), 'validation'=>array('required'=>($this->_view->dbConnectType == 'host' ? true : false), 'type'=>'text'), 'disabled'=>($this->_view->dbConnectType == 'host' ? false : true)),
+            'dbPort'     	=> array('type'=>'textbox', 'value'=>$this->_view->dbPort, 'title'=>A::t('setup', 'Database Port'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxLength'=>'10', 'autocomplete'=>'off', 'placeholder'=>'e.g. 3306', 'style'=>'width:80px'), 'validation'=>array('required'=>false, 'type'=>'integer'), 'disabled'=>($this->_view->dbConnectType == 'host' ? false : true)),
+            'dbName'     	=> array('type'=>'textbox', 'value'=>$this->_view->dbName, 'title'=>A::t('setup', 'Database Name'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'20', 'autocomplete'=>'off'), 'validation'=>array('required'=>true, 'type'=>'text')),
+            'dbUser'     	=> array('type'=>'textbox', 'value'=>$this->_view->dbUser, 'title'=>A::t('setup', 'Database User'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'20', 'autocomplete'=>'off'), 'validation'=>array('required'=>true, 'type'=>'text')),
+            'dbPassword' 	=> array('type'=>'password', 'value'=>$this->_view->dbPassword, 'title'=>A::t('setup', 'Database Password'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxLength'=>'20', 'autocomplete'=>'off'), 'validation'=>array('required'=>false, 'type'=>'text')),
         );
         $validationFields = array_merge($separatorGeneralFields, $separatorConenctionSettingsFields);
         $this->_view->formFields = array(
-            'act'               =>array('type'=>'hidden', 'value'=>'send'),
-            'separatorGeneral'  =>$separatorGeneralFields,
-            'separatorConenctionSettings' =>$separatorConenctionSettingsFields,
+            'act'               => array('type'=>'hidden', 'value'=>'send'),
+            'separatorGeneral'  => $separatorGeneralFields,
+            'separatorConenctionSettings' => $separatorConenctionSettingsFields,
         );            
 
-        // check if previous step was passed
+        // Check if previous step was passed
         if($this->_cSession->get('step') < 2){
             $this->redirect('setup/index');
-        }else if($this->_cRequest->getPost('act') == 'send'){
+        }elseif($this->_cRequest->getPost('act') == 'send'){
 
             $result = CWidget::create('CFormValidation', array(
                 'fields' => $validationFields
@@ -251,7 +269,10 @@ class SetupController extends CController
             }else{
                 $model = new Setup(array(
                     'dbDriver' => $this->_view->dbDriver,
+					'dbConnectType' => $this->_view->dbConnectType,
+					'dbSocket' => $this->_view->dbSocket,
                     'dbHost' => $this->_view->dbHost,
+					'dbPort' => $this->_view->dbPort,
                     'dbName' => $this->_view->dbName,
                     'dbUser' => $this->_view->dbUser,
                     'dbPassword' => $this->_view->dbPassword
@@ -260,10 +281,13 @@ class SetupController extends CController
                 if($model->getError()){
                     $this->_view->actionMessage = CWidget::create('CMessage', array('error', $model->getErrorMessage()));
                 }else{
-                    // go to the next step
+                    // Go to the next step
                     $this->_cSession->set('setupType', $this->_view->setupType);
                     $this->_cSession->set('dbDriver', $this->_view->dbDriver);
+					$this->_cSession->set('dbConnectType', $this->_view->dbConnectType);
+					$this->_cSession->set('dbSocket', $this->_view->dbSocket);
                     $this->_cSession->set('dbHost', $this->_view->dbHost);
+					$this->_cSession->set('dbPort', $this->_view->dbPort);
                     $this->_cSession->set('dbName', $this->_view->dbName);
                     $this->_cSession->set('dbUser', $this->_view->dbUser);
                     $this->_cSession->set('dbPassword', $this->_view->dbPassword);
@@ -295,13 +319,13 @@ class SetupController extends CController
         $this->_view->actionMessage = '';
         $msg = '';
         
-        // check if previous step was passed
+        // Check if previous step was passed
         if($this->_cSession->get('step') < 3){
             $this->redirect('setup/index');
-        }else if($this->_cSession->get('setupType') == 'update'){
+        }elseif($this->_cSession->get('setupType') == 'update'){
             $this->_cSession->set('step', 4);
             $this->redirect('setup/ready');
-        }else if($this->_cRequest->getPost('act') == 'send'){
+        }elseif($this->_cRequest->getPost('act') == 'send'){
             $this->_view->email = $this->_cRequest->getPost('email');
             $this->_view->username = $this->_cRequest->getPost('username');
             $this->_view->password = $this->_cRequest->getPost('password');
@@ -318,7 +342,7 @@ class SetupController extends CController
                 $msg = $result['errorMessage'];
                 $this->_view->errorField = $result['errorField'];
             }else{
-                // go to the next step                
+                // Go to the next step                
                 $this->_cSession->set('email', $this->_view->email);
                 $this->_cSession->set('username', $this->_view->username);
                 $this->_cSession->set('password', $this->_view->password);
@@ -347,7 +371,7 @@ class SetupController extends CController
         // Check if previous step was passed
         if($this->_cSession->get('step') < 4){
             $this->redirect('setup/index');
-        }else if($this->_cRequest->getPost('act') == 'send'){
+        }elseif($this->_cRequest->getPost('act') == 'send'){
             // Get sql schema
 			$dbDriver = $this->_cSession->get('dbDriver', 'mysql');			
             $sqlDumpPath = APPHP_PATH.'/protected/data/schema'.($this->_cSession->get('setupType') == 'update' ? '.update' : '').'.'.strtolower($dbDriver).'.sql';
@@ -373,7 +397,10 @@ class SetupController extends CController
                 
                 $model = new Setup(array(
                     'dbDriver' => $dbDriver,
+					'dbConnectType' => $this->_cSession->get('dbConnectType'),
+					'dbSocket' => $this->_cSession->get('dbSocket'),
                     'dbHost' => $this->_cSession->get('dbHost'),
+					'dbPort' => $this->_cSession->get('dbPort'),
                     'dbName' => $this->_cSession->get('dbName'),
                     'dbUser' => $this->_cSession->get('dbUser'),
                     'dbPassword' => $this->_cSession->get('dbPassword')
@@ -386,7 +413,7 @@ class SetupController extends CController
                         $modulesError = false;
                         $modulesWarning = false;
                         if($this->_cSession->get('setupType') == 'install'){
-                            // install modules 
+                            // Install modules 
                             $modulesList = isset($this->_configMain['modules']) ? $this->_configMain['modules'] : '';
                             if(is_array($modulesList)){
                                 foreach($modulesList as $module => $modValue){
@@ -398,7 +425,7 @@ class SetupController extends CController
                                             $sqlDumpFile = isset($xml->files->data->install) ? $xml->files->data->install : '';
                                             $sqlDump = file(APPHP_PATH.$modulePath.'data/'.$sqlDumpFile);
                                             if(!empty($sqlDump)){											
-                                                // get and run sql schema filename for the module
+                                                // Get and run sql schema filename for the module
                                                 $sqlDump = str_ireplace('<DB_PREFIX>', $this->_cSession->get('dbPrefix'), $sqlDump);
 												$sqlDump = str_ireplace('<CURRENT_DATE>', date('Y-m-d', time() + (date('I', time()) ? 3600 : 0)), $sqlDump);
 												$sqlDump = str_ireplace('<CURRENT_DATETIME>', date('Y-m-d H:i:s', time() + (date('I', time()) ? 3600 : 0)), $sqlDump);
@@ -407,14 +434,14 @@ class SetupController extends CController
                                                     $modulesError = true;
                                                     $this->_view->actionMessage = CWidget::create('CMessage', array('error', $model->getErrorMessage()));
                                                 }else{
-                                                    // copy module files
+                                                    // Copy module files
                                                     foreach($xml->files->children() as $folder){
                                                         if(isset($folder['exclude']) && strtolower($folder['exclude']) == 'yes') continue;
                                                         if(!isset($folder['installationPath'])) continue;
                                                         
                                                         $src = APPHP_PATH.$modulePath.$folder->getName().'/';
                                                         if(isset($folder['byDirectory']) && strtolower($folder['byDirectory']) == 'true'){
-                                                            // copy by whole directory
+                                                            // Copy by whole directory
                                                             $srcFolder = $modulePath.$folder->getName().'/';
                                                             $destFolder = '/'.$folder['installationPath'];
                                                             if(!CFile::copyDirectory($srcFolder, $destFolder)){
@@ -422,9 +449,9 @@ class SetupController extends CController
                                                                 $this->_view->actionMessage .= CWidget::create('CMessage', array('warning', A::t('core', 'An error occurred while copying the folder {source} to {destination}.', array('{source}'=>$srcFolder, '{destination}'=>$destFolder))));
                                                             }														
                                                         }else{
-                                                            // copy file by file (default)
+                                                            // Copy file by file (default)
                                                             if(substr($folder['installationPath'], -1) === '*'){
-                                                                // prepare array of destinations for copying to all subfolders
+                                                                // Prepare array of destinations for copying to all subfolders
                                                                 $destPaths = CFile::findSubDirectories(substr($folder['installationPath'], 0, -1), true);
                                                             }else{
                                                                 $destPaths = array($folder['installationPath']);
@@ -470,7 +497,7 @@ class SetupController extends CController
                                             break;	
                                         } 									
                                     }
-                                } // modules loop
+                                } // Modules loop
                             }                            
                         }
 						if(!$modulesError){
@@ -498,7 +525,7 @@ class SetupController extends CController
 	 */
     public function completedAction()
 	{
-        // check if previous step was passed
+        // Check if previous step was passed
         if($this->_cSession->get('step') < 5){
             $this->redirect('setup/index');
         }       
@@ -509,7 +536,9 @@ class SetupController extends CController
         
         $dbContent = file_get_contents(APPHP_PATH.'/protected/data/config.db.tpl');
         $dbContent = str_ireplace('<DB_DRIVER>', $this->_cSession->get('dbDriver'), $dbContent);
+		$dbContent = str_ireplace('<DB_SOCKET>', $this->_cSession->get('dbSocket'), $dbContent);
         $dbContent = str_ireplace('<DB_HOST>', $this->_cSession->get('dbHost'), $dbContent);
+		$dbContent = str_ireplace('<DB_PORT>', $this->_cSession->get('dbPort'), $dbContent);
         $dbContent = str_ireplace('<DB_NAME>', $this->_cSession->get('dbName'), $dbContent);
         $dbContent = str_ireplace('<DB_USER>', $this->_cSession->get('dbUser'), $dbContent);
         $dbContent = str_ireplace('<DB_PASSWORD>', $this->_cSession->get('dbPassword'), $dbContent);
@@ -557,7 +586,7 @@ class SetupController extends CController
 		$mod_rewrite = false;
 		
         if(function_exists('apache_get_modules')){
-            // works only if PHP is not running as CGI module
+            // Works only if PHP is not running as CGI module
             $mod_rewrite = in_array('mod_rewrite', apache_get_modules());
         }
 		
@@ -598,7 +627,7 @@ class SetupController extends CController
 			$endArrayKeys = end($arrayKeys);
             if(strlen($match[1])){
                 $phpInfo[$match[1]] = array();
-            }else if(isset($match[3])){
+            }elseif(isset($match[3])){
                 $phpInfo[$endArrayKeys][$match[2]] = isset($match[4]) ? array($match[3], $match[4]) : $match[3];
             }else{				
                 $phpInfo[$endArrayKeys][] = $match[2];

@@ -111,7 +111,7 @@ form input[type=text] { margin-left:10px; margin-right:0px; }
 
 /* SETTINGS
 ---------------------------------------------------------- */
-div.left-side 		{ float:right; width:300px; }
+div.left-side 		{ float:right; width:310px; }
 div.left-side select { min-width:100px; }
 div.central-part 	{ float:right; margin-left:10px; padding-left:10px; border-left-width:1px; border-left-style:solid; border-left-color:#c7c7e7;  }
 div.right-side 		{ margin-left:0px; margin-right:563px; }

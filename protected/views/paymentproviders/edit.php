@@ -4,7 +4,7 @@
 	$this->_activeMenu = 'paymentProviders/';
     $this->_breadCrumbs = array(
         array('label'=>A::t('app', 'General'), 'url'=>'backend/'),
-        array('label'=>A::t('app', 'Payment Providers')),
+        array('label'=>A::t('app', 'Payment Providers'), 'url'=>'paymentProviders/manage'),
         array('label'=>A::t('app', 'Edit Payment Provider')),
     );    
 ?>
@@ -24,9 +24,9 @@
 		foreach($requiredFields as $key => $requiredField){
 			if($requiredField == 'merchant_id'){
 				$required['merchant_id'] = true;
-			}else if($requiredField == 'merchant_code'){
+			}elseif($requiredField == 'merchant_code'){
 				$required['merchant_code'] = true;
-			}else if($requiredField == 'merchant_key'){
+			}elseif($requiredField == 'merchant_key'){
 				$required['merchant_key'] = true;
 			}
 		}
@@ -48,7 +48,7 @@
 			'requiredFieldsAlert'=>true,
 			'fields'			=> array(
 				'name'       		=> array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'text', 'maxLength'=>40), 'htmlOptions'=>array('maxLength'=>'40')),
-				'description'		=> array('type'=>'textarea', 'title'=>A::t('app', 'Description').' ('.A::t('app', 'for internal use').')', 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>false, 'type'=>'text', 'maxLength'=>2048), 'htmlOptions'=>array('maxLength'=>'2048', 'class'=>'small')),
+				'description'		=> array('type'=>'textarea', 'title'=>A::t('app', 'Description').' ('.A::t('app', 'for internal use').')', 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>2048), 'htmlOptions'=>array('maxLength'=>'2048', 'class'=>'normal')),
 				'instructions'		=> array('type'=>'textarea', 'title'=>A::t('app', 'Instructions').' ('.A::t('app', 'for external use').')', 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>false, 'type'=>'any', 'maxLength'=>2048), 'htmlOptions'=>array('maxLength'=>'2048')),
 				'code'       		=> array('type'=>'textbox', 'title'=>A::t('app', 'Code'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'unique'=>true, 'type'=>'seoLink', 'maxLength'=>20), 'htmlOptions'=>array('maxLength'=>'20')),
 				'used_on'			=> array('type'=>'select', 'title'=>A::t('app', 'Used On'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($usedOn)), 'data'=>$usedOn, 'emptyOption'=>true, 'viewType'=>'dropdownlist|checkboxes', 'multiple'=>false, 'storeType'=>'serialized|separatedValues', 'separator'=>';', 'htmlOptions'=>array('class'=>'chosen-select-filter')),

@@ -47,10 +47,10 @@
                     'fileOptions'       => array('showAlways'=>false, 'class'=>'file', 'size'=>'25', 'filePath'=>'images/social_networks/')
                 ),
                 'name'       => array('type'=>'textbox', 'title'=>A::t('app', 'Name'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'text', 'maxLength'=>50), 'htmlOptions'=>array('class'=>'middle', 'maxLength'=>50)),
+				'code'		 => array('type'=>'textbox', 'title'=>A::t('app', 'Code'), 'validation'=>array('required'=>true, 'type'=>'identityCode', 'unique'=>true), 'htmlOptions'=>array('maxlength'=>'20', 'class'=>'middle')),
                 'link'       => array('type'=>'textbox', 'title'=>A::t('app', 'Link'), 'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'url', 'maxLength'=>255), 'htmlOptions'=>array('class'=>'middle', 'maxLength'=>255)),
                 'sort_order' => array('type'=>'textbox', 'title'=>A::t('app', 'Sort Order'), 'default'=>0, 'tooltip'=>'', 'validation'=>array('required'=>false, 'maxLength'=>1, 'type'=>'numeric'), 'htmlOptions'=>array('maxLength'=>1, 'class'=>'small')),
                 'is_active'  => array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'default'=>1, 'validation'=>array('type'=>'set', 'source'=>array(0, 1)), 'data'=>array(0 => A::t('app', 'No'), 1 => A::t('app', 'Yes')), 'viewType'=>'custom'),
-                'site_id'    => array('type'=>'data', 'default'=>'1'),
             ),
             'translationInfo'       => array(),
             'translationFields'     => array(),

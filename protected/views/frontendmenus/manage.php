@@ -33,22 +33,6 @@
 				echo '<a href="frontendMenus/add'.($parentId ? '/pid/'.(int)$parentId : '').'" class="add-new">'.A::t('app', 'Add New').'</a>';
 			}		
 					
-			$fields = array(
-				'menu_name'    		=> array('title'=>A::t('app', 'Menu Title'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left'),
-				'menu_type'    		=> array('title'=>A::t('app', 'Menu Type'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px'),
-				'placement'			=> array('title'=>A::t('app', 'Display On'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>$placementsList, 'width'=>'130px'),
-				'access_level'		=> array('title'=>A::t('app', 'Access'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>$accessLevelsList, 'width'=>'80px'),
-                'is_active' 		=> array('title'=>A::t('app', 'Active'), 'type'=>'link', 'align'=>'', 'width'=>'90px', 'class'=>'center', 'headerClass'=>'center', 'isSortable'=>false, 'linkUrl'=>'frontendMenus/changeStatus/id/{id}'.($parentId != 0 ? '/pid/'.(int)$parentId : ''), 'linkText'=>'', 'definedValues'=>array('0'=>'<span class="badge-red">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'htmlOptions'=>array('class'=>'tooltip-link', 'title'=>A::t('app', 'Click to change status'))),
-				'sort_order'    	=> array('title'=>A::t('app', 'Sort Order'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'90px'),
-				'sub_menus_link' 	=> array('title'=>A::t('app', 'Sub-Menus'), 'type'=>'link', 'class'=>'center', 'headerClass'=>'center', 'width'=>'90px', 'isSortable'=>false, 'linkUrl'=>($parentId == 0 ? 'frontendMenus/manage/pid/{id}' : ''), 'linkText'=>($parentId == 0 ? A::t('app', 'Sub-Menus') : A::t('app', 'N/A')), 'htmlOptions'=>array('class'=>'subgrid-link'), 'prependCode'=>($parentId == 0 ? '[ ' : ''), 'appendCode'=>($parentId == 0 ? ' ]' : ''), 'disabled'=>($parentId == 0 ? false : true)),
-				'menu_id'    		=> array('title' => '', 'type'=>'enum', 'table'=>'', 'operator'=>'=', 'default'=>'', 'width'=>'45px', 'source'=>$subMenuCounts, 'definedValues'=>array(''=>'<span class="label-zerogray">0</span>'), 'isSortable'=>true, 'class' => 'left', 'prependCode'=>'<span class="label-lightgray">', 'appendCode'=>'</span>', 'disabled'=>($parentId == 0 ? false : true)),
-				'id'    			=> array('title'=>A::t('app', 'ID'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'40px'),
-			);
-			
-			if($parentId){
-				unset($fields['placement']);
-			}
-			
 			echo CWidget::create('CGridView', array(
 				'model'				=> 'FrontendMenus',
 				'actionPath'		=> 'frontendMenus/manage'.($parentId ? '/pid/'.(int)$parentId : ''),
@@ -58,9 +42,21 @@
 				'defaultOrder'		=> array('placement'=>'ASC', 'sort_order'=>'ASC'),
 				'passParameters'	=> true,
 			    'filters'			=> array(
-			    	'placement' 		=> array('title'=>A::t('app', 'Display On'), 'type'=>'enum', 'operator'=>'=', 'width'=>'', 'source'=>$placementsFilterList, 'emptyOption'=>true),
+			    	'placement' 		=> array('title'=>A::t('app', 'Display On'), 'type'=>'enum', 'operator'=>'=', 'width'=>'130px', 'source'=>$placementsFilterList, 'emptyOption'=>true),
+			    	'module_code' 		=> array('title'=>A::t('app', 'Module'), 'type'=>'enum', 'operator'=>'=', 'width'=>'130px', 'source'=>$modulesFilterList, 'emptyOption'=>true),
 			    ),
-				'fields'			=> $fields,
+				'fields'			=> array(
+					'menu_name'    	=> array('title'=>A::t('app', 'Menu Title'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left'),
+					'menu_type'    	=> array('title'=>A::t('app', 'Menu Type'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px'),
+					'module_code'   => array('title'=>A::t('app', 'Module'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px'),
+					'placement'		=> array('title'=>A::t('app', 'Display On'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>$placementsList, 'width'=>'130px', 'disabled'=>($parentId == 0 ? false : true)),
+					'access_level'	=> array('title'=>A::t('app', 'Access'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>$accessLevelsList, 'width'=>'80px'),
+					'sort_order'    => array('title'=>A::t('app', 'Sort Order'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'90px'),
+					'is_active' 	=> array('title'=>A::t('app', 'Active'), 'type'=>'link', 'align'=>'', 'width'=>'90px', 'class'=>'center', 'headerClass'=>'center', 'isSortable'=>false, 'linkUrl'=>'frontendMenus/changeStatus/id/{id}'.($parentId != 0 ? '/pid/'.(int)$parentId : ''), 'linkText'=>'', 'definedValues'=>array('0'=>'<span class="badge-red">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'htmlOptions'=>array('class'=>'tooltip-link', 'title'=>A::t('app', 'Click to change status'))),
+					'sub_menus_link'=> array('title'=>A::t('app', 'Sub-Menus'), 'type'=>'link', 'class'=>'center', 'headerClass'=>'center', 'width'=>'90px', 'isSortable'=>false, 'linkUrl'=>($parentId == 0 ? 'frontendMenus/manage/pid/{id}' : ''), 'linkText'=>($parentId == 0 ? A::t('app', 'Sub-Menus') : A::t('app', 'N/A')), 'htmlOptions'=>array('class'=>'subgrid-link'), 'prependCode'=>($parentId == 0 ? '[ ' : ''), 'appendCode'=>($parentId == 0 ? ' ]' : ''), 'disabled'=>($parentId == 0 ? false : true)),
+					'menu_id'    	=> array('title' => '', 'type'=>'enum', 'table'=>'', 'operator'=>'=', 'default'=>'', 'width'=>'45px', 'source'=>$subMenuCounts, 'definedValues'=>array(''=>'<span class="label-zerogray">0</span>'), 'isSortable'=>true, 'class' => 'left', 'prependCode'=>'<span class="label-lightgray">', 'appendCode'=>'</span>', 'disabled'=>($parentId == 0 ? false : true)),
+					'id'    		=> array('title'=>A::t('app', 'ID'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'40px'),
+				),
 				'actions'			=> array(
 					'edit' => array(
 						'disabled'	=> !Admins::hasPrivilege('frontend_menu', 'edit'),

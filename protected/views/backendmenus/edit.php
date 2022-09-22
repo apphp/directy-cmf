@@ -51,7 +51,7 @@
                     'type'          => 'imageupload',
                     'title'         => A::t('app', 'Icon'),
                     'validation'    => array('required'=>false, 'type'=>'image', 'maxSize'=>'50k', 'maxWidth'=>'32px', 'maxHeight'=>'32px', 'targetPath'=>'templates/backend/images/icons/', 'mimeType'=>'image/jpeg, image/jpg, image/png, image/gif', 'fileName'=>'menu_'.$id),
-                    'imageOptions'  => array('showImage'=>true, 'showImageName'=>$allowImageOptions, 'showImageSize'=>$allowImageOptions, 'imageClass'=>'menu-preview-icon'),
+                    'imageOptions'  => array('showImage'=>true, 'showImageName'=>$allowImageOptions, 'showImageSize'=>$allowImageOptions, 'showImageDimensions'=>$allowImageOptions, 'imageClass'=>'menu-preview-icon'),
                     'deleteOptions' => array('showLink'=>$allowImageOptions, 'linkUrl'=>'backendMenus/edit/id/'.$id.($parentId ? '/pid/'.$parentId : '').'/icon/delete', 'linkText'=>A::t('app', 'Delete')),
                     'fileOptions'   => array('showAlways'=>false, 'class'=>'file', 'size'=>'25', 'filePath'=>'templates/backend/images/icons/')
                 ),

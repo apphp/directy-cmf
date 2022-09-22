@@ -79,7 +79,7 @@ class WireTransfer extends PaymentGateway
         $returnUrl          = isset($params['return']) ? $params['return'] : '';
         $cancelReturnUrl    = isset($params['cancel_return']) ? $params['cancel_return'] : '';
         $backUrl            = isset($params['back']) ? $params['back'] : '';
-        $formAction         = $mode == 1 ? $notifyUrl : $notifyUrl;
+        $formAction         = $notifyUrl;
 
         $output .= CHtml::openForm($formAction, 'post', array('name'=>'payform')).self::NL;
 

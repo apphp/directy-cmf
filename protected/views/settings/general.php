@@ -8,7 +8,7 @@
 		array('label'=>A::t('app', 'General Settings'))
     );
     
-    A::app()->getClientScript()->registerCssFile('js/vendors/jquery/jquery-ui.min.css');
+    A::app()->getClientScript()->registerCssFile('assets/vendors/jquery/jquery-ui.min.css');
 ?>
     
 <h1><?= A::t('app', 'General Settings'); ?></h1>

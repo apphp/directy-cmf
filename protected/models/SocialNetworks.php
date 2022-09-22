@@ -2,13 +2,10 @@
 /**
  * SocialNetworks model
  *
- * PUBLIC:                 PROTECTED                  PRIVATE
- * ---------------         ---------------            ---------------
- * __construct             _relations
- *
- * STATIC:
- * ---------------------------------------------------------------
- * model
+ * PUBLIC:                 	PROTECTED:                 	PRIVATE:
+ * ---------------         	---------------            	---------------
+ * __construct              _relations
+ * model (static)
  *
  */
 class SocialNetworks extends CActiveRecord
@@ -16,9 +13,8 @@ class SocialNetworks extends CActiveRecord
 
     /** @var string */
     protected $_table = 'social_networks';
-    /** @var string */
-    protected $_tableSite = 'site_info_frontend';
 
+	
     public function __construct()
     {
         parent::__construct();

@@ -22,24 +22,32 @@ class SearchForm extends CComponent
 	}
 
 	/**
-	 * Draws menu from database
-	 * @param string $placement left|right|top|bottom
+	 * Draws search form
 	 * @param array $params
-	 * @SEE self::_getMenu() 
+	 * @SEE self::_getSearch() 
 	 * @return HTML code
 	 */
-	public static function draw($placement = '', $params = array())
+	public static function draw($params = array())
 	{
-        return self::_getSearch($placement, $params);
+        return self::_getSearch($params);
 	}
 
 	/**
 	 * Returns HTML code of the site search control
-	 * @param string $placement left|right|top|bottom
 	 * @param array $params
+	 * Ex.:
+	 * <form class="form-search" action="search/find" method="get">
+	 * 		<div class="input-group">
+	 * 			<input value="" name="search_category" id="search_category" type="hidden">
+	 * 			<input class="inputClass" placeholder="placeHolder" maxlength="1024" autocomplete="off" value="" name="keywords" id="keywords" type="search">
+	 * 			<input class="btn" name="ap0" value="Search" type="submit">
+	 * 			- or -
+	 * 			buttonHtml
+	 * 		</div>
+	 * </form>
 	 * @return HTML code
 	 */
-	private static function _getSearch($placement = '', $params = array())
+	private static function _getSearch($params = array())
 	{
 		$output = '';
 		$cRequest = A::app()->getRequest();
@@ -51,13 +59,17 @@ class SearchForm extends CComponent
 		}
 		
 		$keywords = trim($keywords);
-		$inputClass = isset($params['input-class']) ? $params['input-class'] : 'input-medium search-query';
-		$buttonHtml = isset($params['button-html']) ? $params['button-html'] : CHtml::submitButton(A::t('app', 'Search'), array('class'=>'btn'));
+		$innerWrapper = isset($params['innerWrapper']) ? (bool)$params['innerWrapper'] : false;
+		$inputClass = isset($params['inputClass']) ? $params['inputClass'] : 'input-medium search-query';
+		$placeHolder = isset($params['placeHolder']) ? $params['placeHolder'] : A::te('app', 'Search');
+		$buttonHtml = isset($params['buttonHtml']) ? $params['buttonHtml'] : CHtml::submitButton(A::t('app', 'Search'), array('class'=>'btn'));
 		
 		$output .= CHtml::openForm('search/find', 'get', array('class'=>'form-search'));
-		$output .= CHtml::hiddenField('search_category', '', array());		
-		$output .= CHtml::textField('keywords', htmlspecialchars($keywords), array('class'=>$inputClass, 'placeholder'=>A::te('app', 'Search'), 'maxlength'=>'1024', 'autocomplete'=>'off'));
+		if($innerWrapper) $output .= CHtml::openTag('div', array('class'=>'input-group'));
+		$output .= CHtml::hiddenField('search_category', '', array());
+		$output .= CHtml::searchField('keywords', htmlspecialchars($keywords), array('class'=>$inputClass, 'placeholder'=>$placeHolder, 'maxlength'=>'1024', 'autocomplete'=>'off'));
 		$output .= $buttonHtml;
+		if($innerWrapper) $output .= CHtml::closeTag('div');
 		$output .= CHtml::closeForm();
 		
 		// Define events handling for search form

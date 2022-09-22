@@ -101,6 +101,11 @@ class BackendController extends CController
 			}
 		}
 		$this->_view->changedPasswordAdminsList = $changedPasswordAdminsList;
+		
+		// Prepare session's data
+		$this->_view->customStorage = CConfig::get('session.customStorage');
+		$sessions = CDatabase::init()->select('SELECT COUNT(*) cnt FROM '.CConfig::get('db.prefix').'sessions');
+		$this->_view->activeSessions = isset($sessions[0]['cnt']) ? $sessions[0]['cnt'] : 0;
 
 		// Prepare notifications 
 		$systemNotifications = array();		
@@ -108,11 +113,11 @@ class BackendController extends CController
 		$loggedRole = CAuth::getLoggedRole();
 		if($loggedRole == 'owner'){
 			$condition = '';
-		}else if($loggedRole == 'mainadmin'){
+		}elseif($loggedRole == 'mainadmin'){
 			$condition = "minimal_role != 'owner'";
-		}else if($loggedRole == 'admin'){
+		}elseif($loggedRole == 'admin'){
 			$condition = "minimal_role NOT IN ('owner', 'mainadmin')";
-		}else if(!empty($loggedRole)){
+		}elseif(!empty($loggedRole)){
 			$condition = "(minimal_role = '".$loggedRole."')";
 		}		
 		
@@ -176,7 +181,7 @@ class BackendController extends CController
 					$usernameBanned = Website::checkBan('username', $username);
 					if($usernameBanned){
 						// do nothing
-					}else if(!$usernameBanned && $admin->login($username, $password, true, true)){
+					}elseif(!$usernameBanned && $admin->login($username, $password, true, true)){
 						$this->redirect('backend/index');				
 					}
 				}            

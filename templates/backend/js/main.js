@@ -188,6 +188,21 @@ $(document).ready(function(){
         });
         $('.sortable-content').append('<div style="clear:both"></div>');
     }
+
+    // INIT PROMPT ACTION 
+    // --------------------------------------
+	$('.prompt-delete').click(function(e){
+		var promptMessage = $(this).data('prompt-message');
+		if(promptMessage == undefined || promptMessage == ''){ 
+			promptMessage = 'Are you sure you want to perform delete operation?';
+		}
+		if(confirm(promptMessage)){
+			return true;
+		}else{
+			e.preventDefault();
+			return false;
+		}
+	});
 })
 
 

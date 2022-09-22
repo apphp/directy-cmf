@@ -76,7 +76,7 @@ class OnlineCreditCard extends PaymentGateway
         $returnUrl          = isset($params['return']) ? $params['return'] : '';
         $cancelReturnUrl    = isset($params['cancel_return']) ? $params['cancel_return'] : '';
         $backUrl            = isset($params['back']) ? $params['back'] : '';
-        $formAction         = $mode == 1 ? $notifyUrl : $notifyUrl;
+        $formAction         = $notifyUrl;
 
         $errorField         = isset($params['error_field']) ? $params['error_field'] : '';
 
@@ -92,7 +92,7 @@ class OnlineCreditCard extends PaymentGateway
         $cRequest = A::app()->getRequest();
 
         $output .= CWidget::create('CFormView', array(
-			'action'=>$notifyUrl,
+			'action'=>$formAction,
 			'cancelUrl'=>$backUrl,
 			'method'=>'post',
 			'htmlOptions'=>array(

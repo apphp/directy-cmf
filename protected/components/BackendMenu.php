@@ -120,7 +120,7 @@ class BackendMenu extends CComponent
 							}else{
 								$backendDefaultUrl = CConfig::get('modules.'.$module['code'].'.backendDefaultUrl');
 								$items[] = array(
-									'label' => '<img src="images/modules/'.$module['code'].'/'.$module['icon'].'" class="sub-menu-icon" />'.$module['name'],
+									'label' => '<img src="assets/modules/'.$module['code'].'/images/'.$module['icon'].'" class="sub-menu-icon" />'.$module['name'],
 									'url' 	=> (!empty($backendDefaultUrl) ? $backendDefaultUrl : 'modules/settings/code/'.$module['code'])
 								);								
 							}

@@ -56,6 +56,7 @@ class CurrenciesController extends CController
         // Check for existing currency in DB
         if($result = Currencies::model()->find('code = :code AND is_active = 1', array(':code'=>$currency_code))){
 			$params = array();
+			$params['name'] = $result->name;
 			$params['symbol'] = $result->symbol;
 			$params['symbol_place'] = $result->symbol_place;
 			$params['decimals'] = $result->decimals;
@@ -159,7 +160,7 @@ class CurrenciesController extends CController
 		if($currency->is_default){
 			$alert = A::t('app', 'Delete Default Alert');
 			$alertType = 'error';
-		}else if($currency->delete()){				
+		}elseif($currency->delete()){				
 			if($currency->getError()){
 				$alert = A::t('app', 'Delete Warning Message');
 				$alertType = 'warning';

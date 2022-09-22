@@ -59,13 +59,13 @@ class Cron extends CModel
 			if(is_array($modules)){
 				foreach($modules as $module){
 					$moduleName = ! empty($module['class_code']) ? $module['class_code'] : ucfirst($module['code']);
-					// For PHP_VERSION >= 5.3.0 you may use
+					// For PHP_VERSION | phpversion() >= 5.3.0 you may use
 					// $callbackClass = $moduleName::cronJob();
 					$object = $moduleName;
 					$method = 'cron';
 					if(is_string($object)){
 						@call_user_func_array($object.'::cron', array());
-					}else if(method_exists($object, $method)){
+					}elseif(method_exists($object, $method)){
 						$object->$method();
 					}else{
 						CDebug::addMessage('errors', '', A::t('core', 'Component or method does not exist: {component}', array('{component}'=>$moduleName.'::cron()')), 'session');

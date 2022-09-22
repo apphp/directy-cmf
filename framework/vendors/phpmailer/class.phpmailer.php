@@ -1102,7 +1102,7 @@ class PHPMailer
                 $patternselect = 'pcre';
             } else {
                 //Filter_var appeared in PHP 5.2.0 and does not require the PCRE extension
-                if (version_compare(PHP_VERSION, '5.2.0') >= 0) {
+                if (version_compare(phpversion(), '5.2.0') >= 0) {
                     $patternselect = 'php';
                 } else {
                     $patternselect = 'noregex';
@@ -2713,7 +2713,7 @@ class PHPMailer
             }
             $magic_quotes = get_magic_quotes_runtime();
             if ($magic_quotes) {
-                if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+                if (version_compare(phpversion(), '5.3.0', '<')) {
                     set_magic_quotes_runtime(false);
                 } else {
                     //Doesn't exist in PHP 5.4, but we don't need to check because
@@ -2725,7 +2725,7 @@ class PHPMailer
             $file_buffer = file_get_contents($path);
             $file_buffer = $this->encodeString($file_buffer, $encoding);
             if ($magic_quotes) {
-                if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+                if (version_compare(phpversion(), '5.3.0', '<')) {
                     set_magic_quotes_runtime($magic_quotes);
                 } else {
                     ini_set('magic_quotes_runtime', $magic_quotes);
@@ -3812,7 +3812,7 @@ class PHPMailer
         }
         //Workaround for missing digest algorithms in old PHP & OpenSSL versions
         //@link http://stackoverflow.com/a/11117338/333340
-        if (version_compare(PHP_VERSION, '5.3.0') >= 0 and
+        if (version_compare(phpversion(), '5.3.0') >= 0 and
             in_array('sha256WithRSAEncryption', openssl_get_md_methods(true))) {
             if (openssl_sign($signHeader, $signature, $privKey, 'sha256WithRSAEncryption')) {
                 openssl_pkey_free($privKey);

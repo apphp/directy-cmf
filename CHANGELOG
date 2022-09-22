@@ -1,3 +1,31 @@
+Version 2.8.6 - 05 Aug, 2017
+----------------------------
+- New: added support for layouts
+- New: added possibility to specify in modules default error controller
+- New: added phone, fax, email and address info in General Settings > Visual
+- New: added possibility to delete all test data for separate module (if defined)
+- New: added possibility to define trigger conditions and actions for module settings
+- New: added new vendor - jQuery Timepicker
+- Enh: added check for email ban in social networks login
+- Enh: added checkBan method to Website component
+- Enh: added possibility to define socket in setup for db connection
+- New: changed new default template
+- Enh: upgraded jQuery to 1.11.3
+- Enh: improvements in drawing Search Form
+- Enh: changes of icons and placement for some of Backend links
+- Enh: changed logic in General / Site Settings / Site Info
+- Enh: removed check for "magic_quotes" functions for PHP < 5.3
+- Enh: added possibility to chekc if module is installed Modules::model()->param('moduleName', 'paramName')
+- Enh: modules/ and vendors/ directories moved to assets/ directory
+- Enh: all date/detetime fields default value set as NULL
+- Bug: fixed "b.browser" error in Fancybox vendor script
+- Bug: fixed doubling non-English characters in search textbox
+- Bug: fixed wrong text displaying on search result
+- Bug: fixed wrong re-ordering modules after module uninstallation
+- Bug: fixed birthdate issue on My Account page
+- Bug: fixed wrong update of last login date
+
+
 Version 2.7.2 - 11 Dec, 2016
 ----------------------------
 - New: added possibility to see advanced domain statistics in General / Site Settings / Site Info
@@ -7,12 +35,12 @@ Version 2.7.2 - 11 Dec, 2016
 - New: added new vendor Morris (pretty time-series line graphs)
 - New: added new vendor Toastr (jQuery Plugin for popup alerts)
 - New: added possibility to detect and use last visited page
-- New: added detection of min. required version of framework for module instalaltion
+- New: added detection of min. required version of framework for module installation
 - New: added possibility to define shortcodes as {module:name|id}
 - Enh: changes in Currencies model
-- Enh: Blocking unauthorized access to non-logged users
+- Enh: blocking unauthorized access to non-logged users
 - Enh: javascript files, css and images excluded from rule rewrites
-- Enh: Added README fiels for each JS vendor
+- Enh: added README files for each JS vendor
 - Bug: fixed error in order of languages in drawing languages selector
 - Bug: fixed error on changing language in General > Settings > Visual Setting
 

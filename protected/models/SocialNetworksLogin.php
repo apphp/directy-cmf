@@ -2,13 +2,10 @@
 /**
  * SocialNetworksLogin model
  *
- * PUBLIC:                 PROTECTED                  PRIVATE
- * ---------------         ---------------            ---------------
- * __construct             _relations
- *
- * STATIC:
- * ---------------------------------------------------------------
- * model
+ * PUBLIC:                 	PROTECTED:                 	PRIVATE:
+ * ---------------         	---------------            	---------------
+ * __construct              _relations
+ * model (static)
  *
  */
 class SocialNetworksLogin extends CActiveRecord

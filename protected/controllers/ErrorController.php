@@ -18,7 +18,7 @@ class ErrorController extends CController
 	{
         if(in_array($code, array('404', '500'))){
             $redirectCode = $code;
-        }else if(strtolower($code) == 'no-privileges'){
+        }elseif(strtolower($code) == 'no-privileges'){
 			$redirectCode = 'noprivileges';
         }else{
             $redirectCode = 'index';

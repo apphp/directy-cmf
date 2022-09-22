@@ -35,9 +35,9 @@
 			<table id="tblModulesSettings">
 			<thead>
 			<tr>
-				<th class="left" style="width:180px;"><?= A::t('app', 'Name'); ?></th>
+				<th class="left" width="190px"><?= A::t('app', 'Name'); ?></th>
 				<th class="left"><?= A::t('app', 'Description'); ?></th>
-				<th class="right" style="width:235px;"><?= A::t('app', 'Value'); ?>&nbsp;&nbsp;</th>
+				<th class="right" width="300px"><?= A::t('app', 'Value'); ?>&nbsp;&nbsp;</th>
 			</tr>
 			</thead>
             </table>
@@ -55,12 +55,12 @@
 				$appendText = isset($setting['append_text']) ? $setting['append_text'] : '';
                 
                 if($currentGroup != $setting['property_group'] && $setting['property_group'] != ''){
-                    echo '<tr><td class="property-group left" colspan="3"><div class="property-group-title">'.$setting['property_group'].' / '.A::t('app', 'Settings').':</div></td></tr>';
+                    echo '<tr><td class="property-group left" colspan="3"><div class="property-group-title">&bull; '.$setting['property_group'].' / '.A::t('app', 'Settings').':</div></td></tr>';
                 }
                 $currentGroup = $setting['property_group'];
                 ?>
 				<tr>
-					<td class="left" style="width:180px;"><?= CHtml::label($settingName, $fieldName); ?></td>
+					<td class="left" width="180px"><?= CHtml::label($settingName, $fieldName); ?></td>
 					<td class="left"><?= A::t($setting['module_code'], $setting['description']); ?></td>
 					<td class="right" width="300px"> 
 					<?php
@@ -138,7 +138,7 @@
 			echo CHtml::closeForm();
 		
 			if($spinnersCount){
-				A::app()->getClientScript()->registerCssFile('js/vendors/jquery/jquery-ui.min.css');
+				A::app()->getClientScript()->registerCssFile('assets/vendors/jquery/jquery-ui.min.css');
 				A::app()->getClientScript()->registerScript($formName, 'var spinner = $(".spinner").spinner();', 2);
 			}
 		

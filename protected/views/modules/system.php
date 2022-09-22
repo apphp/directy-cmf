@@ -44,14 +44,14 @@
 					$moduleDefaultUrl = !empty($backendDefaultUrl) ? $backendDefaultUrl : 'modules/settings/code/'.$module['code'];
 
 					echo '<tr>';
-					echo '<td class="left" width="36px"><img src="images/modules/'.$module['code'].'/'.$module['icon'].'" alt="icon" style="height:24px;margin-top:1px;" /></td>';
+					echo '<td class="left" width="36px"><img src="assets/modules/'.$module['code'].'/images/'.$module['icon'].'" alt="icon" style="height:24px;margin-top:1px;" /></td>';
 					echo '<td class="left">'.((Admins::hasPrivilege('modules', 'edit_management')) ? '<a href="'.$moduleDefaultUrl.'">'.A::t($module['code'], $module['name']).'</a>' : A::t($module['code'], $module['name'])).'</td>';
                     echo '<td class="left">'.A::t($module['code'], $module['description']).'</td>';
 					echo '<td class="center">'.(!CTime::isEmptyDateTime($module['installed_at']) ? '<span class="tooltip-link" title="'.CLocale::date($dateTimeFormat, $module['installed_at']).'">'.date($dateFormat, strtotime($module['installed_at'])).'</span>' : A::t('app', 'never')).'</td>';
 					echo '<td class="center">'.(!CTime::isEmptyDateTime($module['updated_at']) ? '<span class="tooltip-link" title="'.CLocale::date($dateTimeFormat, $module['updated_at']).'">'.date($dateFormat, strtotime($module['updated_at'])).'</span>' : A::t('app', 'never')).'</td>';
 					echo '<td class="center">'.$module['version'].'</td>';
 					echo '<td class="center"><img src="templates/backend/images/enabled.png" title="'.A::t('app', 'Enabled').'" class="tooltip-link" alt="tooltip" height="16px" /></td>';
-					echo '<td class="center">'.$module['sort_order'].'</td>';
+					echo '<td class="center">'.(int)$module['sort_order'].'</td>';
 					
 					if(Admins::hasPrivilege('modules', 'edit_management')){
 						$removable = (CConfig::exists('modules.'.$module['code'].'.removable') && CConfig::get('modules.'.$module['code'].'.removable')) ? true : false;
@@ -81,7 +81,7 @@
 					if(Admins::hasPrivilege('modules', 'edit_management')){
 						if(version_compare($frameworkVersion, $module['framework']) >= 0){
 							echo '<td class="center"><img src="templates/backend/images/disabled.png" title="'.A::t('app', 'Disabled').'" class="tooltip-link" alt="tooltip" height="16px" /></td>';
-							echo '<td class="center"></td>';
+							echo '<td class="center">--</td>';
 							echo '<td class="actions">';
 							if(!empty($module['framework']) && $module['framework'] > A::app()->getVersion()){
 								echo '<span class="tooltip-link" title="'.A::te('core', 'Framework v'.A::app()->getVersion().' or higher required').'">'.A::te('app', 'Disabled').' [?]</span>';

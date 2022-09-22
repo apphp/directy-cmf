@@ -31,7 +31,7 @@ class CConvert
 		
 		if($unitCase == 'camel'){
 			$unit = array('b','Kb','Mb','Gb','Tb','Pb');
-		}else if($unitCase == 'upper'){
+		}elseif($unitCase == 'upper'){
 			$unit = array('B','KB','MB','GB','TB','PB');
 		}
 

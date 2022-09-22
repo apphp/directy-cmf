@@ -11,11 +11,12 @@
     <?php if(!empty($text)): ?>
 		<?= $text; ?>
 	<?php else: ?>
-		<h1>Oops! This is a default page.</h1>
+		<h1>Welcome to <?= CConfig::get('name'); ?>!</h1>
 		
 		<hr>
 		
 		<p>
+			This is a default page.
 			Apparently, no one has uploaded a new page yet for this site. If you're visiting from a link on
 			another site, you may	want to let them know that there's nothing here yet.
 		</p>

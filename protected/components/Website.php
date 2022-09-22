@@ -18,6 +18,7 @@
  * getRefererPage
  * getCurrentPage
  * getDefaultPage
+ * isDefaultPage
  * setLastVisitedPage
  * getLastVisitedPage
  * 
@@ -111,6 +112,11 @@ class Website extends CComponent
 			A::app()->view->siteSlogan = $siteInfo->slogan;
 			A::app()->view->siteFooter = $siteInfo->footer;
 
+			A::app()->view->sitePhone = $siteInfo->site_phone;
+			A::app()->view->siteFax = $siteInfo->site_fax;
+			A::app()->view->siteEmail = $siteInfo->site_email;
+			A::app()->view->siteAddress = $siteInfo->site_address;
+			
 			// Set default page URL
 			A::app()->view->defaultPage = CConfig::get('defaultController').'/'.CConfig::get('defaultAction');
 		}
@@ -301,7 +307,7 @@ class Website extends CComponent
 		$errors = array('alertType'=>'', 'alert'=>'');
 		
 		$isBanned = BanLists::model()->count(
-			"item_type = :item_type AND item_value = :item_value AND is_active = 1 AND (expires_at > :expires_at OR expires_at = '0000-00-00 00:00:00')",
+			"item_type = :item_type AND item_value = :item_value AND is_active = 1 AND (expires_at IS NULL OR expires_at > :expires_at)",
 			array(':item_type'=>$itemType, ':item_value' => $itemValue, ':expires_at' => LocalTime::currentDateTime())
 		);
 		
@@ -368,6 +374,22 @@ class Website extends CComponent
 	} 	
  
 	/**
+	 * Checks if current page is default page
+	 * @return bool
+	 */	
+	public static function isDefaultPage()
+	{
+		$defaultPage = CConfig::get('defaultController').'/'.CConfig::get('defaultAction');
+		$currentUrl = A::app()->getUri()->uriString();
+		
+		if(strtolower($defaultPage) == strtolower($currentUrl)){
+			return true;
+		}
+		
+		return false;
+	}
+	   
+	/**
 	 * Sets last visited page
 	 */	
 	public static function setLastVisitedPage()
@@ -386,5 +408,5 @@ class Website extends CComponent
 	{
 		return A::app()->getSession()->get('last_visited_page');
 	}
-   
+	
 }

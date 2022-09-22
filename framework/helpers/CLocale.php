@@ -116,7 +116,7 @@ class CLocale
 			$amPm		= ($hour24 < 12) ? A::t('i18n', 'amName') : A::t('i18n', 'pmName');
 			
 			$convertedFormat = isset($dateFormat['converted_format']) ? $dateFormat['converted_format'] : '';		
-		}else if(isset(self::$_arrDateFormats[$format])){
+		}elseif(isset(self::$_arrDateFormats[$format])){
 			$dateFormat = self::$_arrDateFormats[$format];
 		
 			$parts 	= explode(' ', $date);
@@ -129,7 +129,7 @@ class CLocale
 			$day 		= isset($day[0]) ? $dayParts[0] : '';
 	
 			$convertedFormat = isset($dateFormat['converted_format']) ? $dateFormat['converted_format'] : '';		
-		}else if(isset(self::$_arrTimeFormats[$format])){			
+		}elseif(isset(self::$_arrTimeFormats[$format])){			
 			$dateFormat = self::$_arrTimeFormats[$format];
 			
 			$parts 	= explode(' ', $date);

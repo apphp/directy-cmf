@@ -147,7 +147,7 @@ class BanListsController extends CController
         if($banList->is_default){
             $alert = A::t('app', 'Delete Default Alert');
             $alertType = 'error';
-        }else if($banList->delete()){
+        }elseif($banList->delete()){
             if($banList->getError()){
                 $alert = A::t('app', 'Delete Warning Message');
                 $alertType = 'warning';

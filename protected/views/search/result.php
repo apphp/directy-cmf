@@ -45,10 +45,12 @@
 							if($highlightResults){
 								$title = preg_replace('@('.$keywords.')@si', '<strong style="background-color:yellow">$1</strong>', $contentVal['title']);
 							}
-							echo '<a href="'.CHtml::encode($contentVal['link']).'">'.$title.'</a><br>';
+							
+							// Show title
+							echo '<a href="'.CHtml::encode($contentVal['link']).'">'.strip_tags($title).'</a><br>';
 
-							// Limit string by 255 chars
-							$content = CString::substr($contentVal['content'], 255, '', true);
+							// Show content limited string by 255 chars
+							$content = CString::substr(strip_tags($contentVal['content']), 255, '', true);
 							
 							// Highlight keywords in content
 							if($highlightResults){

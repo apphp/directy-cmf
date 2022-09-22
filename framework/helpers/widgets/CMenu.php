@@ -135,7 +135,7 @@ class CMenu extends CWidgs
                 $output .= ((!$readonly) ? CHtml::link($label, $url, $linkHtmlOptions) : CHtml::label($label)).self::NL;
 
                 // Draw inner items for 2nd level (if exist)
-                if(is_array($innerItems)){
+                if(!empty($innerItems) && is_array($innerItems)){
                     $output .= CHtml::openTag('ul', array('class'=>$subMenuClass)).self::NL;
                     foreach($innerItems as $iItem => $iVal){
                         if(empty($iVal)) continue;

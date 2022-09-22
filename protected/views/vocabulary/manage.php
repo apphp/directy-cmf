@@ -8,9 +8,9 @@
     );    
 
 	// Register CodeMirror files
-	A::app()->getClientScript()->registerCssFile('js/vendors/codemirror/codemirror.css');
-	A::app()->getClientScript()->registerScriptFile('js/vendors/codemirror/codemirror.js');
-	A::app()->getClientScript()->registerScriptFile('js/vendors/codemirror/clike.js');
+	A::app()->getClientScript()->registerCssFile('assets/vendors/codemirror/codemirror.css');
+	A::app()->getClientScript()->registerScriptFile('assets/vendors/codemirror/codemirror.js');
+	A::app()->getClientScript()->registerScriptFile('assets/vendors/codemirror/clike.js');
 ?>
 
 <h1><?= A::t('app', 'Vocabulary Management'); ?></h1>

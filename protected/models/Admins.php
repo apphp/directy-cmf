@@ -30,6 +30,8 @@ class Admins extends CActiveRecord
     private $_passwordSalt = '';
     /** @var string */    
     private $_errorDescription = '';
+    /** @var bool */    
+	private $_isLoginProcess = false;
 
 
     /**
@@ -76,15 +78,17 @@ class Admins extends CActiveRecord
     	if($id > 0){
     		// Update admin
 			if($this->birth_date == ''){
-				$this->birth_date = '0000-00-00';
+				$this->birth_date = null;
 			}
-			if($this->password !== '' && A::app()->getRequest()->getPost('password') !== ''){
-				$this->password_changed_at = LocalTime::currentDateTime();
+			if(!$this->_isLoginProcess){
+				if($this->password !== '' && A::app()->getRequest()->getPost('password') !== ''){
+					$this->password_changed_at = LocalTime::currentDateTime();
+				}
+				$this->updated_at = LocalTime::currentDateTime();				
 			}
-        	$this->updated_at = LocalTime::currentDateTime();
         }else{
         	// Insert new admin
-			if($this->birth_date == '') $this->birth_date = '0000-00-00';
+			if($this->birth_date == '') $this->birth_date = null;
         	$this->created_at = LocalTime::currentDateTime();
         }
 		return true;
@@ -129,9 +133,10 @@ class Admins extends CActiveRecord
 		$admin = $this->find('username = :username', array(':username' => $username));
         
 		if($admin){
-            
+			$this->_isLoginProcess = true;
+			
 			$isBanned = BanLists::model()->count(
-				"item_type = 'email' AND item_value = :item_value AND is_active = 1 AND (expires_at > :expires_at OR expires_at = '0000-00-00 00:00:00')",
+				"item_type = 'email' AND item_value = :item_value AND is_active = 1 AND (expires_at IS NULL OR expires_at > :expires_at)",
 				array(':item_value' => $admin->email, ':expires_at' => LocalTime::currentDateTime())
 			);		
 
