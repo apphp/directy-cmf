@@ -60,4 +60,4 @@
     <div class="clear"></div>    
 </div>
 
-<div class="apphp"><a href="http://www.apphp.com" target="_new" title="Visit ApPHP">Powered by ApPHP</a></div>
+<div class="apphp"><a href="https://www.apphp.com" target="_blank" rel="noopener noreferrer" title="Visit ApPHP">Powered by ApPHP</a></div>

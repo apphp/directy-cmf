@@ -128,6 +128,7 @@ $(document).ready(function(){
     // INIT CHOSEN SELECTS
     // --------------------------------------
 	$('select').addClass('chosen-select-filter');
+	$('select.no-choosen').removeClass('chosen-select-filter');
  	$('.chosen-select-filter').css({'padding': '10px'});
 	$('.chosen-select-filter').chosen({disable_search_threshold: 7});	
 	//$('.chosen-select').chosen({disable_search: true});

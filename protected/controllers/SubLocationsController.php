@@ -9,6 +9,7 @@
  * manageAction
  * addAction
  * editAction
+ * changeStatusAction
  * deleteAction
  *
  */
@@ -67,6 +68,7 @@ class SubLocationsController extends CController
 			$this->redirect('locations/manage');
 		}
 		$this->_view->selectedCountry = $selectedCountry;
+		$this->_view->countryId = $country;
 			
 		if($this->_cSession->hasFlash('alert')){
             $alert = $this->_cSession->getFlash('alert');
@@ -120,6 +122,43 @@ class SubLocationsController extends CController
         $this->_view->render('sublocations/edit');        
 	}
 
+    /**
+     * Change status sub-location action handler
+     * @param int $id 	the sub-location ID
+     * @param int $page 	the page number
+     */
+    public function changeStatusAction($id, $page = 0)
+    {
+		// Block access if admin has no active privilege to edit sub-locations
+		Website::prepareBackendAction('edit', 'locations', 'subLocations/manage');
+		
+		$countryId = 0;
+		
+     	$state = States::model()->findByPk((int)$id);
+		if(!$state){
+			$this->redirect('subLocations/manage');
+		}else{
+			$country = Countries::model()->find('code = :code', array('s:code'=>$state->country_code));
+			if(!$country){
+				$this->redirect('subLocations/manage');
+			}
+			$countryId = $country->id;
+		}	
+		
+		if(States::model()->updateByPk($id, array('is_active'=>($state->is_active == 1 ? '0' : '1')))){
+			$alert = A::t('app', 'Status has been successfully changed!');
+			$alertType = 'success';
+		}else{
+			$alert = (APPHP_MODE == 'demo') ? A::t('core', 'This operation is blocked in Demo Mode!') : A::t('app', 'Status changing error');
+			$alertType = (APPHP_MODE == 'demo') ? 'warning' : 'error';
+		}
+		 
+		$this->_cSession->setFlash('alert', $alert);
+		$this->_cSession->setFlash('alertType', $alertType);
+		
+		$this->redirect('subLocations/manage/country/'.$countryId.(!empty($page) ? '?page='.(int)$page : 1));
+    }
+	
 	/**
 	 * Delete state action handler
 	 * @param int $id The state id
@@ -166,4 +205,5 @@ class SubLocationsController extends CController
 
 		$this->redirect('subLocations/manage/country/'.$selectedCountry->id);
 	}
+
 }

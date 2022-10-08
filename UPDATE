@@ -3,7 +3,7 @@
 ---------------------------------------------------------------------------  
 
 Software requirements:
-- PHP 5.0 or later version
+- PHP 5.3 or later version
 - PDO extension enabled
 
 An update of ApPHP Directy CMF is a very straight forward process:
@@ -71,6 +71,10 @@ Congratulations, you now have ApPHP Directy CMF updated!
 
 General update intructions
 ---------------------------
+
+Updating from 2.8.6 to 2.9.2
+--------
+- nothing
 
 Updating from 2.7.0 to 2.8.6
 --------

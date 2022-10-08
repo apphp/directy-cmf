@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE:		
@@ -32,7 +32,7 @@ class CFormValidation extends CWidgs
      *  	alpha, numeric, alphanumeric, variable, mixed, seoLink, phone, phoneString, username, timeZone, zipCode,
      *  	password, email, fileName, identity|identityCode, date, integer|int, positiveInteger|positiveInt, percent, isHtmlSize,
      *  	float, any, confirm, url, ip, range ('minValue'=>'' and 'maxValue'=>''), length ('minLength'=>'' and 'maxLength'=>''),
-     *  	simplePassword, set, text, hexColor
+     *  	simplePassword, set, text, hexColor, captcha
      * - attribute 'validation'=>array(..., 'forbiddenChars'=>array('+', '$')) is used to define forbidden characters
      * - attribute 'validation'=>array(..., 'trim'=>true) - removes spaces from field value before validation
      * - validated field in $_POST may also be an array
@@ -79,10 +79,12 @@ class CFormValidation extends CWidgs
      *         'field_9'=>array('title'=>'File',            'validation'=>array('required'=>true, 'type'=>'file', 'targetPath'=>'protected/uploaded/', 'maxSize'=>'100k', 'mimeType'=>'application/zip, application/xml', 'fileName'=>'')),
      *        'field_10'=>array('title'=>'Price',           'validation'=>array('required'=>true, 'type'=>'float', 'minValue'=>'', 'maxValue'=>'', 'format'=>'american|european'),
      *        'field_11'=>array('title'=>'Format',          'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array(1, 2, 3, 4, 5))),
+     *        'field_12'=>array('title'=>'Captcha', 		'validation'=>array('required'=>true, 'type'=>'captcha')),
      *     ),
      *     'multiArray'		=> false,
      *     'messagesSource'	=> 'core',
      *     'showAllErrors'	=> false,
+     *     'method'			=> 'POST',
      * ));
      *
      *   
@@ -134,6 +136,7 @@ class CFormValidation extends CWidgs
 		$fields 		= self::params('fields', array());
         $msgSource 		= self::params('messagesSource', 'core');
 		$showAllErrors 	= self::params('showAllErrors', false);
+		$requestMethod  = strtolower(self::params('method', 'post')) == 'get' ? 'getQuery' : 'getPost';
 
 		$title          = self::keyAt('title', $fieldInfo, '');
 		$required       = self::keyAt('validation.required', $fieldInfo, false);
@@ -158,7 +161,9 @@ class CFormValidation extends CWidgs
 		$fileDefinedName = self::keyAt('validation.fileName', $fieldInfo, '');
 		$trim           = (bool)self::keyAt('validation.trim', $fieldInfo, false);
 		$format         = self::keyAt('validation.format', $fieldInfo, '');
-		$fieldValue     = ($trim) ? trim($cRequest->getPost($field)) : $cRequest->getPost($field);
+		///$fieldValue     = @call_user_func_array(array($cRequest, $requestMethod), array($field));
+		///$fieldValue     = $trim ? trim($fieldValue) : $fieldValue;
+		$fieldValue     = ($trim) ? trim($cRequest->$requestMethod($field)) : $cRequest->$requestMethod($field);
 		$errorMessage   = '';
 		$valid = true;
 				
@@ -246,35 +251,11 @@ class CFormValidation extends CWidgs
 						}else{
 							$valid = false;
 							$errorMessage = A::t($msgSource, 'An error occurred while uploading your file for field {title}. Please try again.', array('{title}'=>$title));
-							if(version_compare(phpversion(), '5.2.0', '>=')){
-								$err = error_get_last();
-								if(!empty($err['message'])){
-									$lastError = $err['message'].' | file: '.$err['file'].' | line: '.$err['line'];
-									CDebug::addMessage('errors', 'fileUploading', $lastError);
-									@trigger_error('');
-								}
-							}else{
-								CDebug::addMessage('errors', 'fileUploading', $fileError);
-								//switch($HTTP_POST_FILES['userfile']['error']){
-								//	case 0: //no error; possible file attack!
-								//	  echo "There was a problem with your upload.";
-								//	  break;
-								//	case 1: //uploaded file exceeds the upload_max_filesize directive in php.ini
-								//	  echo "The file you are trying to upload is too big.";
-								//	  break;
-								//	case 2: //uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the html form
-								//	  echo "The file you are trying to upload is too big.";
-								//	  break;
-								//	case 3: //uploaded file was only partially uploaded
-								//	  echo "The file you are trying upload was only partially uploaded.";
-								//	  break;
-								//	case 4: //no file was uploaded
-								//	  echo "You must select an image for upload.";
-								//	  break;
-								//	default: //a default error, just in case!  :)
-								//	  echo "There was a problem with your upload.";
-								//	  break;
-								//}
+							$err = error_get_last();
+							if(!empty($err['message'])){
+								$lastError = $err['message'].' | file: '.$err['file'].' | line: '.$err['line'];
+								CDebug::addMessage('errors', 'fileUploading', $lastError);
+								@trigger_error('');
 							}
 						}
 					}else{
@@ -467,8 +448,12 @@ class CFormValidation extends CWidgs
 						$valid = CValidator::isHexColor($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid a hexadecimal color value, ex.: {sample}! Please re-enter.', array('{title}'=>$title, '{sample}'=>'#3369FE'));
 						break;
+					case 'captcha':
+						$valid = ($fieldValue == A::app()->getSession()->get($field));
+						$errorMessage = A::t($msgSource, 'Sorry, the code you have entered is invalid! Please try again.');
+						break;
 					case 'any':
-					default:                        
+					default:
 						break;
 				}                    
 			}

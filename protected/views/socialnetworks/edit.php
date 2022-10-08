@@ -42,7 +42,7 @@
                     'type'              => 'imageUpload',
                     'title'             => A::t('app', 'Icon'),
                     'default'=>'',
-                    'validation'        => array('required'=>false, 'type'=>'image', 'targetPath'=>'images/social_networks/', 'maxSize'=>'990k', 'mimeType'=>'image/jpeg, image/png, image/gif', 'fileName'=>'sn_'.CHash::getRandomString(10), 'maxWidth'=>'64px', 'maxHeight'=>'64px'),
+                    'validation'        => array('required'=>false, 'type'=>'image', 'targetPath'=>'images/social_networks/', 'maxSize'=>'990k', 'mimeType'=>'image/jpeg, image/jpg, image/png, image/gif', 'fileName'=>'sn_'.CHash::getRandomString(10), 'maxWidth'=>'64px', 'maxHeight'=>'64px'),
                     'imageOptions'      => array('showImage'=>true, 'showImageName'=>true, 'imageClass'=>'icon'),
                     'thumbnailOptions'  => array('create'=>false),
                     'deleteOptions'     => array('showLink'=>true, 'linkUrl'=>'socialNetworks/edit/id/'.$id.'/delete/image', 'linkText'=>A::t('app', 'Delete')),

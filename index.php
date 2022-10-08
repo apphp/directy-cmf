@@ -4,9 +4,9 @@
  *
  * @project ApPHP Directy CMF
  * @author ApPHP <info@apphp.com>
- * @link http://www.apphp.com/php-directy-cmf/
+ * @link https://www.apphp.com/php-directy-cmf/
  * @copyright Copyright (c) 2013 - 2017 ApPHP Directy CMF
- * @license http://www.apphp.com/php-directy-cmf/
+ * @license https://www.apphp.com/php-directy-cmf/
  */	  
 
 // Change the following paths if necessary

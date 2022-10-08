@@ -38,7 +38,7 @@
 				'expires_at' 		=> array('title'=>A::t('app', 'Expires'), 'type'=>'datetime', 'class'=>'center', 'headerClass'=>'center', 'definedValues'=>array(null=>A::t('app', 'Never')), 'width'=>'140px', 'format'=>$dateFormat),
 				'activity_counter'  => array('title'=>A::t('app', 'Activity Counter'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'100px'),
 				'last_activity'  	=> array('title'=>A::t('app', 'Last Activity'), 'type'=>'datetime', 'class'=>'center', 'headerClass'=>'center', 'definedValues'=>array(null=>A::t('app', 'Never')), 'width'=>'160px', 'format'=>$dateFormat),
-				'is_active'  		=> array('title'=>A::t('app', 'Active'), 'type'=>'link', 'align'=>'', 'width'=>'70px', 'class'=>'center', 'headerClass'=>'center', 'linkUrl'=>'banLists/changeStatus/id/{id}', 'linkText'=>'', 'definedValues'=>array('0'=>'<span class="badge-red">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'htmlOptions'=>array('class'=>'tooltip-link', 'title'=>A::t('app', 'Click to change status'))),
+				'is_active'  		=> array('title'=>A::t('app', 'Active'), 'type'=>'link', 'align'=>'', 'width'=>'70px', 'class'=>'center', 'headerClass'=>'center', 'linkUrl'=>'banLists/changeStatus/id/{id}/page/{page}', 'linkText'=>'', 'definedValues'=>array('0'=>'<span class="badge-red">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'htmlOptions'=>array('class'=>'tooltip-link', 'title'=>A::t('app', 'Click to change status'))),
 			),
 			'actions'			=> array(
 				'edit'   => array(

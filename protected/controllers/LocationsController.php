@@ -9,6 +9,7 @@
  * manageAction
  * addAction
  * editAction
+ * changeStatusAction
  * deleteAction
  * getSubLocationsAction
  *
@@ -110,9 +111,41 @@ class LocationsController extends CController
         Website::setBackend();
 
 		$this->_view->country = $country;		
-		$this->_view->render('locations/edit');        
+		$this->_view->render('locations/edit');
 	}
 
+    /**
+     * Change status location action handler
+     * @param int $id 		the location ID
+     * @param int $page 	the page number
+     */
+    public function changeStatusAction($id, $page = 0)
+    {
+        // Block access to this controller to non-logged users
+		CAuth::handleLogin(Website::getDefaultPage());
+		
+		// Block access if admin has no active privilege to edit locations
+        Website::prepareBackendAction('edit', 'locations', 'locations/manage');
+		
+		$country = Countries::model()->findByPk((int)$id);
+		if(!$country){
+			$this->redirect('locations/manage');
+		}
+		
+		if(Countries::model()->updateByPk($id, array('is_active'=>($country->is_active == 1 ? '0' : '1')))){
+			$alert = A::t('app', 'Status has been successfully changed!');
+			$alertType = 'success';
+		}else{
+			$alert = (APPHP_MODE == 'demo') ? A::t('core', 'This operation is blocked in Demo Mode!') : A::t('app', 'Status changing error');
+			$alertType = (APPHP_MODE == 'demo') ? 'warning' : 'error';
+		}
+		 
+		$this->_cSession->setFlash('alert', $alert);
+		$this->_cSession->setFlash('alertType', $alertType);
+		
+		$this->redirect('locations/manage'.(!empty($page) ? '?page='.(int)$page : 1));
+    }
+	
 	/**
 	 * Delete location (country) action handler
 	 * @param int $id the country id 

@@ -44,7 +44,7 @@
 				'email_from' 		=> array('title'=>A::t('app', 'From Email'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left', 'width'=>'210px'),
 				'email_to' 			=> array('title'=>A::t('app', 'To Email'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left','width'=>'210px'),
 				'sent_at' 			=> array('title'=>A::t('app', 'Date Sent'), 'type'=>'datetime', 'class'=>'center', 'headerClass'=>'center', 'definedValues'=>array(null=>A::t('app', 'Never')), 'width'=>'140px', 'format'=>$dateTimeFormat),
-				'status' 			=> array('title'=>A::t('app', 'Status'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px', 'definedValues'=>array('0'=>'<span class="label-red">'.A::t('app', 'No Sent').'</span>', '1'=>'<span class="label-green">'.A::t('app', 'Sent').'</span>')),
+				'status' 			=> array('title'=>A::t('app', 'Status'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px', 'definedValues'=>array('0'=>'<span class="label-red badge-square">'.A::t('app', 'No Sent').'</span>', '1'=>'<span class="label-green badge-square">'.A::t('app', 'Sent').'</span>')),
 			),
 			'actions'			=> array(
 				'details'   		=> array(

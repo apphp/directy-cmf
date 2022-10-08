@@ -1,3 +1,16 @@
+Version 2.9.2 - 17 Mar, 2018 
+----------------------------
+- New: added possibility to site owner to see / clear errorlog file content via dashboard
+- New: added possibility to update currency rates from Google services
+- New: added new type of CSRF tokens "multipages", that allows to generate tokens for separate pages
+- Enh: mininum requirements for PHP is defined as 5.3.0 
+- Enh: button Delete Test Data disappers after 30 days from installation elapsed
+- Enh: improved modules installation procedure
+- Enh: payment providers and Currencies Management moved to separate menu Payment Settings
+- Bug: fixed Chrome ERR_BLOCKED_BY_XSS_AUDITOR error
+- Bug: fixed replacing email placeholders in Website::sendEmail()
+
+
 Version 2.8.6 - 05 Aug, 2017
 ----------------------------
 - New: added support for layouts
@@ -9,7 +22,7 @@ Version 2.8.6 - 05 Aug, 2017
 - Enh: added check for email ban in social networks login
 - Enh: added checkBan method to Website component
 - Enh: added possibility to define socket in setup for db connection
-- New: changed new default template
+- Enh: changed new default template
 - Enh: upgraded jQuery to 1.11.3
 - Enh: improvements in drawing Search Form
 - Enh: changes of icons and placement for some of Backend links
@@ -17,7 +30,7 @@ Version 2.8.6 - 05 Aug, 2017
 - Enh: removed check for "magic_quotes" functions for PHP < 5.3
 - Enh: added possibility to chekc if module is installed Modules::model()->param('moduleName', 'paramName')
 - Enh: modules/ and vendors/ directories moved to assets/ directory
-- Enh: all date/detetime fields default value set as NULL
+- Enh: all date/datetime fields default value set as NULL
 - Bug: fixed "b.browser" error in Fancybox vendor script
 - Bug: fixed doubling non-English characters in search textbox
 - Bug: fixed wrong text displaying on search result

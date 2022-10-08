@@ -8,7 +8,7 @@
  * modal({
  *		type: 'success', // Type of Modal Box (alert | confirm | prompt | success | warning | error | info | inverted | primary)
  *		title: 'Vehicle Saved', //Modal Title
- *		text: 'You\'ve sucessfully saved this vehicle.', //Modal HTML Content
+ *		text: 'You\'ve successfully saved this vehicle.', //Modal HTML Content
  *		//buttons : null,
  *		callback: function(result){}
  *		theme: 'reseted'

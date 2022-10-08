@@ -29,20 +29,19 @@
 
         if(Admins::hasPrivilege('modules', 'edit') && Admins::hasPrivilege('social_networks', 'edit')){
             echo '<a href="socialNetworks/add" class="add-new">'.A::t('app', 'Add Social Network').'</a>';
-            $fields['is_active'] = array('title'=>A::t('app', 'Active'), 'type'=>'link', 'width'=>'80px', 'class'=>'center', 'headerClass'=>'center', 'isSortable'=>true, 'linkUrl'=>'socialNetworks/changeNetworkStatus/id/{id}', 'linkText'=>'', 'definedValues'=>array('0'=>'<span class="badge-red">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'htmlOptions'=>array('class'=>'tooltip-link', 'title'=>A::t('app', 'Click to change status')));
+            $fields['is_active'] = array('title'=>A::t('app', 'Active'), 'type'=>'link', 'width'=>'80px', 'class'=>'center', 'headerClass'=>'center', 'isSortable'=>true, 'linkUrl'=>'socialNetworks/changeNetworkStatus/id/{id}/page/{page}', 'linkText'=>'', 'definedValues'=>array('0'=>'<span class="badge-red">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'htmlOptions'=>array('class'=>'tooltip-link', 'title'=>A::t('app', 'Click to change status')));
         }
 
         CWidget::create('CGridView', array(
-            'model'=>'SocialNetworks',
-            'actionPath'=>'socialNetworks/add',
-            'condition'=>'',
-            'passParameters'=>true,
-            'defaultOrder'=>array('sort_order'=>'ASC'),
-            'pagination'=>array('enable'=>true, 'pageSize'=>20),
-            'sorting'=>true,
-            'filters'=>array(
-            ),
-            'fields'=>$fields,
+            'model'         => 'SocialNetworks',
+            'actionPath'    => 'socialNetworks/manage',
+            'condition'     => '',
+            'passParameters'=> true,
+            'defaultOrder'  => array('sort_order'=>'ASC'),
+            'pagination'    => array('enable'=>true, 'pageSize'=>20),
+            'sorting'       => true,
+            'filters'       => array(),
+            'fields'        => $fields,
             'actions'=>array(
                 'edit'    => array(
                     'disabled'=>!Admins::hasPrivilege('modules', 'edit') || !Admins::hasPrivilege('social_networks', 'edit'),

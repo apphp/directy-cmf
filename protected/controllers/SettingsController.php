@@ -249,8 +249,10 @@ class SettingsController extends CController
        	}
        	$this->_view->langList = $langList;
     	
+   		// Settings form submit
     	if($this->_cRequest->getPost('act') == 'send'){
-    		// settings form submit
+			// Fix for Chrome ERR_BLOCKED_BY_XSS_AUDITOR error
+			header('X-XSS-Protection:0');			
     		
     		// Block access if admin has no active privilege to edit site settings
     		if(!Admins::hasPrivilege('site_settings', 'edit')){
@@ -346,7 +348,7 @@ class SettingsController extends CController
 		if(!empty($this->_alert)){
 			$this->_view->actionMessage = CWidget::create('CMessage', array($this->_alertType, $this->_alert, array('button'=>true)));
 		}
-
+		
     	$this->_view->tabs = $this->_prepareTab('visual');
     	$this->_view->render('settings/visual');
     }

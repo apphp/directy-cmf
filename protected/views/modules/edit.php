@@ -17,9 +17,13 @@
 
     <div class="content">
 	<?= $actionMessage; ?>
-	<?php if($module->has_test_data): ?>
+
+	<?php
+		// Don't show delete test data button if not allowed or after 30 days fron installation
+		if($module->has_test_data && $days_after_installation < 30): ?>
 		<a href="modules/deleteTestData/id/<?= $module->id; ?>" class="delete-all prompt-delete align-right" data-prompt-message="<?= A::te('app', 'Are you sure you want to delete all test data for module {module}?', array('{module}'=>$module->name)); ?>"><?= A::t('app', 'Delete All Test Data'); ?></a>
 	<?php endif; ?>
+
     <?php        
         echo CWidget::create('CDataForm', array(
             'model'				=> 'Modules',

@@ -10,7 +10,9 @@
  * getDefaultCurrency      
  * getDefaultCurrencyInfo
  * drawSelector (static)
- *
+ * cronJob (static)
+ * updateRates (static)
+ * 
  */
 
 class Currencies extends CActiveRecord
@@ -36,6 +38,31 @@ class Currencies extends CActiveRecord
     {
         return parent::model(__CLASS__);
     }
+	
+	/** 
+	 * Returns boolean that indicates if the last operation was successfull
+	 * @return boolean
+	 */
+	public function getError()
+	{
+		return $this->_isError;
+	}
+
+	/**
+	 * Returns default currency
+	 */
+	public function getDefaultCurrency()
+	{
+        return ($currency = $this->find('is_default = 1')) ? $currency->code : '';
+	}
+	
+	/**
+	 * Returns default currency
+	 */
+	public function getDefaultCurrencyInfo()
+	{
+		return ($currency = $this->find('is_default = 1')) ? $currency : '';
+	}
 
   	/**
 	 * Draws currencies selector
@@ -72,6 +99,48 @@ class Currencies extends CActiveRecord
 		
         return $output;
 	}
+	
+	/**
+	 * Cronjob for currency rates
+	 */
+	public static function cronJob()
+	{
+		// Uncomment if you want to run this method with CronJob
+		//self::updateRates();
+	}
+	
+	/**
+	 * Update currency rates
+	 * @return array
+	 */
+	public static function updateRates()
+	{
+		$result = array('alert'=>'', 'alertType'=>'');
+		
+		$currencies = Currencies::model()->findAll(array('order' => 'is_default DESC'));
+		if(!empty($currencies)){
+			$defaultCurrency = array_shift($currencies);
+			foreach($currencies as $key => $currency){
+				$url = 'https://finance.google.com/finance/converter?a=1&from='.$defaultCurrency['code'].'&to='.$currency['code'];
+				$data = file_get_contents($url);
+				$data = explode('<span class=bld>', $data);
+				$data = explode('</span>', $data[1]);
+				$converted_amount = $data[0];
+				$converted_amount = round($converted_amount, 4);
+				
+				if(!empty($converted_amount) && $currency['rate'] != $converted_amount){					
+					Currencies::model()->updateByPk($currency['id'], array('rate'=>$converted_amount, 'updated_at'=>LocalTime::currentDateTime()));
+				}
+				
+				$alert .= '<br>'.$currency['code'].' : '.A::t('app', 'previous').' - '.$currency['rate'].' / '.A::t('app', 'new rate').' - '.($currency['rate'] != $converted_amount ? '<b>'.$converted_amount.'</b>' : A::t('app', 'not changed'));
+			}
+			
+			$result['alert'] = A::t('app', 'Currency rates have been successfully updated!').$alert;
+			$result['alertType'] = 'success';
+		}
+		
+		return $result;
+	}
 
 	/**
      * Used to define custom fields
@@ -93,6 +162,7 @@ class Currencies extends CActiveRecord
 		// If currency is default - it must be active
 		if($this->is_default) $this->is_active = 1;
 		$this->code = strtoupper($this->code);
+		$this->updated_at = LocalTime::currentDateTime();
 		return true;
 	}
 
@@ -112,28 +182,4 @@ class Currencies extends CActiveRecord
 		}		
 	}
 	
-	/** 
-	 * Returns boolean that indicates if the last operation was successfull
-	 * @return boolean
-	 */
-	public function getError()
-	{
-		return $this->_isError;
-	}
-
-	/**
-	 * Returns default currency
-	 */
-	public function getDefaultCurrency()
-	{
-        return ($currency = $this->find('is_default = 1')) ? $currency->code : '';
-	}
-	
-	/**
-	 * Returns default currency
-	 */
-	public function getDefaultCurrencyInfo()
-	{
-		return ($currency = $this->find('is_default = 1')) ? $currency : '';
-	}
 }

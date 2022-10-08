@@ -40,7 +40,7 @@
 				'template_name'    => array('title'=>A::t('app', 'Name'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left', 'width'=>'270px'),
 				'template_subject' => array('title'=>A::t('app', 'Subject'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left'),
 				'module_code'      => array('title'=>A::t('app', 'Module'), 'type'=>'label', 'class'=>'center', 'headerClass'=>'center', 'width'=>'110px', 'definedValues'=>array(''=>A::t('app', 'system'))),
-				'is_system'        => array('title'=>A::t('app', 'System Template'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>array('0'=>'<span class="badge-gray">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'width'=>'120px'),
+				'is_system'   	   => array('title'=>A::t('app', 'System Template'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>array('0'=>'<span class="badge-gray badge-square">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green badge-square">'.A::t('app', 'Yes').'</span>'), 'width'=>'120px'),
 			),
 			'actions'			=> array(
 				'edit'   		=> array(

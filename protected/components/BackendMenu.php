@@ -68,10 +68,6 @@ class BackendMenu extends CComponent
 							if(!Admins::hasPrivilege('frontend_menu', 'view')) $show = false; break;
 						case 'locations/':
 							if(!Admins::hasPrivilege('locations', 'view')) $show = false; break;
-						case 'currencies/':
-							if(!Admins::hasPrivilege('currencies', 'view')) $show = false; break;
-						case 'paymentProviders/':
-							if(!Admins::hasPrivilege('payment_providers', 'view')) $show = false; break;
 						case 'banLists/':
 							if(!Admins::hasPrivilege('ban_lists', 'view')) $show = false; break;
 						case 'admins/':
@@ -82,6 +78,10 @@ class BackendMenu extends CComponent
 							if(!Admins::hasPrivilege('languages', 'view')) $show = false; break;					
 						case 'vocabulary/':
 							if(!Admins::hasPrivilege('vocabulary', 'view')) $show = false; break;					
+						case 'currencies/':
+							if(!Admins::hasPrivilege('currencies', 'view')) $show = false; break;
+						case 'paymentProviders/':
+							if(!Admins::hasPrivilege('payment_providers', 'view')) $show = false; break;
 						case 'emailTemplates/':
 							if(!Admins::hasPrivilege('email_templates', 'view')) $show = false; break;
 						case 'mailingLog/':
@@ -91,10 +91,9 @@ class BackendMenu extends CComponent
 					}
 				}
 				
-				if($show){
-					
+				if($show){					
 					// Preview
-					if($item['id'] == 15){
+					if($item['url'] == 'index/'){
 						$url = A::app()->getRequest()->getBaseUrl();
 					}else{
 						$url = ! empty($item['url']) ? $item['url'] : 'javascript:void(0)';	

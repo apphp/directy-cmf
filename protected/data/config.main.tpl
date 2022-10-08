@@ -3,7 +3,7 @@
 return array(
     // Application data
     'name' => 'ApPHP Directy CMF',
-    'version' => '2.8.6',
+    'version' => '2.9.2',
     
     // Installation settings
     'installationKey' => '<INSTALLATION_KEY>',
@@ -35,8 +35,9 @@ return array(
     
     // Validations
 	// Define array of 'excluded' controllers, ex.: array('PaymentProviders', 'Checkout')
+	// Token type: 'session', 'cookie' or 'multipages'
     'validation' => array(
-        'csrf' => array('enable' => true, 'exclude' => array('PaymentProviders')),
+		'csrf' => array('enable' => false, 'exclude' => array('PaymentProviders'), 'tokenType' => 'session'),
         'bruteforce' => array('enable' => true, 'badLogins' => 5, 'redirectDelay' => 3)
     ),
 
@@ -49,7 +50,7 @@ return array(
 
     // Output compression
 	'compression' => array(
-		'gzip' => array('enable' => true),
+		'gzip' => array('enable' => false),
 		'html' => array('enable' => false),
 	),
 
@@ -100,7 +101,7 @@ return array(
 	
 	// Layout default settings  
 	'layouts' => array(
-		'enable' => false, 
+		'enable' => array('frontend' => false, 'backend' => false), 
 		'default' => 'default'
 	),
 	

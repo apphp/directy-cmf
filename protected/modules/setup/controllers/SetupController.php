@@ -79,8 +79,7 @@ class SetupController extends CController
             'language' =>array('type'=>'dropdownlist', 'value'=>$language, 'title'=>A::t('setup', 'Language'), 'mandatoryStar'=>false, 'data'=>$this->_languages, 'htmlOptions'=>array(), 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($this->_languages))),
         );            
 
-        if($this->_cRequest->getPost('act') == 'send'){
-            
+        if($this->_cRequest->getPost('act') == 'send'){            
             $result = CWidget::create('CFormValidation', array(
                 'fields' => $this->_view->formFields
             ));
@@ -92,12 +91,22 @@ class SetupController extends CController
                 A::app()->setLanguage($language);
                 $this->redirect('setup/requirements');
             }
-
+			
 			if(!empty($msg)){
 				$this->_view->actionMessage = CWidget::create('CMessage', array('validation', $msg));
             }
         }
         
+		$modeRewrite = $this->_checkModRewrite();
+        if(!$modeRewrite){
+			$this->_view->actionMessage = CWidget::create('CMessage', array('warning', 'This program requires "<b>mod_rewrite</b>" module to use friendly URLs, but it is not enabled or its status unknown. You may proceed current installation on yuor own risk.'));
+		}
+		
+		$hostName = A::app()->getRequest()->getHostName();
+		if(CValidator::isIpAddress($hostName)){
+			$this->_view->actionMessage .= CWidget::create('CMessage', array('warning', 'You\'re trying to install this script using IP address (without domain name), so you have to add some changes in your .htaccess file to provide a correct work of the "<b>mod_rewrite</b>". Find more information <a href="http://www.apphp.net/forum/viewtopic.php?f=80&t=6614" target="_blank" rel="noopener noreferrer">here</a>.'));
+		}
+		
         $phpInfo = $this->_getPhpInfo();
 		
         // Check pdoExtension
@@ -138,8 +147,8 @@ class SetupController extends CController
         $modeRewrite = $this->_checkModRewrite();
 		$shortOpenTag = isset($phpInfo[$phpCoreIndex]['short_open_tag'][0]) ? strtolower($phpInfo[$phpCoreIndex]['short_open_tag'][0]) : false;
         
-        if(version_compare(phpversion(), '5.2.3', '<')){	
-            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'This program requires at least <b>PHP version 5.2.3</b> installed. You cannot proceed current installation.'));
+        if(version_compare(phpversion(), '5.3.0', '<')){	
+            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'This program requires at least <b>PHP version 5.3.0</b> installed. You cannot proceed current installation.'));
             $this->_view->isCriticalError = true;
         }elseif(!is_writable(APPHP_PATH.'/protected/config/')){
             $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/protected/config/</b> is not writable! <br>You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));
@@ -147,6 +156,12 @@ class SetupController extends CController
         }elseif(!is_writable(APPHP_PATH.'/assets/modules/')){
             $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/assets/modules/</b> is not writable! <br>You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));
             $this->_view->isCriticalError = true;
+        }elseif(!is_writable(APPHP_PATH.'/protected/messages/')){
+            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/protected/messages/</b> is not writable! <br>You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));
+            $this->_view->isCriticalError = true;			
+        }elseif(!is_writable(APPHP_PATH.'/templates/backend/images/icons/')){
+            $this->_view->notifyMessage = CWidget::create('CMessage', array('error', 'The directory <b>'.APPHP_PATH.'/templates/backend/images/icons/</b> is not writable! <br>You must grant "write" permissions (access rights 0755 or 777, depending on your system settings) to this directory before you start current installation!'));
+            $this->_view->isCriticalError = true;			
         }elseif(!$modeRewrite){
             $this->_view->notifyMessage = CWidget::create('CMessage', array('warning', 'This program requires "<b>mod_rewrite</b>" module to use friendly URLs, but it is not enabled or its status unknown. You may proceed current installation on yuor own risk.'));
             $this->_view->isCriticalError = false;
@@ -243,8 +258,8 @@ class SetupController extends CController
 			'dbSocket'   	=> array('type'=>'textbox', 'value'=>$this->_view->dbSocket, 'title'=>A::t('setup', 'Database Socket'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'60', 'autocomplete'=>'off', 'placeholder'=>'/tmp/mysql.sock'), 'validation'=>array('required'=>($this->_view->dbConnectType == 'socket' ? true : false), 'type'=>'text'), 'disabled'=>($this->_view->dbConnectType == 'socket' ? false : true)),
             'dbHost'     	=> array('type'=>'textbox', 'value'=>$this->_view->dbHost, 'title'=>A::t('setup', 'Database Host'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'60', 'autocomplete'=>'off', 'placeholder'=>'e.g. localhost'), 'validation'=>array('required'=>($this->_view->dbConnectType == 'host' ? true : false), 'type'=>'text'), 'disabled'=>($this->_view->dbConnectType == 'host' ? false : true)),
             'dbPort'     	=> array('type'=>'textbox', 'value'=>$this->_view->dbPort, 'title'=>A::t('setup', 'Database Port'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxLength'=>'10', 'autocomplete'=>'off', 'placeholder'=>'e.g. 3306', 'style'=>'width:80px'), 'validation'=>array('required'=>false, 'type'=>'integer'), 'disabled'=>($this->_view->dbConnectType == 'host' ? false : true)),
-            'dbName'     	=> array('type'=>'textbox', 'value'=>$this->_view->dbName, 'title'=>A::t('setup', 'Database Name'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'20', 'autocomplete'=>'off'), 'validation'=>array('required'=>true, 'type'=>'text')),
-            'dbUser'     	=> array('type'=>'textbox', 'value'=>$this->_view->dbUser, 'title'=>A::t('setup', 'Database User'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'20', 'autocomplete'=>'off'), 'validation'=>array('required'=>true, 'type'=>'text')),
+            'dbName'     	=> array('type'=>'textbox', 'value'=>$this->_view->dbName, 'title'=>A::t('setup', 'Database Name'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'30', 'autocomplete'=>'off'), 'validation'=>array('required'=>true, 'type'=>'text')),
+            'dbUser'     	=> array('type'=>'textbox', 'value'=>$this->_view->dbUser, 'title'=>A::t('setup', 'Database User'), 'mandatoryStar'=>true, 'htmlOptions'=>array('maxLength'=>'30', 'autocomplete'=>'off'), 'validation'=>array('required'=>true, 'type'=>'text')),
             'dbPassword' 	=> array('type'=>'password', 'value'=>$this->_view->dbPassword, 'title'=>A::t('setup', 'Database Password'), 'mandatoryStar'=>false, 'htmlOptions'=>array('maxLength'=>'20', 'autocomplete'=>'off'), 'validation'=>array('required'=>false, 'type'=>'text')),
         );
         $validationFields = array_merge($separatorGeneralFields, $separatorConenctionSettingsFields);
@@ -493,7 +508,7 @@ class SetupController extends CController
                                             }									
                                         }else{
                                             $modulesError = true;
-                                            $this->_view->actionMessage .= CWidget::create('CMessage', array('error', A::t('core', 'Failed to load XML file {file}.', array('{file}'=>$modulePath.'/info.xml'))));
+                                            $this->_view->actionMessage .= CWidget::create('CMessage', array('error', A::t('core', 'Failed to load XML file {file}.', array('{file}'=>$modulePath.'info.xml'))));
                                             break;	
                                         } 									
                                     }

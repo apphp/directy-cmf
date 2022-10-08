@@ -44,7 +44,7 @@
 					'avatar' =>array(
 						'type'          => 'imageupload',
 						'title'         => A::t('app', 'Avatar'),
-						'validation'    => array('required'=>false, 'type'=>'image', 'maxSize'=>'100k', 'maxWidth'=>'100px', 'maxHeight'=>'100px', 'targetPath'=>'templates/backend/images/accounts/', 'mimeType'=>'image/jpeg, image/png', 'fileName'=>'adm_'.CHash::getRandomString(10)),
+						'validation'    => array('required'=>false, 'type'=>'image', 'maxSize'=>'100k', 'maxWidth'=>'100px', 'maxHeight'=>'100px', 'targetPath'=>'templates/backend/images/accounts/', 'mimeType'=>'image/jpeg, image/jpg, image/png, image/gif', 'fileName'=>'adm_'.CHash::getRandomString(10)),
 						'imageOptions'  => array('showImage'=>false),
 						'deleteOptions' => array('showLink'=>false),
 						'fileOptions'   => array('showAlways'=>false, 'class'=>'file', 'size'=>'25')

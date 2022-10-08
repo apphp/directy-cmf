@@ -17,7 +17,7 @@
 			if(!empty($socialNetworks)):
 				echo '<ul class="social-icons standard">';
 				foreach($socialNetworks as $key => $socialNetwork):
-					echo '<li class="'.str_replace('-', '', $socialNetwork['code']).'"><a href="'.$socialNetwork['link'].'" target="_blank"><i class="fa fa-'.$socialNetwork['code'].'"></i></a></li>';
+					echo '<li class="'.str_replace('-', '', $socialNetwork['code']).'"><a href="'.$socialNetwork['link'].'" target="_blank" rel="noopener noreferrer"><i class="fa fa-'.$socialNetwork['code'].'"></i></a></li>';
 				endforeach;
 				echo '</ul>';
 			endif;

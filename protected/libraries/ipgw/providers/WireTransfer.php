@@ -122,7 +122,7 @@ class WireTransfer extends PaymentGateway
                 $fh = fopen($myFile, 'a') or die('can\'t open file');
             }
 
-            $logData .= $nl.$nl.'= ['.date('Y-m-d H:i:s').'] ============='.$nl;
+            $logData .= $nl.$nl.'= ['.date('Y-m-d H:i:s').'] ============= WireTransfer'.$nl;
             $logData .= '<br />---------------<br />'.$nl;
             $logData .= 'POST<br />'.$nl;
             foreach($_POST as $key=>$value) {

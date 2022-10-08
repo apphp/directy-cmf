@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE (static):		
@@ -42,7 +42,8 @@ class CDataForm extends CWidgs
      * 	 - validation types: 
      *  	alpha, numeric, alphanumeric, variable, mixed, seoLink, phone, phoneString, username, timeZone, zipCode,
      *  	password, email, fileName, identity|identityCode, date, integer, positiveInteger, percent, isHtmlSize,
-     *  	float, any, text, confirm, url, ip, range ('minValue'=>'' and 'maxValue'=>''), set, hexColor
+     *  	float, any, text, confirm, url, ip, set, hexColor
+     *  	range ('minValue'=>'' and 'maxValue'=>'') or ('minLength'=>'', 'maxLength'=>''),
      *   - attribute 'validation'=>array(..., 'forbiddenChars'=>array('+', '$')) is used to define forbidden characters
      *   - attribute 'validation'=>array(..., 'trim'=>true) - removes spaces from field value before validation
      *   - 'successCallback' - callback methods of controller (must be public methods)
@@ -104,7 +105,7 @@ class CDataForm extends CWidgs
      *              'title'			 	=> 'Image Uploader',
      *              'tooltip'		 	=> '',
      *              'default'		 	=> '',
-     *              'validation'	 	=> array('required'=>true, 'type'=>'image', 'targetPath'=>'templates/backend/images/accounts/', 'maxSize'=>'100k', 'maxWidth'=>'120px', 'maxHeight'=>'90px', 'mimeType'=>'image/jpeg, image/png', 'fileName'=>CHash::getRandomString(10), 'filePrefix'=>'', 'filePostfix'=>'', 'htmlOptions'=>array()),
+     *              'validation'	 	=> array('required'=>true, 'type'=>'image', 'targetPath'=>'templates/backend/images/accounts/', 'maxSize'=>'100k', 'maxWidth'=>'120px', 'maxHeight'=>'90px', 'mimeType'=>'image/jpeg, image/jpg, image/png, image/gif', 'fileName'=>CHash::getRandomString(10), 'filePrefix'=>'', 'filePostfix'=>'', 'htmlOptions'=>array()),
 	 *          	'imageOptions'	 	=> array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'showImageDimensions'=>true, 'imageClass'=>'avatar'),
 	 *          	'thumbnailOptions'	=> array('create'=>true, 'directory'=>'', 'field'=>'', 'postfix'=>'_thumb', 'width'=>'', 'height'=>''),
 	 *          	'deleteOptions'	 	=> array('showLink'=>true, 'linkUrl'=>'admins/edit/avatar/delete', 'linkText'=>'Delete'),
@@ -122,13 +123,14 @@ class CDataForm extends CWidgs
 	 *          	'deleteOptions'	 	=> array('showLink'=>true, 'linkUrl'=>'admins/edit/avatar/delete', 'linkText'=>'Delete'),
 	 *          	'fileOptions'	 	=> array('showAlways'=>false, 'class'=>'file', 'size'=>'25', 'filePath'=>'templates/backend/files/accounts/')
      *          ),
-     *          'field_19'=>array('type'=>'label',  	'title'=>'Label 19', 'default'=>'', 'tooltip'=>'', 'definedValues'=>array(), 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false, 'callback'=>array('function'=>$functionName, 'params'=>$functionParams)),
-     *          'field_20'=>array('type'=>'html',  		'title'=>'Title 20', 'default'=>'', 'tooltip'=>'', 'definedValues'=>array(), 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false, 'callback'=>array('function'=>$functionName, 'params'=>$functionParams)),
-     *          'field_21'=>array('type'=>'link',   	'title'=>'Title 21', 'tooltip'=>'', 'linkUrl'=>'path/to/param', 'linkText'=>'', 'htmlOptions'=>array()),
-     *          'field_22'=>array('type'=>'videoLink',  'title'=>'Title 22', 'tooltip'=>'', 'default'=>'', 'preview'=>false, 'validation'=>array('required'=>false, 'type'=>'url'), 'htmlOptions'=>array()),
-     *          'field_23'=>array('type'=>'datetime', 	'title'=>'Title 23', 'default'=>'', 'tooltip'=>'', 'validation'=>array('required'=>true, 'type'=>'date'), 'htmlOptions'=>array(), 'definedValues'=>array(), 'format'=>'', 'buttonTrigger'=>true, 'minDate'=>'', 'maxDate'=>'', 'yearRange'=>'-100:+0'),
-     *          'field_24'=>array('type'=>'hidden', 	'default'=>'', 'htmlOptions'=>array()),
-     *          'field_25'=>array('type'=>'data', 		'default'=>''),
+     *          'field_19'=>array('type'=>'label',  	'title'=>'Label', 		'tooltip'=>'', 'default'=>'', 'definedValues'=>array(), 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false, 'callback'=>array('function'=>$functionName, 'params'=>$functionParams)),
+     *          'field_20'=>array('type'=>'html',  		'title'=>'Html', 		'tooltip'=>'', 'default'=>'', 'definedValues'=>array(), 'htmlOptions'=>array(), 'format'=>'', 'stripTags'=>false, 'callback'=>array('function'=>$functionName, 'params'=>$functionParams)),
+     *          'field_21'=>array('type'=>'link',   	'title'=>'Link', 		'tooltip'=>'', 'linkUrl'=>'path/to/param', 'linkText'=>'', 'htmlOptions'=>array()),
+     *          'field_22'=>array('type'=>'videoLink',  'title'=>'Video Link', 	'tooltip'=>'', 'default'=>'', 'preview'=>false, 'validation'=>array('required'=>false, 'type'=>'url', 'maxLength'=>125), 'htmlOptions'=>array('maxLength'=>125)),
+     *          'field_23'=>array('type'=>'datetime', 	'title'=>'Date Time', 	'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'date'), 'htmlOptions'=>array(), 'definedValues'=>array(), 'format'=>'', 'buttonTrigger'=>true, 'minDate'=>'', 'maxDate'=>'', 'yearRange'=>'-100:+0'),
+     *			'field_24'=>array('type'=>'captcha',  	'title'=>'Captcha', 	'tooltip'=>'', 'default'=>'', 'validation'=>array('required'=>true, 'type'=>'captcha'), 'htmlOptions'=>array()),
+     *          'field_25'=>array('type'=>'hidden', 	'default'=>'', 'htmlOptions'=>array()),
+     *          'field_26'=>array('type'=>'data', 		'default'=>''),
      *       ),
      *       'translationInfo'=>array('relation'=>array('field_from', 'field_to'), 'languages'=>Languages::model()->findAll(array('condition'=>'is_active = 1', 'orderBy'=>'sort_order ASC')),
      *       'translationFields'=>array(
@@ -454,20 +456,23 @@ class CDataForm extends CWidgs
 						// Redirect to success URL
 						if(!empty($successUrl)){
 							
+							if(!empty($alertItemName)){
+								$message = ($operationType == 'add') ?
+									A::t($msgSource, 'New {item_type} has been successfully added!', array('{item_type}'=>$alertItemName)) :
+									A::t($msgSource, 'The {item_type} has been successfully updated!', array('{item_type}'=>$alertItemName));
+							}else{
+								$message = ($operationType == 'add') ?
+									A::t($msgSource, 'The adding operation has been successfully completed!') :
+									A::t($msgSource, 'The updating operation has been successfully completed!');
+							}
+							
 							// Create flash alert
 							if($alertType == 'flash'){
-								if(!empty($alertItemName)){
-									$message = ($operationType == 'add') ?
-										A::t($msgSource, 'New {item_type} has been successfully added!', array('{item_type}'=>$alertItemName)) :
-										A::t($msgSource, 'The {item_type} has been successfully updated!', array('{item_type}'=>$alertItemName));
-								}else{
-									$message = ($operationType == 'add') ?
-										A::t($msgSource, 'The adding operation has been successfully completed!') :
-										A::t($msgSource, 'The updating operation has been successfully completed!');
-								}
 								A::app()->getSession()->setFlash('alert', $message);
 								A::app()->getSession()->setFlash('alertType', 'success');
-							}							
+							}else{
+								$msg = $message;
+							}						
 							
                             if($cRequest->isPostExists('btnUpdateClose')){
                                 header('location: '.$baseUrl.$successUrl);

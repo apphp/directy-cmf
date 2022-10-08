@@ -72,7 +72,7 @@
 			
 			echo '<div class="privilege-property">'; 			
 			if($role->code == 'owner'){
-				echo CHtml::tag('span', array('class'=>'badge-green', 'style'=>'float:left;margin-top:3px;text-transform:uppercase;'), '&nbsp;'.A::t('app', 'On'));
+				echo CHtml::tag('span', array('class'=>'badge-green badge-square', 'style'=>'float:left;margin-top:3px;text-transform:uppercase;'), '&nbsp;'.A::t('app', 'On'));
 			}else{
 				echo '<div class="slideBox">';
 				echo CHtml::checkBox($categoryName, ($val['is_active'] ? true : false), array('uncheckValue'=>0, 'id'=>CHtml::encode($privilegeName)));

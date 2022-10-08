@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC(static):			PROTECTED:					PRIVATE:		
@@ -81,13 +81,14 @@ class CFormView extends CWidgs
      *          'field_16'=>array('type'=>'email',    'title'=>'Field 16', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'htmlOptions'=>array('maxLength'=>'100')),
      *          'field_17'=>array('type'=>'radioButton', 'title'=>'Field 17', 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>'', 'checked'=>'true', 'htmlOptions'=>array()),
      *          'field_18'=>array('type'=>'radioButtonList', 'title'=>'Field 18', 'tooltip'=>'', 'mandatoryStar'=>true, 'checked'=>0, 'data'=>array(), 'htmlOptions'=>array()),
-	 *          'field_19'=>array('type'=>'imageUpload', 'title'=>'Field 19', 'tooltip'=>'', 'mandatoryStar'=>false, 'value'=>'', 
+     *          'field_19'=>array('type'=>'captcha',  'title'=>'Captcha', 'tooltip'=>'', 'value'=>''),
+	 *          'field_20'=>array('type'=>'imageUpload', 'title'=>'Field 19', 'tooltip'=>'', 'mandatoryStar'=>false, 'value'=>'', 
 	 *          	'imageOptions' =>array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'showImageDimensions'=>true, 'imageClass'=>'avatar'),
 	 *          	'deleteOptions'=>array('showLink'=>true, 'linkUrl'=>'admins/edit/avatar/delete', 'linkText'=>'Delete'),
 	 *          	'rotateOptions'=>array('showLinks'=>true, 'linkRotateLeft'=>'admins/edit/rotate/left', 'linkRotateRigth'=>'admin/edit/rotate/right', 'iconRotateLeft'=>'templates/backend/images/rotateLeft.png', 'iconRotateRight'=>'templates/backend/images/rotateRight.png'),
 	 *          	'fileOptions'=>array('showAlways'=>false, 'class'=>'file', 'size'=>'25', 'filePath'=>'templates/backend/files/accounts/')
 	 *          ),
-     *          'field_20'=>array('type'=>'fileUpload', 'title'=>'Field 20', 'tooltip'=>'', 'mandatoryStar'=>false, 'value'=>'', 'download'=>false,
+     *          'field_21'=>array('type'=>'fileUpload', 'title'=>'Field 20', 'tooltip'=>'', 'mandatoryStar'=>false, 'value'=>'', 'download'=>false,
 	 *          	'iconOptions'=>array('showType'=>true, 'showFileName'=>true, 'showFileSize'=>true),
 	 *          	'deleteOptions'=>array('showLink'=>true, 'linkUrl'=>'templates/backend/files/accounts/', 'linkText'=>'Delete'),
 	 *          	'fileOptions'=>array('showAlways'=>false, 'class'=>'file', 'size'=>'25', 'filePath'=>'templates/backend/files/accounts/')
@@ -700,11 +701,15 @@ class CFormView extends CWidgs
                 );
                 self::$_colorCount++;
                 break;
-
+			
             case 'email':
                 $fieldHtml = CHtml::emailField($field, $value, $htmlOptions);
                 break;
-
+			
+            case 'captcha':
+				$fieldHtml = CWidget::create('CCaptcha', array('type'=>'math', 'required'=>true, 'id'=>$field, 'name'=>$field, 'value'=>$value, 'return'=>true));
+                break;
+			
             case 'textbox':
             default:
 				$autocompleteEnabled = self::keyAt('enable', $autocomplete);

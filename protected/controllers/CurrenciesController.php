@@ -10,7 +10,9 @@
  * manageAction
  * addAction
  * editAction
+ * changeStatusAction
  * deleteAction
+ * updateRatesAction
  *
  */
 
@@ -31,7 +33,10 @@ class CurrenciesController extends CController
 		$this->_cRequest = A::app()->getRequest();
 		$this->_cSession = A::app()->getSession();
 
+	    // Fetch datetime format from settings table
+        $this->_view->dateTimeFormat = Bootstrap::init()->getSettings('datetime_format');
         $this->_view->numberFormat = Bootstrap::init()->getSettings('number_format');
+		
         $this->_view->actionMessage = '';
         $this->_view->errorField = '';
     }
@@ -48,7 +53,7 @@ class CurrenciesController extends CController
      * Changes currencies on site
 	 * @param string $currency_code code of the new currency
      */
-    public function changeAction($currency_code)
+    public function changeAction($currency_code = null)
     {
         // If redirected from dropdown list
         if(empty($currency_code)) $currency_code = A::app()->getRequest()->getQuery('currency');
@@ -139,6 +144,41 @@ class CurrenciesController extends CController
 		$this->_view->render('currencies/edit');
 	}
 
+    /**
+     * Change status currencies action handler
+     * @param int $id the currency ID
+     */
+    public function changeStatusAction($id)
+    {
+		// Block access to this controller to non-logged users
+		CAuth::handleLogin(Website::getDefaultPage());
+		
+		// Block access if admin has no active privilege to edit currencies
+        Website::prepareBackendAction('edit', 'currencies', 'currencies/manage');
+		
+		$currency = Currencies::model()->findByPk($id);
+		if(!$currency){
+			$this->redirect('currencies/manage');
+		}
+		
+		// Check if the currency is default
+		if($currency->is_default){
+			$alert = A::t('app', 'Change Status Default Alert');
+			$alertType = 'error';
+		}elseif(Currencies::model()->updateByPk($id, array('is_active'=>($currency->is_active == 1 ? '0' : '1')))){
+			$alert = A::t('app', 'Status has been successfully changed!');
+			$alertType = 'success';
+		}else{
+			$alert = (APPHP_MODE == 'demo') ? A::t('core', 'This operation is blocked in Demo Mode!') : A::t('app', 'Status changing error');
+			$alertType = (APPHP_MODE == 'demo') ? 'warning' : 'error';
+		}
+		 
+		$this->_cSession->setFlash('alert', $alert);
+		$this->_cSession->setFlash('alertType', $alertType);
+		
+		$this->redirect('currencies/manage');
+    }
+
 	/**
 	 * Delete currency action handler
 	 * @param int $id the currency id 
@@ -183,5 +223,23 @@ class CurrenciesController extends CController
 
 		$this->redirect('currencies/manage');
 	}
+	
+	/**
+	 * Update currency rates
+	 * @return void
+	 */
+	public function updateRatesAction()
+	{
+		// Block access if admin has no active privilege to delete currencies
+        Website::prepareBackendAction('edit', 'currencies', 'currencies/manage');
+		
+		// Update currency rates
+		$result = Currencies::updateRates();
+		
+		$this->_cSession->setFlash('alert', $result['alert']);
+		$this->_cSession->setFlash('alertType', $result['alertType']);
+
+		$this->redirect('currencies/manage');
+	}	
 	
 }

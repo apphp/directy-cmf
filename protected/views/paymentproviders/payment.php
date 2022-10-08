@@ -2,6 +2,7 @@
     Website::setMetaTags(array('title'=>A::t('app', 'Test Checkout')));
 	
 	$product = array(
+		'order_id' 		=> 'ord_'.time(),
 		'item_name' 	=> 'Product',
 		'item_number' 	=> '002',
 		'amount'		=> 9.90,
@@ -20,9 +21,10 @@
 	
 ?>
 
-<h1><?= A::t('app', 'Test Checkout'); ?></h1>
+<div class="bloc container">
 
-<div class="bloc">
+	<h1><?= A::t('app', 'Test Checkout'); ?></h1>
+
     <div class="title"><?= A::t('app', 'Payment Provider'); ?>: <?= CString::humanize($type); ?></div>
 	<br>
 		
@@ -65,7 +67,7 @@
 					'item_name' 	=> $product['item_name'],
 					'item_number' 	=> $product['item_number'],
 					'amount'		=> $product['amount'],
-					'custom'		=> '', 		// order ID
+					'custom'		=> $product['order_id'],	// order ID
 					'lc'			=> '', 		// country's language  
 					'cn'			=> '', 		// If this variable is omitted, the default label above the note field is "Add special instructions to merchant."
 					'rm'			=> '', 		// Return method. 0 – all shopping cart payments use the GET method, 1 – the buyer's browser is redirected to the return URL by using the GET method, but no payment variables are included, 2 – the buyer's browser is redirected to the return URL by using the POST method, and all payment variables are included
@@ -98,7 +100,7 @@
 					'item_name' 	=> $product['item_name'],
 					'item_number' 	=> $product['item_number'],
 					'amount'		=> $product['amount'],
-					'custom'		=> '', 		// order ID
+					'custom'		=> $product['order_id'],	// order ID
 					'lc'			=> '', 		// country's language  
 					'cn'			=> '', 		// If this variable is omitted, the default label above the note field is "Add special instructions to merchant."
 					'rm'			=> '', 		// Return method. 0 – all shopping cart payments use the GET method, 1 – the buyer's browser is redirected to the return URL by using the GET method, but no payment variables are included, 2 – the buyer's browser is redirected to the return URL by using the POST method, and all payment variables are included
@@ -131,7 +133,7 @@
 					'item_name' 	=> $product['item_name'],
 					'item_number' 	=> $product['item_number'],
 					'amount'		=> $product['amount'],
-					'custom'		=> '', 		// order ID
+					'custom'		=> $product['order_id'],	// order ID
 					'lc'			=> '', 		// country's language  
 					'cn'			=> '', 		// If this variable is omitted, the default label above the note field is "Add special instructions to merchant."
 					'rm'			=> '', 		// Return method. 0 – all shopping cart payments use the GET method, 1 – the buyer's browser is redirected to the return URL by using the GET method, but no payment variables are included, 2 – the buyer's browser is redirected to the return URL by using the POST method, and all payment variables are included
@@ -164,7 +166,7 @@
 					'item_name' 	=> $product['item_name'],
 					'item_number' 	=> $product['item_number'],
 					'amount'		=> $product['amount'],
-					'custom'		=> '', 		// order ID
+					'custom'		=> $product['order_id'],	// order ID
 					'lc'			=> '', 		// country's language  
 					'cn'			=> '', 		// If this variable is omitted, the default label above the note field is "Add special instructions to merchant."
 					'rm'			=> '', 		// Return method. 0 – all shopping cart payments use the GET method, 1 – the buyer's browser is redirected to the return URL by using the GET method, but no payment variables are included, 2 – the buyer's browser is redirected to the return URL by using the POST method, and all payment variables are included
@@ -192,5 +194,7 @@
 
 		<?php } ?>
 		
+		<br>
+			
     </div>
 </div>

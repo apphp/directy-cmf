@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED (static):			PRIVATE (static):
@@ -43,6 +43,8 @@
  * submitButton
  * resetButton
  * image
+ * video
+ * audio
  * button
  * convertFileSize
  * convertImageDimensions
@@ -115,8 +117,9 @@ class CHtml
             $htmlOptions['href'] = self::escapeHex($htmlOptions['href']);
             if(isset($htmlOptions['escape'])) unset($htmlOptions['escape']);
         }
+		// Prevent target="_blank" vulnerability
 		if(isset($htmlOptions['target']) && strtolower($htmlOptions['target']) === '_blank' && empty($htmlOptions['rel'])){
-			$htmlOptions['rel'] = 'nofollow noopener';
+			$htmlOptions['rel'] = 'noopener noreferrer';
 		}
 		return self::tag('a', $htmlOptions, $text);
 	}
@@ -804,6 +807,73 @@ class CHtml
 		$htmlOptions['src'] = $src;
 		$htmlOptions['alt'] = $alt;
 		return self::tag('img', $htmlOptions);
+	}
+
+	/**
+	 * Generates an video tag
+	 * @param string $src 
+	 * @param array $options
+	 * Ex.: array('width'=>'560', 'height'=>'350', 'autoplay'=>true, 'allowfullscreen'=>true, 'controls'=>true)
+	 * @return string 
+	 */
+	public static function video($src, $options = array())
+	{
+		$videoHtml = '';
+		
+		$srcParts = explode('/', $src);
+		$videoId = array_pop($srcParts); 
+		
+		$htmlOptions = array();
+		$width = !empty($options['width']) ? $options['width'] : '560';
+		$htmlOptions['width'] = $width;
+		$height = !empty($options['height']) ? $options['height'] : '315';
+		$htmlOptions['height'] = $height;
+		
+		if(preg_match('/(youtube\.|youtu\.)/i', $src)){
+			$autoplayParam = !empty($options['autoplay']) ? '?autoplay=1' : '';
+			$htmlOptions['frameborder'] = '0';
+			$htmlOptions['allow'] = 'encrypted-media'.(!empty($autoplayParam) ? ' autoplay' : '');
+			$htmlOptions['allowfullscreen'] = !empty($options['allowfullscreen']) ? 'allowfullscreen' : null;			
+			$htmlOptions['src'] = 'https://www.youtube.com/embed/'.$videoId.$autoplayParam;
+			$videoHtml = self::openTag('iframe', $htmlOptions).self::closeTag('iframe');
+		}elseif(preg_match('/vimeo\./i', $src)){
+			$autoplayParam = !empty($options['autoplay']) ? '?autoplay=1' : '';
+			$htmlOptions['frameborder'] = '0';
+			$htmlOptions['webkitallowfullscreen'] = !empty($options['webkitallowfullscreen']) ? 'webkitallowfullscreen' : null;
+			$htmlOptions['mozallowfullscreen'] = !empty($options['mozallowfullscreen']) ? 'mozallowfullscreen' : null;			
+			$htmlOptions['src'] = 'https://player.vimeo.com/video/'.$videoId.$autoplayParam;
+			$videoHtml = self::openTag('iframe', $htmlOptions).self::closeTag('iframe');
+		}else{
+			$htmlOptions['autoplay'] = !empty($options['autoplay']) ? ' autoplay' : null;
+			$htmlOptions['controls'] = !empty($options['controls']) ? ' controls' : null;
+			$videoHtml = self::openTag('video', $htmlOptions);
+			$videoHtml = self::tag('source', array('src'=>$src, 'type'=>'video/mp4'));
+			$videoHtml .= self::closeTag('video');
+		}
+		
+		if(!empty($htmlOptions)){
+			$videoHtml = self::openTag('iframe', $htmlOptions, false, false).self::closeTag('iframe');
+		}
+		
+		return $videoHtml;
+	}
+
+	/**
+	 * Generates an audio tag
+	 * @param string $src 
+	 * @param array $options
+	 * Ex.: array('autoplay'=>true, 'controls'=>true)
+	 * @return string 
+	 */
+	public static function audio($src, $options = array())
+	{
+		$htmlOptions = array();
+		$htmlOptions['autoplay'] = !empty($options['autoplay']) ? ' autoplay' : null;
+		$htmlOptions['controls'] = !empty($options['controls']) ? ' controls' : null;
+		
+		$videoHtml = self::openTag('audio', $htmlOptions);
+		$videoHtml = self::tag('source', array('src'=>$src, 'type'=>'audio/mpeg'));
+		$videoHtml .= self::closeTag('audio');
 	}
 
     /**

@@ -40,15 +40,15 @@
 				'icon' 			=> array(
 					'type'          => 'imageupload',
 					'title'         => A::t('app', 'Icon Image Label'),
-					'validation'    => array('required'=>false, 'type'=>'image', 'maxSize'=>'100k', 'targetPath'=>'images/flags/', 'mimeType'=>'image/jpeg, image/png, image/gif, image/jpg', 'fileName'=>''),
+					'validation'    => array('required'=>false, 'type'=>'image', 'maxSize'=>'100k', 'targetPath'=>'images/flags/', 'mimeType'=>'image/jpeg, image/jpg, image/png, image/gif', 'fileName'=>''),
 					'imageOptions'  => array('showImage'=>true, 'showImageName'=>true, 'showImageSize'=>true, 'showImageDimensions'=>true, 'imageClass'=>'icon'),
 					'deleteOptions' => array('showLink'=>true, 'linkUrl'=>'languages/edit/id/'.$language->id.'/icon/delete', 'linkText'=>A::t('app', 'Delete')),
 					'fileOptions'   => array('showAlways'=>false, 'class'=>'file', 'size'=>'25', 'filePath'=>'images/flags/')
 				),
 				'sort_order' 	=> array('type'=>'textbox', 'title'=>A::t('app', 'Order'), 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'2', 'class'=>'small')),
 				'used_on' 	 	=> array('type'=>'select', 'title'=>A::t('app', 'Used On'), 'data'=>$usedOnList, 'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array_keys($usedOnList))),
-				'is_default' 	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>($language->is_default ? array('disabled'=>'disabled', 'uncheckValue'=>$language->is_default) : ''), 'viewType'=>'custom'),
-				'is_active'  	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>($language->is_default ? array('disabled'=>'disabled', 'uncheckValue'=>$language->is_active) : ''), 'viewType'=>'custom'),
+				'is_default' 	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Default'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>($language->is_default ? array('disabled'=>'disabled', 'uncheckValue'=>$language->is_default) : array()), 'viewType'=>'custom'),
+				'is_active'  	=> array('type'=>'checkbox', 'title'=>A::t('app', 'Active'), 'validation'=>array('type'=>'set', 'source'=>array(0,1)), 'htmlOptions'=>($language->is_default ? array('disabled'=>'disabled', 'uncheckValue'=>$language->is_active) : array()), 'viewType'=>'custom'),
 			),
 			'buttons'			=> array(
                 'submitUpdateClose' => array('type'=>'submit', 'value'=>A::t('app', 'Update & Close'), 'htmlOptions'=>array('name'=>'btnUpdateClose')),

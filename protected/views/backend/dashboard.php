@@ -70,7 +70,7 @@
 		$notificationsCount = 0;
 		if(is_array($systemNotifications)){
 			foreach($systemNotifications as $notification){
-				echo '<h5>'.$notification['date'].'</h5>';
+				echo '<b>'.CLocale::date($dateTimeFormat, $notification['date']).'</b>';
 				echo '<ul>';
 				echo '<li>';
 				echo $notification['title'];
@@ -118,6 +118,9 @@
 				$tabStat3 .= $count++ ? ',' : '';
 				$tabStat3 .= '<a href="admins/manage?username='.CHtml::encode($admin).'&but_filter=Filter">'.$admin.'</a>';	
 			}
+			if(empty($lastAdminsList)){
+				$tabStat3 .= '--';
+			}			
 			$tabStat3 .= '</td></tr>';
 			
 			$tabStat3 .= '<tr><td>'.A::t('app', 'Last 5 Changed Password').': </td><td>';			
@@ -126,6 +129,9 @@
 				$tabStat3 .= $count++ ? ',' : '';
 				$tabStat3 .= '<a href="admins/manage?username='.CHtml::encode($admin).'&but_filter=Filter">'.$admin.'</a>';	
 			}
+			if(empty($changedPasswordAdminsList)){
+				$tabStat3 .= '--';
+			}			
 			$tabStat3 .= '</td></tr>
         </tbody>
         </table>';

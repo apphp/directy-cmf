@@ -145,10 +145,11 @@ class SocialNetworksController extends CController
 
     /**
      * Change status social network action handler
-     * @param int $id the menu ID
+     * @param int $id       the network ID
+     * @param int $page 	the page number
      * @return void
      */
-    public function changeNetworkStatusAction($id)
+    public function changeNetworkStatusAction($id, $page = 0)
     {
         CAuth::handleLogin(Website::getDefaultPage());
 
@@ -181,7 +182,7 @@ class SocialNetworksController extends CController
 			A::app()->getSession()->setFlash('alertType', $alertType);
 		}
 
-        $this->redirect('socialNetworks/manage');
+        $this->redirect('socialNetworks/manage'.(!empty($page) ? '?page='.(int)$page : 1));
     }
 
     /**
@@ -303,7 +304,7 @@ class SocialNetworksController extends CController
 
     /**
      * Change status social network action handler
-     * @param int $id the menu ID
+     * @param int $id the login ID
      * @return void
      */
     public function changeLoginStatusAction($id = 0)
@@ -568,7 +569,7 @@ class SocialNetworksController extends CController
 									$alertType = 'success';
 								}
 							}else{
-								CDebug::addMessage('error', 'The method '.CHtml::encode($model).'::'.CHtml::encode($method).'can not be called');
+								CDebug::addMessage('error', 'social-login', 'The method '.CHtml::encode($model).'::'.CHtml::encode($method).'can not be called');
 	
 								$alert = A::t('app', 'Input incorrect parameters');
 								$alertType = 'error';

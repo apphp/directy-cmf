@@ -12735,6 +12735,7 @@ tinymce.create('tinymce.ui.Toolbar:tinymce.ui.Container', {
 					window.showModalDialog(u, window, f);
 				} else
 					w = window.open(u, s.name, f);
+					w.opener = null;
 			} catch (ex) {
 				// Ignore
 			}

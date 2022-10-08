@@ -109,15 +109,16 @@ class BanListsController extends CController
     /**
      * Change status action handler
      * @param int $id
+     * @param int $page 	the page number
      */
-    public function changeStatusAction($id)
+    public function changeStatusAction($id, $page = 0)
     {
 		// Block access if admin has no active privilege to change ban lists
         Website::prepareBackendAction('edit', 'ban_lists', 'banLists/manage');
         $banList = $this->_checkActionAccess($id);
 
         if(BanLists::model()->updateByPk($id, array('is_active'=>($banList->is_active == 1 ? '0' : '1')))){
-            $alert = 'Status has been successfully changed!';
+			$alert = A::t('app', 'Status has been successfully changed!');
 			$alertType = 'success';
         }else{
             $alert = ((APPHP_MODE == 'demo') ? A::t('core', 'This operation is blocked in Demo Mode!') : A::t('app', 'Status changing error'));
@@ -127,7 +128,7 @@ class BanListsController extends CController
 		$this->_cSession->setFlash('alert', $alert);
 		$this->_cSession->setFlash('alertType', $alertType);
 
-        $this->redirect('banLists/manage');        
+        $this->redirect('banLists/manage'.(!empty($page) ? '?page='.(int)$page : 1));
     }
 	
     /**

@@ -52,15 +52,6 @@ class Accounts extends CActiveRecord
             }
 		}		
 	}
-
-    ///**
-    // * Returns the static model of the specified AR class
-	// * @version PHP 5.2.x 
-    // */
-    //public static function model($class = __CLASS__)
-    //{
-    //    return parent::model($class);
-    //}
     
     /**
      * Account login

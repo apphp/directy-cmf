@@ -53,6 +53,10 @@ class BackendController extends CController
         if(APPHP_MODE == 'debug') $alerts[] = array('type'=>'warning', 'message'=>A::t('app', 'Debug Mode Alert'));
 		if(CConfig::get('cookies.path') == '/' && A::app()->getRequest()->getBasePath() != '/') $alerts[] = array('type'=>'warning', 'message'=>A::t('app', 'Cookies Base Path Alert', array('{path}'=>A::app()->getRequest()->getBasePath())));			 
         if(CAuth::getLoggedEmail() == '' || preg_match('/email.me/i', CAuth::getLoggedEmail())) $alerts[] = array('type'=>'error', 'message'=>A::t('app', 'Default Email Alert'));
+		if(in_array(CAuth::getLoggedRole(), array('owner', 'mainadmin'))){
+			if(($errorLogSize = CFile::getFileSize('protected/tmp/logs/error.log')) > 0) $alerts[] = array('type'=>'error', 'message'=>A::t('app', 'There seems to be some errors in your system: error log file is not empty ({size}Kb)! Click <a href="error/viewErrorLog">here</a> to check it.', array('{size}'=>$errorLogSize)));
+		}
+		
 		// Draw alerts from modules		
 		$modules = Modules::model()->findAll('is_active = 1');		
 		if(is_array($modules)){
@@ -76,11 +80,12 @@ class BackendController extends CController
         $this->_view->dashboardHotkeys = Bootstrap::init()->getSettings('dashboard_hotkeys');
         $this->_view->dashboardNotifications = Bootstrap::init()->getSettings('dashboard_notifications');
         $this->_view->dashboardStatistics = Bootstrap::init()->getSettings('dashboard_statistics');
-        $this->_view->todayDate = date($dateTimeFormat);
-        $this->_view->lastLoginDate = strtotime(CAuth::getLoggedLastVisit()) > 0 ? date($dateTimeFormat, strtotime(CAuth::getLoggedLastVisit())) : A::t('app', 'Never');
+        $this->_view->todayDate = CLocale::date($dateTimeFormat);
+        $this->_view->lastLoginDate = strtotime(CAuth::getLoggedLastVisit()) > 0 ? CLocale::date($dateTimeFormat, CAuth::getLoggedLastVisit()) : A::t('app', 'Never');
         $this->_view->adminsCount = Admins::model()->count();
 		$this->_view->scriptName = CConfig::get('name');
 		$this->_view->scriptVersion = CConfig::get('version');
+		$this->_view->dateTimeFormat = $dateTimeFormat;
 
 		// Fetch last 5 admins
 		$lastAdmins = Admins::model()->findAll(array('condition'=>"role != 'owner'", 'order'=>'id DESC', 'limit'=>'5'));

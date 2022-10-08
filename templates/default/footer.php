@@ -14,6 +14,12 @@
 						<p>
 							<a href="<?= Website::getDefaultPage(); ?>"><?= A::t('app', 'Read More'); ?> →</a>
 						</p>
+
+						<?php
+							if(Modules::model()->isInstalled('news')): 
+								NewsComponent::drawSubscriptionBlock();
+							endif;
+						?>
 					</section>
 				</div>
 				
@@ -70,7 +76,7 @@
 				if(!empty($socialNetworks)):
 					echo '<ul class="social-icons std-menu pull-right">';
 					foreach($socialNetworks as $key => $socialNetwork):
-						echo '<li><a href="'.$socialNetwork['link'].'" target="_blank" data-placement="top" rel="tooltip" title="" data-original-title="'.$socialNetwork['name'].'"><i class="fa fa-'.$socialNetwork['code'].'"></i></a></li>';
+						echo '<li><a href="'.$socialNetwork['link'].'" target="_blank" data-placement="top" rel="tooltip noopener noreferrer" title="" data-original-title="'.$socialNetwork['name'].'"><i class="fa fa-'.$socialNetwork['code'].'"></i></a></li>';
 					endforeach;
 					echo '</ul>';
 				endif;

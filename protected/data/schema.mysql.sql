@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>site_info` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
 
 INSERT INTO `<DB_PREFIX>site_info` (`id`, `language_code`, `logo`, `site_phone`, `site_fax`, `site_email`, `site_address`, `header`, `slogan`, `footer`, `meta_title`, `meta_description`, `meta_keywords`) VALUES
-(1, 'en', '', '1(800) 123 456', '', 'info@email.me', '', 'PHP Directy CMF', 'Welcome to PHP Directy CMF!', 'PHP Directy CMF © <a class="footer_link" target="_new" href="http://www.apphp.com/php-directy-cmf/index.php">ApPHP</a>', 'PHP Directy CMF', 'Directy CMF', 'php cmf, php framework, php content management framework, php cms');
+(1, 'en', '', '1(800) 123 456', '', 'info@email.me', '', 'PHP Directy CMF', 'Welcome to PHP Directy CMF!', 'PHP Directy CMF © <a class="footer_link" target="_blank" rel="noopener noreferrer" href="https://www.apphp.com/php-directy-cmf/index.php">ApPHP</a>', 'PHP Directy CMF', 'Directy CMF', 'php cmf, php framework, php content management framework, php cms');
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>modules`;
@@ -937,17 +937,18 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>currencies` (
   `decimals` tinyint(1) NOT NULL DEFAULT '2',
   `symbol_place` enum('before','after') CHARACTER SET latin1 NOT NULL DEFAULT 'before',
   `sort_order` tinyint(1) NOT NULL DEFAULT '0',
+  `updated_at` datetime NULL DEFAULT NULL,
   `is_default` tinyint(1) NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=6 ;
 
-INSERT INTO `<DB_PREFIX>currencies` (`id`, `name`, `symbol`, `code`, `rate`, `decimals`, `symbol_place`, `sort_order`, `is_default`, `is_active`) VALUES
-(1, 'US Dollar', '$', 'USD', 1.0000, 2, 'before', 1, 1, 1),
-(2, 'Euro', '€', 'EUR', 0.7691, 2, 'before', 2, 0, 1),
-(3, 'GB Pound', '£', 'GBP', 0.6555, 2, 'before', 3, 0, 1),
-(4, 'AU Dollar', 'A$', 'AUD', 0.9742, 2, 'before', 4, 0, 1),
-(5, 'CA Dollar', 'C$', 'CAD', 1.0400, 2, 'before', 5, 0, 1);
+INSERT INTO `<DB_PREFIX>currencies` (`id`, `name`, `symbol`, `code`, `rate`, `decimals`, `symbol_place`, `sort_order`, `updated_at`, `is_default`, `is_active`) VALUES
+(1, 'US Dollar', '$', 'USD', 1.0000, 2, 'before', 1, NULL, 1, 1),
+(2, 'Euro', '€', 'EUR', 0.7691, 2, 'before', 2, NULL, 0, 1),
+(3, 'GB Pound', '£', 'GBP', 0.6555, 2, 'before', 3, NULL, 0, 1),
+(4, 'AU Dollar', 'A$', 'AUD', 0.9742, 2, 'before', 4, NULL, 0, 1),
+(5, 'CA Dollar', 'C$', 'CAD', 1.0400, 2, 'before', 5, NULL, 0, 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>roles`;
@@ -1121,32 +1122,33 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>backend_menus` (
   `is_visible` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `sort_order` smallint(6) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=24 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=25 ;
 
 INSERT INTO `<DB_PREFIX>backend_menus` (`id`, `parent_id`, `url`, `module_code`, `icon`, `is_system`, `is_visible`, `sort_order`) VALUES
 (1, 0, '', '', 'dashboard.png',  1, 1, 1),
 (2, 0, '', '', 'accounts.png', 1, 1, 2),
 (3, 0, '', '', 'languages.png', 1, 1, 3),
-(4, 0, '', '', 'mails.png', 1, 1, 4),
-(5, 0, '', '', 'modules.png', 1, 1, 5),
-(6, 1, 'backend/', '', '', 1, 1, 1),
-(7, 1, 'settings/', '', '', 1, 1, 2),
-(8, 1, 'backendMenus/', '', '', 1, 1, 3),
-(9, 1, 'frontendMenus/', '', '', 1, 1, 4),
-(10, 1, 'socialNetworks/', '', '', 1, 1, 5),
-(11, 1, 'banLists/', '', '', 1, 1, 6),
-(12, 1, 'locations/', '', '', 1, 1, 7),
-(13, 1, 'currencies/', '', '', 1, 1, 8),
-(14, 1, 'paymentProviders/', '', '', 1, 1, 9),
-(15, 1, 'index/', '', '', 1, 1, 10),
-(16, 2, 'admins/', '', '', 1, 1, 1),
-(17, 2, 'roles/', '', '', 1, 1, 2),
-(18, 2, 'admins/myAccount', '', '', 1, 1, 3),
-(19, 3, 'languages/', '', '', 1, 1, 1),
-(20, 3, 'vocabulary/', '', '', 1, 1, 2),
-(21, 4, 'emailTemplates/', '', '', 1, 1, 1),
-(22, 4, 'mailingLog/', '', '', 1, 1, 2),
-(23, 5, 'modules/', '', '', 1, 1, 1);
+(4, 0, '', '', 'payments.png', 1, 1, 4),
+(5, 0, '', '', 'mails.png', 1, 1, 5),
+(6, 0, '', '', 'modules.png', 1, 1, 6),
+(7, 1, 'backend/', '', '', 1, 1, 1),
+(8, 1, 'settings/', '', '', 1, 1, 2),
+(9, 1, 'backendMenus/', '', '', 1, 1, 3),
+(10, 1, 'frontendMenus/', '', '', 1, 1, 4),
+(11, 1, 'socialNetworks/', '', '', 1, 1, 5),
+(12, 1, 'banLists/', '', '', 1, 1, 6),
+(13, 1, 'locations/', '', '', 1, 1, 7),
+(14, 1, 'index/', '', '', 1, 1, 8),
+(15, 2, 'admins/', '', '', 1, 1, 1),
+(16, 2, 'roles/', '', '', 1, 1, 2),
+(17, 2, 'admins/myAccount', '', '', 1, 1, 3),
+(18, 3, 'languages/', '', '', 1, 1, 1),
+(19, 3, 'vocabulary/', '', '', 1, 1, 2),
+(20, 4, 'currencies/', '', '', 1, 1, 1),
+(21, 4, 'paymentProviders/', '', '', 1, 1, 2),
+(22, 5, 'emailTemplates/', '', '', 1, 1, 1),
+(23, 5, 'mailingLog/', '', '', 1, 1, 2),
+(24, 6, 'modules/', '', '', 1, 1, 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>backend_menu_translations`;
@@ -1156,32 +1158,33 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>backend_menu_translations` (
   `language_code` varchar(2) CHARACTER SET latin1 NOT NULL,
   `name` varchar(125) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=24 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=25 ;
 
 INSERT INTO `<DB_PREFIX>backend_menu_translations` (`id`, `menu_id`, `language_code`, `name`) VALUES
 (1, 1, 'en', 'General'),
 (2, 2, 'en', 'Accounts'),
 (3, 3, 'en', 'Language Settings'),
-(4, 4, 'en', 'Mail Settings'),
-(5, 5, 'en', 'Modules'),
-(6, 6, 'en', 'Dashboard'),
-(7, 7, 'en', 'Site Settings'),
-(8, 8, 'en', 'Backend Menu'),
-(9, 9, 'en', 'Frontend Menu'),
-(10, 10, 'en', 'Social Networks'),
-(11, 11, 'en', 'Ban Lists'),
-(12, 12, 'en', 'Locations'),
-(13, 13, 'en', 'Currencies'),
-(14, 14, 'en', 'Payment Providers'),
-(15, 15, 'en', 'Preview'),
-(16, 16, 'en', 'Admins'),
-(17, 17, 'en', 'Roles & Privileges'),
-(18, 18, 'en', 'My Account'),
-(19, 19, 'en', 'Languages'),
-(20, 20, 'en', 'Vocabulary'),
-(21, 21, 'en', 'Email Templates'),
-(22, 22, 'en', 'Mailing Log'),
-(23, 23, 'en', 'Modules Management');
+(4, 4, 'en', 'Payment Settings'),
+(5, 5, 'en', 'Mail Settings'),
+(6, 6, 'en', 'Modules'),
+(7, 7, 'en', 'Dashboard'),
+(8, 8, 'en', 'Site Settings'),
+(9, 9, 'en', 'Backend Menu'),
+(10, 10, 'en', 'Frontend Menu'),
+(11, 11, 'en', 'Social Networks'),
+(12, 12, 'en', 'Ban Lists'),
+(13, 13, 'en', 'Locations'),
+(14, 14, 'en', 'Preview'),
+(15, 15, 'en', 'Admins'),
+(16, 16, 'en', 'Roles & Privileges'),
+(17, 17, 'en', 'My Account'),
+(18, 18, 'en', 'Languages'),
+(19, 19, 'en', 'Vocabulary'),
+(20, 20, 'en', 'Currencies'),
+(21, 21, 'en', 'Payment Providers'),
+(22, 22, 'en', 'Email Templates'),
+(23, 23, 'en', 'Mailing Log'),
+(24, 24, 'en', 'Modules Management');
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>frontend_menus`;

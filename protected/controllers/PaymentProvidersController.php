@@ -9,6 +9,7 @@
  * manageAction
  * addAction
  * editAction
+ * changeStatusAction
  * deleteAction
  * testCheckoutAction
  * testPaymentAction
@@ -104,9 +105,48 @@ class PaymentProvidersController extends CController
         Website::prepareBackendAction('edit', 'payment_providers', 'backend/index');
 
         $paymentProvider = $this->_checkActionAccess($id);
+		if(!$paymentProvider){
+			$this->redirect('paymentProviders/manage');
+		}
+        
         $this->_view->paymentProvider = $paymentProvider;
-
+        
         $this->_view->render('paymentProviders/edit');
+    }
+
+    /**
+     * Change status payment providers action handler
+     * @param int $id the payment provider ID
+     */
+    public function changeStatusAction($id)
+    {
+        // Block access to this controller to non-logged users
+        CAuth::handleLogin(Website::getDefaultPage());
+
+        // Block access if admin has no active privilege to manage payment providers
+        Website::prepareBackendAction('edit', 'payment_providers', 'backend/index');
+
+        $paymentProvider = $this->_checkActionAccess($id);
+		if(!$paymentProvider){
+			$this->redirect('paymentProviders/manage');
+		}
+		
+		// Check if the payment provider is default
+		if($paymentProvider->is_default){
+			$alert = A::t('app', 'Change Status Default Alert');
+			$alertType = 'error';
+		}elseif(PaymentProviders::model()->updateByPk($id, array('is_active'=>($paymentProvider->is_active == 1 ? '0' : '1')))){
+			$alert = A::t('app', 'Status has been successfully changed!');
+			$alertType = 'success';
+		}else{
+			$alert = (APPHP_MODE == 'demo') ? A::t('core', 'This operation is blocked in Demo Mode!') : A::t('app', 'Status changing error');
+			$alertType = (APPHP_MODE == 'demo') ? 'warning' : 'error';
+		}
+		 
+		$this->_cSession->setFlash('alert', $alert);
+		$this->_cSession->setFlash('alertType', $alertType);
+		
+		$this->redirect('paymentProviders/manage');
     }
 
     /**

@@ -349,3 +349,13 @@ p.block-title {
 		float:right !important;
 	}
 }
+
+.side-panel-block {
+	margin-bottom:20px;
+}
+
+/* LOGIN
+---------------------------------------------------------- */
+.csrf-refresh-page {
+	margin: 0px auto !important;
+}

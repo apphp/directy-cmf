@@ -20,11 +20,11 @@
 	
 ?>
 
-<h1><?= A::t('app', 'Test Checkout'); ?></h1>
-
-<div class="bloc">    
+<div class="bloc container">
 	<br>
 		
+	<h1><?= A::t('app', 'Test Checkout'); ?></h1>
+	
     <div class="content">
 		
 		<fieldset>
@@ -53,5 +53,7 @@
 			
 			<input type="submit" value="<?= A::t('app', 'Go To Payment'); ?>" />
 		</form>
+		
+		<br><br>
     </div>
 </div>

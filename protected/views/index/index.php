@@ -22,7 +22,7 @@
 		</p>
 		
 		<p>
-			If this is your site, here are <a href="http://www.apphp.com/php-directy-cmf/index.php?page=getting-started">some instructions on how to get
+			If this is your site, here are <a href="https://www.apphp.com/php-directy-cmf/index.php?page=getting-started">some instructions on how to get
 			started</a>.
 		</p>
 		<p>

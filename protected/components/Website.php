@@ -2,9 +2,9 @@
 /**
  * Website - component for working with website
  *
- * PUBLIC (static):         PRIVATE:
- * -----------              ------------------
- * init
+ * PUBLIC (static):         	PRIVATE:
+ * -----------              	------------------
+ * init							_replaceEmailPlaceHolders
  * setBackend
  * setFrontend
  * setDefaultLanguage
@@ -147,6 +147,9 @@ class Website extends CComponent
 				'smtp_password'	=> CHash::decrypt($settings->smtp_password, CConfig::get('password.hashKey')),
 			));
 			
+			// Replace email placeholders
+			$content = self::_replaceEmailPlaceHolders($content, $params);
+
 			$result = CMailer::send($emailTo, $subject, $content, array('from'=>$settings->general_email), $attachments);
 			if(CMailer::getError()) CDebug::addMessage('errors', 'sending-email', CMailer::getError());			
 		}        
@@ -170,19 +173,9 @@ class Website extends CComponent
         $templateContent = isset($template['template_content']) ? $template['template_content'] : '';
 		$result = false;
 		
-		if(!empty($template)){
-			// set base variables if not defined        
-			if(!isset($params['{SITE_URL}'])) $params['{SITE_URL}'] = A::app()->getRequest()->getBaseUrl();
-			if(!isset($params['{WEB_SITE}'])) $params['{WEB_SITE}'] = CConfig::get('name');
-			if(!isset($params['{YEAR}'])) $params['{YEAR}'] = LocalTime::currentDate('Y');
-	
-			$arrKeys = array();
-			$arrValues = array();        
-			foreach($params as $key => $val){
-				$arrKeys[] = $key;
-				$arrValues[] = $val;
-			}
-			$templateContent = str_ireplace($arrKeys, $arrValues, $templateContent);
+		if(!empty($template)){			
+			// Replace email placeholders
+			$templateContent = self::_replaceEmailPlaceHolders($templateContent, $params);
 			
 			$settings = Bootstrap::init()->getSettings();
 			CMailer::config(array(
@@ -382,7 +375,7 @@ class Website extends CComponent
 		$defaultPage = CConfig::get('defaultController').'/'.CConfig::get('defaultAction');
 		$currentUrl = A::app()->getUri()->uriString();
 		
-		if(strtolower($defaultPage) == strtolower($currentUrl)){
+		if(strtolower($defaultPage) == strtolower($currentUrl) || $currentUrl === '/'){
 			return true;
 		}
 		
@@ -407,6 +400,29 @@ class Website extends CComponent
 	public static function getLastVisitedPage()
 	{
 		return A::app()->getSession()->get('last_visited_page');
+	}
+	
+	/**
+	 * Replaces email placeholders
+	 * @param string $templateContent
+	 * @param array $params
+	 * @return string
+	*/
+	private static function _replaceEmailPlaceHolders($templateContent = '', $params = array())
+	{
+		// Set base variables if not defined        
+		if(!isset($params['{SITE_URL}'])) $params['{SITE_URL}'] = A::app()->getRequest()->getBaseUrl();
+		if(!isset($params['{WEB_SITE}'])) $params['{WEB_SITE}'] = CConfig::get('name');
+		if(!isset($params['{YEAR}'])) $params['{YEAR}'] = LocalTime::currentDate('Y');
+
+		$arrKeys = array();
+		$arrValues = array();        
+		foreach($params as $key => $val){
+			$arrKeys[] = $key;
+			$arrValues[] = $val;
+		}
+		
+		return str_ireplace($arrKeys, $arrValues, $templateContent);
 	}
 	
 }

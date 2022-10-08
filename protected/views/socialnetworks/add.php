@@ -41,7 +41,7 @@
                     'type'              => 'imageUpload',
                     'title'             => A::t('app', 'Icon'),
                     'default'=>'',
-                    'validation'        => array('required'=>false, 'type'=>'image', 'targetPath'=>'images/social_networks/', 'maxSize'=>'990k', 'mimeType'=>'image/jpeg, image/png, image/gif', 'fileName'=>'sn_'.CHash::getRandomString(10), 'maxWidth'=>'64px', 'maxHeight'=>'64px'),
+                    'validation'        => array('required'=>false, 'type'=>'image', 'targetPath'=>'images/social_networks/', 'maxSize'=>'990k', 'mimeType'=>'image/jpeg, image/jpg, image/png, image/gif', 'fileName'=>'sn_'.CHash::getRandomString(10), 'maxWidth'=>'64px', 'maxHeight'=>'64px'),
                     'imageOptions'      => array('showImage'=>false, 'showImageName'=>true, 'imageClass'=>'icon-listing'),
                     'thumbnailOptions'  => array('create'=>false),
                     'fileOptions'       => array('showAlways'=>false, 'class'=>'file', 'size'=>'25', 'filePath'=>'images/social_networks/')

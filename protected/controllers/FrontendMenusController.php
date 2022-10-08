@@ -6,15 +6,15 @@
  * ---------------         	---------------
  * __construct              _getPlacementsList
  * indexAction				_getAccessLevelsList
- * manageAction				_getLinkTargetsList
- * changeStatusAction		_getMenuTypesList 	
- * addAction         		_getPagesLinks
- * editAction               _getModulesLinks
- * deleteAction             _getModulesBlock
+ * manageAction				_getLinkTargetsList  		
+ * addAction         		_getMenuTypesList 	
+ * editAction               _getPagesLinks
+ * changeStatusAction		_getModulesLinks
+ * deleteAction             
+ *                          _getModulesBlock
  *                          _getDialogContent
  *                          _getModulesList
- *                          _prepareSubMenuCounts
- *
+ *							_prepareSubMenuCounts
  */
 
 class FrontendMenusController extends CController
@@ -100,39 +100,6 @@ class FrontendMenusController extends CController
 		$this->_view->render('frontendMenus/manage');	   	
     }
     
-    /**
-     * Change status menu action handler
-     * @param int $id the menu ID
-     * @param int $pid the ID of the parent menu, if $pid == 0 views up level menu items.
-     */
-    public function changeStatusAction($id, $pid = 0)
-    {
-		// Block access if admin has no active privilege to edit frontend menus
-		Website::prepareBackendAction('edit', 'frontend_menu', 'frontendMenus/manage');		
-		
-		$parentMenuPart = '';
-
-		$menu = FrontendMenus::model()->findbyPk($id);
-		if(!empty($menu)){
-			if(FrontendMenus::model()->updateByPk($id, array('is_active'=>($menu->is_active == 1 ? '0' : '1')))){
-				$alert = A::t('app', 'Status has been successfully changed!');
-				$alertType = 'success';
-			}else{
-				$alert = (APPHP_MODE == 'demo') ? A::t('core', 'This operation is blocked in Demo Mode!') : A::t('app', 'Status changing error');
-				$alertType = (APPHP_MODE == 'demo') ? 'warning' : 'error';
-			}
-			 
-			$this->_cSession->setFlash('alert', $alert);
-			$this->_cSession->setFlash('alertType', $alertType);
-
-			if($parentMenu = FrontendMenus::model()->findbyPk($pid)){
-				$parentMenuPart = '/pid/'.(int)$pid;
-			}
-		}
-		
-        $this->redirect('frontendMenus/manage'.$parentMenuPart);        
-    }
-
     /**
      * Add new menu action handler
 	 * @param int $pid the ID of the parent menu, if $pid == 0 views up level menu items.
@@ -220,6 +187,39 @@ class FrontendMenusController extends CController
     	$this->_view->render('frontendMenus/edit');
     }    
   
+    /**
+     * Change status menu action handler
+     * @param int $id 		the menu ID
+     * @param int $page 	the page number
+     */
+    public function changeStatusAction($id, $page = 0)
+    {
+		// Block access if admin has no active privilege to edit frontend menus
+		Website::prepareBackendAction('edit', 'frontend_menu', 'frontendMenus/manage');		
+		
+		$parentMenuPart = '';
+
+		$menu = FrontendMenus::model()->findbyPk($id);
+		if(!empty($menu)){
+			if(FrontendMenus::model()->updateByPk($id, array('is_active'=>($menu->is_active == 1 ? '0' : '1')))){
+				$alert = A::t('app', 'Status has been successfully changed!');
+				$alertType = 'success';
+			}else{
+				$alert = (APPHP_MODE == 'demo') ? A::t('core', 'This operation is blocked in Demo Mode!') : A::t('app', 'Status changing error');
+				$alertType = (APPHP_MODE == 'demo') ? 'warning' : 'error';
+			}
+			 
+			$this->_cSession->setFlash('alert', $alert);
+			$this->_cSession->setFlash('alertType', $alertType);
+
+			if($parentMenu = FrontendMenus::model()->findByPk($menu->parent_id)){
+				$parentMenuPart = '/pid/'.(int)$parentMenu->id;
+			}
+		}
+		
+        $this->redirect('frontendMenus/manage'.$parentMenuPart.(!empty($page) ? '?page='.(int)$page : 1));
+    }
+
     /**
      * Delete menu action handler
      * @param int $id the menu id

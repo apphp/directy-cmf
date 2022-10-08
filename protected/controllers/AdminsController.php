@@ -9,6 +9,7 @@
  * manageAction
  * addAction
  * editAction
+ * changeStatusAction
  * deleteAction
  * myAccountAction
  * sendNewAccountEmail
@@ -205,6 +206,47 @@ class AdminsController extends CController
         $this->_view->render('admins/edit');
     }
     
+    /**
+     * Change status admin action handler
+     * @param int $id 		the admin ID
+     * @param int $page 	the page number
+     */
+    public function changeStatusAction($id, $page = 0)
+    {
+		$admin = Admins::model()->findByPk($id);
+    	if(!$admin){
+            if($isMyAccount){
+                A::app()->getSession()->endSession();
+                $this->redirect('backend/login');
+            }else{
+                $this->redirect('backend/index');    
+            }
+    	}
+    	$this->_view->isMyAccount = ($admin->id == $this->_loggedId ? true : false);
+		
+    	// Allow access to edit other admins only to site owner or main admin
+        if(!$this->_view->isMyAccount && 
+       		!CAuth::isLoggedInAs('owner', 'mainadmin') && 
+       		!in_array($admin->role, array_keys($this->_view->rolesList))){
+        	$this->redirect('backend/index');
+        }
+
+		if(!empty($admin)){
+			if(Admins::model()->updateByPk($id, array('is_active'=>($admin->is_active == 1 ? '0' : '1')))){
+				$alert = A::t('app', 'Status has been successfully changed!');
+				$alertType = 'success';
+			}else{
+				$alert = (APPHP_MODE == 'demo') ? A::t('core', 'This operation is blocked in Demo Mode!') : A::t('app', 'Status changing error');
+				$alertType = (APPHP_MODE == 'demo') ? 'warning' : 'error';
+			}
+			 
+			$this->_cSession->setFlash('alert', $alert);
+			$this->_cSession->setFlash('alertType', $alertType);
+		}
+		
+        $this->redirect('admins/manage'.(!empty($page) ? '?page='.(int)$page : 1));
+    }
+	
     /**
      * Delete admin action handler
      * @param int $id The admin id 

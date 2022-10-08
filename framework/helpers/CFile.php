@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE:		
@@ -29,6 +29,7 @@
  * getFileSize
  * getImageDimensions
  * createShortenName
+ * getFileContent
  * 
  */	  
 
@@ -187,6 +188,8 @@ class CFile
 	 */
 	public static function deleteDirectory($path = '', $deleteHidden = false)
 	{
+		if(empty($path)) return false;
+		
 		$path = trim($path, '/').'/';
 		
 		$files = glob($path.'*');
@@ -264,11 +267,14 @@ class CFile
 	/**
 	 * Returns the result of check if given directory is empty
 	 * @param string $dir
+	 * @return bool
 	 */
 	public static function isDirectoryEmpty($dir = '')
 	{
 		if($dir == '' || !is_readable($dir)) return false; 
+		
 		$hd = opendir($dir);
+		if(!$hd) return false;		
 		while(false !== ($entry = readdir($hd))){
 			if($entry !== '.' && $entry !== '..'){
 				return false;
@@ -420,6 +426,8 @@ class CFile
 	 */
 	public static function deleteFile($file = '')
 	{
+		if(empty($file)) return false;
+		
         $result = @unlink($file);
         self::_errorHanler('file-deleting-error', A::t('core', 'An error occurred while deleting the file {file}.', array('{file}'=>$file)));
 		return $result;
@@ -471,6 +479,16 @@ class CFile
 		return array('width'=>$width, 'height'=>$height);
 	}
    
+	/**
+	 * Returns content of the given file
+	 * @param string $file
+	 * @return array
+	 */
+	public static function getFileContent($file)
+	{
+		return file_get_contents($file);
+	}
+
 	/**
 	 * Returns shorten name of the given file
 	 * @param string $file
@@ -543,15 +561,13 @@ class CFile
      */
     private static function _errorHanler($msgType = '', $msg = '')
     {
-        if(version_compare(phpversion(), '5.2.0', '>=')){	
-            $err = error_get_last();
-            if(isset($err['message']) && $err['message'] != ''){
-                $lastError = $err['message'].' | file: '.$err['file'].' | line: '.$err['line'];
-                $errorMsg = ($lastError) ? $lastError : $msg;
-                CDebug::addMessage('errors', $msgType, $errorMsg, 'session');
-                @trigger_error('');
-            }
-        }        
+		$err = error_get_last();
+		if(isset($err['message']) && $err['message'] != ''){
+			$lastError = $err['message'].' | file: '.$err['file'].' | line: '.$err['line'];
+			$errorMsg = ($lastError) ? $lastError : $msg;
+			CDebug::addMessage('errors', $msgType, $errorMsg, 'session');
+			@trigger_error('');
+		}
     }
     
 }

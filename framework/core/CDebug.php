@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2016 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE (static):		
@@ -294,11 +294,11 @@ class CDebug
         
         // Retrieve stored error messages and show them, then remove
         if($debugError = A::app()->getSession()->get('debug-errors')){
-            //self::addMessage('errors', 'debug-errors', $debugError);
+            self::addMessage('errors', 'debug-errors', $debugError);
             A::app()->getSession()->remove('debug-errors');
         }
         if($debugWarning = A::app()->getSession()->get('debug-warnings')){
-            //self::addMessage('warnings', 'debug-warnings', $debugWarning);
+            self::addMessage('warnings', 'debug-warnings', $debugWarning);
             A::app()->getSession()->remove('debug-warnings');
  		}		
 
@@ -493,6 +493,13 @@ class CDebug
             $arrConstants = @get_defined_constants(true);
 			$arrUserConstants = isset($arrConstants['user']) ? $arrConstants['user'] : array();
             print_r($arrUserConstants);
+			echo '</pre>';
+			echo '<br>';
+
+			echo '<strong>VIEW VARIABLES</strong>:';
+			echo '<pre style="white-space:pre-wrap;">';
+            $arrViewVars = A::app()->view->getAllVars();
+            print_r(@array_map('htmlspecialchars', $arrViewVars));
 			echo '</pre>';
 			echo '<br>';
 

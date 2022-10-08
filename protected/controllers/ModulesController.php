@@ -61,7 +61,7 @@ class ModulesController extends CController
 	 */
 	public function indexAction()
 	{
-        $this->redirect('modules/application');    
+        $this->redirect('modules/system');    
     }
 
     /**
@@ -143,6 +143,9 @@ class ModulesController extends CController
             );
 		}
 		
+		// Calculate days elapsed after installation
+		$this->_view->days_after_installation = CTime::getTimeDiff(LocalTime::currentDateTime(), $module->installed_at, 'day');
+
 		$this->_view->module = $module;		
 		$this->_view->render('modules/edit');
 	}
@@ -295,7 +298,7 @@ class ModulesController extends CController
 				$this->redirect('modules/settings/code/'.$code);
 			}				
     	}
-
+		
 		if($this->_cSession->hasFlash('alert')){
             $alert = $this->_cSession->getFlash('alert');
             $alertType = $this->_cSession->getFlash('alertType');
@@ -304,7 +307,7 @@ class ModulesController extends CController
                 'CMessage', array($alertType, $alert, array('button'=>true))
             );
 		}
-
+		
         // Set meta tags according to active language
     	Website::setMetaTags(array('title'=>$moduleName));
 
@@ -327,9 +330,9 @@ class ModulesController extends CController
      	}
 		
      	$installed = false;
+		$alert = '';
 		$alertType = '';
 		$moduleType = '';
-		$alert = '';
 		
 		// Check if the module is already installed
         if(APPHP_MODE == 'demo'){
@@ -342,8 +345,6 @@ class ModulesController extends CController
 		}else{
 			// Read module xml file
 			$xml = $this->_readModuleXml($code);
-			$name = isset($xml->name) ? $xml->name : $code;
-			$moduleType = $xml->moduleType;
 			if(!is_object($xml)){
 				// If failed to read XML file, $xml will contain error message 
 				$alert = A::t('app', 'XML File Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$code.'/info.xml', 30, 50)));
@@ -353,6 +354,9 @@ class ModulesController extends CController
 				//$alert = A::t('app', 'Operation Blocked Error Message');
 				//$alertType = 'error';
 			}else{								
+				$name = isset($xml->name) ? $xml->name : $code;
+				$moduleType = $xml->moduleType;
+				
 				// Get sql schema filename from the xml
 				$sqlInstallFile = isset($xml->files->data->install) ? $xml->files->data->install : '';
 				$sqlUninstallFile = isset($xml->files->data->uninstall) ? $xml->files->data->uninstall : '';
@@ -364,9 +368,10 @@ class ModulesController extends CController
 				}else{
 					$installed = true;					
 
-					$alertSuccess = A::t('app', 'Module Installation Success Message', array('{module}'=>$name));
-					$alertSuccess .= '<br><br>'.A::t('app', 'Adding information to database').' ... <span style="color:darkgreen;">'.A::t('app', 'OK').'</span>';
-					$alertSuccess .= '<br>'.A::t('app', 'Copying files and directories');
+					$alert = A::t('app', 'Module Installation Success Message', array('{module}'=>$name));
+					$alert .= '<br><br>'.A::t('app', 'Adding information to database').' ... <span style="color:darkgreen;">'.A::t('app', 'OK').'</span>';
+					$alert .= '<br>'.A::t('app', 'Copying files and directories');
+					$alertType = 'success';
                     
 					// Create module directory
 					if(!file_exists('assets/modules/'.$code)){
@@ -374,24 +379,22 @@ class ModulesController extends CController
 					}
 					
                     $result = $this->_processInfoXml($xml, $code);
-                    $alert .= $result['msg'];
-                    $alertSuccess .= $result['msg_success'];
-                    $alertType .= $result['error_type'];
+					if(!empty($result['error_type'])){
+						$alert = $result['msg'];
+						$alertType = $result['error_type'];						
+					}else{
+						$alert .= $result['msg_success'];
+					}
 				}
 			}
 		}
 		
-		if($installed){
-			Modules::model()->reLoadData();
-			$this->_view->actionMessage .= CWidget::create('CMessage', array('success', $alertSuccess, array('button'=>true)));
+		if(!empty($alert)){
+			$this->_cSession->setFlash('alert', $alert);
+			$this->_cSession->setFlash('alertType', $alertType);			
 		}
-		$this->_view->actionMessage .= CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
-			
-        $this->_view->modulesList = ($moduleType == 'application') ? $this->_getApplicationModules() : $this->_getSystemModules();
-		$this->_view->notInstalledModulesList = $this->_getNotInstalledModules();
-        $this->_view->allModulesList = $this->_getModules('application');
-		$this->_view->tabs = $this->_prepareTab(($moduleType == 'application') ? 'application' : 'system');
-		$this->_view->render('modules/'.(($moduleType == 'application') ? 'application' : 'system'));
+		
+		$this->redirect('modules/'.($moduleType == 'application' ? 'application' : 'system'));
 	}
 	
 	/**
@@ -556,7 +559,7 @@ class ModulesController extends CController
 					foreach($xml->files->children() as $folder){
                         if(isset($folder['exclude']) && strtolower($folder['exclude']) == 'yes') continue;
 						if(!isset($folder['installationPath'])) continue;
-
+						
                         if(isset($folder['byDirectory']) && strtolower($folder['byDirectory']) == 'true'){
                             // Remove by whole directory
                             $deletedFiles .= '<br> - dir.: '.$folder['installationPath'].'*';
@@ -607,19 +610,13 @@ class ModulesController extends CController
 				}
 			}	
 		}
+
+		if(!empty($alert)){
+			$this->_cSession->setFlash('alert', $alert);
+			$this->_cSession->setFlash('alertType', $alertType);			
+		}
 		
-		if(empty($alert)){
-			// Success
-			$alert = A::t('app', 'Module Uninstallation Success Message', array('{module}'=>$module->name));
-       		$alertType = 'success';
-		}		
-		$this->_view->actionMessage = CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
-					
-		$this->_view->modulesList = ($moduleType == 'application') ? $this->_getApplicationModules() : $this->_getSystemModules();
-		$this->_view->notInstalledModulesList = $this->_getNotInstalledModules(($moduleType == 'application' ? 'application' : 'system'));
-        $this->_view->allModulesList = $this->_getModules(($moduleType == 'application' ? 'application' : 'system'));
-    	$this->_view->tabs = $this->_prepareTab(($moduleType == 'application' ? 'application' : 'system'));
-		$this->_view->render('modules/'.($moduleType == 'application' ? 'application' : 'system'));
+		$this->redirect('modules/'.($moduleType == 'application' ? 'application' : 'system'));
 	}
 		
     /**
@@ -844,7 +841,7 @@ class ModulesController extends CController
      * Prepare modules view tabs
      * @param string $activeTab the active tab (system|application)
      */
-	private function _prepareTab($activeTab = 'application')
+	private function _prepareTab($activeTab = 'system')
     {
 		return CWidget::create('CTabs', array(
 		   	'tabsWrapper'=>array('tag'=>'div', 'class'=>'title'),
@@ -852,8 +849,8 @@ class ModulesController extends CController
 			'contentWrapper'=>array(),
 			'contentMessage'=>'',
 			'tabs'=>array(
+				A::t('app', 'System Modules') => array('href'=>'modules/system', 'id'=>'tab1', 'content'=>'', 'active'=>($activeTab == 'system' ? true : false)),
 				A::t('app', 'Application Modules') => array('href'=>'modules/application', 'id'=>'tab2', 'content'=>'', 'active'=>($activeTab == 'application' ? true : false)),
-				A::t('app', 'System Modules')     => array('href'=>'modules/system', 'id'=>'tab1', 'content'=>'', 'active'=>($activeTab == 'system' ? true : false)),
 			),
 			'events'=>array(
 				//'click'=>array('field'=>$errorField)

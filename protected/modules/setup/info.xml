@@ -4,16 +4,19 @@
     <description>Setup module allows to install application using web installation wizard</description>
     <version>0.1.0</version>
     <creationDate>01/02/2013</creationDate>
-    <lastChangedDate>10.09.2015</lastChangedDate>
+    <lastChangedDate>02/12/2017</lastChangedDate>
     <author>ApPHP</author>
     <authorEmail>info@apphp.com</authorEmail>
-    <authorUrl>http://www.apphp.com</authorUrl>
+    <authorUrl>https://www.apphp.com</authorUrl>
     <copyright>ApPHP</copyright>
     <license>LGPL</license>
     <manual></manual>
     <icon>assets/modules/setup/images/icon.png</icon>
     <moduleType>system</moduleType>
     <code>setup</code>
+	<requirements>
+		<framework>1.0.0</framework>
+	</requirements>	
     <files>
         <filename>info.xml</filename>
         <config>
@@ -25,6 +28,7 @@
             <uninstall>uninstall.mysql.sql</uninstall>
         </data>
         <images installationPath="assets/modules/setup/images/" byDirectory="true">
+			<filename>.htaccess</filename>            
             <filename>icon.png</filename>
         </images>
         <templates movingPath="templates/setup/">

@@ -31,7 +31,7 @@
                     'name'    		  => array('title'=>A::t('app', 'Name'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left', 'width'=>'120px',),
                 	'description'     => array('title'=>A::t('app', 'Description'), 'type'=>'label', 'class'=>'left', 'headerClass'=>'left'),
                     'privileges_link' => array('title'=>'', 'type'=>'link', 'class'=>'center', 'headerClass'=>'center', 'width'=>'130px', 'isSortable'=>false, 'linkUrl'=>'rolePrivileges/manage/role/{id}', 'linkText'=>A::t('app', 'Privileges'), 'htmlOptions'=>array('class'=>'subgrid-link'), 'prependCode'=>'[ ', 'appendCode'=>' ]'),
-					'is_system'       => array('title'=>A::t('app', 'System Role'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>array('0'=>'<span class="badge-gray">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green">'.A::t('app', 'Yes').'</span>'), 'width'=>'120px'),
+					'is_system'       => array('title'=>A::t('app', 'System Role'), 'type'=>'enum', 'class'=>'center', 'headerClass'=>'center', 'source'=>array('0'=>'<span class="badge-gray badge-square">'.A::t('app', 'No').'</span>', '1'=>'<span class="badge-green badge-square">'.A::t('app', 'Yes').'</span>'), 'width'=>'120px'),
                 ),
                 'actions'		=> array(
                     'edit'   		 => array('link'=>'roles/edit/id/{id}', 'imagePath'=>'templates/backend/images/edit.png', 'title'=>A::t('app', 'Edit this record')),

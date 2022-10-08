@@ -1,5 +1,7 @@
 <?php
-    Website::setMetaTags(array('title'=>A::t('app', 'Error 404')));	
+	if(!A::app()->isSetup()){
+		Website::setMetaTags(array('title'=>A::t('app', 'Error 404')));
+	}
 	$this->_pageTitle = A::t('app', 'Error 404');
 ?>
 

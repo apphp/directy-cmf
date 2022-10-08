@@ -8,6 +8,7 @@
  * indexAction
  * manageAction
  * editAction
+ * changeStatusAction
  *
  */
 
@@ -147,5 +148,38 @@ class BackendMenusController extends CController
     	$this->_view->id = (int)$id;
     	$this->_view->render('backendMenus/edit');
 	}
+  
+    /**
+     * Change status menu action handler
+     * @param int $id 		the menu ID
+     * @param int $page 	the page number
+     */
+    public function changeStatusAction($id, $page = 0)
+    {
+		// Block access if admin has no active privilege to edit backend menus
+		Website::prepareBackendAction('edit', 'backend_menu', 'backendMenus/manage');
+		
+		$parentMenuPart = '';
+
+		$menu = BackendMenus::model()->findbyPk($id);
+		if(!empty($menu)){
+			if(BackendMenus::model()->updateByPk($id, array('is_visible'=>($menu->is_visible == 1 ? '0' : '1')))){
+				$alert = A::t('app', 'Status has been successfully changed!');
+				$alertType = 'success';
+			}else{
+				$alert = (APPHP_MODE == 'demo') ? A::t('core', 'This operation is blocked in Demo Mode!') : A::t('app', 'Status changing error');
+				$alertType = (APPHP_MODE == 'demo') ? 'warning' : 'error';
+			}
+			 
+			$this->_cSession->setFlash('alert', $alert);
+			$this->_cSession->setFlash('alertType', $alertType);
+
+			if($parentMenu = BackendMenus::model()->findbyPk($menu->parent_id)){
+				$parentMenuPart = '/pid/'.(int)$menu->id;
+			}
+		}
+		
+		$this->redirect('backendMenus/manage'.$parentMenuPart.(!empty($page) ? '?page='.(int)$page : ''));
+    }
   
 }

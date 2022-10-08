@@ -10,6 +10,7 @@
  * manageAction				
  * addAction
  * editAction
+ * changeStatusAction
  * deleteAction
  * 
  */
@@ -48,7 +49,7 @@ class LanguagesController extends CController
      * Changes language on site
 	 * @param string $lang code of the new site language
      */
-    public function changeAction($lang = '')
+    public function changeAction($lang = null)
     {
         // If redirected from dropdown list
         if(empty($lang)) $lang = A::app()->getRequest()->getQuery('lang');
@@ -167,6 +168,41 @@ class LanguagesController extends CController
 		$this->_view->render('languages/edit');
 	}
 
+    /**
+     * Change status languages action handler
+     * @param int $id the language ID
+     */
+    public function changeStatusAction($id)
+    {
+		// Block access to this controller to non-logged users
+		CAuth::handleLogin(Website::getDefaultPage());
+		
+		// Block access if admin has no active privilege to edit languages
+        Website::prepareBackendAction('edit', 'languages', 'languages/manage');
+		
+		$language = Languages::model()->findByPk($id);
+		if(!$language){
+			$this->redirect('languages/manage');
+		}
+		
+		// Check if the language is default
+		if($language->is_default){
+			$alert = A::t('app', 'Change Status Default Alert');
+			$alertType = 'error';
+		}elseif(Languages::model()->updateByPk($id, array('is_active'=>($language->is_active == 1 ? '0' : '1')))){
+			$alert = A::t('app', 'Status has been successfully changed!');
+			$alertType = 'success';
+		}else{
+			$alert = (APPHP_MODE == 'demo') ? A::t('core', 'This operation is blocked in Demo Mode!') : A::t('app', 'Status changing error');
+			$alertType = (APPHP_MODE == 'demo') ? 'warning' : 'error';
+		}
+		 
+		$this->_cSession->setFlash('alert', $alert);
+		$this->_cSession->setFlash('alertType', $alertType);
+		
+		$this->redirect('languages/manage');
+    }
+	
 	/**
 	 * Delete language action handler
 	 * @param int $id The language id

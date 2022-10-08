@@ -39,7 +39,7 @@
 				'icon' 			=> array(
 					'type'        	=> 'imageupload',
 					'title'		  	=> A::t('app', 'Icon Image Label'),
-					'validation'  	=> array('required'=>false, 'type'=>'image', 'maxSize'=>'100k', 'targetPath'=>'images/flags/', 'mimeType'=>'image/jpeg, image/png, image/gif, image/jpg', 'fileName'=>''),
+					'validation'  	=> array('required'=>false, 'type'=>'image', 'maxSize'=>'100k', 'targetPath'=>'images/flags/', 'mimeType'=>'image/jpeg, image/jpg, image/png, image/gif', 'fileName'=>''),
 					'fileOptions' 	=> array('showAlways'=>false, 'class'=>'file', 'size'=>'25')
 				),					
 				'sort_order' 	=> array('type'=>'textbox', 'title'=>A::t('app', 'Order'), 'default'=>$sortOrder, 'validation'=>array('required'=>true, 'type'=>'numeric'), 'htmlOptions'=>array('maxlength'=>'2', 'class'=>'small')),
