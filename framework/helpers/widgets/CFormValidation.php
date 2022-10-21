@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2019 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE:		
@@ -29,12 +29,13 @@ class CFormValidation extends CWidgs
      * 
      * Usage: (in Controller class)
      * - possible validation types:
-     *  	alpha, numeric, alphanumeric, variable, mixed, seoLink, phone, phoneString, username, timeZone, zipCode,
-     *  	password, email, fileName, identity|identityCode, date, integer|int, positiveInteger|positiveInt, percent, isHtmlSize,
+     *  	alpha, alphabetic, alphadash, alphanumeric, numeric, variable, mixed(alphanumericspaces), seoLink, phone, phoneString, username, timeZone, zipCode,
+     *  	password, email, fileName, identity|identityCode, date, integer|int, positiveInteger|positiveInt, percent, htmlSize,
      *  	float, any, confirm, url, ip, range ('minValue'=>'' and 'maxValue'=>''), length ('minLength'=>'' and 'maxLength'=>''),
-     *  	simplePassword, set, text, hexColor, captcha
-     * - attribute 'validation'=>array(..., 'forbiddenChars'=>array('+', '$')) is used to define forbidden characters
-     * - attribute 'validation'=>array(..., 'trim'=>true) - removes spaces from field value before validation
+     *  	simplePassword, set, text, hexColor, captcha, regex
+     * - attribute 'forbiddenChars' - 'validation'=>array(..., 'forbiddenChars'=>array('+', '$')) is used to define forbidden characters
+	 * - attribute 'allowedChars' - 'validation'=>array(..., 'allowedChars'=>array('+', '$')) is used to define allowed characters (for alpha, alphanumeric or alphadash)
+     * - attribute 'trim' - 'validation'=>array(..., 'trim'=>true) - removes spaces from field value before validation
      * - validated field in $_POST may also be an array
      * 
      *  HTML example:
@@ -69,7 +70,7 @@ class CFormValidation extends CWidgs
      * $result = CWidget::create('CFormValidation', array(
      *     'fields'=>array(
      *         'field_1'=>array('title'=>'Username',        'validation'=>array('required'=>true, 'type'=>'username')),
-     *         'field_2'=>array('title'=>'Password',        'validation'=>array('required'=>true, 'type'=>'password', 'minLength'=>6, 'maxLength'=>20, 'simplePassword'=>false)),
+     *         'field_2'=>array('title'=>'Password',        'validation'=>array('required'=>true, 'type'=>'password', 'minLength'=>6, 'maxLength'=>25, 'simplePassword'=>false)),
      *         'field_3'=>array('title'=>'Repeat Password', 'validation'=>array('required'=>true, 'type'=>'confirm', 'confirmField'=>'field_2')),
      *         'field_4'=>array('title'=>'Email',           'validation'=>array('required'=>true, 'type'=>'email')),
      *         'field_5'=>array('title'=>'Confirm Email',   'validation'=>array('required'=>true, 'type'=>'confirm', 'confirmField'=>'field_4')),
@@ -80,6 +81,7 @@ class CFormValidation extends CWidgs
      *        'field_10'=>array('title'=>'Price',           'validation'=>array('required'=>true, 'type'=>'float', 'minValue'=>'', 'maxValue'=>'', 'format'=>'american|european'),
      *        'field_11'=>array('title'=>'Format',          'validation'=>array('required'=>true, 'type'=>'set', 'source'=>array(1, 2, 3, 4, 5))),
      *        'field_12'=>array('title'=>'Captcha', 		'validation'=>array('required'=>true, 'type'=>'captcha')),
+	 *        'field_13'=>array('title'=>'Regex', 			'validation'=>array('required'=>true, 'type'=>'regex', 'pattern'=>'^[a-zA-Z\-]+$')),
      *     ),
      *     'multiArray'		=> false,
      *     'messagesSource'	=> 'core',
@@ -141,7 +143,9 @@ class CFormValidation extends CWidgs
 		$title          = self::keyAt('title', $fieldInfo, '');
 		$required       = self::keyAt('validation.required', $fieldInfo, false);
 		$type           = self::keyAt('validation.type', $fieldInfo, 'any');
+		$viewType       = self::keyAt('validation.viewType', $fieldInfo, '');
 		$forbiddenChars = self::keyAt('validation.forbiddenChars', $fieldInfo, array());
+		$allowedChars 	= self::keyAt('validation.allowedChars', $fieldInfo, array());
 		$minLength      = self::keyAt('validation.minLength', $fieldInfo, '');
 		$maxLength      = self::keyAt('validation.maxLength', $fieldInfo, '');
 		$minValue       = self::keyAt('validation.minValue', $fieldInfo, '');
@@ -294,42 +298,48 @@ class CFormValidation extends CWidgs
 			if($valid){				
 				switch($type){
 					case 'alpha':
-						$valid = CValidator::isAlpha($fieldValue);
+					case 'alphabetic':
+						$valid = CValidator::isAlpha($fieldValue, $allowedChars);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid alphabetic value! Please re-enter.', array('{title}'=>$title));
-						break;                                                
+						break;
+					case 'alphanumeric':
+						$valid = CValidator::isAlphaNumeric($fieldValue, $allowedChars);
+						$errorMessage = A::t($msgSource, 'The field {title} must be a valid alpha-numeric value! Please re-enter.', array('{title}'=>$title));
+						break;
+					case 'alphadash':
+						$valid = CValidator::isAlphaDash($fieldValue, $allowedChars);
+						$errorMessage = A::t($msgSource, 'The field {title} must be a valid alphabetic value or dash! Please re-enter.', array('{title}'=>$title));
+						break;
 					case 'numeric':
 						$valid = CValidator::isNumeric($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid numeric value! Please re-enter.', array('{title}'=>$title));
-						break;                                                
-					case 'alphanumeric':
-						$valid = CValidator::isAlphaNumeric($fieldValue);
-						$errorMessage = A::t($msgSource, 'The field {title} must be a valid alpha-numeric value! Please re-enter.', array('{title}'=>$title));
-						break;                                                
+						break;
 					case 'variable':
 						$valid = CValidator::isVariable($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid label name (alphanumeric, starts with letter and can contain an underscore)! Please re-enter.', array('{title}'=>$title));
-						break;                                                
+						break;
+					case 'alphanumericspaces':
 					case 'mixed':
 						$valid = CValidator::isMixed($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} should include only alpha, space and numeric characters! Please re-enter.', array('{title}'=>$title));
 						break;                        
-					case 'seoLink':
+					case 'seolink':
 						$valid = CValidator::isSeoLink($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} should include only alpha, hyphen, underscore and numeric characters! Please re-enter.', array('{title}'=>$title));
 						break;                        
-					case 'timeZone':
+					case 'timezone':
 						$valid = CValidator::isTimeZone($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} should include only alpha and slashes characters! Please re-enter.', array('{title}'=>$title));
 						break;                        
 					case 'phone':
 						$valid = CValidator::isPhone($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid phone number! Please re-enter.', array('{title}'=>$title));
-						break;                                                
-					case 'phoneString':
+						break;
+					case 'phonestring':
 						$valid = CValidator::isPhoneString($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid phone number! Please re-enter.', array('{title}'=>$title));
-						break;                                                
-					case 'zipCode':
+						break;
+					case 'zipcode':
 						$valid = CValidator::isZipCode($fieldValue, $countryCode);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid zip/post code! Please re-enter.', array('{title}'=>$title));
 						break;
@@ -348,19 +358,27 @@ class CFormValidation extends CWidgs
 					case 'email':
 						$valid = CValidator::isEmail($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid email address! Please re-enter.', array('{title}'=>$title));
-						break;                                                
+						break;
 					case 'identity':
-					case 'identityCode':
+					case 'identitycode':
 						$valid = CValidator::isIdentityCode($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid identity code! Please re-enter.', array('{title}'=>$title));
-						break;                                                
-					case 'fileName':
+						break;
+					case 'filename':
 						$valid = CValidator::isFileName($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid file name! Please re-enter.', array('{title}'=>$title));
-						break;                                                
+						break;
 					case 'date':
-						$valid = CValidator::isDate($fieldValue);
-						$errorMessage = A::t($msgSource, 'The field {title} must be a valid date value! Please re-enter.', array('{title}'=>$title));
+						if($viewType == 'datetime'){
+							$valid = CValidator::isDateTime($fieldValue);
+							$errorMessage = A::t($msgSource, 'The field {title} must be a valid datetime value! Please re-enter.', array('{title}'=>$title));
+						}elseif($viewType == 'time'){
+							$valid = CValidator::isTime($fieldValue);
+							$errorMessage = A::t($msgSource, 'The field {title} must be a valid time value! Please re-enter.', array('{title}'=>$title));
+						}else{
+							$valid = CValidator::isDate($fieldValue);
+							$errorMessage = A::t($msgSource, 'The field {title} must be a valid date value! Please re-enter.', array('{title}'=>$title));
+						}
 						if($valid && $minValue != ''){
 							$valid = CValidator::validateMinDate($fieldValue, $minValue);
 							$errorMessage = A::t($msgSource, 'The field {title} must be greater than or equal to date {min}! Please re-enter.', array('{title}'=>$title, '{min}'=>$minValue));                                
@@ -369,14 +387,14 @@ class CFormValidation extends CWidgs
 							$valid = CValidator::validateMaxDate($fieldValue, $maxValue);
 							$errorMessage = A::t($msgSource, 'The field {title} must be less than or equal to date {max}! Please re-enter.', array('{title}'=>$title, '{max}'=>$maxValue));
 						}
-						break;                                                
+						break;
 					case 'integer':
 					case 'int':
 						$valid = CValidator::isInteger($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid integer value! Please re-enter.', array('{title}'=>$title));
 						break;
-					case 'positiveInteger':
-					case 'positiveInt':	
+					case 'positiveinteger':
+					case 'positiveint':
 						$valid = CValidator::isPositiveInteger($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid positive integer value! Please re-enter.', array('{title}'=>$title));
 						break;
@@ -384,7 +402,7 @@ class CFormValidation extends CWidgs
 						$valid = CValidator::validateRange($fieldValue, 0, 100);
 						$errorMessage = A::t($msgSource, 'The value of field {title} must be between {min} and {max}! Please re-enter.', array('{title}'=>$title, '{min}'=>'0', '{max}'=>'100'));
 						break;							
-					case 'isHtmlSize':	
+					case 'htmlsize':
 						$valid = CValidator::isHtmlSize($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid HTML element size value (ex.: 100px, pt, em or %)! Please re-enter.', array('{title}'=>$title));
 						break;						
@@ -400,7 +418,7 @@ class CFormValidation extends CWidgs
 							$valid = CValidator::validateMax($fieldValue, $maxValue, $format);
 							$errorMessage = A::t($msgSource, 'The field {title} must be less than or equal to {max}! Please re-enter.', array('{title}'=>$title, '{max}'=>$maxValue));
 						}
-						break;                                                
+						break;
 					case 'set':
 						$sourceArray = self::keyAt('validation.source', $fieldInfo, array());
 						if(is_array($fieldValue)){
@@ -444,13 +462,18 @@ class CFormValidation extends CWidgs
 						$valid = CValidator::isIpAddress($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid IP address! Please re-enter.', array('{title}'=>$title));
 						break;
-					case 'hexColor':
+					case 'hexcolor':
 						$valid = CValidator::isHexColor($fieldValue);
 						$errorMessage = A::t($msgSource, 'The field {title} must be a valid a hexadecimal color value, ex.: {sample}! Please re-enter.', array('{title}'=>$title, '{sample}'=>'#3369FE'));
 						break;
 					case 'captcha':
 						$valid = ($fieldValue == A::app()->getSession()->get($field));
 						$errorMessage = A::t($msgSource, 'Sorry, the code you have entered is invalid! Please try again.');
+						break;
+					case 'regex':
+						$pattern = self::keyAt('validation.pattern', $fieldInfo);
+						$valid = CValidator::validateRegex($fieldValue, $pattern);
+						$errorMessage = A::t($msgSource, 'The field {title} has incorrect value! It must match pattern {pattern}. Please re-enter.', array('{title}'=>$title, '{pattern}'=>$pattern));
 						break;
 					case 'any':
 					default:

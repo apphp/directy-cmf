@@ -2,7 +2,7 @@
 <div class="header-container">
 	<?php
 	    if(CAuth::isLoggedInAsAdmin()){
-	        echo CHtml::link(A::t('app', 'Back to Admin Panel'), 'backend/index', array('class'=>'back-to'));
+	        echo CHtml::link(A::t('app', 'Back to Admin Panel'), Website::getBackendPath().'dashboard', array('class'=>'back-to'));
 	    }
     ?>
 	
@@ -27,13 +27,14 @@
 
 				<!--Header Search-->
 				<div class="search" id="headerSearch">
-					<a href="#" id="headerSearchOpen"><i class="fa fa-search"></i></a>
+					<a href="javascript:void(0)" id="headerSearchOpen"><i class="fa fa-search"></i></a>
 					<div class="search-input">
-						<?
+						<?php
 							echo SearchForm::draw(array(
 								'innerWrapper'	=> true,
 								'inputClass'	=> 'form-control search',
-								//'placeHolder'	=> ''
+								'inputId'	    => 'search-keywords',
+								'categoryId'    => 'search-category-id',
 								'buttonHtml'	=> '<span class="input-group-btn"><button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button></span>',
 							));
 						?>
@@ -44,8 +45,8 @@
 				<!--End Header Search-->
 				
 				<!--Main Menu-->
-				<nav class="nav-main mega-menu">					
-					<?
+				<nav class="nav-main mega-menu">
+					<?php
 						echo FrontendMenu::draw('top', $this->_activeMenu, array(
 							'menuId'			=> 'mainMenu',
 							'menuClass'			=> 'nav nav-pills nav-main',

@@ -2,13 +2,14 @@
 /**
  * Languages model
  *
- * PUBLIC:                 	PROTECTED:                 	PRIVATE:
- * ---------------         	---------------            	---------------
- * __construct            	_beforeDelete
- * model (static)         	_beforeSave
- * drawSelector (static)  	_afterSave
- * getError               	_afterDelete 
- * getDefaultLanguage     
+ * PUBLIC:                 		PROTECTED:                 	PRIVATE:
+ * ---------------         		---------------            	---------------
+ * __construct            		_beforeDelete				_clearCache
+ * model (static)         		_beforeSave
+ * drawSelector (static)  		_afterSave
+ * countLanguages				_afterDelete
+ * getError
+ * getDefaultLanguage
  *
  */
 
@@ -19,13 +20,20 @@ class Languages extends CActiveRecord
     protected $_table = 'languages';
     /** @var bool */
     private $_isError = false;
-    
+	/** @var string */
+	private static $_cacheKeyFindAll = '';
+	/** @var string */
+	private static $_cacheKeyCount = '';
+
     /**
 	 * Class default constructor
      */
     public function __construct()
     {
         parent::__construct();
+
+		self::$_cacheKeyFindAll = md5('Frontend|Languages|findAll');
+		self::$_cacheKeyCount = md5('Frontend|Languages|Count');
     }
 
     /**
@@ -50,14 +58,20 @@ class Languages extends CActiveRecord
         $display = isset($params['display']) ? $params['display'] : 'icons';
 		$class = isset($params['class']) ? $params['class'] : '';
 		$forceDrawing = isset($params['forceDrawing']) ? (bool)$params['forceDrawing'] : false;
-        
-        $arrLanguages = array();
-        $languages = self::model()->findAll(array('condition'=>"is_active = 1 AND used_on IN ('front-end', 'global')", 'orderBy'=>'sort_order ASC'));
-        if(is_array($languages)){
-        	foreach($languages as $lang){
-	            $arrLanguages[$lang['code']] = array('name'=>$lang['name_native'], 'icon'=>$lang['icon']);
-	        }
-        }
+		$condition = "is_active = 1 AND used_on IN ('front-end', 'global')";
+		$orderBy = 'sort_order ASC';
+
+        // Take data from session cache or from database if not exists
+		$arrLanguages = CSessionCache::get(self::$_cacheKeyFindAll);
+		if(empty($arrLanguages)){
+			$languages = self::model()->findAll(array('condition'=>$condition, 'orderBy'=>$orderBy));
+			if(is_array($languages)){
+				foreach($languages as $lang){
+					$arrLanguages[$lang['code']] = array('name'=>$lang['name_native'], 'icon'=>$lang['icon']);
+				}
+			}
+			CSessionCache::set(self::$_cacheKeyFindAll, $arrLanguages);
+		}
 
         $output = CWidget::create('CLanguageSelector', array(
             'languages' 		=> $arrLanguages,
@@ -69,6 +83,22 @@ class Languages extends CActiveRecord
         ));
 		
         return $output;
+	}
+
+	/**
+	 * Count languages
+	 * @return int
+	 */
+	public static function countLanguages()
+	{
+		// Take data from session cache or from database if not exists
+		$countLanguages = CSessionCache::get(self::$_cacheKeyCount);
+		if(empty($countLanguages)){
+			$countLanguages = Languages::model()->count(array('condition'=>"is_active = 1 AND used_on IN ('front-end', 'global')", 'orderBy'=>'sort_order ASC'));
+			CSessionCache::set(self::$_cacheKeyCount, $countLanguages);
+		}
+
+		return $countLanguages;
 	}
 
 	/**
@@ -151,6 +181,9 @@ class Languages extends CActiveRecord
                 }			
             }
         }
+
+		// Clear cache
+		$this->_clearCache();
 	}
 	
 	/**
@@ -177,7 +210,6 @@ class Languages extends CActiveRecord
 	{
 		$this->_isError = false;
 		// Delete site description and translation data for the deleted language from all needed tables
-		
 		// Get list of all tables
 		$allTables = $this->_db->showTables();
 		$pattern = '/'.CConfig::get('db.prefix').'(\w*(_translations|site_info|_description))/'; 
@@ -191,6 +223,19 @@ class Languages extends CActiveRecord
 				}
 			}
 		}
+
+		// Clear cache
+		$this->_clearCache();
+	}
+
+	/**
+	 * This method clears all cache related to languages
+	 * @return void
+	 */
+	private function _clearCache()
+	{
+		CSessionCache::remove(self::$_cacheKeyFindAll);
+		CSessionCache::remove(self::$_cacheKeyCount);
 	}
 	
 	/**

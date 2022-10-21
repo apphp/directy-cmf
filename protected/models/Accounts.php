@@ -39,7 +39,6 @@ class Accounts extends CActiveRecord
 	 * We use this method to avoid calling model($className = __CLASS__) in derived class
 	 * @param string $method
 	 * @param array $args
-	 * @version PHP 5.3.0 or higher
 	 * @return mixed
 	 */
 	public static function __callStatic($method, $args)

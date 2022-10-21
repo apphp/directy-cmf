@@ -169,25 +169,27 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>payment_providers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `name` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `description` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `instructions` text COLLATE utf8_unicode_ci NOT NULL,
+  `description` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'for internal use',
+  `instructions` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'for external use',
   `required_fields` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `merchant_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `merchant_code` varchar(60) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `merchant_key` varchar(60) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `used_on` enum('front-end','back-end','global') CHARACTER SET latin1 NOT NULL DEFAULT 'global',
   `mode` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 - test mode, 1- real mode',
-  `sort_order` smallint(6) unsigned NOT NULL DEFAULT '1',
+  `sort_order` smallint(6) unsigned NOT NULL DEFAULT '0',
   `is_default` tinyint(1) NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=6 ;
 
 INSERT INTO `<DB_PREFIX>payment_providers` (`id`, `code`, `name`, `description`, `instructions`, `required_fields`, `merchant_id`, `merchant_code`, `merchant_key`, `used_on`, `mode`, `sort_order`, `is_default`, `is_active`) VALUES
-(1, 'online_order', 'Online Order', 'Online Order', '''Online Order'' is designed to allow the customer to make an order on the site without any advance payment. It may be used like POA - "Pay on Arrival" order for hotel bookings, car rental etc. The administrator receives a notification about placing the order and can complete the order by himself.', '', '', '', '', 'global', 1, 0, 1, 1),
-(2, 'online_credit_card', 'Online Credit Card', 'Online Credit Card', '''Online Credit Card'' is designed to allow the customer to make an order on the site with payment by credit card. The administrator receives a credit card info and can complete the order by himself (in case he''s allowed to do Offline Credit Card Processing).', '', '', '', '', 'global', 1, 1, 0, 1),
-(3, 'wire_transfer', 'Wire Transfer', 'Wire Payment', '''Wire Transfer'' is designed to allow the customer to perform a purchase on the site without any advance payment. The administrator receives a notification about placing this reservation and can complete it after the customer will pay a required sum to the provided bank account. After the customer send a payment with wire transfer and it successfully received, the status of purchase may be changes to ''paid''.', '', '', '', '', 'global', 1, 2, 0, 1),
-(4, 'paypal', 'PayPal', 'PayPal online payments system', 'To make PayPal processing system works on your site you have to perform the following steps:<br><br>Create an account on PayPal: https://www.paypal.com<br>After account is created, log into and select from the top menu: My Account -> Profile<br>On Profile Summary page select from the Selling Preferences column: Instant Payment Notification (IPN) Preferences.<br>Turn ''On'' IPN by selecting Receive IPN messages (Enabled) and write into Notification URL: {site}/payments/paypal, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/payments/paypal or<br>http://your_domain.com/site_directory/payments/paypal<br>Then go to My Account -> Profile -> Website Payment Preferences, turn Auto Return ''On'' and write into Return URL: {site}/payments/paypal, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/payments/paypal<br>', 'merchant_id', 'sales@test.com', '', '', 'global', 1, 3, 0, 1);
+(1, 'online_order', 'Online Order', '''Online Order'' is designed to allow the customer to make an order on the site without any advance payment. It may be used like POA - "Pay on Arrival" order for hotel bookings, car rental etc. The administrator receives a notification about placing the order and can complete the order by himself.', '', '', '', '', '', 'global', 1, 0, 1, 1),
+(2, 'online_credit_card', 'Online Credit Card', '''Online Credit Card'' is designed to allow the customer to make an order on the site with payment by credit card. The administrator receives a credit card info and can complete the order by himself (in case he''s allowed to do Offline Credit Card Processing).', '', '', '', '', '', 'global', 1, 1, 0, 1),
+(3, 'wire_transfer', 'Wire Transfer', '''Wire Transfer'' is designed to allow the customer to perform a purchase on the site without any advance payment. The administrator receives a notification about placing this reservation and can complete it after the customer will pay a required sum to the provided bank account. After the customer send a payment with wire transfer and it successfully received, the status of purchase may be changes to ''paid''.', 'Bank name: {BANK NAME HERE}<br>Swift code: {CODE HERE}<br>Routing in Transit# or ABA#: {ROUTING HERE}<br>Account number *: {ACCOUNT NUMBER HERE}<br><br>*The account number must be in the IBAN format which may be obtained from the branch handling the customer''''s account or may be seen at the top the customer''''s bank statement', '', '', '', '', 'global', 1, 2, 0, 1),
+(4, 'paypal_standard', 'PayPal Standard', 'To make PayPal Standard payments processing system works on your site you have to perform the following steps:<br><br>Create an account on PayPal: https://www.paypal.com<br>After account is created, log into and select from the top menu: My Account -> Profile<br>On Profile Summary page select from the Selling Preferences column: Instant Payment Notification (IPN) Preferences.<br>Turn ''On'' IPN by selecting Receive IPN messages (Enabled) and write into Notification URL: {site}/paymentProviders/handlePayment/paypal/orders, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/handlePayment/paypal/orders or<br>http://your_domain.com/site_directory/paymentProviders/handlePayment/paypal/orders<br>Then go to My Account -> Profile -> Website Payment Preferences, turn Auto Return ''On'' and write into Return URL: {site}/paymentProviders/successPayment, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/successPayment', 'PayPal Payments Standard allows you to pay with credit cards, debit cards, PayPal, and PayPal Credit.', 'merchant_id', 'sales@example.com', '', '', 'global', 1, 3, 0, 1),
+(5, 'paypal_recurring', 'PayPal Recurring', 'To make PayPal Recurring payments processing system works on your site you have to perform the following steps:<br><br>Create an account on PayPal: https://www.paypal.com<br>After account is created, log into and select from the top menu: My Account -> Profile<br>On Profile Summary page select from the Selling Preferences column: Instant Payment Notification (IPN) Preferences.<br>Turn ''On'' IPN by selecting Receive IPN messages (Enabled) and write into Notification URL: {site}/paymentProviders/handlePayment/paypal/orders, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/handlePayment/paypal/orders or<br>http://your_domain.com/site_directory/paymentProviders/handlePayment/paypal/orders<br>Then go to My Account -> Profile -> Website Payment Preferences, turn Auto Return ''On'' and write into Return URL: {site}/paymentProviders/successPayment, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/successPayment', 'PayPal Recurring Payments allows you to pay for subscription payments and installment plan payments.', 'merchant_id', 'sales@example.com', '', '', 'global', 1, 3, 0, 1);
+
 
 DROP TABLE IF EXISTS `<DB_PREFIX>social_networks`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>social_networks` (
@@ -202,14 +204,13 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>social_networks` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=9;
 
 INSERT INTO `<DB_PREFIX>social_networks` (`id`, `code`, `icon`, `name`, `link`, `sort_order`, `is_active`) VALUES
-(1, 'facebook', 'facebook.png', 'Facebook', 'http://facebook.com/', 1, 1),
-(2, 'googleplus', 'googleplus.png', 'Google+', 'https://plus.google.com/', 2, 1),
-(3, 'twitter', 'twitter.png', 'Twitter', 'http://twitter.com/', 3, 1),
-(4, 'youtube', 'youtube.png', 'YouTube', 'http://youtube.com/', 4, 1),
-(5, 'skype', 'skype.png', 'Skype', 'http://web.skype.com/', 5, 0),
-(6, 'pinterest', 'pinterest.png', 'Pinterest', 'http://pinterest.com/', 6, 0),
-(7, 'linkedin', 'linkedin.png', 'LinkedIn', 'http://linkedin.com/', 7, 0),
-(8, 'instagram', 'instagram.png', 'Instagram', 'http://instagram.com/', 8, 0);
+(1, 'facebook', 'facebook.png', 'Facebook', 'https://facebook.com/', 1, 1),
+(2, 'twitter', 'twitter.png', 'Twitter', 'https://twitter.com/', 2, 1),
+(3, 'youtube', 'youtube.png', 'YouTube', 'https://youtube.com/', 3, 1),
+(4, 'skype', 'skype.png', 'Skype', 'https://web.skype.com/', 4, 0),
+(5, 'pinterest', 'pinterest.png', 'Pinterest', 'https://pinterest.com/', 5, 0),
+(6, 'linkedin', 'linkedin.png', 'LinkedIn', 'https://linkedin.com/', 6, 0),
+(7, 'instagram', 'instagram.png', 'Instagram', 'https://instagram.com/', 7, 0);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>social_networks_login`;
@@ -226,7 +227,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>social_networks_login` (
 
 INSERT INTO `<DB_PREFIX>social_networks_login` (`id`, `name`, `type`, `application_id`, `application_secret`, `sort_order`, `is_active`) VALUES
 (1, 'Facebook', 'facebook', '', '', 1, 0),
-(2, 'Google+', 'google', '', '', 2, 0),
+(2, 'Google', 'google', '', '', 2, 0),
 (3, 'Twitter', 'twitter', '', '', 3, 0);
 
 
@@ -365,3 +366,11 @@ ALTER TABLE  `<DB_PREFIX>accounts` ADD `password_changed_at` datetime NULL DEFAU
 
 -- 2.8
 ALTER TABLE  `<DB_PREFIX>module_settings` ADD  `trigger_condition` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'includes serialized trigger condition and action fields' AFTER  `append_text`;
+
+-- 3.0
+ALTER TABLE  `<DB_PREFIX>search_categories` ADD  `sort_order` tinyint(1) unsigned NOT NULL DEFAULT '0';
+INSERT INTO  `<DB_PREFIX>email_templates` (`id`, `code`, `module_code`, `is_system`) VALUES (NULL, 'bo_admin_password_forgotten_renew', '', 1);
+INSERT INTO	 `<DB_PREFIX>email_template_translations` (`id`, `template_code`, `language_code`, `template_name`, `template_subject`, `template_content`) SELECT NULL, 'bo_admin_password_forgotten_renew', code, 'Restore forgotten password', 'Forgotten Password', 'Hello!\r\n\r\nYou or someone else asked to restore your login info on our site:\r\n<a href={SITE_BO_URL}admin/login>{WEB_SITE}</a>\r\n\r\nYour new login:\r\n---------------\r\nUsername: {USERNAME}\r\nPassword: {PASSWORD}\r\n\r\n-\r\nSincerely,\r\nAdministration' FROM `<DB_PREFIX>languages`;
+ALTER TABLE  `<DB_PREFIX>admins` ADD `password_restore_hash` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '';
+ALTER TABLE  `<DB_PREFIX>settings` ADD `shorttime_format` varchar(3) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'H:i';
+ALTER TABLE  `<DB_PREFIX>mailing_log` ADD `email_attachments` varchar(512) COLLATE utf8_unicode_ci NOT NULL DEFAULT '';

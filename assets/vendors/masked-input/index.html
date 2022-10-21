@@ -1,0 +1,174 @@
+<html>
+<head>
+<title> jQuery Mask Test </title>
+<script src="jquery-1.9.0.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="jquery.mask.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+$(document).ready(function(){
+  $('.date').mask('00/00/0000');
+  $('.time').mask('00:00:00');
+  $('.date_time').mask('00/00/0000 00:00:00');
+  $('.cep').mask('00000-000');
+  $('.phone').mask('0000-0000');
+  $('.phone_with_ddd').mask('(00) 0000-0000');
+  $('.phone_us').mask('(000) 000-0000');
+  $('.mixed').mask('AAA 000-S0S');
+  $('.cpf').mask('000.000.000-00', {reverse: true});
+  $('.cnpj').mask('00.000.000/0000-00', {reverse: true});
+  $('.money').mask('000.000.000.000.000,00', {reverse: true});
+  $('.money2').mask("#.##0,00", {reverse: true});
+  $('.ip_address').mask('0ZZ.0ZZ.0ZZ.0ZZ', {
+    translation: {
+      'Z': {
+        pattern: /[0-9]/, optional: true
+      }
+    }
+  });
+  $('.ip_address').mask('099.099.099.099', {placeholder: "___.___.___.___"});
+  $('.percent').mask('##0,00%', {reverse: true});
+  $('.clear-if-not-match').mask("00/00/0000", {clearIfNotMatch: true});
+  $('.placeholder').mask("00/00/0000", {placeholder: "__/__/____"});
+  $('.fallback').mask("00r00r0000", {
+      translation: {
+        'r': {
+          pattern: /[\/]/,
+          fallback: '/'
+        },
+        placeholder: "__/__/____"
+      }
+    });
+  $('.selectonfocus').mask("00/00/0000", {selectOnFocus: true});
+});
+
+    $(function() {
+//        $.mask.definitions['~'] = "[+-]";
+//		$("#ip").mask("999.999.999");
+//        $("#date").mask("99/99/9999",{placeholder:"mm/dd/yyyy",completed:function(){alert("completed!");}});
+//        $(".phone").mask("(999) 999-9999");
+//        $("#phoneExt").mask("(999) 999-9999? x99999");
+//        $("#iphone").mask("+33 999 999 999");
+//        $("#tin").mask("99-9999999");
+//        $("#ssn").mask("999-99-9999");
+//        $("#product").mask("a*-999-a999", { placeholder: " " });
+//        $("#eyescript").mask("~9.99 ~9.99 999");
+//        $("#po").mask("PO: aaa-999-***");
+//        $("#pct").mask("99%");
+//        $("#phoneAutoclearFalse").mask("(999) 999-9999", { autoclear: false, completed:function(){alert("completed autoclear!");} });
+//        $("#phoneExtAutoclearFalse").mask("(999) 999-9999? x99999", { autoclear: false });
+//
+//        $("input").blur(function() {
+//            $("#info").html("Unmasked value: " + $(this).mask());
+//        }).dblclick(function() {
+//            $(this).unmask();
+//        });
+    });
+
+</script>
+</head>
+<body>
+
+
+<div class="inputs">
+          <div class="input-group">
+            <label for="date">Date</label>
+            <input type="text" class="date" id="date" maxlength="10">
+          </div>
+
+          <div class="input-group">
+            <label for="time">Hour</label>
+            <input type="text" class="time" id="time" maxlength="8">
+          </div>
+
+          <div class="input-group">
+            <label for="date_time">Date &amp; Hour</label>
+            <input type="text" class="date_time" id="date_time" maxlength="19">
+          </div>
+
+          <div class="input-group">
+            <label for="cep">ZIP Code</label>
+            <input type="text" class="cep" id="cep" maxlength="9">
+          </div>
+
+          <div class="input-group">
+            <label for="cep_with_callback">With Callbacks (open console)</label>
+            <input type="text" class="cep_with_callback" id="cep_with_callback" maxlength="9">
+          </div>
+
+          <div class="input-group">
+            <label for="crazy_cep">Crazy Zip Code</label>
+            <input type="text" class="crazy_cep" id="crazy_cep" maxlength="9">
+          </div>
+
+          <div class="input-group">
+            <label for="money">Money</label>
+            <input type="text" class="money" id="money">
+          </div>
+
+          <div class="input-group">
+            <label for="placeholder">Mask placeholder option</label>
+            <input type="text" class="placeholder" id="placeholder" placeholder="__/__/____" maxlength="10">
+          </div>
+
+          <div class="input-group">
+            <label for="placeholder">Masks on div elements!</label>
+            <input type="text" class="placeholder" id="placeholder" placeholder="__/__/____" maxlength="10">
+          </div>
+
+          <div class="input-group">
+            <label for="phone">Telephone</label>
+            <input type="text" class="phone" id="phone" maxlength="9">
+          </div>
+
+          <div class="input-group">
+            <label for="phone_with_ddd">Telephone with Code Area</label>
+            <input type="text" class="phone_with_ddd" id="phone_with_ddd" maxlength="14">
+          </div>
+
+          <div class="input-group">
+            <label for="phone_us">US Telephone</label>
+            <input type="text" class="phone_us" id="phone_us" maxlength="14">
+          </div>
+
+          <div class="input-group">
+            <label for="sp_celphones">São Paulo Celphones</label>
+            <input type="text" class="sp_celphones" id="sp_celphones" maxlength="15">
+          </div>
+
+          <div class="input-group">
+            <label for="mixed">Mixed Type Mask</label>
+            <input type="text" class="mixed" id="mixed" maxlength="11">
+          </div>
+
+          <div class="input-group">
+            <label for="cpf">CPF</label>
+            <input type="text" class="cpf" id="cpf" maxlength="14">
+          </div>
+
+          <div class="input-group">
+            <label for="cnpj">CNPJ</label>
+            <input type="text" class="cnpj" id="cnpj" maxlength="18">
+          </div>
+
+          <div class="input-group">
+            <label for="ip_address">IP Address</label>
+            <input type="text" class="ip_address" id="ip_address" maxlength="15">
+          </div>
+
+          <div class="input-group">
+            <label for="clear-if-not-match">With Clear If Not Match Option</label>
+            <input type="text" class="clear-if-not-match" id="clear-if-not-match" maxlength="10">
+          </div>
+
+          <div class="input-group">
+            <label for="fallback">With a fallback digit</label>
+            <input type="text" class="fallback" id="fallback" maxlength="10">
+          </div>
+
+          <div class="input-group">
+            <label for="selectonfocus">With selectOnFocus</label>
+            <input type="text" class="selectonfocus" id="selectonfocus" maxlength="10">
+          </div>
+        </div>
+</body>
+</html>

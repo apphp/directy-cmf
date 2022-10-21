@@ -7,7 +7,7 @@
  * CLoader::library('ipgw/PaymentProvider.php');
  * $onlineOrder = PaymentProvider::init('online_order');
  * echo $onlineOrder->drawPaymentForm(array(
- *      'merchant_id'   => 'sales@email.me',
+ *      'merchant_id'   => 'sales@example.com',
  *      'item_name'     => 'Item Name',
  *      'item_number'   => 'Item Number',
  *      'amount'        => 9.90,
@@ -21,7 +21,7 @@
  *      'country'       => 'us',
  *      'first_name'    => 'John',
  *      'last_name'     => 'Smith',
- *      'email'         => 'j.smith@email.me',
+ *      'email'         => 'j.smith@example.com',
  *      'phone'         => '12345678',
  *
  *      'mode'          => 1,       // 1- Real mode, 0 - Test mode
@@ -107,7 +107,7 @@ class OnlineCreditCard extends PaymentGateway
 				'separatorCreditCard' =>array(
 					'separatorInfo' => array('legend'=>A::t('app', 'Credit Card')),
 					'cc_type'=>array('type'=>'select',  'title'=>A::t('app', 'Credit Card Type'), 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>$cRequest->getPost('cc_type'), 'data'=>$arrCCType, 'emptyOption'=>false, 'emptyValue'=>'', 'viewType'=>'dropdownlist', 'multiple'=>false, 'htmlOptions'=>array()),
-					'cc_holder_name'=>array('type'=>'textbox',  'title'=>A::t('app', 'Card Holder\'s Name'), 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>$cRequest->getPost('cc_holder_name'), 'htmlOptions'=>array('maxLength'=>'50')),
+					'cc_holder_name'=>array('type'=>'textbox',  'title'=>A::t('app', 'Card Holder Name'), 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>$cRequest->getPost('cc_holder_name'), 'htmlOptions'=>array('maxLength'=>'50')),
 					'cc_number'=>array('type'=>'textbox', 'title'=>A::t('app', 'Credit Card Number'), 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>$cRequest->getPost('cc_number'), 'htmlOptions'=>array('maxLength'=>'50')),
 					'cc_expires_month'=>array('type'=>'select',  'title'=>A::t('app', 'Expires Month'), 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>$cRequest->getPost('cc_expires_month'), 'data'=>$arrCCExpiresMonth, 'emptyOption'=>false, 'emptyValue'=>'', 'viewType'=>'dropdownlist', 'multiple'=>false, 'htmlOptions'=>array()),
 					'cc_expires_year'=>array('type'=>'select',  'title'=>A::t('app', 'Expires Year'), 'tooltip'=>'', 'mandatoryStar'=>true, 'value'=>$cRequest->getPost('cc_expires_year'), 'data'=>$arrCCExpiresYear, 'emptyOption'=>false, 'emptyValue'=>'', 'viewType'=>'dropdownlist', 'multiple'=>false, 'htmlOptions'=>array()),
@@ -115,7 +115,7 @@ class OnlineCreditCard extends PaymentGateway
 				),
 			),
 			'buttons'=>array(
-			   'submit'=>array('type'=>'submit', 'value'=>A::t('app', 'Place Order'), 'htmlOptions'=>array('name'=>'')),
+			   'submit'=>array('type'=>'submit', 'value'=>A::t('app', 'Place Order'), 'htmlOptions'=>array('name'=>'', 'class'=>'btn v-btn v-btn-default v-small-button')),
 			   'custom'=>array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white', 'onclick'=>'location.href=\''.CHtml::encode($backUrl).'\'')),
 			),
 			'buttonsPosition'=>'bottom',

@@ -38,12 +38,6 @@
     <li><?= A::t('setup', 'Safe Mode'); ?>: <i><?= $safeMode; ?></i> <span class="checked">&#10004; <?= A::t('setup', 'checked!'); ?></span></li>
     <li><?= A::t('setup', 'Short Open Tag'); ?>: <i><?= $shortOpenTag; ?></i> <span class="checked">&#10004; <?= A::t('setup', 'checked!'); ?></span></li>
     <li><?= A::t('setup', 'Session Support'); ?>: <i><?= $sessionSupport; ?></i> <span class="checked">&#10004; <?= A::t('setup', 'checked!'); ?></span></li>
-    
-	<?php if(version_compare(phpversion(), '5.3.0', '<')): ?>
-		<li><?= A::t('setup', 'Magic Quotes GPC'); ?>: <i><?= $magicQuotesGpc; ?></i> <span class="checked">&#10004; <?= A::t('setup', 'checked!'); ?></span></li>
-		<li><?= A::t('setup', 'Magic Quotes Runtime'); ?>: <i><?= $magicQuotesRuntime; ?></i> <span class="checked">&#10004; <?= A::t('setup', 'checked!'); ?></span></li>
-		<li><?= A::t('setup', 'Magic Quotes Sybase'); ?>: <i><?= $magicQuotesSybase; ?></i> <span class="checked">&#10004; <?= A::t('setup', 'checked!'); ?></span></li>
-    <?php endif; ?>
 </ul>
 </fieldset>
 

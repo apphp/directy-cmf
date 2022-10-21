@@ -4,6 +4,4 @@
     $this->_activeMenu = $this->_controller.'/'.$this->_action;
 ?>
 
-<p>
-    <?= $errorMessage; ?>  
-</p>
+<p><?= $errorMessage; ?></p>

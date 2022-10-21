@@ -12,6 +12,14 @@
  *
  */
 
+namespace Modules\Setup\Models;
+
+// Framework
+use \A,
+	\CModel,
+	\CDatabase;
+
+
 class Setup extends CModel
 {
 

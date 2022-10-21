@@ -27,7 +27,7 @@
 		</p>
 		<p>
 			To change the content of this page, open a file: <code>protected/views/index/index.php</code>
-			and replace this text with yuor own text or HTML code.
+			and replace this text with your own text or HTML code.
 		</p>
 		
 		<br><br>

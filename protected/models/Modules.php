@@ -7,7 +7,6 @@
  * __construct             	_relations					_loadData
  * model (static)          	_afterSave
  * reLoadData
- * reOrder
  * param (static)
  * isInstalled (static)
  * getModules
@@ -66,21 +65,6 @@ class Modules extends CActiveRecord
         }
 	}
     
-	/**
-	 * Re-orders modules in table after one of modules was uninstalled
-	 * @param string $moduleType
-	 * @return bool
-	 */
-	public function reOrder($moduleType = 'application')
-	{
-		$records = $this->findAll('is_system = '.($moduleType == 'system' ? 1 :0));
-		
-		$count = 0;
-		foreach($records as $record){
-			$this->updateByPk($record['id'], array('sort_order'=>++$count));
-		}
-	}
-	
 	/**
 	 * Re-loads data of all modules one time
 	 */

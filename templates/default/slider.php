@@ -3,7 +3,7 @@
 	
 	<?php
 		if(Modules::model()->isInstalled('banners') && Website::isDefaultPage()):
-			echo BannersComponent::drawSlider(array(
+			echo Modules\Banners\Components\BannersComponent::drawSlider(array(
 				'type' 			=> 'revolution',
 				'width' 		=> '1170',
 				'height' 		=> '500',

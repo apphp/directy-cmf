@@ -4,7 +4,7 @@ Usage:
 -----
 
 <!-- jQuery files -->
-<?php //echo CHtml::scriptFile('http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'); ?>
+<?php //echo CHtml::scriptFile('http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'); ?>
 <?php //echo CHtml::scriptFile('http://code.jquery.com/ui/1.10.2/jquery-ui.js'); ?>
 <?= CHtml::scriptFile('assets/vendors/jquery/jquery.js'); ?>
 

@@ -1,12 +1,43 @@
+Version 3.0.2 - 01 Feb, 2019
+----------------------------
+- New: added possibility clear session and cookies from Debug panel
+- New: added new vendor Bar Rating (jQuery Plugin for stars rating)
+- New: added possibility to define access permissions to controller actions via _accessRules() method
+- New: added possibility to define triggers in CGridView helper
+- New: added new assets DatetimePicker
+- New: added short time format for General > Site Settings > Local Settings
+- New: added possibility for new type of cache - data cache, changes in config file
+- New: added possibility to minify CSS and JS files via config file
+- New: added possibility to define 'defaultBackendDirectory' in config file
+- New: added jQuery Form Validator vendor for Backend and Frontend widgets
+- New: added new type of password restore 'reset' for administrator's
+- Enh: search settings separated in a special tab in General > Site Settings > Search Settings
+- Enh: updated jQuery to v1.11.0
+- Enh: changed General Settings in backend - added new tab Cache
+- Enh: changed in Website component
+- Enh: minimum requirements for PHP is defined as 5.4.0
+- Enh: changing currencies rate on changing default currency
+- Enh: on BO MailLog now shows also attachments that were sent
+- Enh: CodeMirror (JavaScript component) removed from this version
+- Bug: removed module placeholders in search results
+- Bug: fixed in search procedure if module was incorrectly uninstalled
+- Bug: fixed wrong calculation of time zones and offsets
+- Bug: fixed in social login routines
+- Bug: fixed deleting icon on modules uninstalling
+
+
 Version 2.9.2 - 17 Mar, 2018 
 ----------------------------
 - New: added possibility to site owner to see / clear errorlog file content via dashboard
 - New: added possibility to update currency rates from Google services
 - New: added new type of CSRF tokens "multipages", that allows to generate tokens for separate pages
-- Enh: mininum requirements for PHP is defined as 5.3.0 
-- Enh: button Delete Test Data disappers after 30 days from installation elapsed
+- New: added new vendor - jQuery Input Mask
+- New: added possibility to send test email for email templates
+- Enh: minimum requirements for PHP is defined as 5.3.0 
+- Enh: button Delete Test Data disappears after 30 days elapsed from installation date
 - Enh: improved modules installation procedure
 - Enh: payment providers and Currencies Management moved to separate menu Payment Settings
+- Enh: in Setup module - added possibility to toggle password fields to visible
 - Bug: fixed Chrome ERR_BLOCKED_BY_XSS_AUDITOR error
 - Bug: fixed replacing email placeholders in Website::sendEmail()
 

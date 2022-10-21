@@ -1,11 +1,15 @@
 # Rewrite URL rules
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    
+
+	# Force SSL MODE
+	#RewriteCond %{HTTPS} !=on
+	#RewriteRule ^(.*)$ https://www.your-domain.com/$1 [R=301,L]
+
 	# Exclude images from rewriting rules
-	RewriteCond %{REQUEST_URI} !(\.gif|\.jpg|\.jpeg|\.png|\.bmp)$ [NC]
+	RewriteCond %{REQUEST_URI} !(\.gif|\.jpg|\.jpeg|\.png|\.bmp|\.svg|\.svgz|\.ico)$ [NC]
 	# Exclude fonts from rewriting rules
-	RewriteCond %{REQUEST_URI} !(\.eot|\.woff|\.woff2|\.svg)$ [NC]
+	RewriteCond %{REQUEST_URI} !(\.eot|\.woff|\.woff2|\.ttf|\.ttc|\.otf)$ [NC]
 	# Exclude css files from rewriting rules
 	RewriteCond %{REQUEST_URI} !(\.css)$ [NC] 
 	# Exclude Javascript files from rewriting rules
@@ -30,3 +34,8 @@
 </Limit>
 
 Options All -Indexes
+
+# Defines maximum post fiels we can submit in HTML form
+# We need this for vocabulary editing in Backend: backend/vocabulary/manage
+php_value max_input_vars 3000
+

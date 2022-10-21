@@ -14,13 +14,13 @@
 		'country'		=> 'us',
 		'first_name'	=> 'John',
 		'last_name'		=> 'Smith',
-		'email'			=> 'j.smith@email.me',
+		'email'			=> 'j.smith@example.com',
 		'phone'			=> '12345678',
 	);
 	
 ?>
 
-<div class="bloc container">
+<div class="bloc">
 	<br>
 		
 	<h1><?= A::t('app', 'Test Checkout'); ?></h1>
@@ -50,8 +50,7 @@
 				</select>
 			</fieldset>
 			<br>
-			
-			<input type="submit" value="<?= A::t('app', 'Go To Payment'); ?>" />
+			<input type="submit" class="btn v-btn v-btn-default v-small-button" value="<?= A::t('app', 'Go To Payment'); ?>" />
 		</form>
 		
 		<br><br>

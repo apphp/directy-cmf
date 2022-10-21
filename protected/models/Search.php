@@ -13,13 +13,10 @@
  * 
  */
 
-class Search extends CModel
+class Search extends CActiveRecord
 {
-	/** @var object */    
-    private static $_instance;
-
     /** @var string */    
-    protected $_tableCategories = 'search_categories';
+    protected $_table = 'search_categories';
     /** @var string */
     protected $_tableWords = 'search_words';
     /** @var bool */
@@ -33,16 +30,12 @@ class Search extends CModel
         parent::__construct();
     }
 
-	/**
-	 * Returns the static model of the current class
-	 */
-	public static function model()
-	{
-		if(self::$_instance == null){
-			self::$_instance = new self();
-		}
-		
-		return self::$_instance;    		
+    /**
+     * Returns the static model of the specified AR class
+     */
+    public static function model()
+    {
+        return parent::model(__CLASS__);
     }
 	
 	/**
@@ -67,7 +60,7 @@ class Search extends CModel
 	 */
 	public function getAllCategories()
 	{
-		return $this->_db->select('SELECT * FROM '.CConfig::get('db.prefix').$this->_tableCategories.' WHERE is_active = 1');
+		return $this->_db->select('SELECT * FROM '.CConfig::get('db.prefix').$this->_table.' WHERE is_active = 1 ORDER BY sort_order ASC');
 	}
 	
 	/** 
@@ -78,7 +71,10 @@ class Search extends CModel
 	public function getCategory($category)
 	{
 		$result = $this->_db->select(
-			'SELECT * FROM '.CConfig::get('db.prefix').$this->_tableCategories.' WHERE category_code = :categoryCode LIMIT 0,1',
+			'SELECT *
+			 FROM '.CConfig::get('db.prefix').$this->_table.'
+			 WHERE category_code = :categoryCode AND is_active = 1
+			 LIMIT 0,1',
 			array(':categoryCode' => $category)
 		);
 		
@@ -107,19 +103,29 @@ class Search extends CModel
 		
 		if(is_array($categories) && !empty($keywords)){
 			foreach($categories as $key => $val){
-				// For PHP_VERSION | phpversion() >= 5.3.0 you may use
-				// $callbackClass = $val['callback_class']::model()->search();
-				if($callbackClass = @call_user_func_array($val['callback_class'].'::model', array())){
-					if($categoryResult = @call_user_func_array(array($callbackClass, $val['callback_method']), array($keywords, ($singleCategory ? 1000 : $val['items_count'])))){
-						$result[$val['category_code']] = array(
-							'category_name' => A::t($val['module_code'], $val['category_name']),
-							'result' 		=> isset($categoryResult[0]) ? $categoryResult[0] : array(),
-							'total' 		=> isset($categoryResult[1]) ? $categoryResult[1] : 0
-						);
-					}else{
-						CDebug::addMessage('errors', 'missing-callback-method', A::t('core', 'Component or method does not exist: {component}', array('{component}'=>$val['callback_class'].'::'.$val['callback_method'].'()')), 'session');
-					}					
+				// For classes with namespaces callback_class must be:
+				// $val['callback_class'] = 'Namespace\Namespace\Namespace\Class';
+				if(empty($val['module_code']) || (!empty($val['module_code']) && Modules::model()->isInstalled($val['module_code']))){
+					$categoryResult = $val['callback_class']::model()->search($keywords, ($singleCategory ? 1000 : $val['items_count']));
 				}
+
+				if(!empty($categoryResult)){
+					// Clean result from {module:...} placeholders
+					if(is_array($categoryResult[0])){
+						foreach($categoryResult[0] as $crKey => $crResult){
+							$categoryResult[0][$crKey]['content'] = preg_replace('/{module:(.*?)}/i', '', $categoryResult[0][$crKey]['content']);
+							$categoryResult[0][$crKey]['content'] = str_ireplace(array('&nbsp;'), '', $categoryResult[0][$crKey]['content']);
+						}
+					}
+
+					$result[$val['category_code']] = array(
+						'category_name' => A::t($val['module_code'], $val['category_name']),
+						'result' 		=> isset($categoryResult[0]) ? $categoryResult[0] : array(),
+						'total' 		=> isset($categoryResult[1]) ? $categoryResult[1] : 0
+					);					
+				}else{
+					CDebug::addMessage('errors', 'missing-callback-method', A::t('core', 'Component or method does not exist: {component}', array('{component}'=>$val['callback_class'].'::'.$val['callback_method'].'()')), 'session');
+				}					
 			}
 		}
 		

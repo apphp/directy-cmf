@@ -233,24 +233,12 @@ h2.v-bg-box-shadow-text-40 {
 }
 
 /*--- HEADER ---*/
-.language-selector {
-	z-index:1003;
-}
-.language-selector li{
-	background-color:#fff !important;
-}
-.language-selector li:active{
-	color:#000;
-}
-.language-selector li.current{
-	background-color:#f7f7f7 !important;
-}
-.currency-selector {
-	z-index:1003;
-}
-.currency-selector li.current{
-	background-color:#f7f7f7 !important;
-}
+.language-selector      {z-index:1003;}
+.language-selector li   {background-color:#fff !important;}
+.language-selector li:active{color:#000;}
+.language-selector li.current{background-color:#f7f7f7 !important;}
+.currency-selector      {z-index:1003;}
+.currency-selector li.current{background-color:#f7f7f7 !important;}
 
 .header-container a.back-to             { position:fixed; top:0; left:0; font-size:11px; background-color:#eee; padding:5px 10px; z-index:1007; color:#000; text-decoration:none; border-radius: 0 0 5px 0; }
 .header-container a.back-to:hover       { color:#555; }
@@ -313,7 +301,7 @@ ul.troubleshooting-list {
 div.pagination-wrapper               { padding:3px 0px; margin:20px 0 5px 0; height:25px; color:#999; text-align:left; }
 div.pagination-wrapper .results-part { display:inline-block; padding:0px 5px; line-height:25px; float:right; color:rgb(100, 97, 97); }
 div.pagination-wrapper .links-part   { display:inline-block; }
-div.pagination-wrapper a    		  { display:inline-block; min-width:25px; line-height:25px; margin:0px 1px 0px 0px; border:1px solid rgb(218, 217, 217); text-align:center; text-decoration:none; color:rgb(100, 97, 97); }
+div.pagination-wrapper a    		 { display:inline-block; min-width:25px; line-height:25px; margin:0px 1px 0px 0px; border:1px solid rgb(218, 217, 217); text-align:center; text-decoration:none; color:rgb(100, 97, 97); }
 div.pagination-wrapper a:hover,
 div.pagination-wrapper a:active      { display:inline-block; min-width:25px; line-height:25px; margin:0px 1px 0px 0px;  border:1px solid rgb(53, 128, 169); color:rgb(212, 230, 239); font-weight:normal; text-align:center; text-decoration:none; background-color:#337ab7; }
 div.pagination-wrapper span.current  { display:inline-block; min-width:25px; line-height:25px; margin:0px 1px 0px 0px; border:1px solid rgb(53, 128, 169); color:rgb(212, 230, 239); font-weight:bold; text-align:center; text-decoration:none; background-color: #F3F3F3; border-color: #e4e4e4; color: #444444; font-weight: bold; }
@@ -359,3 +347,28 @@ p.block-title {
 .csrf-refresh-page {
 	margin: 0px auto !important;
 }
+
+
+
+/* BLOCK SOCIAL LOGIN
+ ----------------------------------------------------------*/
+.social-signup { margin-top: 45px; margin-bottom:15px; text-align: center; border-top: 1px solid #ccc; }
+.social-signup .or-break {position: relative; width: 30px; height: 30px; font-family: 'Playfair Display', serif; font-style: italic; display: block; border-radius: 100%; line-height: 1.7em; font-weight: 400; font-size: 130%; }
+.social-signup .or-break {color: #777;border: 1px solid #eee;background: #fff;left: 50%;top: -18px;margin-left: -15px;margin-bottom: -15px;}
+.btn-social {display: inline-block;font-size: 14px;font-weight: normal;line-height: 1.42857143;white-space: nowrap;vertical-align: middle;-ms-touch-action: manipulation;touch-action: manipulation;cursor: pointer;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;background-image: none;border: 1px solid transparent;border-radius: 4px !important;padding:8px !important;width:50%;color: #fff !important;text-align: left;margin: 5px 10px !important;}
+.btn-social:hover {opacity: .9;}
+.btn-google {background: #df4a32;border-color: #ef3a22;}
+.btn-facebook {background: #4162a7;border-color: #3d5c9c;}
+.btn-twitter {background: #63b3ef;border-color: #55acee;}
+.btn-linkedin {background: #00ACED;border-color: #009cde;}
+.btn-social i {padding-right: 10px;margin-right: 20px;border-right: 1px solid rgba(0,0,0,.1);}
+@media (max-width: 497px) {
+    a.btn-social { width:50%; }
+    .btn-social i {
+        padding-right: 10px;
+        margin-right: 20px;
+        border-right: 1px solid rgba(0,0,0,.1);
+    }
+}
+
+

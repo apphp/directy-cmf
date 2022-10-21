@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2019 ApPHP Framework
  * @license http://www.apphpframework.com/license/ 
  *
  * USAGE:
@@ -81,12 +81,21 @@ class CMailer
 		}
 		
 		$settings = Bootstrap::init()->getSettings();
-		if($settings->mailing_log && class_exists('MailingLog')){
+		if(!empty($settings) && $settings->mailing_log){
 			$mailingLog = new MailingLog();
 			$mailingLog->email_from = isset($params['from']) ? $params['from'] : '';
 			$mailingLog->email_to = $to;
 			$mailingLog->email_subject = $subject;
 			$mailingLog->email_content = $message;
+			// Attachments
+			$email_attachments = '';
+			if(!empty($attachments)){
+				$attachments = (array)$attachments;
+				foreach($attachments as $attachment){
+					$email_attachments .= PHP_EOL.$attachment;
+				}
+			}
+			$mailingLog->email_attachments = $email_attachments;
 			$mailingLog->sent_at = date('Y-m-d H:i:s');
 			$mailingLog->status = (int)$result;
 			$mailingLog->status_description = !$result ? self::getError() : '';

@@ -80,9 +80,9 @@ class FrontendMenu extends CComponent
 					}
 					
 					// Call component methods
-					if(!empty($item['link_url'])){
+					if(!empty($item['link_url']) && !empty($componentClass)){
 						if(APPHP_MODE == 'debug'){
-							$output .= call_user_func_array($componentClass.'::'.$item['link_url'], array($item['menu_name'], $activeMenu));	
+							$output .= call_user_func_array($componentClass.'::'.$item['link_url'], array($item['menu_name'], $activeMenu));
 						}else{
 							$output .= @call_user_func_array($componentClass.'::'.$item['link_url'], array($item['menu_name'], $activeMenu));
 						}

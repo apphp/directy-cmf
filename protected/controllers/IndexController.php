@@ -6,6 +6,7 @@
  * ---------------         	---------------
  * __construct
  * indexAction
+ * clearAction
  *
  */
 
@@ -24,6 +25,7 @@ class IndexController extends CController
 	
 	/**
 	 * Controller default action handler
+	 * @return void
 	 */
 	public function indexAction()
 	{
@@ -40,5 +42,28 @@ class IndexController extends CController
 		}else{
 			$this->redirect($controller.'/'.$action);	
 		}		
-	}	
+	}
+
+	/**
+	 * Controller clear action handler
+	 * @param string $type
+	 * @return void
+	 */
+	public function clearAction($type = '')
+	{
+		if(APPHP_MODE == 'debug'){
+			// Clear session and cookies
+			if($type == 'session_and_cookie'){
+				A::app()->getSession()->removeAll();
+				A::app()->getCookie()->clearAll();
+			}elseif($type == 'cache_and_minified'){
+				CFile::emptyDirectory(CConfig::get('cache.db.path'), array('index.html'));
+					CFile::emptyDirectory(CConfig::get('compression.css.path'), array('index.html'));
+				CFile::emptyDirectory(CConfig::get('compression.js.path'), array('index.html'));
+			}
+
+			$this->redirect(Website::getDefaultPage());
+		}
+	}
+
 }

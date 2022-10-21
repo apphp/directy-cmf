@@ -1,0 +1,17 @@
+jQuery Form Validator
+http://www.formvalidator.net
+
+Usage:
+-----
+
+<!-- jQuery Form Validator files -->
+<?
+	A::app()->getClientScript()->registerScriptFile('assets/vendors/form-validator/jquery.form-validator.min.js', 2);
+	A::app()->getClientScript()->registerScript(
+		'form-validation',
+		//'$.validate({lang: \'es\'})'
+		'jQuery.validate({
+			form : "#'.$htmlOptions['id'].'"
+		});'
+	);
+?>

@@ -3,24 +3,41 @@
 return array(
     // Application data
     'name' => 'ApPHP Directy CMF',
-    'version' => '2.9.2',
+    'version' => '3.0.2',
     
     // Installation settings
     'installationKey' => '<INSTALLATION_KEY>',
 
-    // Password keys settings (for database passwords only - don't change it)
-    // md5, sha1 (not recommended), sha256, whirlpool, etc
+    // Password keys settings (for database passwords only)
+	// Remember: changing these settings after installation may lead to unstable work of application
+    // encryptAlgorithm - md5, sha1 (not recommended), sha256, whirlpool, etc
 	'password' => array(
         'encryption' => true,
         'encryptAlgorithm' => 'sha256',
 		'encryptSalt' => true,
-		'hashKey' => 'apphp_directy_cmf',    
+		'hashKey' => 'apphp_directy_cmf_hash',
+    ),
+    
+	// Password restore settings
+	'restoreAdminPassword' => array(
+		'enable' => true,
+		'restoreType' => 'renew'			/* 'renew' - send new generated password, 'reset' - send a link to the reset page */
+	),
+
+    // Text encryption settings (for database text fields only)
+	// Remember: changing these settings after installation may lead to unstable work of application
+	// Encryption level - PHP or DB
+	// encryptAlgorithm - PHP: aes-256-cbc DB: AES
+	'text' => array(
+        'encryption' => true,
+        'encryptAlgorithm' => 'aes-256-cbc', 
+		'encryptKey' => 'apphp_directy_cmf',
     ),
     
     // Default email settings
 	'email' => array(
         'mailer' => 'smtpMailer', /* phpMail | phpMailer | smtpMailer */
-        'from' => 'info@email.me',
+        'from' => 'info@example.com',
         'fromName' => '', /* John Smith */
         'isHtml' => true,
         'smtp' => array(
@@ -38,7 +55,7 @@ return array(
 	// Token type: 'session', 'cookie' or 'multipages'
     'validation' => array(
 		'csrf' => array('enable' => false, 'exclude' => array('PaymentProviders'), 'tokenType' => 'session'),
-        'bruteforce' => array('enable' => true, 'badLogins' => 5, 'redirectDelay' => 3)
+		'bruteforce' => array('enable' => true, 'badLogins' => 5, 'badRestores' => 5, 'redirectDelay' => 3)
     ),
 
     // Exception handling
@@ -52,6 +69,8 @@ return array(
 	'compression' => array(
 		'gzip' => array('enable' => false),
 		'html' => array('enable' => false),
+		'css' => array('enable' => false, 'path' => 'assets/minified/css/', 'minify' => array('frontend'=>true, 'backend'=>false)),
+		'js' => array('enable' => false, 'path' => 'assets/minified/js/', 'minify' => array('frontend'=>true, 'backend'=>false)),
 	),
 
     // Session settings
@@ -67,13 +86,16 @@ return array(
         'path' => '/' 
     ),
 
-    // Cache settings 
-    'cache' => array(
-        'enable' => false,
-		'type' => 'auto', 			/* 'auto' or 'manual' */
-        'lifetime' => 20,  			/* in minutes */
-        'path' => 'protected/tmp/cache/'
-    ),
+    // Cache settings
+	'cache' => array(
+		'data' => array('enable' => true),
+		'db' => array(
+			'enable' => false,
+			'type' => 'auto', 			/* 'auto' or 'manual' */
+			'lifetime' => 20,  			/* in minutes */
+			'path' => 'protected/tmp/cache/'
+		)
+	),
 
     // Logger settings 
     'log' => array(
@@ -106,13 +128,14 @@ return array(
 	),
 	
     // Application default settings
-	'defaultErrorController' => 'Error',				/* may be overridden by module settings */
-	'defaultController' => 'Index',						/* may be overridden by module settings */
-    'defaultAction' => 'index',							/* may be overridden by module settings */
+	'defaultBackendDirectory' => 'backend',		/* default backend directory - don't change after installation */
+	'defaultErrorController' => 'Error',		/* may be overridden by module settings */
+	'defaultController' => 'Index',				/* may be overridden by module settings */
+    'defaultAction' => 'index',					/* may be overridden by module settings */
 	
 	// Application payment complete page (controller/action - may be overridden by module settings)
 	'paymentCompletePage' => '',
-    
+	
     // Application components
     'components' => array(
         'BackendMenu' => array('enable' => true, 'class' => 'BackendMenu'),
@@ -140,6 +163,7 @@ return array(
     ),
 
     // Url manager
+	// Important: controller name must be written in "camel case" - aaaBbb or AaaBbb
     'urlManager' => array(
         'urlFormat' => 'shortPath',  /* get | path | shortPath */
         'rules' => array(
@@ -151,10 +175,10 @@ return array(
 			//'paymentProviders/handlePayment/provider/([a-zA-Z0-9\_]+)[\/]?$' => 'paymentProviders/handlePayment/provider/{$0}',
 			'paymentProviders/handlePayment/([a-zA-Z0-9\_]+)[\/]?$' => 'paymentProviders/handlePayment/provider/{$0}',
             // Required by dynamic pages, if you want to use user-friendly URLs
-			//'controller/action/value1/value2' => 'controller/action/param1/value1/param2/value2',
-			//'sitepages/show/example-page-1' => 'sitepages/show/name/about-us',
-			//'value1' => 'controller/action/param1/value1',
-			//'about-us' => 'sitepages/show/name/about-us',
+			//'controller/action/value1/value2' => 'controllerName/action/param1/value1/param2/value2',
+			//'page-name' => 'controllerName/action/param1/page-name',
+			//'sitepages/show/example-page-1' => 'sitePages/show/name/example-page-1',
+			//'about-us' => 'sitePages/show/name/about-us',
         ),
     ),
     

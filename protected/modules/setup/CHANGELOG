@@ -1,0 +1,76 @@
+Version 0.1.1 - 
+----------------------------
+- New: added namespaces
+- Enh: increased maxlength of db name and password
+- Enh: added "mod_rewrite" and IP address check on first step
+
+Version 0.1.0 - [28.01.2017]
+----------------------------
+- Enh: added date of script installation as a 1st settings option
+- Enh: check for Short Open Tag set as "required"
+- Enh: fixed script error on 1st page, when no PDO extension detected
+- Enh: added possibility to define socket in setup for db connection
+- Bug: fixed asp_tags for PHP version > 7.0.0
+
+Version 0.0.9 - [10.09.2015]
+----------------------------
+- Enh: hashKey changed with encryptionSalt
+- Enh: added installation date readonly property in settings
+- Bug: mod_rewrite error message status redone from error to warning
+- Bug: improved mod_rewrite detection routine
+- Bug: fixed syntax issues for using different databse drivers
+
+Version 0.0.8 - [24.11.2014]
+----------------------------
+- New: translation in to Spanish and German
+- New: added "Update" option to Setup Wizard
+- New: added warning option on "ready" step
+- Bug: fixed SimpleXMLElement::count() error
+- Bug: fixed css height container error
+
+Version 0.0.7 - [15.03.2014]
+----------------------------
+- New: added check for "mod_rewrite"
+- New: added check for "PDO Extension"
+- Enh: minor changes in design
+- Enh: check procedure for required setings
+- Enh: improved error processing while installation
+
+Version 0.0.6 - [11.02.2014]
+----------------------------
+- Enh: minor changes in view "ready" 
+- Bug: fixed issue with Magic Quotes in SetupController
+- Enh: added copying directories while setup
+- Enh: added possibility to ignore error on instalaltion
+- Enh: "database type" changed with "database driver"
+
+Version 0.0.5 - [06.07.2013]
+----------------------------
+- New: added new placeholder for SQL dump - <CREATED_AT>
+- New: added moving files for modules installation
+- New: added rollback copying to destination folders failed for modules
+- Bug: fixed issue with "safe_mode" parameter in phpinfo()
+- Enh: added possibility to copy vocabulary file for all languages
+
+Version 0.0.4 - [05.06.2013]
+----------------------------
+- New: added info about loaded modules
+- New: added modules installation
+- Enh: minor changes in desing
+- Enh: minor changes in SetupController
+- Bug: fixed strict standards warnings
+
+Version 0.0.3 - [06.05.2013]
+----------------------------
+- New: added possibility to define program name and version
+- Enh: added filtering on databaseAction()
+- Bug: fixed css errors on resizing window
+- Bug: fixed strict standards warnings
+- Bug: fixed PDO Core syntax for PHP > 5.3.0
+
+Version 0.0.2 - [06.04.2013]
+----------------------------
+
+Version 0.0.1 - [01.04.2013]
+----------------------------
+Initial release

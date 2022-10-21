@@ -19,7 +19,8 @@ class PaymentProvider
 		'online_order'			=> array('class'=>'OnlineOrder', 'file'=>'OnlineOrder.php'),
 		'online_credit_card'	=> array('class'=>'OnlineCreditCard', 'file'=>'OnlineCreditCard.php'),
 		'wire_transfer'			=> array('class'=>'WireTransfer', 'file'=>'WireTransfer.php'),
-        'paypal'				=> array('class'=>'PayPal', 'file'=>'PayPal.php'),
+		'paypal_standard'		=> array('class'=>'PayPalStandard', 'file'=>'PayPal.php'),
+		'paypal_recurring'		=> array('class'=>'PayPalRecurring', 'file'=>'PayPal.php'),
 	);
 
 	/**

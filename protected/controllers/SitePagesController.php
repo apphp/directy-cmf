@@ -22,7 +22,13 @@ class SitePagesController extends CController
 		// 	  TO ACTIVATE THIS CONTROLLER
 		// 2. Add new URL rules to config/main.php file:
 		//    Ex.: 'about-us' => 'sitePages/show/name/about-us',
-		Website::getDefaultPage();
+
+		// Set frontend mode
+		Website::setFrontend();
+
+		// REMOVE THIS BLOCKER
+		// if you want to start using of this controller
+		$this->redirect(Website::getDefaultPage());
     }
 
     /**
@@ -30,12 +36,15 @@ class SitePagesController extends CController
      */
     public function indexAction()
     {
+		// REMOVE THIS BLOCKER
+		// if you want to start using of this controller
         $this->redirect(Website::getDefaultPage());
     }
     
     /**
      * Manage action handler
-     * @param string $msg 
+	 * Ex.: sitepages/show/page/page-name-1
+     * @param string $name
      */
     public function showAction($name = '')
     {
@@ -43,6 +52,8 @@ class SitePagesController extends CController
 			$this->_view->render('sitePages/example-page-1');
 		}elseif($name == 'page-name-2'){
 			$this->_view->render('sitePages/example-page-2');
+		}elseif($name == 'about-us'){
+			$this->_view->render('sitePages/about-us');
 		}else{
 			$this->redirect(Website::getDefaultPage());	
 		}	

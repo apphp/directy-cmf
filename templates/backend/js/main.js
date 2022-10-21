@@ -37,7 +37,7 @@ $(document).ready(function(){
         }else{
             $('#sidebar>ul>li.active').removeClass('active').find('ul:first').slideDown(0).slideUp();
             e.addClass('active').find('ul:first').slideUp(0).slideDown();
-            $.cookie('isOpened', e.attr('id'));
+            $.cookie('isOpened', e.prop('id'));
         }        
     });
 
@@ -87,7 +87,7 @@ $(document).ready(function(){
     $('.bloc .title.closable').append('<a href="javascript:void(\'close\')" class="close"></a>');
     $('.bloc .title .close').click(function(){
         var cookieArrName = new cookieList('closedBlocs');
-        var parentID = $(this).parent().parent().attr('id');
+        var parentID = $(this).parent().parent().prop('id');
         if(typeof parentID != 'undefined') cookieArrName.add(parentID, {expires : 0});
         $(this).toggleClass('hide').parent().parent().hide();
         return false;
@@ -96,7 +96,7 @@ $(document).ready(function(){
     $('.bloc .title.collapsible').append('<a href="javascript:void(\'toggle\')" class="toggle"></a>');
     $('.bloc .title .toggle').click(function(){
         var cookieArrName = new cookieList('collapsedBlocs');
-        var parentID = $(this).parent().parent().attr('id');        
+        var parentID = $(this).parent().parent().prop('id');
         if(typeof parentID != 'undefined'){
             if(cookieArrName.exists(parentID)){
                 cookieArrName.remove(parentID);
@@ -115,7 +115,7 @@ $(document).ready(function(){
     $('.alert .close').click(function(){
         $(this).parent().hide();
         var cookieArrName = new cookieList('closedAlerts');
-        var parentID = $(this).parent().attr('id');
+        var parentID = $(this).parent().prop('id');
         if(typeof parentID != 'undefined') cookieArrName.add(parentID, {expires : 0});
         hideAlertsWrapper();
     });    
@@ -132,28 +132,28 @@ $(document).ready(function(){
  	$('.chosen-select-filter').css({'padding': '10px'});
 	$('.chosen-select-filter').chosen({disable_search_threshold: 7});	
 	//$('.chosen-select').chosen({disable_search: true});
-	$('.chosen-search input, .chosen-select-filter input').attr('maxlength', 255);
+	$('.chosen-search input, .chosen-select-filter input').prop('maxlength', 255);
 
     // INIT TABS
     // --------------------------------------
     var anchor = window.location.hash;
     $('.tabs.static').each(function(){        
         var current = null;
-        var id = (typeof $(this).attr('id') != 'undefined') ? $(this).attr('id') : '';
+        var id = (typeof $(this).prop('id') != 'undefined') ? $(this).prop('id') : '';
         
         if(anchor != '' && $(this).find('a[href="'+anchor+'"]').length > 0){
             current = anchor;
         }else if($.cookie('tabs-'+id) && $(this).find('a[href="'+$.cookie('tabs-'+id)+'"]').length > 0){
             current = $.cookie('tabs-'+id);
         }else{
-            current = $(this).find('a:first').attr('href');
+            current = $(this).find('a:first').prop('href');
         }
 
         $(this).find('a[href="'+current+'"]').addClass('active');
         $(current).siblings().hide();
         $(this).find('a').click(function(event){
             event.preventDefault();
-            var link = $(this).attr('href');
+            var link = $(this).prop('href');
             if(link == current){
                 return false;
             }else{
@@ -173,7 +173,7 @@ $(document).ready(function(){
             var newOrder = $(this).sortable('toArray').join();
             $.cookie('sortableOrder', newOrder); /* { expires: 7} */
 			if(toastr != undefined){
-				toastr.success((alertMessage != undefined ? alertMessage : "Dashboard (hotkeys) order has beed changed!"));	
+				toastr.success((alertMessage != undefined ? alertMessage : cmfLang('Dashboard (hotkeys) order has been changed!')));
 			}
         }                                    
     });
@@ -192,24 +192,55 @@ $(document).ready(function(){
 
     // INIT PROMPT ACTION 
     // --------------------------------------
-	$('.prompt-delete').click(function(e){
-		var promptMessage = $(this).data('prompt-message');
-		if(promptMessage == undefined || promptMessage == ''){ 
-			promptMessage = 'Are you sure you want to perform delete operation?';
-		}
-		if(confirm(promptMessage)){
-			return true;
-		}else{
-			e.preventDefault();
-			return false;
-		}
+	$('.prompt-delete,.prompt-action').click(function(e){
+        if($(this).data('submitted') === true){
+            // Previously submitted - don't submit again
+            e.preventDefault();
+        }else{
+            var promptMessage = $(this).data('prompt-message');
+            if(promptMessage == undefined || promptMessage == ''){
+                promptMessage = $(this).hasClass('prompt-delete')
+                    ? cmfLang('Are you sure you want to delete?')
+                    : cmfLang('Are you sure you want to perform this operation?');
+            }
+            if(confirm(promptMessage)){
+                $(this).data('submitted', true);
+                return true;
+            }else{
+                e.preventDefault();
+                return false;
+            }
+        }
 	});
+
+    // PREVENT DOUBLE SUBMISSION OF FORM
+    // --------------------------------------
+    ///$('form.widget-cformview').find('[type="submit"]').preventButtonDoubleSubmission();
+    $('.btn-prevent-double-submit').preventButtonDoubleSubmission();
+    $('.link-prevent-double-click').preventLinkDoubleSubmission();
+
+    // SHOW TOOLTIP ON text-overflow: ellipsis
+    // --------------------------------------
+    $('.grid-view-table tr td').tooltipOnOverflow();
 })
 
 
 // -------------------------------------------------------
 // Global Functions
 // -------------------------------------------------------
+
+/**
+ * Returns vocabulary value
+ * @param cName
+ * @return string
+ */
+function cmfLang(cName) {
+    if(typeof cmfVocabulary._MSG[cName] != 'undefined'){
+        return cmfVocabulary._MSG[cName];
+    }
+
+    return cName;
+}
 
 /**
  * Hides elements from array
@@ -336,15 +367,34 @@ var cookieList = function(cookieName) {
 
 /*
 |--------------------------------------------------------------------------
+| Internet Explorer detector
+|--------------------------------------------------------------------------
+*/
+function isMsIe() {
+	var ua = window.navigator.userAgent;
+	var msie = ua.indexOf('MSIE ');
+	if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)){
+		return true;
+	}
+
+	return false;
+}
+
+
+// -------------------------------------------------------
+// PLUGINS
+// -------------------------------------------------------
+
+/*
+|--------------------------------------------------------------------------
 | Numeric only control handler
 | Usage:
 | // Allow only numeric input	
 | $('input[data-type="numeric"]').forceNumericOnly();
-| $('input[data-type="numeric"]').attr('autocomplete', 'off');
+| $('input[data-type="numeric"]').prop('autocomplete', 'off');
 |--------------------------------------------------------------------------
 */ 
-jQuery.fn.forceNumericOnly =
-function(t){
+jQuery.fn.forceNumericOnly = function(t){
 	var integer = (t !== null && (t == 'int' || t == 'integer')) ? true : false,
 		keys_condition = '';
 	
@@ -354,7 +404,7 @@ function(t){
 				shifted = e.shiftKey;
 			
 			// Exit if dot found in iteger 
-			if ( integer && (key == 110 || key == 190) ) {
+			if(integer && (key == 110 || key == 190)){
 				return false;
 			}
 			
@@ -362,22 +412,66 @@ function(t){
 			// home, end, period, and numpad decimal			
 			keys_condition = ( key == 8 || key == 9 || key == 13 || key == 46 || key == 110 || key == 190 || (key >= 35 && key <= 40) || (key >= 48 && key <= 57) || (key >= 96 && key <= 105) );					
 			
-			return ( (!e.shiftKey || (e.shiftKey && key == 9)) && keys_condition );
+			return ((!e.shiftKey || (e.shiftKey && key == 9)) && keys_condition);
 		});
 	});
 };
 
 /*
 |--------------------------------------------------------------------------
-| Internet Explorer detector
+| Prevent double submission of forms
 |--------------------------------------------------------------------------
-*/ 
-function isMsIe() {
-	var ua = window.navigator.userAgent;
-	var msie = ua.indexOf('MSIE ');
-	if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)){
-		return true;
-	}
-	
-	return false;
-}
+*/
+jQuery.fn.preventButtonDoubleSubmission = function() {
+    $(this).on('click',function(e){
+        var $form = $(this).closest('form');
+        if($form.data('submitted') === true){
+            // Previously submitted - don't submit again
+            e.preventDefault();
+        }else{
+            // Mark it so that the next submit can be ignored
+            $form.data('submitted', true);
+            $(this).data('old-value', $(this).val());
+            $(this).val($(this).val() + '...');
+            $(this).addClass('btn-disabled btn-hover');
+        }
+    });
+
+    // Keep changeability
+    return this;
+};
+
+jQuery.fn.preventLinkDoubleSubmission = function() {
+    $(this).on('click',function(e){
+        if($(this).data('submitted') === true){
+            // Previously submitted - don't submit again
+            e.preventDefault();
+        }else{
+            // Mark it so that the next submit can be ignored
+            $(this).data('submitted', true);
+            $(this).html($(this).html() + '...');
+        }
+    });
+
+    // Keep changeability
+    return this;
+};
+
+/*
+|--------------------------------------------------------------------------
+| Tooltiop on mouse over
+|--------------------------------------------------------------------------
+*/
+$.fn.tooltipOnOverflow = function(options) {
+	$(this).on("mouseenter", function() {
+        if (this.offsetWidth < this.scrollWidth) {
+            if($(this).prop('title') == '' && !$(this).html().match(/tooltip/) ){
+                var html = $("<div/>").html($(this).html()).text();
+                $(this).prop('title', html) ;
+            }
+        }else{
+            $(this).prop('title', '');
+        }
+	});
+};
+

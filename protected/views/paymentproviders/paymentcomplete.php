@@ -6,7 +6,7 @@
 
 <div class="bloc">
 	<br>
-		
-	Complete!!!
+	
+	<?= !empty($actionMessage)? $actionMessage : 'Payment Complete!'; ?>		
     
 </div>

@@ -17,7 +17,7 @@
 
 						<?php
 							if(Modules::model()->isInstalled('news')): 
-								NewsComponent::drawSubscriptionBlock();
+								Modules\News\Components\NewsComponent::drawSubscriptionBlock();
 							endif;
 						?>
 					</section>
@@ -30,7 +30,7 @@
 							<h4><?= A::t('news', 'Latest News'); ?></h4>
 							<div class="horizontal-break"></div>
 						</div>
-						<?= NewsComponent::drawLatestNewsBlock(array('title'=>'', 'showThumb'=>false, 'newsCount'=>3)); ?>
+						<?= Modules\News\Components\NewsComponent::drawLatestNewsBlock(array('title'=>'', 'showThumb'=>false, 'newsCount'=>3)); ?>
 					</section>
 				</div>
 				<?php endif; ?>
@@ -42,7 +42,7 @@
 							<h4><?= A::t('blog', 'Recent Posts'); ?></h4>
 							<div class="horizontal-break"></div>
 						</div>
-						<?= BlogComponent::drawLastPostsBlock(); ?>
+						<?= Modules\Blog\Components\BlogComponent::drawLastPostsBlock(); ?>
 					</section>
 				</div>
 				<?php endif; ?>
@@ -54,7 +54,7 @@
 							<h4>Recent Works</h4>
 							<div class="horizontal-break"></div>
 						</div>
-						<?= GalleryComponent::drawRecentImages(); ?>
+						<?= Modules\Gallery\Components\GalleryComponent::drawRecentImages(); ?>
 					</section>
 				</div>
 				<?php endif; ?>
@@ -68,7 +68,7 @@
 			<p><?= $this->siteFooter; ?></p>			
 			
 			<?php if(APPHP_MODE == 'debug' || APPHP_MODE == 'demo'): ?>
-				&nbsp;&#124;&nbsp; <a href="backend/login"><?= (CAuth::isGuest() ? A::t('app', 'Admin Login') : ''); ?></a>
+				<a href="<?=Website::getBackendPath();?>admin/login"><?= (CAuth::isGuest() ? '&nbsp;&#124;&nbsp;'.A::t('app', 'Admin Login') : ''); ?></a>
 			<?php endif; ?>
 	
 			<?php

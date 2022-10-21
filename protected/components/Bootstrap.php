@@ -31,7 +31,7 @@ class Bootstrap extends CComponent
         
 		// Check if site is offline
 		if($this->_settings->is_offline){
-            if(CAuth::isLoggedInAsAdmin() || stripos(A::app()->getRequest()->getRequestUri(), 'backend/login')){
+            if(CAuth::isLoggedInAsAdmin() || stripos(A::app()->getRequest()->getRequestUri(), 'admin/login')){
                 // Allow viewing
             }else{
                 $siteInfo = SiteInfo::model()->find('language_code = :lang', array(':lang'=>A::app()->getLanguage()));

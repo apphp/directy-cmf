@@ -89,7 +89,8 @@ class BackendMenus extends CActiveRecord
         $lastInsertId = $this->_addMenuItem($code, $name, $code.'.png');
         
         // Add settings item
-        $this->_addMenuItem($code, A::t('app', 'Settings'), '', 'modules/settings/code/'.$code, $lastInsertId);
+		$backendDirectory = CConfig::get('defaultBackendDirectory') ? CConfig::get('defaultBackendDirectory').'/' : '';
+        $this->_addMenuItem($code, A::t('app', 'Settings'), '', $backendDirectory.'modules/settings/code/'.$code, $lastInsertId);
         
         // Add sub items
 		$configModule = CLoader::file('main.php', 'protected/modules/'.$code.'/config/', true);

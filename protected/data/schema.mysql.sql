@@ -2,9 +2,10 @@
 DROP TABLE IF EXISTS `<DB_PREFIX>admins`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>admins` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(25) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `username` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `password` varchar(64) CHARACTER SET latin1 NOT NULL,
   `salt` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `password_restore_hash` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `token_expires_at` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `display_name` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `first_name` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
@@ -23,15 +24,15 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>admins` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
 
-INSERT INTO `<DB_PREFIX>admins` (`id`, `username`, `password`, `salt`, `token_expires_at`, `display_name`, `first_name`, `last_name`, `email`, `birth_date`, `language_code`, `avatar`, `personal_info`, `role`, `created_at`, `updated_at`, `password_changed_at`, `last_visited_at`, `is_active`) VALUES
-(1, '<USERNAME>', '<PASSWORD>', '<SALT>', '', '', '', '', '<EMAIL>', NULL, 'en', '', '', 'owner', '<CREATED_AT>', NULL, NULL, NULL, 1);
+INSERT INTO `<DB_PREFIX>admins` (`id`, `username`, `password`, `salt`, `password_restore_hash`, `token_expires_at`, `display_name`, `first_name`, `last_name`, `email`, `birth_date`, `language_code`, `avatar`, `personal_info`, `role`, `created_at`, `updated_at`, `password_changed_at`, `last_visited_at`, `is_active`) VALUES
+(1, '<USERNAME>', '<PASSWORD>', '<SALT>', '', '', '', '', '', '<EMAIL>', NULL, 'en', '', '', 'owner', '<CREATED_AT>', NULL, NULL, NULL, 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>accounts`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>accounts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `role` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'defined for each module separately',
-  `username` varchar(25) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `username` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `password` varchar(64) CHARACTER SET latin1 NOT NULL,
   `salt` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `token_expires_at` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -80,6 +81,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>settings` (
   `ssl_mode` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0 - no, 1 - entire site, 2 - admin area, 3 - user area, 4 - payment modules',
   `date_format` varchar(10) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Y-m-d',
   `time_format` varchar(5) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'H:i:s',
+  `shorttime_format` varchar(3) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'H:i',
   `datetime_format` varchar(16) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Y-m-d H:i:s',
   `time_zone` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `daylight_saving` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -93,7 +95,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>settings` (
   `smtp_host` varchar(70) COLLATE utf8_unicode_ci NOT NULL,
   `smtp_port` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
   `smtp_username` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
-  `smtp_password` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `smtp_password` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `mailing_log` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `rss_feed` tinyint(1) NOT NULL DEFAULT '1',
   `rss_feed_type` enum('rss1','rss2','atom') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'rss1',
@@ -126,8 +128,8 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>settings` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `<DB_PREFIX>settings` (`id`, `template`, `ssl_mode`, `date_format`, `time_format`, `datetime_format`, `time_zone`, `daylight_saving`, `week_startday`, `number_format`, `general_email`, `general_email_name`, `mailer`, `smtp_auth`, `smtp_secure`, `smtp_host`, `smtp_port`, `smtp_username`, `smtp_password`, `mailing_log`, `rss_feed`, `rss_feed_type`, `rss_items_per_feed`, `search_items_per_page`, `search_is_highlighted`, `is_offline`, `offline_message`, `analytics_level`, `analytics_code`, `dashboard_hotkeys`, `dashboard_notifications`, `dashboard_statistics`, `mapping_api_type`, `mapping_api_key`, `website_domain`, `google_rank`, `alexa_rank`, `indexed_pages_google`, `indexed_pages_bing`, `indexed_pages_yahoo`, `indexed_pages_yandex`, `indexed_pages_baidu`, `indexed_pages_goo`, `site_last_updated`, `cron_type`, `cron_run_last_time`, `cron_run_period`, `cron_run_period_value`) VALUES
-(1, 'default', 0, 'F d Y', 'H:i:s', 'Y-m-d H:i:s', 'UTC', 1, 1, 'american', 'info@email.me', '', 'phpMail', 1, 'ssl', '', '', '', '', 0, 1, 'rss2', 10, 20, 1, 0, 'Our website is currently offline for maintenance. Please visit us later.', 1, '', 1, 1, 1, 'google_maps', '', '', '', '', '', '', '', '', '', '', NULL, 'non-batch', NULL, 'minute', 1);
+INSERT INTO `<DB_PREFIX>settings` (`id`, `template`, `ssl_mode`, `date_format`, `time_format`, `shorttime_format`, `datetime_format`, `time_zone`, `daylight_saving`, `week_startday`, `number_format`, `general_email`, `general_email_name`, `mailer`, `smtp_auth`, `smtp_secure`, `smtp_host`, `smtp_port`, `smtp_username`, `smtp_password`, `mailing_log`, `rss_feed`, `rss_feed_type`, `rss_items_per_feed`, `search_items_per_page`, `search_is_highlighted`, `is_offline`, `offline_message`, `analytics_level`, `analytics_code`, `dashboard_hotkeys`, `dashboard_notifications`, `dashboard_statistics`, `mapping_api_type`, `mapping_api_key`, `website_domain`, `google_rank`, `alexa_rank`, `indexed_pages_google`, `indexed_pages_bing`, `indexed_pages_yahoo`, `indexed_pages_yandex`, `indexed_pages_baidu`, `indexed_pages_goo`, `site_last_updated`, `cron_type`, `cron_run_last_time`, `cron_run_period`, `cron_run_period_value`) VALUES
+(1, 'default', 0, 'F d Y', 'H:i:s', 'H:i', 'Y-m-d H:i:s', 'UTC', 1, 1, 'american', 'info@example.com', '', 'phpMail', 1, 'ssl', '', '', '', '', 0, 1, 'rss2', 10, 20, 1, 0, 'Our website is currently offline for maintenance. Please visit us later.', 1, '', 1, 1, 1, 'google_maps', '', '', '', '', '', '', '', '', '', '', NULL, 'non-batch', NULL, 'minute', 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>site_info`;
@@ -150,7 +152,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>site_info` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
 
 INSERT INTO `<DB_PREFIX>site_info` (`id`, `language_code`, `logo`, `site_phone`, `site_fax`, `site_email`, `site_address`, `header`, `slogan`, `footer`, `meta_title`, `meta_description`, `meta_keywords`) VALUES
-(1, 'en', '', '1(800) 123 456', '', 'info@email.me', '', 'PHP Directy CMF', 'Welcome to PHP Directy CMF!', 'PHP Directy CMF © <a class="footer_link" target="_blank" rel="noopener noreferrer" href="https://www.apphp.com/php-directy-cmf/index.php">ApPHP</a>', 'PHP Directy CMF', 'Directy CMF', 'php cmf, php framework, php content management framework, php cms');
+(1, 'en', '', '1(800) 123 456', '', 'info@example.com', '', 'ApPHP Directy CMF', 'Welcome to ApPHP Directy CMF!', 'ApPHP Directy CMF © <a class="footer_link" target="_blank" rel="noopener noreferrer" href="https://www.apphp.com/php-directy-cmf/index.php">ApPHP</a>', 'PHP Directy CMF', 'Directy CMF', 'php cmf, php framework, php content management framework, php cms');
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>modules`;
@@ -1131,24 +1133,24 @@ INSERT INTO `<DB_PREFIX>backend_menus` (`id`, `parent_id`, `url`, `module_code`,
 (4, 0, '', '', 'payments.png', 1, 1, 4),
 (5, 0, '', '', 'mails.png', 1, 1, 5),
 (6, 0, '', '', 'modules.png', 1, 1, 6),
-(7, 1, 'backend/', '', '', 1, 1, 1),
-(8, 1, 'settings/', '', '', 1, 1, 2),
-(9, 1, 'backendMenus/', '', '', 1, 1, 3),
-(10, 1, 'frontendMenus/', '', '', 1, 1, 4),
-(11, 1, 'socialNetworks/', '', '', 1, 1, 5),
-(12, 1, 'banLists/', '', '', 1, 1, 6),
-(13, 1, 'locations/', '', '', 1, 1, 7),
+(7, 1, '<SITE_BO_URL>dashboard/', '', '', 1, 1, 1),
+(8, 1, '<SITE_BO_URL>settings/', '', '', 1, 1, 2),
+(9, 1, '<SITE_BO_URL>backendMenus/', '', '', 1, 1, 3),
+(10, 1, '<SITE_BO_URL>frontendMenus/', '', '', 1, 1, 4),
+(11, 1, '<SITE_BO_URL>socialNetworks/', '', '', 1, 1, 5),
+(12, 1, '<SITE_BO_URL>banLists/', '', '', 1, 1, 6),
+(13, 1, '<SITE_BO_URL>locations/', '', '', 1, 1, 7),
 (14, 1, 'index/', '', '', 1, 1, 8),
-(15, 2, 'admins/', '', '', 1, 1, 1),
-(16, 2, 'roles/', '', '', 1, 1, 2),
-(17, 2, 'admins/myAccount', '', '', 1, 1, 3),
-(18, 3, 'languages/', '', '', 1, 1, 1),
-(19, 3, 'vocabulary/', '', '', 1, 1, 2),
-(20, 4, 'currencies/', '', '', 1, 1, 1),
-(21, 4, 'paymentProviders/', '', '', 1, 1, 2),
-(22, 5, 'emailTemplates/', '', '', 1, 1, 1),
-(23, 5, 'mailingLog/', '', '', 1, 1, 2),
-(24, 6, 'modules/', '', '', 1, 1, 1);
+(15, 2, '<SITE_BO_URL>admins/', '', '', 1, 1, 1),
+(16, 2, '<SITE_BO_URL>roles/', '', '', 1, 1, 2),
+(17, 2, '<SITE_BO_URL>admins/myAccount', '', '', 1, 1, 3),
+(18, 3, '<SITE_BO_URL>languages/', '', '', 1, 1, 1),
+(19, 3, '<SITE_BO_URL>vocabulary/', '', '', 1, 1, 2),
+(20, 4, '<SITE_BO_URL>currencies/', '', '', 1, 1, 1),
+(21, 4, '<SITE_BO_URL>paymentProviders/', '', '', 1, 1, 2),
+(22, 5, '<SITE_BO_URL>emailTemplates/', '', '', 1, 1, 1),
+(23, 5, '<SITE_BO_URL>mailingLog/', '', '', 1, 1, 2),
+(24, 6, '<SITE_BO_URL>modules/', '', '', 1, 1, 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>backend_menu_translations`;
@@ -1219,8 +1221,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>frontend_menu_translations` (
   KEY `menu_id` (`menu_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2;
 
-INSERT INTO `<DB_PREFIX>frontend_menu_translations` (`id`, `menu_id`, `language_code`, `name`) VALUES
-(1, 1, 'en', 'Home');
+INSERT INTO `<DB_PREFIX>frontend_menu_translations` (`id`, `menu_id`, `language_code`, `name`) VALUES (1, 1, 'en', 'Home');
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>email_templates`;
@@ -1230,10 +1231,11 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>email_templates` (
   `module_code` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `is_system` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT = 4;
 
-INSERT INTO `<DB_PREFIX>email_templates` (`id`, `code`, `module_code`, `is_system`) VALUES
-(NULL, 'bo_admin_account_created_by_owner', '', 1);
+INSERT INTO `<DB_PREFIX>email_templates` (`id`, `code`, `module_code`, `is_system`) VALUES (NULL, 'bo_admin_account_created_by_owner', '', 1);
+INSERT INTO `<DB_PREFIX>email_templates` (`id`, `code`, `module_code`, `is_system`) VALUES (NULL, 'bo_admin_password_forgotten_renew', '', 1);
+INSERT INTO `<DB_PREFIX>email_templates` (`id`, `code`, `module_code`, `is_system`) VALUES (NULL, 'bo_admin_password_forgotten_reset', '', 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>email_template_translations`;
@@ -1245,9 +1247,11 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>email_template_translations` (
   `template_subject` varchar(125) COLLATE utf8_unicode_ci NOT NULL,
   `template_content` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT = 4;
 
-INSERT INTO `<DB_PREFIX>email_template_translations` (`id`, `template_code`, `language_code`, `template_name`, `template_subject`, `template_content`) SELECT NULL, 'bo_admin_account_created_by_owner', code, 'New admin account created (by site owner)', 'Your account has been created by site administrator', 'Dear <b>{FIRST_NAME} {LAST_NAME}!</b>\r\n\r\nThe {WEB_SITE} administrator has created a new account for you.\r\n\r\nPlease keep this email for your records, as it contains an important information that you may need, should you ever encounter problems or forget your password.\r\n\r\nYour login: {USERNAME}\r\nYour password: {PASSWORD}\r\n\r\nYou will need to visit {WEB_SITE} website and reset the temporary password to a permanent password. Please follow the link below to log into your account: <a href={SITE_URL}backend/login>Login</a>.\r\n\r\nEnjoy!\r\n-\r\nSincerely, \r\nAdministration' FROM `<DB_PREFIX>languages`;
+INSERT INTO `<DB_PREFIX>email_template_translations` (`id`, `template_code`, `language_code`, `template_name`, `template_subject`, `template_content`) SELECT NULL, 'bo_admin_account_created_by_owner', code, 'New admin account created (by site owner)', 'Your account has been created by site administrator', 'Dear <b>{FIRST_NAME} {LAST_NAME}!</b>\r\n\r\nThe {WEB_SITE} administrator has created a new account for you.\r\n\r\nPlease keep this email for your records, as it contains an important information that you may need, should you ever encounter problems or forget your password.\r\n\r\nYour login: {USERNAME}\r\nYour password: {PASSWORD}\r\n\r\nYou will need to visit {WEB_SITE} website and reset the temporary password to a permanent password. Please follow the link below to log into your account: <a href={SITE_BO_URL}admin/login>Login</a>.\r\n\r\nEnjoy!\r\n-\r\nSincerely, \r\nAdministration' FROM `<DB_PREFIX>languages`;
+INSERT INTO `<DB_PREFIX>email_template_translations` (`id`, `template_code`, `language_code`, `template_name`, `template_subject`, `template_content`) SELECT NULL, 'bo_admin_password_forgotten_renew', code, 'Restore forgotten password (renew)', 'Forgotten Password', 'Hello!\r\n\r\nYou or someone else asked to restore your login info on our site:\r\n<a href={SITE_BO_URL}admin/login>{WEB_SITE}</a>\r\n\r\nYour new login:\r\n---------------\r\nUsername: {USERNAME}\r\nPassword: {PASSWORD}\r\n\r\n-\r\nSincerely,\r\nAdministration' FROM `<DB_PREFIX>languages`;
+INSERT INTO `<DB_PREFIX>email_template_translations` (`id`, `template_code`, `language_code`, `template_name`, `template_subject`, `template_content`) SELECT NULL, 'bo_admin_password_forgotten_reset', code, 'Restore forgotten password (reset)', 'Forgotten Password', 'Hello!\r\n\r\nYou or someone else asked to restore your login info on our site:\r\n<a href={SITE_BO_URL}admin/login>{WEB_SITE}</a>\r\n\r\nYou need your password back? <a href="{SITE_BO_URL}admin/resetPassword/{HASH_CODE}">Click here to reset your password</a>.\r\n\r\nIf you can''t see the link, browse to \r\n{SITE_BO_URL}admin/resetPassword/{HASH_CODE}\r\n\r\nYou can just ignore this email, and your password will remain unchanged.\r\n\r\n-\r\nSincerely,\r\nAdministration' FROM `<DB_PREFIX>languages`;
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>sessions`;
@@ -1282,6 +1286,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>search_categories` (
   `callback_class` varchar(80) CHARACTER SET latin1 NOT NULL DEFAULT '',
   `callback_method` varchar(125) CHARACTER SET latin1 NOT NULL DEFAULT '',
   `items_count` tinyint(1) NOT NULL DEFAULT '20',
+  `sort_order` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `category_code` (`category_code`)
@@ -1302,7 +1307,7 @@ DROP TABLE IF EXISTS `<DB_PREFIX>ban_lists`;
 CREATE TABLE IF NOT EXISTS `<DB_PREFIX>ban_lists` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `item_type` enum('ip_address','email_address','email_domain','username') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ip_address',
-  `item_value` varchar(100) CHARACTER SET latin1 NOT NULL,
+  `item_value` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `reason` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `activity_counter` int(10) NOT NULL DEFAULT '0',
   `last_activity_at` datetime NULL DEFAULT NULL,
@@ -1335,6 +1340,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>mailing_log` (
   `email_to` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
   `email_subject` varchar(125) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `email_content` text COLLATE utf8_unicode_ci NOT NULL,
+  `email_attachments` varchar(512) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `sent_at` datetime NULL DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0 - error, 1- successfully sent',
   `status_description` varchar(512) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -1355,17 +1361,18 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>payment_providers` (
   `merchant_key` varchar(60) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `used_on` enum('front-end','back-end','global') CHARACTER SET latin1 NOT NULL DEFAULT 'global',
   `mode` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 - test mode, 1- real mode',
-  `sort_order` smallint(6) unsigned NOT NULL DEFAULT '1',
+  `sort_order` smallint(6) unsigned NOT NULL DEFAULT '0',
   `is_default` tinyint(1) NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=6 ;
 
 INSERT INTO `<DB_PREFIX>payment_providers` (`id`, `code`, `name`, `description`, `instructions`, `required_fields`, `merchant_id`, `merchant_code`, `merchant_key`, `used_on`, `mode`, `sort_order`, `is_default`, `is_active`) VALUES
 (1, 'online_order', 'Online Order', '''Online Order'' is designed to allow the customer to make an order on the site without any advance payment. It may be used like POA - "Pay on Arrival" order for hotel bookings, car rental etc. The administrator receives a notification about placing the order and can complete the order by himself.', '', '', '', '', '', 'global', 1, 0, 1, 1),
 (2, 'online_credit_card', 'Online Credit Card', '''Online Credit Card'' is designed to allow the customer to make an order on the site with payment by credit card. The administrator receives a credit card info and can complete the order by himself (in case he''s allowed to do Offline Credit Card Processing).', '', '', '', '', '', 'global', 1, 1, 0, 1),
 (3, 'wire_transfer', 'Wire Transfer', '''Wire Transfer'' is designed to allow the customer to perform a purchase on the site without any advance payment. The administrator receives a notification about placing this reservation and can complete it after the customer will pay a required sum to the provided bank account. After the customer send a payment with wire transfer and it successfully received, the status of purchase may be changes to ''paid''.', 'Bank name: {BANK NAME HERE}<br>Swift code: {CODE HERE}<br>Routing in Transit# or ABA#: {ROUTING HERE}<br>Account number *: {ACCOUNT NUMBER HERE}<br><br>*The account number must be in the IBAN format which may be obtained from the branch handling the customer''''s account or may be seen at the top the customer''''s bank statement', '', '', '', '', 'global', 1, 2, 0, 1),
-(4, 'paypal', 'PayPal', 'To make PayPal processing system works on your site you have to perform the following steps:<br><br>Create an account on PayPal: https://www.paypal.com<br>After account is created, log into and select from the top menu: My Account -> Profile<br>On Profile Summary page select from the Selling Preferences column: Instant Payment Notification (IPN) Preferences.<br>Turn ''On'' IPN by selecting Receive IPN messages (Enabled) and write into Notification URL: {site}/paymentProviders/handlePayment/paypal/orders, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/handlePayment/paypal/orders or<br>http://your_domain.com/site_directory/paymentProviders/handlePayment/paypal/orders<br>Then go to My Account -> Profile -> Website Payment Preferences, turn Auto Return ''On'' and write into Return URL: {site}/paymentProviders/successPayment, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/successPayment', '', 'merchant_id', 'sales@test.com', '', '', 'global', 1, 3, 0, 1);
+(4, 'paypal_standard', 'PayPal Standard', 'To make PayPal Standard payments processing system works on your site you have to perform the following steps:<br><br>Create an account on PayPal: https://www.paypal.com<br>After account is created, log into and select from the top menu: My Account -> Profile<br>On Profile Summary page select from the Selling Preferences column: Instant Payment Notification (IPN) Preferences.<br>Turn ''On'' IPN by selecting Receive IPN messages (Enabled) and write into Notification URL: {site}/paymentProviders/handlePayment/paypal/orders, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/handlePayment/paypal/orders or<br>http://your_domain.com/site_directory/paymentProviders/handlePayment/paypal/orders<br>Then go to My Account -> Profile -> Website Payment Preferences, turn Auto Return ''On'' and write into Return URL: {site}/paymentProviders/successPayment, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/successPayment', 'PayPal Payments Standard allows you to pay with credit cards, debit cards, PayPal, and PayPal Credit.', 'merchant_id', 'sales@example.com', '', '', 'global', 1, 3, 0, 1),
+(5, 'paypal_recurring', 'PayPal Recurring', 'To make PayPal Recurring payments processing system works on your site you have to perform the following steps:<br><br>Create an account on PayPal: https://www.paypal.com<br>After account is created, log into and select from the top menu: My Account -> Profile<br>On Profile Summary page select from the Selling Preferences column: Instant Payment Notification (IPN) Preferences.<br>Turn ''On'' IPN by selecting Receive IPN messages (Enabled) and write into Notification URL: {site}/paymentProviders/handlePayment/paypal/orders, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/handlePayment/paypal/orders or<br>http://your_domain.com/site_directory/paymentProviders/handlePayment/paypal/orders<br>Then go to My Account -> Profile -> Website Payment Preferences, turn Auto Return ''On'' and write into Return URL: {site}/paymentProviders/successPayment, where {site} is a full URL to your site.<br><br>For example: http://your_domain.com/paymentProviders/successPayment', 'PayPal Recurring Payments allows you to pay for subscription payments and installment plan payments.', 'merchant_id', 'sales@example.com', '', '', 'global', 1, 3, 0, 1);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>social_networks`;
@@ -1381,14 +1388,13 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>social_networks` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=9;
 
 INSERT INTO `<DB_PREFIX>social_networks` (`id`, `code`, `icon`, `name`, `link`, `sort_order`, `is_active`) VALUES
-(1, 'facebook', 'facebook.png', 'Facebook', 'http://facebook.com/', 1, 1),
-(2, 'google-plus', 'google-plus.png', 'Google+', 'https://plus.google.com/', 2, 1),
-(3, 'twitter', 'twitter.png', 'Twitter', 'http://twitter.com/', 3, 1),
-(4, 'youtube', 'youtube.png', 'YouTube', 'http://youtube.com/', 4, 1),
-(5, 'skype', 'skype.png', 'Skype', 'http://web.skype.com/', 5, 0),
-(6, 'pinterest', 'pinterest.png', 'Pinterest', 'http://pinterest.com/', 6, 0),
-(7, 'linkedin', 'linkedin.png', 'LinkedIn', 'http://linkedin.com/', 7, 0),
-(8, 'instagram', 'instagram.png', 'Instagram', 'http://instagram.com/', 8, 0);
+(1, 'facebook', 'facebook.png', 'Facebook', 'https://facebook.com/', 1, 1),
+(2, 'twitter', 'twitter.png', 'Twitter', 'https://twitter.com/', 2, 1),
+(3, 'youtube', 'youtube.png', 'YouTube', 'https://youtube.com/', 3, 1),
+(4, 'skype', 'skype.png', 'Skype', 'https://web.skype.com/', 4, 0),
+(5, 'pinterest', 'pinterest.png', 'Pinterest', 'https://pinterest.com/', 5, 0),
+(6, 'linkedin', 'linkedin.png', 'LinkedIn', 'https://linkedin.com/', 6, 0),
+(7, 'instagram', 'instagram.png', 'Instagram', 'https://instagram.com/', 7, 0);
 
 
 DROP TABLE IF EXISTS `<DB_PREFIX>social_networks_login`;
@@ -1404,6 +1410,7 @@ CREATE TABLE IF NOT EXISTS `<DB_PREFIX>social_networks_login` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4;
 
 INSERT INTO `<DB_PREFIX>social_networks_login` (`id`, `name`, `type`, `application_id`, `application_secret`, `sort_order`, `is_active`) VALUES
-(1, 'Facebook', 'facebook', '', '', 1, 0),
-(2, 'Google+', 'google', '', '', 2, 0),
-(3, 'Twitter', 'twitter', '', '', 3, 0);
+(1, 'Google', 'google', '', '', 1, 0),
+(2, 'Facebook', 'facebook', '', '', 2, 0),
+(3, 'Twitter', 'twitter', '', '', 3, 0),
+(4, 'LinkedIn', 'linkedin', '', '', 4, 0);

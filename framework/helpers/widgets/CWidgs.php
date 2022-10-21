@@ -6,7 +6,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2019 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE:		
@@ -139,20 +139,22 @@ class CWidgs
 		$parts = count($paramParts);
 		$result = null;
 		
-		if($parts == 1){
-			if(array_key_exists($paramParts[0], $array)){
-				if($validation == 'is_array'){
-					if(is_array($result = $array[$paramParts[0]])){
+		if(is_array($array)){
+			if($parts == 1){
+				if(array_key_exists($paramParts[0], $array)){
+					if($validation == 'is_array'){
+						if(is_array($result = $array[$paramParts[0]])){
+							$result = $array[$paramParts[0]];
+						}
+					}else{
 						$result = $array[$paramParts[0]];
 					}
-				}else{
-					$result = $array[$paramParts[0]];
-				}				
+				}
+			}elseif($parts == 2){
+				if(array_key_exists($paramParts[0], $array) && array_key_exists($paramParts[1], $array[$paramParts[0]])){
+					$result = $array[$paramParts[0]][$paramParts[1]];
+				}
 			}
-		}elseif($parts == 2){
-			if(array_key_exists($paramParts[0], $array) && array_key_exists($paramParts[1], $array[$paramParts[0]])){
-				$result = $array[$paramParts[0]][$paramParts[1]];
-			}			
 		}
 		
 		return ($result === null && $default !== null) ? $default : $result;

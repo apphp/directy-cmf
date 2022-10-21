@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2019 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE:		
@@ -85,33 +85,60 @@ class CAuth
     public static function isGuest()
     {
         return (!self::isLoggedIn()) ? true : false;
-    }    
-
-    /**
-     * Handles access for non-logged users (block access)
-     * @param string $location
-     * @param string $role
-     */
-    public static function handleLogin($location = 'index/index', $role = '')
-    {
-        if(APPHP_MODE == 'test') return '';
-        $isLoggedIn = ($role === '') ? self::isLoggedInAsAdmin() : self::isLoggedInAs($role);
-        if(!$isLoggedIn){
-            //session_destroy();
-            header('location: '.A::app()->getRequest()->getBaseUrl().$location);
-            exit;
-        }
     }
+
+	/**
+	 * Handles access for non-logged users (block access)
+	 * @param string $location
+	 * @param string $role
+	 * @return string|void
+	 */
+	public static function handleLogin($location = 'index/index', $role = '')
+	{
+		if(APPHP_MODE == 'test') return '';
+
+		$isLoggedIn = false;
+		if(empty($role)){
+			$isLoggedIn = self::isLoggedInAsAdmin();
+		}else{
+			$roles = explode(',', $role);
+			foreach($roles as $role){
+				if(self::isLoggedInAs($role)){
+					$isLoggedIn = true;
+					break;
+				}
+			}
+		}
+
+		if(!$isLoggedIn){
+			header('location: '.A::app()->getRequest()->getBaseUrl().$location);
+			exit;
+		}
+	}
 
     /**
      * Handles access for logged in users (redirect logged in users)
      * @param string $location
      * @param string $role
+	 * @return string|void
      */
     public static function handleLoggedIn($location = '', $role = '')
     {
         if(APPHP_MODE == 'test') return '';
-        $isLoggedIn = ($role === '') ? self::isLoggedInAsAdmin() : self::isLoggedInAs($role);
+
+		$isLoggedIn = false;
+		if(empty($role)){
+			$isLoggedIn = self::isLoggedInAsAdmin();
+		}else{
+			$roles = explode(',', $role);
+			foreach($roles as $role){
+				if(self::isLoggedInAs($role)){
+					$isLoggedIn = true;
+					break;
+				}
+			}
+		}
+
         if($isLoggedIn){
             header('location: '.A::app()->getRequest()->getBaseUrl().$location);
             exit;

@@ -47,7 +47,7 @@
 							}
 							
 							// Show title
-							echo '<a href="'.CHtml::encode($contentVal['link']).'">'.strip_tags($title).'</a><br>';
+							echo '<a href="'.CHtml::encode($contentVal['link']).'">'.strip_tags($title, '<strong>').'</a><br>';
 
 							// Show content limited string by 255 chars
 							$content = CString::substr(strip_tags($contentVal['content']), 255, '', true);

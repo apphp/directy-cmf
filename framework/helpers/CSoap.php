@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2019 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * USAGE:
@@ -35,9 +35,9 @@
  *
  */
 
-if(!class_exists('SoapClient')){
-    // Include the main library.
-    include(dirname(__FILE__).'/../vendors/nusoap/nusoap.php');
+if(!CClass::isExists('SoapClient')){
+    // Include the main library
+    include_once(dirname(__FILE__).'/../vendors/nusoap/nusoap.php');
 }
 
 class CSoap
@@ -138,7 +138,7 @@ class CSoap
     public static function call($host, $params)
     {
         // If enabled the SOAP extension
-        if(class_exists('SoapClient')){
+        if(CClass::isExists('SoapClient')){
            // Create the SoapClient instance
             $settingParams = array();
             if(!empty(self::$_proxyhost)) $settingParams['proxy_host'] = self::$_proxyhost;

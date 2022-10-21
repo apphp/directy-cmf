@@ -1,3 +1,5 @@
+[DEPRECATED from v3.0.0]
+
 jQuery Timepicker (jQuery Plugin)
 
 Demo - http://jonthornton.github.io/jquery-timepicker/
@@ -12,7 +14,7 @@ Usage:
 <?php
 
 A::app()->getClientScript()->registerScript(
-	'timepickerExample',
+	'timePickerExample',
 	'jQuery(document).ready(function(){
 		$(".timepicker").timepicker({ "timeFormat": "H:i:s" });
  	});',

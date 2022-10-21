@@ -1,7 +1,8 @@
 <?php
 	A::app()->view->setMetaTags('title', A::t('setup', 'Database Settings'));
-	
-    $this->_activeMenu = $this->_controller.'/'.$this->_action;
+	A::app()->getClientScript()->registerScriptFile('assets/modules/setup/js/setup.js', 2);
+
+    $this->_activeMenu = $this->_controller.'/'.$this->_action;	
 ?>
 
 <h1><?= A::t('setup', 'Database Settings'); ?></h1>
@@ -30,15 +31,3 @@
     )); 
 ?>
 <br>
-	
-<?php
-	A::app()->getClientScript()->registerScript(
-		'setup-database',
-		'// Reload page
-		jQuery(\'select[name="dbConnectType"]\').on("change", function(){
-			jQuery(this).closest("form").submit();
-		});
-		',
-		2
-	);
-?>

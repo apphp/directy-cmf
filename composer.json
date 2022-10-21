@@ -1,7 +1,7 @@
 {
   "name": "apphp/directy-cmf",
   "type": "project",
-  "version": "2.9.2",
+  "version": "3.0.2",
   "description": "The ApPHP Directy CMF.",
   "keywords": [
     "framework",

@@ -606,7 +606,7 @@
                                 }
 
                                 google.maps.event.addListener(companyMarker, 'click', function () {
-                                    window.location.href = 'http://maps.google.com/maps?q=' + companyPos;
+                                    window.location.href = '//maps.google.com/maps?q=' + companyPos;
                                 });
 
                                 google.maps.event.addDomListener(window, 'resize', function () {
@@ -628,7 +628,7 @@
             fullscreenMap: function () {
                 var fullscreenMap = jQuery('.fullscreen-map'),
                     container = jQuery('#container'),
-                    mapOffset = container.offset().left,
+                    mapOffset = container.offset() != undefined ? container.offset().left : 0,
                     windowWidth = $window.width();
 
                 if (windowWidth > 768) {
@@ -1042,14 +1042,6 @@
 
 
 
-
-
-
-
-
-
-
-
 function print_window() {
     var e = window;
     e.document.close(),
@@ -1164,14 +1156,14 @@ function (e, o, t, a, i, n, r) {
     n.async = 1,
     n.src = a,
     r.parentNode.insertBefore(n, r)
-}
+};
 
 
 // SEARCH
-$(document).ready(function () {
-	$('#headerSearchsMobile').on('click', function(){
-		$('header div.search-input').css({'opacity':'1', 'right':'auto', 'left':'10px', 'top':'40px'}).toggle();
-		$('.v-arrow-wrap').css('right', 'auto');
-		$('header div.search-input #keywords').focus();
+jQuery(document).ready(function () {
+    jQuery('#headerSearchsMobile').on('click',    function(){
+        jQuery('header div.search-input').css({'opacity'   :'1', 'right':'auto', 'left':'10px', 'top':'40px'}).toggle();
+        jQuery('.v-arrow-wrap').css('right', 'auto');
+        jQuery('header div.search-input #keywords').focus();
 	});
 });

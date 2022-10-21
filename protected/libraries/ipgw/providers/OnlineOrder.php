@@ -7,7 +7,7 @@
  * CLoader::library('ipgw/PaymentProvider.php');
  * $onlineOrder = PaymentProvider::init('online_order');
  * echo $onlineOrder->drawPaymentForm(array(
- *		'merchant_id' 	=> 'sales@email.me',
+ *		'merchant_id' 	=> 'sales@example.com',
  *		'item_name' 	=> 'Item Name',
  *		'item_number' 	=> 'Item Number',
  *		'amount'		=> 9.90,
@@ -22,7 +22,7 @@
  *		'country'		=> 'us',
  *		'first_name'	=> 'John',
  *		'last_name'		=> 'Smith',
- *		'email'			=> 'j.smith@email.me',
+ *		'email'			=> 'j.smith@example.com',
  *		'phone'			=> '12345678',
  *
  *		'mode'			=> 1,		// 1- Real mode, 0 - Test mode
@@ -82,7 +82,7 @@ class OnlineOrder extends PaymentGateway
 
 		$output .= CHtml::openForm($formAction, 'post', array('name'=>'payform')).self::NL;
 		
-		$output .= '<input type="submit" value="'.A::te('app', 'Pay Now').'" name="btnSubmit" />'.self::NL;
+		$output .= '<input type="submit" class="btn v-btn v-btn-default v-small-button" value="'.A::te('app', 'Pay Now').'" name="btnSubmit" />'.self::NL;
 
 		if((!empty($backUrl))){
 			$output .= '&nbsp; - '.A::t('app', 'or').' - &nbsp;'.self::NL;

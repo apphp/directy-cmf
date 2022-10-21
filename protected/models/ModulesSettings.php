@@ -7,7 +7,7 @@
  * __construct                                    	  	_loadSettings 
  * model (static)
  * param (static)
- * update
+ * updateSettings
  * getSettings
  * getShortcodes
  *
@@ -39,9 +39,9 @@ class ModulesSettings extends CActiveRecord
     }
     
 	/**
-	 * Updates all settings for given module
+	 * Updates all settings for the given module
 	 */
-	public function update($valuesArray = array())
+	public function updateSettings($valuesArray = array())
 	{
 		$result = true;
 		if(is_array($valuesArray)){
@@ -77,20 +77,29 @@ class ModulesSettings extends CActiveRecord
 	
 	/**
 	 * Get all modules shortcodes
+	 * @param bool $listAll
+	 * @return array
 	 */
-	public function getShortcodes()
+	public function getShortcodes($listAll = true)
 	{
 		$_arrModuleSettings = array();
 		$modulesSettings = $this->_db->select("SELECT ms.*, m.class_code
 			FROM ".CConfig::get('db.prefix').$this->_table." ms
-			INNER JOIN ".CConfig::get('db.prefix')."modules m ON ms.module_code = m.code  
+			LEFT JOIN ".CConfig::get('db.prefix')."modules m ON ms.module_code = m.code  
             WHERE ms.property_key = 'shortcode' AND  m.is_active = 1 AND m.is_installed = 1");
-		
+
 		if(is_array($modulesSettings)){
-			foreach($modulesSettings as $key => $val){			
-				$_arrModuleSettings[$val['module_code']] = array('class_code'=>$val['class_code'], 'value'=>$val['property_value'], 'description'=>$val['description']);
+			foreach($modulesSettings as $key => $val){
+				$shortCode = array('class_code'=>$val['class_code'], 'value'=>$val['property_value'], 'description'=>$val['description']);
+				if($listAll){
+					if(!isset($_arrModuleSettings[$val['module_code']])) $_arrModuleSettings[$val['module_code']] = array();
+					$_arrModuleSettings[$val['module_code']][] = $shortCode;
+				}else{
+					$_arrModuleSettings[$val['module_code']] = $shortCode;
+				}
 			}
 		}
+
 		return $_arrModuleSettings;
 	}
 

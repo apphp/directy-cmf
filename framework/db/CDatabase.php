@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2019 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * IMPORTANT:
@@ -87,13 +87,13 @@ class CDatabase extends PDO
         
             try{
 				$this->_init($dbDriver, $dbSocket, $dbHost, $dbPort, $dbName, $dbUser, $dbPassword, $dbCharset);
+				$this->_dbDriver = $dbDriver;
+				$this->_dbName = $dbName;
+				$this->_dbPrefix = '';
 			}catch(Exception $e){
                 self::$_error = true;
                 self::$_errorMessage = $e->getMessage();
             }
-            $this->_dbDriver = $dbDriver;
-            $this->_dbName = $dbName;
-            $this->_dbPrefix = '';
         }else{
 			if(!A::app()->isSetup()){
 				try{
@@ -122,20 +122,21 @@ class CDatabase extends PDO
 					echo $output;
 					exit(1);
 				}
+				
 				$this->_dbDriver = CConfig::get('db.driver');
 				$this->_dbName = CConfig::get('db.database');
 				$this->_dbPrefix = CConfig::get('db.prefix');
 				
-				$this->_cache = CConfig::get('cache.enable') ? true : false;
-				$this->_cacheType = in_array(CConfig::get('cache.type'), array('auto', 'manual')) ? CConfig::get('cache.type') : 'auto';
-				$this->_cacheLifetime = CConfig::get('cache.lifetime', 0); /* in minutes */
-				$this->_cacheDir = CConfig::get('cache.path'); /* protected/tmp/cache/ */
+				$this->_cache = CConfig::get('cache.db.enable') ? true : false;
+				$this->_cacheType = in_array(CConfig::get('cache.db.type'), array('auto', 'manual')) ? CConfig::get('cache.db.type') : 'auto';
+				$this->_cacheLifetime = CConfig::get('cache.db.lifetime', 0); /* in minutes */
+				$this->_cacheDir = CConfig::get('cache.db.path'); /* protected/tmp/cache/ */
 				if($this->_cache) CDebug::addMessage('general', 'cache', 'enabled ('.$this->_cacheType.') ');
 			}
         }
 		
 		// Set back quote according to database driver
-		if(preg_match('/mssql|sqlsrv/i', $this->_dbDriver)){
+		if(!empty($this->_dbDriver) && preg_match('/mssql|sqlsrv/i', $this->_dbDriver)){
 			$this->_backQuote = '';
 		}
     }    
@@ -234,7 +235,7 @@ class CDatabase extends PDO
      * Performs insert query
      * @param string $table name of the table to insert into
      * @param array $data associative array
-     * @return boolean
+     * @return int|boolean
      */
     public function insert($table, $data)
     {
@@ -250,15 +251,25 @@ class CDatabase extends PDO
         ksort($data);
         
         $fieldNames = $this->_quotes(implode($this->_backQuote.', '.$this->_backQuote, array_keys($data)));
-        $fieldValues = ':'.implode(', :', array_keys($data));
         
+		$fieldValues = '';
+        if(is_array($data)){
+            foreach($data as $key => $value){
+				// Regular fields: :last_name,
+				// Encrypted fields: AES_ENCRYPT(:last_name, "key"),
+				// Use str_replace('('.$key.',', '(:'.$key.',', ... for encrypted fields
+				$fieldValues .= (is_array($value) ? str_replace('('.$key.',', '(:'.$key.',', $value['param_key']) : ':'.$key).',';
+			}			
+			$fieldValues = rtrim($fieldValues, ',');
+		}
+
         $sql = 'INSERT INTO '.$this->_quotes($this->_dbPrefix.$table).' ('.$fieldNames.') VALUES ('.$fieldValues.')';
         $sth = $this->prepare($sql);
         
         if(is_array($data)){
             foreach($data as $key => $value){
                 list($key, $param) = $this->_prepareParams($key);
-                $sth->bindValue(':'.$key, $value, $param);
+                $sth->bindValue(':'.$key, (is_array($value) ? $value['param_value'] : $value), $param);
             }
         }
         
@@ -289,12 +300,13 @@ class CDatabase extends PDO
      * @param string $table name of table to update
      * @param string $data an associative array
      * @param string $where the WHERE clause of query
-     * @param array $params
+     * @param array $params, ex.: array('is_default'=>0, 'rate'=>array('expression'=>'ROUND(rate/1.2,4)'))
+	 * @param bool $forceUpdate	used to force update on Demo mode
      * @param boolean
      */
-    public function update($table, $data, $where = '1', $params = array())
+    public function update($table, $data, $where = '1', $params = array(), $forceUpdate = false)
     {
-        if(APPHP_MODE == 'demo'){
+		if(APPHP_MODE == 'demo' && !$forceUpdate){
 			self::$_errorMessage = A::t('core', 'This operation is blocked in Demo Mode!');
 			return false;
 		} 
@@ -308,7 +320,15 @@ class CDatabase extends PDO
         $fieldDetails = NULL;
         if(is_array($data)){
             foreach($data as $key => $value){
-                $fieldDetails .= $this->_quotes($key).' = :'.$key.',';
+				// Regular fields: `last_name` = :last_name, : 'last_name'=>'John',
+				// Expression: 'rate'=>'ROUND(rate/'.$this->rate.')' : 'rate'=>array('expression'=>'ROUND(rate/'.$this->rate.',4)',
+				// Encrypted fields: 'last_name'=>'AES_ENCRYPT(:last_name, "key")' : `last_name` = AES_ENCRYPT(:last_name, "key"),
+				// Use str_replace('('.$key.',', '(:'.$key.',', ... for encrypted fields
+				if(isset($value['expression'])){
+					$fieldDetails .= $this->_quotes($key).' = '.$value['expression'].',';
+				}else {
+					$fieldDetails .= $this->_quotes($key) . ' = ' . (is_array($value) ? str_replace('(' . $key . ',', '(:' . $key . ',', $value['param_key']) : ':' . $key) . ',';
+				}
             }            
         }
         $fieldDetails = rtrim($fieldDetails, ',');
@@ -317,8 +337,10 @@ class CDatabase extends PDO
         $sth = $this->prepare($sql);
         if(is_array($data)){
             foreach($data as $key => $value){
-                list($key, $param) = $this->_prepareParams($key);
-                $sth->bindValue(':'.$key, $value, $param);
+				if(!isset($value['expression'])) {
+					list($key, $param) = $this->_prepareParams($key);
+					$sth->bindValue(':' . $key, (is_array($value) ? $value['param_value'] : $value), $param);
+				}
             }
         }
         if(is_array($params)){
@@ -701,7 +723,7 @@ class CDatabase extends PDO
 		$version = A::t('core', 'Unknown');
 		if(self::$_instance != null && !empty($this->_dbName)){
 			$version = @self::getAttribute(PDO::ATTR_SERVER_VERSION);
-			if(empty($version)){
+			if(empty($version) && empty(self::$_error)){
 				$version = $this->query('select version()')->fetchColumn();
 			}
 			// Clean version number from alphabetic characters
@@ -784,7 +806,7 @@ class CDatabase extends PDO
     {
         self::$_error = true;
         self::$_errorMessage = $errorMessage;
-        CDebug::addMessage('errors', $debugMessage, $errorMessage);
+        CDebug::addMessage('errors', $debugMessage, $errorMessage, 'session');
     }
     
     /**
@@ -855,8 +877,20 @@ class CDatabase extends PDO
             }else{
                 $keys[] = '/[?]/';
             }
+			
+			if(is_array($value)){
+				if(isset($value['expression'])){
+					$params[$key] = $value['expression'];
+				}elseif(isset($value['param_key'])){
+					// Show encrypted fields
+					$params[$key] = str_replace($key, $value['param_value'], $value['param_key']);
+				}
+			}else{
+				// Show regular fields
+				$params[$key] = "'$value'";
+			}
         }
-    
+		
         return preg_replace($keys, $params, $sql, 1, $count);
     }
     

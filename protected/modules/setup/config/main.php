@@ -3,6 +3,6 @@
 return array(
     // Module classes
     'classes' => array(
-        'Setup'
+		'Modules\Setup\Controllers\Setup'
     )
 );

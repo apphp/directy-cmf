@@ -3,12 +3,12 @@
 	<div class="container">
 		<div class="header-top-info">
 			<ul>
-				<? if($this->sitePhone != ''): ?>
+				<?php if($this->sitePhone != ''): ?>
 					<li><i class="fa fa-phone"></i><span><?= A::t('app', 'Call us'); ?>:</span> <a href="tel:<?= preg_replace('/[^0-9]/i', '', $this->sitePhone); ?>"><?= $this->sitePhone; ?></a> </li>
-				<? endif; ?>
-				<? if($this->siteEmail != ''): ?>
+				<?php endif; ?>
+				<?php if($this->siteEmail != ''): ?>
 					<li><a href="mailto:<?= $this->siteEmail; ?>"><i class="fa fa-envelope-o"></i><?= $this->siteEmail; ?></a> </li>
-				<? endif; ?>
+				<?php endif; ?>
 			</ul>
 		</div>
 
@@ -27,14 +27,15 @@
 
 			<!--Header Search-->
 			<div id="headerSearchsMobile">
-				<a href="#" id="headerSearchOpenMobile"><i class="fa fa-search"></i></a>
+				<a href="javascript:void(0)" id="headerSearchOpenMobile"><i class="fa fa-search"></i></a>
 				<div class="search-input">
 					<span class="v-arrow-wrap"><span class="v-arrow-inner"></span></span>
-					<?
+					<?php
 						echo SearchForm::draw(array(
 							'innerWrapper'	=> true,
 							'inputClass'	=> 'form-control search',
-							//'placeHolder'	=> ''
+							'inputId'	    => 'search-keywords-mobile',
+							'categoryId'    => 'search-category-id-mobile',
 							'buttonHtml'	=> '<span class="input-group-btn"><button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button></span>',
 						));
 					?>			
@@ -46,8 +47,12 @@
 				<?php
 					// Show links if module is installed
 					if(Modules::model()->isInstalled('users')):
-						echo '<li class="m-item"><a href="users/login">'.A::t('app', 'Login').'</a></li>';
-						echo '<li class="m-item"><a href="users/registration">'.A::t('app', 'Registration').'</a></li>';
+                        if(!CAuth::isLoggedIn()):
+						    echo '<li class="m-item"><a href="users/login">'.A::t('app', 'Login').'</a></li>';
+						    echo '<li class="m-item"><a href="users/registration">'.A::t('app', 'Registration').'</a></li>';
+						else:
+                            echo '<li class="m-item"><a href="users/dashboard">'.A::t('app', 'Dashboard').'</a></li>';
+                        endif;
 					endif;				
 				?>
 				<li class="dropdown m-item">
@@ -55,29 +60,23 @@
 						<?= CFile::fileExists('images/flags/'.A::app()->getLanguage('icon')) ? '<img src="images/flags/'.A::app()->getLanguage('icon').'" alt="'.CHtml::encode(A::app()->getLanguage()).'" /> &nbsp;' : '' ; ?>
 						<?= A::app()->getLanguage('name_native'); ?>
 						<?//= A::t('app', 'Language'); ?>
-						<?php
-							$countLanguages = Languages::model()->count(array('condition'=>"is_active = 1 AND used_on IN ('front-end', 'global')", 'orderBy'=>'sort_order ASC'));
-							if($countLanguages > 1):
-								echo '<i class="fa fa-caret-down"></i>';
-							endif;
-						?>						
+						<?= Languages::model()->countLanguages() > 1 ? '<i class="fa fa-caret-down"></i>' : ''; ?>
 					</a>
 					<?= Languages::drawSelector(array('display'=>'list', 'class'=>'dropdown-menu language-selector')); ?>
 				</li>
-				
-				<? if(FALSE): ?>
-				<!--<li class="dropdown m-item">
-					<a class="dropdown-toggle" href="javascript:void(0);">
-						<?//= A::app()->getCurrency('symbol'); ?>
-						<?//= A::app()->getCurrency('name'); ?>
-						<?//= A::t('app', 'Currency'); ?>
-						<i class="fa fa-caret-down"></i>
-					</a>
-					<?//= Currencies::drawSelector(array('display'=>'list', 'class'=>'dropdown-menu currency-selector')); ?>
-				</li>-->
-				<? endif; ?>
+
+				<?php if(TRUE): ?>
+                    <li class="dropdown m-item">
+                        <a class="dropdown-toggle" href="javascript:void(0);">
+                            <?= A::app()->getCurrency('symbol'); ?>
+                            <?= A::app()->getCurrency('name'); ?>
+                            <?//= A::t('app', 'Currency'); ?>
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                        <?= Currencies::drawSelector(array('display'=>'list', 'class'=>'dropdown-menu currency-selector')); ?>
+                    </li>
+				<?php endif; ?>
 			</ul>
 		</nav>
 	</div>
 </header>
-

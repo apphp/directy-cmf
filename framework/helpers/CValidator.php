@@ -5,16 +5,18 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2019 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE:		
  * ----------               ----------                  ----------
- * isEmpty          
+ * isEmpty					_prepareAllowedChars
  * isAlpha
  * isAlphaBetic
+ * isAlphaDash
  * isNumeric
  * isAlphaNumeric
+ * isAlphaNumericSpaces
  * isVariable
  * isZipCode
  * isMixed
@@ -31,6 +33,8 @@
  * isIdentityCode
  * isFileName
  * isDate
+ * isTime
+ * isDateTime
  * isDigit
  * isInteger
  * isPositiveInteger
@@ -42,6 +46,7 @@
  * isDomainName
  * isAlignment
  * isHexColor
+ * isBase64
  * inArray
  * validateLength
  * validateMinLength
@@ -51,14 +56,15 @@
  * validateMinDate
  * validateMaxDate
  * validateRange
- * 
+ * validateRegex
+ *
  */	  
 
 class CValidator
 {
 
 	/**
-	 * Checks if given parameter is empty
+	 * Checks if a given parameter is empty
 	 * @param mixed $value 
 	 * @param boolean $trim 
 	 * @return boolean whether the value is empty
@@ -69,26 +75,39 @@ class CValidator
 	}
 
 	/**
-	 * Checks if given parameter is an alphabetic value
-	 * @param mixed $value 
+	 * Checks if a given parameter is an alphabetic value
+	 * @param mixed $value
+	 * @param mixed $allowing
 	 * @return boolean 
 	 */
-    public static function isAlpha($value)
+    public static function isAlpha($value, $allowing = array())
 	{
-        return preg_match('/^[a-zA-Z]+$/', $value);
+        return preg_match('/^[a-zA-Z'.self::_prepareAllowedChars($allowing).']+$/', $value);
     }
 
 	/**
 	 * Alias for isAlpha
+	 * @param mixed $allowing
 	 * @see isAlpha
 	 */
-    public static function isAlphaBetic($value)
+    public static function isAlphaBetic($value, $allowing = array())
 	{
-		return isAlpha($value);
+		return isAlpha($value, $allowing);
 	}
 	
 	/**
-	 * Checks if given parameter is a numeric value
+	 * Checks if a given parameter is a alphabetic value or dash
+	 * @param mixed $value
+	 * @param mixed $allowing
+	 * @return boolean 
+	 */
+    public static function isAlphaDash($value, $allowing = array())
+	{
+		return preg_match('/^[a-zA-Z\-'.self::_prepareAllowedChars($allowing).']+$/', $value);
+	}
+
+	/**
+	 * Checks if a given parameter is a numeric value
 	 * @param mixed $value
 	 * @param int $type 0 - digits only, 1 - with dot or comma
 	 * @return boolean
@@ -104,7 +123,7 @@ class CValidator
     }
 
 	/**
-	 * Checks if given parameter is a alpha-numeric value
+	 * Checks if a given parameter is a alpha-numeric value
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -112,9 +131,19 @@ class CValidator
 	{
         return preg_match('/^[a-zA-Z0-9]+$/', $value);
     }
-    
+	
 	/**
-	 * Checks if given parameter is a variable name in PHP
+	 * Alias for mixed
+	 * @param mixed $value
+	 * @return boolean
+	 */
+    public static function isAlphaNumericSpaces($value)
+	{
+        return isMixed($value);
+    }
+	    
+	/**
+	 * Checks if a given parameter is a variable name in PHP
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -124,7 +153,7 @@ class CValidator
     }
 
 	/**
-	 * Checks if given parameter is a zip code
+	 * Checks if a given parameter is a zip code
      * @param mixed $value
      * @param string $country
 	 * @return boolean
@@ -159,7 +188,7 @@ class CValidator
     }
 
 	/**
-	 * Checks if given parameter is a alpha-numeric value and spaces
+	 * Checks if a given parameter is a alpha-numeric value and spaces
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -169,7 +198,7 @@ class CValidator
     }
 	
 	/**
-	 * Checks if given parameter is a valid SEO link 
+	 * Checks if a given parameter is a valid SEO link 
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -179,7 +208,7 @@ class CValidator
     }
 	
 	/**
-	 * Checks if given parameter is a textual value and allowed HTML tags
+	 * Checks if a given parameter is a textual value and allowed HTML tags
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -206,7 +235,7 @@ class CValidator
     }
 	
 	/**
-	 * Checks if given parameter is a textual utf value 
+	 * Checks if a given parameter is a textual utf value 
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -217,7 +246,7 @@ class CValidator
 	
 
 	/**
-	 * Checks if given parameter is a valid php timezone value
+	 * Checks if a given parameter is a valid php timezone value
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -227,7 +256,7 @@ class CValidator
     }
 
 	/**
-	 * Checks if given parameter is a phone number
+	 * Checks if a given parameter is a phone number
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -237,7 +266,7 @@ class CValidator
     }
 
 	/**
-	 * Checks if given parameter is a phone number in a free format:
+	 * Checks if a given parameter is a phone number in a free format:
 	 * 7 or 32 digit number, with extensions allowed, delimiters are spaces, dashes or periods
 	 * @param mixed $value
 	 * @return boolean
@@ -248,17 +277,17 @@ class CValidator
     }
 
 	/**
-	 * Checks if given parameter is a password 
+	 * Checks if a given parameter is a password 
 	 * @param mixed $value
 	 * @return boolean
 	 */
     public static function isPassword($value)
 	{
-        return preg_match('/^[a-zA-Z0-9_\.\,\-!@#$%^&*()]{6,20}$/', $value);
+        return preg_match('/^[a-zA-Z0-9_\.\,\-!@#$%^&*()]{6,25}$/', $value);
     }
 
 	/**
-	 * Checks if given parameter is a simple password.
+	 * Checks if a given parameter is a simple password.
 	 * It checks if it's a most popular password or it consists from the same symbols
 	 * @param mixed $value
 	 * @return boolean
@@ -299,20 +328,20 @@ class CValidator
     }
 
 	/**
-	 * Checks if given parameter is a username
+	 * Checks if a given parameter is a username
 	 * @param mixed $value
 	 * @return boolean
 	 */
     public static function isUsername($value)
 	{
-		if(preg_match('/^[a-zA-Z0-9_\-]{6,20}$/', $value) && !self::isNumeric($value)){
+		if(preg_match('/^[a-zA-Z0-9_\-]{6,32}$/', $value) && !self::isNumeric($value)){
 			return true;
 		}
         return false;
     }
 
 	/**
-	 * Checks if given parameter is an email
+	 * Checks if a given parameter is an email
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -322,7 +351,7 @@ class CValidator
     }
 
 	/**
-	 * Checks if given parameter is identity code
+	 * Checks if a given parameter is identity code
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -332,7 +361,7 @@ class CValidator
     }
 
 	/**
-	 * Checks if given parameter is a file name
+	 * Checks if a given parameter is a file name
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -340,9 +369,27 @@ class CValidator
 	{
 	    return preg_match('/^[a-zA-Z0-9_\-\.]+$/', $value);
     }
-
+	
 	/**
-	 * Checks if given parameter is a date value
+	 * Checks if a given parameter is a time value
+	 * @param mixed $value
+	 * @return boolean
+	 */
+	public static function isTime($value)
+	{
+		$hour = (int)substr($value, 0, 2);
+		$minute = (int)substr($value, 3, 2);
+		$second = (int)substr($value, 6, 2);
+		
+		if($hour < 0 || $hour > 23) return false;
+		if($minute  > 59 || $minute < 0) return false;
+		if($second > 59 || $second < 0) return false;
+		
+		return true;
+	}
+	
+	/**
+	 * Checks if a given parameter is a date value
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -358,9 +405,33 @@ class CValidator
             return (!empty($date) && self::isInteger($date));            
         }
     }
+	
+	/**
+	 * Checks if a given parameter is a datetime value
+	 * @param mixed $value
+	 * @return boolean
+	 */
+	public static function isDateTime($value)
+	{
+		$year = (int)substr($value, 0, 4);
+		$month = (int)substr($value, 5, 2);
+		$day = (int)substr($value, 8, 2);
+		$hour = (int)substr($value, 11, 2);
+		$minute = (int)substr($value, 14, 2);
+		$second = (int)substr($value, 17, 2);
+		if(strtotime($value) == strtotime($year.'-'.$month.'-'.$day.'-'.$hour.'-'.$minute.'-'.$second)){
+			if($hour < 0 || $hour > 23) return false;
+			if($minute  > 59 || $minute < 0) return false;
+			if($second > 59 || $second < 0) return false;
+			return checkdate($month, $day, $year);
+		}else{
+			$date = strtotime($value);
+			return (!empty($date) && self::isInteger($date));
+		}
+	}
 
 	/**
-	 * Checks if given parameter is a digit value
+	 * Checks if a given parameter is a digit value
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -370,7 +441,7 @@ class CValidator
     }
 
 	/**
-	 * Checks if given parameter is an integer value
+	 * Checks if a given parameter is an integer value
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -380,7 +451,7 @@ class CValidator
     }
 	
 	/**
-	 * Checks if given parameter is a positive integer value
+	 * Checks if a given parameter is a positive integer value
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -390,7 +461,7 @@ class CValidator
     }
 	
 	/**
-	 * Checks if given parameter is a float value
+	 * Checks if a given parameter is a float value
 	 * @param mixed $value
 	 * @param string $format
 	 * @return boolean
@@ -402,7 +473,7 @@ class CValidator
     }
 	
 	/**
-	 * Checks if given parameter is a percent value
+	 * Checks if a given parameter is a percent value
 	 * @param mixed $value
 	 * @param string $format
 	 * @return boolean
@@ -414,7 +485,7 @@ class CValidator
     }
 		
 	/**
-	 * Checks if given parameter is a HTML size value
+	 * Checks if a given parameter is a HTML size value
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -424,7 +495,7 @@ class CValidator
     }
 	
 	/**
-	 * Checks if given parameter is a valid URL address
+	 * Checks if a given parameter is a valid URL address
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -435,7 +506,7 @@ class CValidator
     }
 	
 	/**
-	 * Checks if given parameter is a valid IP address
+	 * Checks if a given parameter is a valid IP address
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -445,7 +516,7 @@ class CValidator
     }
 	
 	/**
-	 * Checks if given parameter is a valid domain name
+	 * Checks if a given parameter is a valid domain name
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -466,7 +537,7 @@ class CValidator
     }
 
 	/**
-	 * Checks if given parameter is an alignment value
+	 * Checks if a given parameter is an alignment value
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -476,7 +547,7 @@ class CValidator
     }
 	
 	/**
-	 * Checks if given parameter is a hexadecimal color value 
+	 * Checks if a given parameter is a hexadecimal color value 
 	 * @param mixed $value
 	 * @return boolean
 	 */
@@ -484,24 +555,44 @@ class CValidator
     {
 		return preg_match('/^#([a-f0-9]{6}|[a-f0-9]{3})$/i', $value);
     }
-		
+	
 	/**
-	 * Checks if given parameter presents in a given array
+	 * Checks if a given parameter is a valid base64 value 
+	 * @param mixed $value
+	 * @return boolean
+	 */
+    public static function isBase64($value)
+    {
+		// Check if there are valid base64 characters
+		if(!preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $value)) return false;
+		
+		// Decode the string in strict mode and check the results
+		$decoded = base64_decode($value, true);
+		if($decoded === false) return false;
+		
+		// Encode the string again
+		if(base64_encode($decoded) != $value) return false;
+		
+		return true;
+    }
+	
+	/**
+	 * Checks if a given parameter presents in a given array
 	 * @param mixed $value
 	 * @param array $array
 	 * @return boolean
 	 */
     public static function inArray($value, $array = array())
     {
-		if(!is_array($array)) return false;		
+		if(!is_array($array)) return false;
 		if(is_array($value)){
 			$intersectResult = array_intersect($value, $array);
 			return !empty($intersectResult) ? true : false;
-		}else{			
+		}else{
 			return in_array($value, $array);
-		}		
+		}
     }	
-		
+	
 	/**
 	 * Validates the length of the given value
 	 * @param string $value
@@ -605,4 +696,38 @@ class CValidator
         return ($value >= $min && $value <= $max) ? true : false;
     }
 	
-}    
+	/**
+	 * Validates if the given numeric value in a specified range
+	 * Ex.: validateRegex($value, '^[a-zA-Z\-]+$')
+	 * @param string $value
+	 * @param string $pattern
+	 * @param string $additional
+	 * @return boolean
+	 */
+	public static function validateRegex($value, $pattern, $additional = '')
+	{
+		if(empty($pattern)) return true;
+		return preg_match('/'.$pattern.'/'.$additional, $value);
+	}
+	
+	/**
+	 * Prepare allowed chars for preg_match check
+	 * @param mixed $value
+	 * @return string
+	*/
+	protected static function _prepareAllowedChars($value = '')
+	{
+		$result = '';
+		if(!empty($value)){
+			if(is_string($value)){
+				$value = str_split($value);
+			}
+			if(is_array($value)){
+				$result = '\\'.implode("\\", $value);
+			}
+		}
+		
+		return $result;
+	}
+
+}

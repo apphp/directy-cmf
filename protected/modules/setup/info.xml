@@ -15,7 +15,7 @@
     <moduleType>system</moduleType>
     <code>setup</code>
 	<requirements>
-		<framework>1.0.0</framework>
+		<framework>1.2.0</framework>
 	</requirements>	
     <files>
         <filename>info.xml</filename>
@@ -31,12 +31,16 @@
 			<filename>.htaccess</filename>            
             <filename>icon.png</filename>
         </images>
+        <js installationPath="assets/modules/setup/js/" byDirectory="true">
+            <filename>setup.js</filename>
+        </js>
         <templates movingPath="templates/setup/">
             <css>
                 <filename>main.css</filename>    
             </css>
             <images>
                 <filename>wizard.png</filename>    
+				<filename>eye.png</filename>
             </images>
             <filename>default.php</filename>
         </templates>

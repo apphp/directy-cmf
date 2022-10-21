@@ -29,21 +29,19 @@ class SocialLogin extends CComponent
      */
     public static function config($params = array())
     {
-        $returnUrl = isset($params['returnUrl']) && !empty($params['returnUrl']) ? $params['returnUrl'] : '';
-        $model     = isset($params['model']) && !empty($params['model']) ? $params['model'] : 'Accounts';
-        $method    = isset($params['method']) && !empty($params['method']) ? $params['method'] : 'registrationSocial';
-        if(class_exists($model)){
-            if(is_callable($model, $method)){
-                $socialLogin = array(
-                    'model' => $model,
-                    'method' => $method,
-                    'returnUrl' => $returnUrl
-                );
+        $model = isset($params['model']) && !empty($params['model']) ? $params['model'] : 'Accounts';
+        $method = isset($params['method']) && !empty($params['method']) ? $params['method'] : 'registrationSocial';
+		$returnUrl = isset($params['returnUrl']) && !empty($params['returnUrl']) ? $params['returnUrl'] : '';
 
-                A::app()->getSession()->set('socialLogin', $socialLogin);
+        if(CClass::isExists($model) && CClass::isMethodCallable($model, $method)){
+			$socialLogin = array(
+				'model' => $model,
+				'method' => $method,
+				'returnUrl' => $returnUrl
+			);
 
-                return true;
-            }
+			A::app()->getSession()->set('socialLogin', $socialLogin);
+			return true;
         }
 
         CDebug::addMessage('warning', 'The method '.CHtml::encode($model).'::'.CHtml::encode($method).'can not be called');
@@ -57,12 +55,11 @@ class SocialLogin extends CComponent
      * @param bool $exit
      * @return bool
     */
-    public static function login($strategy = 'facebook', $exit = true)
+    public static function login($strategy = 'google', $exit = true)
     {
         $strategies = COauth::getStrategies();
         $nameStrategies = array_map('strtolower', array_keys($strategies));
         if(in_array($strategy, $nameStrategies)){
-            $baseUrl = A::app()->getRequest()->getBaseUrl();
             $url = A::app()->getRequest()->getBaseUrl().'socialNetworks/oauth/type/'.$strategy;
             header('Location: '.$url);
             if($exit){

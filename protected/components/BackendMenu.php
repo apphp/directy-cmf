@@ -35,13 +35,13 @@ class BackendMenu extends CComponent
 		if(is_array($menuItems)){
 			foreach($menuItems as $item){
 				
-				// Get opened meni ID
+				// Get opened menu ID
 				$openedMenu = A::app()->getCookie()->get('isOpened');
 
 				// Draw modules management and modules menu
 				if($item['icon'] == 'modules.png' && !Admins::hasPrivilege('modules', 'view') && !Admins::hasPrivilege('modules', 'view_management')) continue;
-				if($item['module_code'] != '' && !Admins::hasPrivilege('modules', 'view')) continue;				
-				
+				if($item['module_code'] != '' && !Admins::hasPrivilege('modules', 'view')) continue;
+
 				$subItems = ($parentId == 0 ? self::_getMenu($item['id']) : '') ;
                 // Don't show parent menu if it has no child items
                 if($parentId == 0 && is_array($subItems) && !count($subItems)) continue;
@@ -88,10 +88,12 @@ class BackendMenu extends CComponent
 							if(!Admins::hasPrivilege('mailing_log', 'view')) $show = false; break;
 						case 'modules/':
 							if(!Admins::hasPrivilege('modules', 'view_management')) $show = false; break;
+						case 'extensions/':
+							if(!Admins::hasPrivilege('module_extensions', 'view_management')) $show = false; break;
 					}
 				}
 				
-				if($show){					
+				if($show){
 					// Preview
 					if($item['url'] == 'index/'){
 						$url = A::app()->getRequest()->getBaseUrl();
@@ -108,9 +110,9 @@ class BackendMenu extends CComponent
 						'items'  => $subItems,						
 					);					
 				}
-				
+
 				// Add menu items for installed modules under Modules menu
-				if($item['url'] === 'modules/'){
+				if($item['url'] === Website::getBackendPath().'modules/'){
 					$modules = Modules::model()->findAll(array('condition'=>'is_installed = 1', 'orderBy'=>'sort_order ASC'));
 					if(is_array($modules)){
 						foreach($modules as $module){
@@ -118,10 +120,13 @@ class BackendMenu extends CComponent
 								// Do nothing - don't show this module in menu (only for modules which has "view" privilege)
 							}else{
 								$backendDefaultUrl = CConfig::get('modules.'.$module['code'].'.backendDefaultUrl');
+								if(substr($backendDefaultUrl, 0, 16) == 'modules/settings'){
+									$backendDefaultUrl = Website::getBackendPath().$backendDefaultUrl;
+								}
 								$items[] = array(
 									'label' => '<img src="assets/modules/'.$module['code'].'/images/'.$module['icon'].'" class="sub-menu-icon" />'.$module['name'],
-									'url' 	=> (!empty($backendDefaultUrl) ? $backendDefaultUrl : 'modules/settings/code/'.$module['code'])
-								);								
+									'url' 	=> (!empty($backendDefaultUrl) ? $backendDefaultUrl : Website::getBackendPath().'modules/settings/code/'.$module['code'])
+								);
 							}
 						}
 					}						
@@ -152,18 +157,19 @@ class BackendMenu extends CComponent
 	 */
 	public static function drawProfileMenu($activeMenu = '')
 	{
+		$backendPath = Website::getBackendPath();
+
         $output = '';
         $output .= CHtml::openTag('div', array('class'=>'logout'));
-        $output .= CHtml::link(CHtml::image('templates/backend/images/icons/logout-white.png', 'logout'), 'backend/logout', array('class'=>'tooltip-link', 'title'=>A::t('app', 'Logout')));
+        $output .= CHtml::link(CHtml::image('templates/backend/images/icons/logout-white.png', 'logout'), $backendPath.'admin/logout', array('class'=>'tooltip-link', 'title'=>A::t('app', 'Logout')));
         $output .= CHtml::closeTag('div');
         $output .= CHtml::openTag('div', array('id'=>'dd', 'class'=>'wrapper-dropdown'));
         $output .= CHtml::image('templates/backend/images/accounts/'.CAuth::getLoggedAvatar(), 'avatar', array('height'=>'36px'));
         $output .= CHtml::tag('span', array(), A::t('app', 'Hi').', '.CAuth::getLoggedName());
         $output .= CHtml::openTag('ul', array('class'=>'dropdown'));
-        $output .= CHtml::tag('li', array('class'=>($activeMenu == 'backend/' ? 'active' : '')), CHtml::link('<i class="icon-dashboard"></i>'.A::t('app', 'Dashboard'), 'backend/dashboard'));
-        $output .= CHtml::tag('li', array('class'=>($activeMenu == 'admins/myAccount' ? 'active' : '')), CHtml::link('<i class="icon-account"></i>'.A::t('app', 'My Account'), 'admins/myAccount'));
-        $output .= CHtml::tag('li', array('class'=>($activeMenu == 'settings/' ? 'active' : '')), CHtml::link('<i class="icon-settings"></i>'.A::t('app', 'Settings'), 'settings/general'));
-        //$output .= CHtml::tag('li', array(), CHtml::link('<i class="icon-logout"></i>'.A::t('app', 'Logout'), 'backend/logout'));
+        $output .= CHtml::tag('li', array('class'=>($activeMenu == 'dashboard/' ? 'active' : '')), CHtml::link('<i class="icon-dashboard"></i>'.A::t('app', 'Dashboard'), $backendPath.'dashboard'));
+        $output .= CHtml::tag('li', array('class'=>($activeMenu == 'admins/myAccount' ? 'active' : '')), CHtml::link('<i class="icon-account"></i>'.A::t('app', 'My Account'), $backendPath.'admins/myAccount'));
+        $output .= CHtml::tag('li', array('class'=>($activeMenu == 'settings/' ? 'active' : '')), CHtml::link('<i class="icon-settings"></i>'.A::t('app', 'Settings'), $backendPath.'settings/general'));
 		$output .= CHtml::tag('li', array('class'=>''), CHtml::link('<i class="icon-preview"></i>'.A::t('app', 'Preview'), Website::getDefaultPage(), array('target'=>'_blank')));
 		
         $output .= CHtml::closeTag('ul');

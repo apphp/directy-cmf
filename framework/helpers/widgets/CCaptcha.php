@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2019 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC (static):			PROTECTED:					PRIVATE:		
@@ -42,6 +42,7 @@ class CCaptcha extends CWidgs
 		$value 			= self::params('value', '');
         $id             = self::params('id', 'captcha_validation');
         $return 		= (bool)self::params('return', true);
+		$htmlOptions 	= self::params('htmlOptions', array());
 
         $firstDigit 	= CHash::getRandomString(1, array('type'=>'positiveNumeric'));
         $secondDigit 	= CHash::getRandomString(1, array('type'=>'positiveNumeric'));
@@ -56,10 +57,19 @@ class CCaptcha extends CWidgs
         else $captchaResult = 0;        
 
         A::app()->getSession()->set($name, $captchaResult);
+	
+		if(!empty($htmlOptions) && is_array($htmlOptions)){
+			$htmlOptions['class'] = isset($htmlOptions['class']) ? $htmlOptions['class'].' captcha-result' : 'captcha-result';
+			$htmlOptions['autocomplete'] = 'off';
+			$htmlOptions['data-required'] = ($required ? 'true' : 'false');
+			$htmlOptions['maxlength'] = '20';
+		}else{
+        	$htmlOptions = array('class'=>'captcha-result', 'autocomplete'=>'off', 'data-required'=>($required ? 'true' : 'false'), 'maxlength'=>'20');
+		}
             
         $output .= CHtml::openTag('div', array('class'=>'captcha'));
         $output .= CHtml::tag('label', array(), $requiredMark.A::t('core', 'How much it will be').'<br><span class="captcha-match">'.$firstDigit.' '.$operator.' '.$secondDigit.' = ?</span>').self::NL;
-        $output .= CHtml::textField($id, $value, array('class'=>'captcha-result', 'autocomplete'=>'off', 'data-required'=>($required ? 'true' : 'false'), 'maxlength'=>'20')).self::NL;
+        $output .= CHtml::textField($id, $value, $htmlOptions).self::NL;
         $output .= CHtml::closeTag('div').self::NL;
 		
         if($return) return $output;

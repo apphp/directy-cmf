@@ -3,7 +3,7 @@
 
     $this->_activeMenu = $this->_controller.'/'.$this->_action;
     $baseUrl = A::app()->getRequest()->getBaseUrl();
-	$backendUrl = $baseUrl.'backend/login';
+    $backendUrl = $baseUrl.$backendPath.'admin/login';
 ?>
 
 <h1><?= A::t('setup', 'Completed'); ?></h1>

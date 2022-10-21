@@ -14,6 +14,7 @@ class SocialNetworksLogin extends CActiveRecord
     /** @var string */
     protected $_table = 'social_networks_login';
 
+
     public function __construct()
     {
         parent::__construct();

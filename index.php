@@ -5,7 +5,7 @@
  * @project ApPHP Directy CMF
  * @author ApPHP <info@apphp.com>
  * @link https://www.apphp.com/php-directy-cmf/
- * @copyright Copyright (c) 2013 - 2017 ApPHP Directy CMF
+ * @copyright Copyright (c) 2013 - 2019 ApPHP Directy CMF
  * @license https://www.apphp.com/php-directy-cmf/
  */	  
 
@@ -14,7 +14,7 @@ defined('APPHP_PATH') || define('APPHP_PATH', dirname(__FILE__));
 // Directory separator
 defined('DS') || define('DS', DIRECTORY_SEPARATOR);
 // Modes: production | debug | demo | test | hidden
-defined('APPHP_MODE') or define('APPHP_MODE', 'production'); 
+defined('APPHP_MODE') or define('APPHP_MODE', 'debug');
 
 $apphp = dirname(__FILE__).'/framework/Apphp.php';
 $config = APPHP_PATH.'/protected/config/';

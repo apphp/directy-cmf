@@ -58,8 +58,23 @@ class Admins extends CActiveRecord
 	{
 		return array(
 			'CONCAT(first_name, " ", last_name)' => 'fullname'
+			//'CONCAT(AES_DECRYPT(first_name, "'.CConfig::get('text.encryptKey').'"), " ", AES_DECRYPT(last_name, "'.CConfig::get('text.encryptKey').'"))' => 'fullname'
 		);
 	}
+
+//	/**
+//     * Used to define encrypted fields
+//	 * This method should be overridden
+//	 * Usage: 'field_name_1' => array('encrypt'=>'AES_ENCRYPT', 'decrypt'=>'AES_DECRYPT', 'key'=>'encryptKey')
+//	 *        'field_name_2' => array('encrypt'=>'AES_ENCRYPT', 'decrypt'=>'AES_DECRYPT', 'key'=>CConfig::get('text.encryptKey'))
+//	 */
+//	protected function _encryptedFields()
+//	{
+//		return array(
+//			'first_name' => array('encrypt'=>'AES_ENCRYPT', 'decrypt'=>'AES_DECRYPT', 'key'=>CConfig::get('text.encryptKey')),
+//			'last_name' => array('encrypt'=>'AES_ENCRYPT', 'decrypt'=>'AES_DECRYPT', 'key'=>CConfig::get('text.encryptKey'))
+//		);
+//	}
 
 	/**
      * Defines relations between different tables in database and current $_table

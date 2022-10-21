@@ -6,22 +6,24 @@
  * -----------              	------------------
  * init							_replaceEmailPlaceHolders
  * setBackend
+ * isBackend
  * setFrontend
  * setDefaultLanguage
  * setMetaTags
  * setInfo
+ * getBackendPath
  * sendEmailByTemplate
  * sendEmail
  * prepareBackendAction
  * prepareLinkByFormat
  * checkBan
- * getRefererPage
+ * getReferrerPage
  * getCurrentPage
  * getDefaultPage
  * isDefaultPage
  * setLastVisitedPage
  * getLastVisitedPage
- * 
+ * siteUrl
  */
 
 class Website extends CComponent
@@ -57,6 +59,14 @@ class Website extends CComponent
     }
 
 	/**
+	 * Checks if we in Backend mode by checking template
+	 */
+    public static function isBackend()
+    {
+        return A::app()->view->getTemplate() === 'backend' ? true : false;
+    }
+
+	/**
 	 * Sets site to frontend mode
 	 * @param string $template
 	 */
@@ -65,7 +75,7 @@ class Website extends CComponent
         if(!$template) $template = Bootstrap::init()->getSettings()->template;               
         A::app()->view->setTemplate($template);
     }
-    
+
 	/**
 	 * Sets default language
 	 */	
@@ -95,6 +105,20 @@ class Website extends CComponent
     	if(isset($params['keywords'])) A::app()->view->setMetaTags('keywords', $params['keywords']);
     	if(isset($params['description'])) A::app()->view->setMetaTags('description', $params['description']);
     }
+
+	/**
+	 * Returns backend path
+	 * @return string
+	 */
+	public static function getBackendPath()
+	{
+		$return = '';
+		$backendDirectory = CConfig::get('defaultBackendDirectory');
+		if(!empty($backendDirectory)){
+			$return = $backendDirectory.'/';
+		}
+		return $return ;
+	}
 
 	/**
 	 * Sets meta tags according to active language
@@ -151,7 +175,9 @@ class Website extends CComponent
 			$content = self::_replaceEmailPlaceHolders($content, $params);
 
 			$result = CMailer::send($emailTo, $subject, $content, array('from'=>$settings->general_email), $attachments);
-			if(CMailer::getError()) CDebug::addMessage('errors', 'sending-email', CMailer::getError());			
+			if(APPHP_MODE == 'demo'){
+				if(CMailer::getError()) CDebug::addMessage('errors', 'sending-email', CMailer::getError());
+			}
 		}        
         
 		return $result;
@@ -187,9 +213,11 @@ class Website extends CComponent
 				'smtp_username'=>$settings->smtp_username,
 				'smtp_password'=>CHash::decrypt($settings->smtp_password, CConfig::get('password.hashKey')),
 			));
-			
+
 			$result = CMailer::send($emailTo, $templateSubject, $templateContent, array('from'=>$settings->general_email), $attachments);
-			if(CMailer::getError()) CDebug::addMessage('errors', 'sending-email', CMailer::getError());			
+			if(APPHP_MODE == 'demo'){
+				if(CMailer::getError()) CDebug::addMessage('errors', 'sending-email', CMailer::getError());
+			}
 		}        
         
 		return $result;
@@ -201,16 +229,17 @@ class Website extends CComponent
      * @param string $privilegeCategory
      * @param string $redirectPath
      */
-    public static function prepareBackendAction($actions = '', $privilegeCategory = '', $redirectPath = 'backend/dashboard')
+    public static function prepareBackendAction($actions = '', $privilegeCategory = '', $redirectPath = 'dashboard')
     {
         $baseUrl = A::app()->getRequest()->getBaseUrl();
+		$backendDirectory = self::getBackendPath();
 
         // Block access to this action to non-logged users
         CAuth::handleLogin(self::getDefaultPage());
 
         // Block access if admin has no privileges to view modules
         if(!Admins::hasPrivilege('modules', 'view')){
-            header('location: '.$baseUrl.'error/index/code/no-privileges');
+            header('location: '.$baseUrl.$backendDirectory.'error/index/code/no-privileges');
             exit;        
         }
 		
@@ -223,7 +252,7 @@ class Website extends CComponent
 			if(in_array($action, array('add', 'insert', 'edit', 'update', 'delete'))){
 				// Block access if admin has no privileges to add/edit modules
 				if(!Admins::hasPrivilege('modules', 'edit')){
-					header('location: '.$baseUrl.'error/index/code/no-privileges');
+					header('location: '.$baseUrl.$backendDirectory.'error/index/code/no-privileges');
 					exit;        
 				}
 			}
@@ -231,7 +260,7 @@ class Website extends CComponent
 			if(in_array($action, array('view'))){
 				// Block access if admin has no privileges to delete records
 				if(!Admins::hasPrivilege($privilegeCategory, 'view')){
-					header('location: '.$baseUrl.$redirectPath);
+					header('location: '.$baseUrl.$backendDirectory.$redirectPath);
 					exit;        
 				}
 			}
@@ -239,7 +268,7 @@ class Website extends CComponent
 			if(in_array($action, array('add', 'insert'))){
 				// Block access if admin has no privileges to add records
 				if(!Admins::hasPrivilege($privilegeCategory, 'add')){
-					header('location: '.$baseUrl.$redirectPath);
+					header('location: '.$baseUrl.$backendDirectory.$redirectPath);
 					exit;        
 				}
 			}
@@ -247,7 +276,7 @@ class Website extends CComponent
 			if(in_array($action, array('edit', 'update'))){
 				// Block access if admin has no privileges to edit records
 				if(!Admins::hasPrivilege($privilegeCategory, 'edit')){
-					header('location: '.$baseUrl.$redirectPath);
+					header('location: '.$baseUrl.$backendDirectory.$redirectPath);
 					exit;        
 				}
 			}
@@ -255,7 +284,7 @@ class Website extends CComponent
 			if(in_array($action, array('delete'))){
 				// Block access if admin has no privileges to delete records
 				if(!Admins::hasPrivilege($privilegeCategory, 'delete')){
-					header('location: '.$baseUrl.$redirectPath);
+					header('location: '.$baseUrl.$backendDirectory.$redirectPath);
 					exit;        
 				}
 			}
@@ -332,12 +361,12 @@ class Website extends CComponent
 	}
 
 	/**
-	 * Gets referer URL
+	 * Gets referrer URL
 	 * @return string
 	 */
-	public static function getRefererPage()
+	public static function getReferrerPage()
 	{
-		return A::app()->getRequest()->getUrlReferer();
+		return A::app()->getRequest()->getUrlReferrer();
 	}
 
 	/**
@@ -401,7 +430,17 @@ class Website extends CComponent
 	{
 		return A::app()->getSession()->get('last_visited_page');
 	}
-	
+
+	/**
+	 * Gets relative path and returns absolute path on the website
+	 * @param string $path
+	 * @return string
+	 */
+	public static function siteUrl($path = '')
+	{
+		return A::app()->getRequest()->getBaseUrl().$path;
+	}
+
 	/**
 	 * Replaces email placeholders
 	 * @param string $templateContent
@@ -410,8 +449,9 @@ class Website extends CComponent
 	*/
 	private static function _replaceEmailPlaceHolders($templateContent = '', $params = array())
 	{
-		// Set base variables if not defined        
+		// Set base variables if not defined
 		if(!isset($params['{SITE_URL}'])) $params['{SITE_URL}'] = A::app()->getRequest()->getBaseUrl();
+		if(!isset($params['{SITE_BO_URL}'])) $params['{SITE_BO_URL}'] = A::app()->getRequest()->getBaseUrl().self::getBackendPath();
 		if(!isset($params['{WEB_SITE}'])) $params['{WEB_SITE}'] = CConfig::get('name');
 		if(!isset($params['{YEAR}'])) $params['{YEAR}'] = LocalTime::currentDate('Y');
 
@@ -424,5 +464,5 @@ class Website extends CComponent
 		
 		return str_ireplace($arrKeys, $arrValues, $templateContent);
 	}
-	
+
 }

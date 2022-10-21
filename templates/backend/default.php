@@ -14,16 +14,19 @@
     <?= CHtml::cssFile('templates/backend/css/style.css'); ?>
     <?php if(A::app()->getLanguage('direction') == 'rtl') echo CHtml::cssFile('templates/backend/css/style.rtl.css'); ?>
 
-    <!-- jQuery files -->
-	<?//= CHtml::scriptFile('http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'); ?>
-	<?//= CHtml::scriptFile('http://code.jquery.com/ui/1.10.2/jquery-ui.js'); ?>
-    <?= CHtml::scriptFile('assets/vendors/jquery/jquery.js'); ?>
-
+	<!-- jQuery files -->
 	<?php
-		// <!-- jQuery ui files -->
-		// Use registerScriptFile() because we want to prevent loading jquery-ui.min.js twice (also used in framework widgets)
-		A::app()->getClientScript()->registerScriptFile('assets/vendors/jquery/jquery-ui.min.js',2);
+		// <!-- jQuery - DON'T REMOVE IT -->
+		// echo CHtml::scriptFile('http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js');
+		// echo CHtml::scriptFile('http://code.jquery.com/ui/1.10.2/jquery-ui.js');
+		// echo CHtml::scriptFile('assets/vendors/jquery/jquery.js'); 
+		// Use registerScriptFile() because we want to prevent loading jquery.js twice (may be used in framework widgets)
+		A::app()->getClientScript()->registerScriptFile('assets/vendors/jquery/jquery.js');
+	
+		// <!-- jQuery UI - DON'T REMOVE IT -->
 		//echo CHtml::scriptFile('assets/vendors/jquery/jquery-ui.min.js');
+		// Use registerScriptFile() because we want to prevent loading jquery-ui.min.js twice (may be used in framework widgets)
+		A::app()->getClientScript()->registerScriptFile('assets/vendors/jquery/jquery-ui.min.js');
 	?>
     
 	<!-- Browser.mobile files -->
@@ -39,8 +42,9 @@
 
     <!-- Site JS main files -->
 	<?= CHtml::script('var cookiePath = "'.A::app()->getRequest()->getBasePath().'";'); ?>
+	<?= CHtml::scriptFile('templates/backend/js/langs'.('/'.A::app()->getLanguage()).'.js'); ?>
     <?= CHtml::scriptFile('templates/backend/js/main.js'); ?>
-	
+
 </head>
 <?php
 	/* Define special class for body when left menu is collapsed */
@@ -58,7 +62,7 @@
         <div class="left">
             <?php
 				$siteTitle = (A::app()->view->siteTitle != '') ? ' / '.CHtml::encode(A::app()->view->siteTitle) : '';
-                echo CHtml::link(A::t('app', 'Admin Panel Title').$siteTitle, (CAuth::isLoggedIn() ? 'backend/index' : Website::getDefaultPage()), array('class'=>'header-title'));
+                echo CHtml::link(A::t('app', 'Admin Panel Title').$siteTitle, (CAuth::isLoggedIn() ? Website::getBackendPath().'dashboard/index' : Website::getDefaultPage()), array('class'=>'header-title'));
             ?>
         </div>
         <div class="right">
@@ -67,7 +71,7 @@
                     // Draw backend menu
                     echo BackendMenu::drawProfileMenu($this->_activeMenu);	
                 }else{
-                    echo '<a href="backend/login">'.A::t('app', 'Admin Login').'</a>';
+                    echo '<a href="'.Website::getBackendPath().'admin/login">'.A::t('app', 'Admin Login').'</a>';
                 }                
             ?>
         </div>

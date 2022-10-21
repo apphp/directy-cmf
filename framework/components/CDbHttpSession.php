@@ -5,7 +5,7 @@
  * @project ApPHP Framework
  * @author ApPHP <info@apphp.com>
  * @link http://www.apphpframework.com/
- * @copyright Copyright (c) 2012 - 2018 ApPHP Framework
+ * @copyright Copyright (c) 2012 - 2019 ApPHP Framework
  * @license http://www.apphpframework.com/license/
  *
  * PUBLIC:					PROTECTED:					PRIVATE:		
@@ -424,7 +424,7 @@ class CDbHttpSession extends CComponent
 
 		@session_start();
 		if(APPHP_MODE == 'debug' && session_id() == ''){
-            Debug::addMessage('errors', 'session', A::t('core', 'Failed to start session'));
+			CDebug::addMessage('errors', 'session', A::t('core', 'Failed to start session'));
 		}
 	}
 
