@@ -486,7 +486,7 @@ class SetupController extends CController
 												);
 
 												// Get and run sql schema filename for the module
-												$model->doBeginTransaction();
+												//$model->doBeginTransaction();
 												if(!$model->install($sqlDump, false)){
 													$modulesError = true;
 													$this->_view->actionMessage = CWidget::create('CMessage', array('error', $model->getErrorMessage()));
@@ -537,12 +537,12 @@ class SetupController extends CController
 														}
 													}
 												}
-												if($modulesError){
-													$model->doRollBack();
-													break;
-												}else{
-													$model->doCommit();
-												}
+//												if($modulesError){
+//													$model->doRollBack();
+//													break;
+//												}else{
+//													$model->doCommit();
+//												}
 											}else{
 												$modulesError = true;
 												$this->_view->actionMessage .= CWidget::create('CMessage', array('error', $model->getErrorMessage()));

@@ -14,7 +14,7 @@ defined('APPHP_PATH') || define('APPHP_PATH', dirname(__FILE__));
 // Directory separator
 defined('DS') || define('DS', DIRECTORY_SEPARATOR);
 // Modes: production | debug | demo | test | hidden
-defined('APPHP_MODE') or define('APPHP_MODE', 'debug');
+defined('APPHP_MODE') or define('APPHP_MODE', 'production');
 
 $apphp = dirname(__FILE__).'/framework/Apphp.php';
 $config = APPHP_PATH.'/protected/config/';

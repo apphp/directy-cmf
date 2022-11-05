@@ -62,7 +62,7 @@ class Setup extends CModel
 	 * @param bool $ignoreErrors
 	 * @return bool
 	 */
-    public function install($sqlDump = '', $transaction = true, $ignoreErrors = false)
+    public function install($sqlDump = '', $transaction = false, $ignoreErrors = false)
     {
         if(empty($sqlDump)){
             $this->_error = true;
@@ -94,7 +94,7 @@ class Setup extends CModel
                 }
             }
             /* commit the changes */
-            if($transaction) $this->_db->commit();            
+            if($transaction) $this->_db->commit();
             return true;
         }        
     }    

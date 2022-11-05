@@ -558,7 +558,7 @@ class CDebug
 
             $arrViewVarsTemp = [];
             foreach ($arrViewVars as $arrViewVar) {
-                if (!is_array($arrViewVar)) {
+                if (is_string($arrViewVar)) {
                     $arrViewVarsTemp[] = htmlspecialchars($arrViewVar);
                 } else {
                     $arrViewVarsTemp[] = $arrViewVar;
@@ -568,7 +568,7 @@ class CDebug
 
             $arrViewVarsTemp = [];
             foreach ($arrViewVars as $arrViewVar) {
-                if ($htmlCompression && !is_array($arrViewVar)) {
+                if ($htmlCompression && is_string($arrViewVar)) {
                     $arrViewVarsTemp[] = nl2br($arrViewVar);
                 } else {
                     $arrViewVarsTemp[] = $arrViewVar;
