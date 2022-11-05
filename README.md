@@ -1,6 +1,6 @@
  ApPHP Directy CMF - Content Management Framework
  ---------------------------------------------------------------------------
-- Version :      3.0.2
+- Version :      3.1.0
 - Developed by:  ApPHP <info@apphp.com>                                      
 - License:       GNU LGPL v.3                                                
 - Site:          https://www.apphp.com/php-directy-cmf/

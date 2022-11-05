@@ -3,7 +3,7 @@
 return array(
   // Application data
 	'name' => 'ApPHP Directy CMF',
-	'version' => '3.0.2',
+	'version' => '3.1.0',
 
   // Installation settings
   'installationKey' => '<INSTALLATION_KEY>',

@@ -1,7 +1,7 @@
 {
   "name": "apphp/directy-cmf",
   "type": "project",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "description": "The ApPHP Directy CMF. Directy CMF - MVC based cross-platform content management framework for publishing web content.",
     "keywords": [
     "framework",

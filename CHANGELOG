@@ -1,3 +1,24 @@
+Version 3.1.0 - 01 Nov, 2022
+----------------------------
+- New: added new modules
+- New: added new module Advertisements
+- New: added new module Backup and Restore
+- New: added new module Banners
+- New: added new module Blog
+- New: added new module Content Management
+- New: added new module Events
+- New: added new module Faq
+- New: added new module Gallery
+- New: added new module News
+- New: added new module Polls
+- New: added new module Reports
+- New: added new module Testimonials
+- New: added new module Tickets
+- New: added new module Users
+- New: added new module Web Forms
+- Bug: fixed db transaction issues
+
+
 Version 3.0.2 - 01 Feb, 2019
 ----------------------------
 - New: added possibility clear session and cookies from Debug panel
