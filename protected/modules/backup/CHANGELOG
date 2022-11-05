@@ -1,0 +1,29 @@
+Version 0.0.5 - [01.08.2017]
+----------------------------
+- New: added possibility to define via code SQL format - standard|compacted (default)
+- New: added possibility define maximum query length for Compacted format
+- Enh: added translation into Russian and Turkish
+- Enh: main view layout
+- Bug: fixed adding wrong values for NULL-value fields
+
+Version 0.0.4 - [16.05.2015]
+----------------------------
+- Enh: added translation into Swedish
+- Bug: table INSERT queries were not added to backup
+- Bug: wrong sorting of backup files (now by ABC DESC)
+
+Version 0.0.3 - [07.08.2014]
+----------------------------
+- Enh: all messages in its own mesages file
+- Enh: minor changes in uninstall.mysql.sql
+- Bug: wrong date format for next backup file after deleting exising
+
+Version 0.0.2 - [12.02.2014]
+----------------------------
+- New: added possibility to create and restore backups
+- Enh: added block for DEMO mode 
+- Bug:
+
+Version 0.0.1 - [20.01.2014]
+----------------------------
+Initial release

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>Backup and Restore</name>
+    <description>Backup and Restore module allows backup and restore site database</description>
+    <version>0.0.5</version>
+    <creationDate>31/05/2013</creationDate>
+    <lastChangedDate>01/08/2017</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <manual></manual>
+    <icon>assets/modules/backup/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>backup</code>
+	<requirements>
+		<framework>1.0.0</framework>
+	</requirements>	
+    <files>
+        <filename>info.xml</filename>
+        <config installationPath="protected/config/">
+			<filename exclude="yes">main.php</filename>
+            <filename>backup.php</filename>
+        </config>
+        <data>
+            <install>install.mysql.sql</install>
+            <update>
+                <filename>update.003.mysql.sql</filename>
+                <filename>update.004.mysql.sql</filename>
+				<filename>update.005.mysql.sql</filename>
+            </update>
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <images installationPath="assets/modules/backup/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>
+        </images>
+        <controllers>
+            <filename>BackupController.php</filename>
+        </controllers>
+        <models>
+            <filename>Backup.php</filename>
+        </models>
+        <views>
+            <backup>
+                <filename>backup.php</filename>
+                <filename>index.php</filename>
+                <filename>restore.php</filename>
+            </backup>
+            <error>
+                <filename>index.php</filename>
+            </error>
+        </views>
+        <messages installationPath="protected/messages/*">
+            <en default="true">
+                <filename>backup.php</filename>
+            </en>
+            <sv>
+                <filename>backup.php</filename>
+            </sv>
+        </messages>
+        <backups installationPath="protected/tmp/backups/" byDirectory="true">
+			<filename>index.html</filename>
+		</backups>		
+    </files>
+</install>
