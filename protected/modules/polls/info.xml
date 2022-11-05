@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install version="1.0" type="module">
     <name>Polls </name>
-    <description>The Poll core module allows administrator to create simple polls.</description>
+    <description>The Poll core module allows administrator to create simple polls</description>
     <version>0.0.2</version>
     <creationDate>24/08/2015</creationDate>
     <lastChangedDate>27/05/2017</lastChangedDate>

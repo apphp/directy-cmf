@@ -32,7 +32,29 @@
 - TipTip (Tooltip jQuery plug-in, Drew Wilson)       		v1.3     	http://code.drewwilson.com/entry/tiptip-jquery-plugin
 - Xoxco Tags Input (jQuery Plugin)                   		v1.3.3   	http://xoxco.com/projects/code/tagsinput
 
-   
+
+ CMF Embedded Modules:
+---------------------------------------------------------------------------
+| Name        | Description |
+| ----------- | ----------- |
+| Advertisements     | Advertisements module allows the administrator to create and place ads on the site. |
+| Backup and Restore | Backup and Restore module allows backup and restore site database |
+| Banners            | This module allows you to show banners on the Frontend of the site |
+| Blog               | This module allows you to manage a simple blog on your site |
+| Content Management | CMS module allows management of site content |
+| Events             | Events module allows creating and displaying events on the site |
+| Faq                | FAQ module allows management of faq categories, faq category items, etc. |
+| Gallery            | Gallery module allows creating gallery and albums on site |
+| News               | News module allows creating and displaying news on the site |
+| Polls              | The Poll core module allows administrator to create simple polls |
+| Reports            | This module provides a feature-rich and user-friendly web interface for managing reports |
+| Setup              | Setup module allows to install application using web installation wizard |
+| Testimonials       | Testimonials module allows creating and managing visitor testimonials |
+| Tickets            | Tickets module allows managing of customer support tickets |
+| Users              | This module allows users management on the site: creating accounts, registration, login etc. |
+| Web Forms          | Web Forms module allows creating online forms on site pages |
+
+
  Installation:
  ---------------------------------------------------------------------------
 - INSTALL file
