@@ -1,0 +1,21 @@
+Version 0.0.3 - [02,04,2019]
+----------------------------
+- New: added social logins
+- New: framework minimum version 1.2
+- New: added namespaces
+- Enh: improved logout logic
+- Enh: changes min value for birthday - 100 years
+
+
+Version 0.0.2 - [10.07.2015]
+----------------------------
+- New: added bruteforce protection for login page
+- Enh: improved Remember Me algorithm
+- Enh: improved password protection algorithm
+- Bug: fixed email field error on SQL insertion
+- Bug: fixed error on user creating
+
+
+Version 0.0.1 - [09.07.2014]
+----------------------------
+Initial release

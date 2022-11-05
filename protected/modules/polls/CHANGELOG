@@ -1,0 +1,21 @@
+Version 0.0.3
+----------------------------
+- New: framework minimum version 1.2
+- New: added namespaces
+- Bug: fixed AJAX voting issue
+
+Version 0.0.2
+----------------------------
+- New: Added the ability to post reviews via ajax
+- New: Added login for social networks
+- New: Added total for polls
+- New: Save vote result in table votes
+- New: You can insert polls via iframe
+- Enh: You can pass parameters in shortcode
+- Enh: You can use several polls
+- Enh: remove settings - vote "visitors only"
+
+
+Version 0.0.1
+----------------------------
+Initial release

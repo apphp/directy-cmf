@@ -1,0 +1,28 @@
+Version 0.0.4 - [06.02.2019]
+----------------------------
+- New: framework minimum version 1.2
+- New: added namespaces
+- New: added messages stored in database
+- Enh: added check routine for banned IP and emails
+- Bug: fixed issue with using CCaptcha twice on the same page
+
+
+Version 0.0.3 - [03.09.2014]
+----------------------------
+- New: added translation into Hebrew and Russian
+- Enh: minor changes in CSS
+- Enh: minor changes in messages texts
+- Bug: fixed wrong alert on error while sending email
+- Bug: fixed issue with using $ as jQuery alias
+
+
+Version 0.0.2 - [15.06.2014]
+----------------------------
+- Enh: minor changes in uninstall.mysql.sql
+- Enh: minor changes in CSS
+- Bug: fixed wrong alert on non-empty message and email
+
+
+Version 0.0.1 - [11.03.2014]
+----------------------------
+Initial release

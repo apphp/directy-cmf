@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>Tickets</name>
+    <description>Tickets module allows managing of customer support tickets</description>
+    <version>0.0.1</version>
+    <creationDate>16/02/2018</creationDate>
+    <lastChangedDate>06/02/2019</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>http://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <manual></manual>
+    <icon>assets/modules/tickets/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>tickets</code>
+	<requirements>
+		<framework>1.2.0</framework>
+	</requirements>	
+    <files>
+        <filename>info.xml</filename>
+        <config installationPath="protected/config/">
+			<filename exclude="yes">main.php</filename>
+            <filename>tickets.php</filename>
+        </config>
+		<components>
+			<filename>TicketsComponent.php</filename>
+		</components>
+		<controllers>
+			<filename>TicketsController.php</filename>
+			<filename>TicketRepliesController.php</filename>
+		</controllers>
+        <data>
+            <install>install.mysql.sql</install>
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <images installationPath="assets/modules/tickets/images/" byDirectory="true">
+            <filename>icon.png</filename>
+        </images>
+        <uploadeditems installationPath="assets/modules/tickets/uploaded" byDirectory="true">
+            <filename>index.html</filename>
+        </uploadeditems>
+        <css installationPath="assets/modules/tickets/css/" byDirectory="true">
+            <filename>tickets.css</filename>
+        </css>
+        <models>
+            <filename>Tickets.php</filename>
+            <filename>TicketReplies.php</filename>
+        </models>
+		<messages installationPath="protected/messages/*">
+            <en>
+                <filename>tickets.php</filename>
+            </en>
+        </messages>
+        <views>
+            <tickets>
+                <filename>editticket.php</filename>
+                <filename>manage.php</filename>
+                <filename>useraddticket.php</filename>
+                <filename>usereditticket.php</filename>
+                <filename>usermanagetickets.php</filename>
+            </tickets>
+            <ticketreplies>
+                <filename>replies.php</filename>
+                <filename>userreplies.php</filename>
+            </ticketreplies>
+        </views>        
+    </files>
+</install>

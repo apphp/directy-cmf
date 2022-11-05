@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>Reports</name>
+    <description>This module provides a feature-rich and user-friendly web interface for managing reports</description>
+    <version>0.0.3</version>
+    <creationDate>08/05/2015</creationDate>
+    <lastChangedDate>20/02/2019</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <manual></manual>
+    <icon>assets/modules/reports/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>reports</code>
+	<requirements>
+		<framework>1.2.0</framework>
+	</requirements>	
+    <files>
+        <filename>info.xml</filename>
+        <components>
+            <filename>ReportsProjectsComponent.php</filename>
+        </components>
+        <config installationPath="protected/config/">
+			<filename exclude="yes">main.php</filename>
+            <filename>reports.php</filename>
+        </config>
+		<controllers>
+			<filename>ReportsIndexController.php</filename>
+			<filename>ReportsEntitiesController.php</filename>
+			<filename>ReportsEntityItemsController.php</filename>
+			<filename>ReportsProjectsController.php</filename>
+			<filename>ReportsTypeItemsController.php</filename>
+			<filename>ReportsTypesController.php</filename>
+		</controllers>
+        <data>
+            <install>install.mysql.sql</install>
+            <update>
+				<filename>update.002.mysql.sql</filename>
+			</update>			
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <files installationPath="assets/modules/reports/files/" byDirectory="true">
+            <upload>
+				<filename>index.html</filename>
+			</upload>
+        </files>
+        <icons installationPath="templates/backend/images/icons/">
+            <filename>reports.png</filename>
+        </icons>
+        <images installationPath="assets/modules/reports/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>
+			<filename>no_image.png</filename>
+			<filename>logo.jpg</filename>
+        </images>
+        <messages installationPath="protected/messages/*">
+           	<filename>reports.php</filename>
+        </messages>		
+        <models>
+			<filename>ReportsEntities.php</filename>
+			<filename>ReportsEntityItems.php</filename>
+			<filename>ReportsProjects.php</filename>
+            <filename>ReportsTypeItems.php</filename>
+			<filename>RepoReportsTypes.php</filename>
+        </models>
+		<templates>
+			<filename>default.tpl</filename>
+		</templates>
+        <views>
+			<reportsindex>
+				<filename>noprivileges.php</filename>
+			</reportsindex>
+			<reportsentities>
+				<filename>add.php</filename>
+				<filename>edit.php</filename>
+				<filename>manage.php</filename>
+				<filename>preview.php</filename>
+			</reportsentities>
+			<reportsentityitems>
+				<filename>add.php</filename>
+				<filename>edit.php</filename>
+				<filename>manage.php</filename>				
+			</reportsentityitems>			
+            <reportsprojects>
+                <filename>add.php</filename>
+                <filename>edit.php</filename>
+                <filename>manage.php</filename>
+            </reportsprojects>
+			<reportstypeitems>
+                <filename>add.php</filename>
+                <filename>edit.php</filename>
+                <filename>manage.php</filename>
+			</reportstypeitems>
+			<reportstypes>
+                <filename>add.php</filename>
+                <filename>edit.php</filename>
+                <filename>manage.php</filename>
+			</reportstypes>
+        </views>        
+    </files>
+</install>

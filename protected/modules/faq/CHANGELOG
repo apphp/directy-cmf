@@ -1,0 +1,15 @@
+Version 0.0.3 - [31.01.2019]
+----------------------------
+- New: framework minimum version 1.2
+- New: added namespaces
+- Enh: redirect functionality on changing status and deleting
+
+Version 0.0.2 - [29.08.2016]
+----------------------------
+- New: TinyMCE editor for the field "answer" in the Edit/Add Category Items
+- Bug: fixed messages conclusion
+
+Version 0.0.1 - [01.07.2014]
+----------------------------
+Initial release
+

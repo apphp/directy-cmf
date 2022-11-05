@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>FAQ</name>
+    <description>FAQ module allows management of faq categories, faq category items, etc.</description>
+    <version>0.0.3</version>
+    <creationDate>1/04/2014</creationDate>
+    <lastChangedDate>29/01/2019</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <manual></manual>
+    <icon>assets/modules/faq/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>faq</code>
+	<requirements>
+		<framework>1.2.0</framework>
+	</requirements>	
+    <files>
+        <filename>info.xml</filename>
+        <components>
+            <filename>FaqComponent.php</filename>
+        </components>
+        <config installationPath="protected/config/">
+            <filename exclude="yes">main.php</filename>
+            <filename>faq.php</filename>
+        </config>
+        <controllers>
+            <filename>FaqCategoriesController.php</filename>
+            <filename>FaqCategoryItemsController.php</filename>
+        </controllers>
+        <data>
+            <install>install.mysql.sql</install>
+            <update>
+                <filename>update.002.mysql.sql</filename>
+            </update>
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <images installationPath="assets/modules/faq/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>
+        </images>
+        <css installationPath="assets/modules/faq/css/" byDirectory="true">
+            <filename>faq.css</filename>
+        </css>
+        <js installationPath="assets/modules/faq/js/" byDirectory="true">
+            <filename>faq.js</filename>
+        </js>
+        <messages installationPath="protected/messages/*">
+            <filename>faq.php</filename>
+        </messages>
+        <models>
+            <filename>FaqCategories.php</filename>
+            <filename>FaqCategoryItems.php</filename>
+        </models>
+        <views>
+        <faqcategories>
+            <filename>add.php</filename>
+            <filename>edit.php</filename>
+            <filename>viewall.php</filename>
+            <filename>manage.php</filename>
+        </faqcategories>
+        <faqcategoriesitems>
+            <filename>add.php</filename>
+            <filename>edit.php</filename>
+            <filename>manage.php</filename>
+        </faqcategoriesitems>
+        </views>
+    </files>
+</install>

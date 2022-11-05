@@ -1,0 +1,16 @@
+Version 0.0.3 - [25.02.2019]
+----------------------------
+- New: added possibility to upload and use images for testimonial authors
+- New: framework minimum version 1.2
+- New: added namespaces
+
+Version 0.0.2 - [05.08.2014]
+----------------------------
+- New: added new settings property "shortcode": {modules:testimonials}
+- New: added new settings property "page size"
+- Enh: minor changes in uninstall.mysql.sql
+- Bug: drawing wrong template in viewAllAction()
+
+Version 0.0.1 - [19.04.2014]
+----------------------------
+Initial release

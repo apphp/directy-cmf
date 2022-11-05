@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>Gallery</name>
+    <description>Gallery module allows creating gallery and albums on site</description>
+    <version>0.0.2</version>
+    <creationDate>02/03/2014</creationDate>
+    <lastChangedDate>27/09/2017</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <manual></manual>
+    <icon>assets/modules/gallery/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>gallery</code>
+	<requirements>
+		<framework>1.2.0</framework>
+	</requirements>	
+    <files>
+        <filename>info.xml</filename>
+        <components>
+            <filename>GalleryComponent.php</filename>
+        </components>
+        <config installationPath="protected/config/">
+			<filename exclude="yes">main.php</filename>
+            <filename>gallery.php</filename>
+        </config>
+		<controllers>
+			<filename>GalleryController.php</filename>
+		</controllers>
+        <data>
+            <install>install.mysql.sql</install>
+            <update>update.002.mysql.sql</update>
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <images installationPath="assets/modules/gallery/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>
+            <filename>empty_album.png</filename>
+            <items>
+            	<filename>no_image.png</filename>
+            </items>
+        </images>
+        <messages installationPath="protected/messages/*">
+           	<filename>gallery.php</filename>
+        </messages>
+        <models>
+            <filename>GalleryAlbums.php</filename>
+        </models>
+        <views>
+            <galleryalbums>
+                <filename>add.php</filename>
+                <filename>edit.php</filename>
+                <filename>manage.php</filename>
+            </galleryalbums>
+        </views>        
+    </files>
+</install>

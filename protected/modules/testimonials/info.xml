@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>Testimonials</name>
+    <description>Testimonials module allows creating and managing visitor testimonials</description>
+    <version>0.0.3</version>
+    <creationDate>02/09/2013</creationDate>
+    <lastChangedDate>25/02/2019</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <manual></manual>
+    <icon>assets/modules/testimonials/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>testimonials</code>
+	<requirements>
+		<framework>1.2.0</framework>
+	</requirements>	
+    <files>
+        <filename>info.xml</filename>
+        <components>
+            <filename>TestimonialsComponent.php</filename>
+        </components>
+        <config installationPath="protected/config/">
+			<filename exclude="yes">main.php</filename>
+            <filename>testimonials.php</filename>
+        </config>
+		<controllers>
+			<filename>TestimonialsController.php</filename>
+		</controllers>
+        <data>
+            <install>install.mysql.sql</install>
+            <update>
+                <filename>update.002.mysql.sql</filename>
+            </update>
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <images installationPath="assets/modules/testimonials/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>
+            <authors>
+				<filename>no_image.png</filename>
+                <filename>author_1.jpg</filename>
+				<filename>author_2.jpg</filename>
+            </authors>
+        </images>
+        <messages installationPath="protected/messages/*">
+           	<filename>testimonials.php</filename>
+        </messages>
+        <models>
+            <filename>Testimonials.php</filename>
+        </models>
+        <views>
+            <testimonials>
+                <filename>add.php</filename>
+                <filename>edit.php</filename>
+                <filename>manage.php</filename>
+                <filename>viewall.php</filename>
+            </testimonials>
+        </views>
+    </files>
+</install>

@@ -1,0 +1,45 @@
+span{  color: #707070;  }
+.message{  font-size: 14px;  color: #000000;  }
+.tickets{  margin-left: 5%;  text-align: left;  background-color:#F4F4F4;  border-radius: 5px;  padding: 10px 10px 2px 10px;  margin-bottom: 15px;  }
+.replies{  margin-right: 10%;  text-align: left;  background-color:#EEFAFF;  border-radius: 5px;  padding: 10px 10px 2px 10px;  margin-bottom: 15px;  }
+.date{  text-align: center;  color: #707070;  padding: 5px 10px 5px 10px; margin-bottom: 5px;  }
+#content .bloc .content p {  padding: 0px 0px 0px 0px !important;  line-height: 1.5em;  }
+
+#ticket-form { width:100%; margin-top:20px; margin-left:15px; }
+#ticket-form .required-fields-alert { margin:0px auto 10px auto; display:inline-block; }
+#ticket-form .row input { font-size:12px; padding:4px; border: 1px solid #AAA; width:400px; margin:2px 12px 3px 0px; }
+#ticket-form .row input[type="file"] { font-size:12px; padding:4px; border: 1px solid #ffffff; width:250px; margin:2px 12px 3px 0px; }
+#ticket-form .row input[type="checkbox"] { width:25px; margin:3px 0px 0px 0px; vertical-align:middle; }
+#ticket-form .row select { font-size:12px; padding:4px; border:solid 1px #aaaaaa; width:auto; min-width:100px; max-width:290px; margin:2px 0 5px 0px; }
+#ticket-form .row textarea { font-size:12px; padding:4px; border:solid 1px #aaaaaa; width:90%; height:200px; margin:2px 0 5px 0px; }
+#ticket-form .row label { width:150px; height:22px; display:inline-block; argin:2px 0 5px 0px; }
+#ticket-form input { font-size:14px; line-height: 20px; clear:both; margin-top: 20px; min-width:80px; }
+#ticket-form .required-fields-alert {margin-left: -15px;}
+
+#reply-message { width:100%; margin-top:20px; margin-left: 15px;}
+#reply-message .row input { font-size:12px; padding:4px; border: 1px solid #AAA; width:300px; margin:2px 12px 3px 0px; }
+#reply-message .row textarea { font-size:12px; padding:4px; border:solid 1px #aaaaaa; width:90%; height:200px; margin:2px 0 5px 0px; }
+#reply-message .row label { width:200px; height:22px; display:inline-block; argin:2px 0 5px 0px; }
+#reply-message input { font-size:14px; line-height: 20px; clear:both; margin-top: 20px; min-width:80px; }
+#reply-message p label { width:10px; display:inline-block; }
+#reply-message .required-fields-alert {margin-left: -15px;}
+#reply-message div.buttons-wrapper input[type="submit"]{ margin-left: -15px; }
+.ticket-closed{ font-size: 16px; text-align: center; color: #707070; }
+
+#frmFilterTickets  { width: 100%; margin-bottom: 10px}
+#frmFilterTickets input[type="text"]{ font-size:12px; padding:4px; border: 1px solid #AAA; width: 200px !important; margin:2px 12px 20px 0px; }
+#frmFilterTickets div.buttons-wrapper{ min-width:170px; float:right; text-align:right; margin-top:0; }
+#frmFilterTickets div.buttons-wrapper input { padding:4px 9px; }
+#frmFilterTickets div.buttons-wrapper input[type="submit"]{ min-width:70px; height: 40px; padding:4px 9px; margin:0; float:right; }
+#frmFilterTickets div.buttons-wrapper input[type="submit"]{color:#fff;background-color:#5bc0de;border-color:#46b8da}
+#frmFilterTickets div.buttons-wrapper input[type="submit"]:hover{color:#fff !important;background-color:#31b0d5 !important;border-color:#269abc !important}
+#frmFilterTickets div.buttons-wrapper input[type="button"]{ min-width:70px; height: 40px; padding:4px 9px; margin-right:5px;}
+#frmFilterTickets div.buttons-wrapper input[type="button"]{color:#fff;background-color:#5bc0de;border-color:#46b8da}
+#frmFilterTickets div.buttons-wrapper input[type="button"]:hover{color:#fff;background-color:#31b0d5;border-color:#269abc}
+
+.gridTable table {width: 100%;}
+.gridTable table thead th {font-size:12px; padding: 5px; border-bottom: 1px solid #AAA;}
+.gridTable table tbody tr{border-bottom: 1px solid #AAA;  padding: 5px;}
+.gridTable table tbody tr td{padding: 5px;}
+.gridTable table tbody tr td a{color:#5bc0de}
+.gridTable table tbody tr td a:hover{color:#000000}

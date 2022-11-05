@@ -1,0 +1,39 @@
+.main-area a.fc-event{
+    color:white;
+}
+#script-warning {
+    display: none;
+    background: #eee;
+    border-bottom: 1px solid #ddd;
+    padding: 0 10px;
+    line-height: 40px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+    color: red;
+}
+
+#loading {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+#calendar {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 10px;
+    position:relative;
+}
+
+#eventDetailsBlock{
+    background: #eee;
+    padding: 1em;
+    position: absolute;
+    display: none;
+    max-width: 40em;
+    z-index: 100;
+    font-size: 80%;
+    color: black;
+}

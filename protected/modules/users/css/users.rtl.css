@@ -1,0 +1,27 @@
+#registration-form label { text-align:left; }
+#registration-form input { margin:2px 10px 5px 0; }
+#registration-form select { margin:2px 10px 5px 0; }
+#registration-form textarea { margin:2px 10px 5px 0; }
+#registration-form img { margin-left:7px; }
+#registration-form p.error { text-align:right; margin:0 208px 3px 0; }
+#registration-form .captcha label { float:right; }
+#registration-form button { margin:5px 208px 0 4px; }
+
+#restore-form label { text-align:left; }
+#restore-form input { margin:2px 10px 5px 0; }
+#restore-form button { clear:both; margin:10px 208px 2px 4px; }
+#restore-form p.error { margin:0 208px 2px 208px; text-align:right; } 
+
+#login-form .row label { text-align:left; }
+#login-form .row label.remember { text-align:right; }
+#login-form p.error { margin:0 210px 2px 0; } 
+#login-form input { margin:2px 10px 3px 0; }
+#login-form input[type="submit"] { margin:2px 210px 2px 4px; }
+#login-form a { margin-left:auto; margin-right:210px; }
+
+#my-account { float:right; direction: rtl }
+#my-account .row input { margin:2px 0 3px 12px; }
+#my-account input[type="submit"] { margin:2px 210px 2px 4px; }
+#my-account img { margin-left:7px; margin-right:0px; }
+
+#remove-account-form { float:right; direction: rtl; }

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>Polls </name>
+    <description>The Poll core module allows administrator to create simple polls.</description>
+    <version>0.0.2</version>
+    <creationDate>24/08/2015</creationDate>
+    <lastChangedDate>27/05/2017</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+	<manual></manual>
+    <icon>assets/modules/polls/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>polls</code>
+    <requirements>
+        <framework>1.2.0</framework>
+    </requirements>
+    <files>
+        <filename>info.xml</filename>
+        <components>
+            <filename>PollsComponent.php</filename>
+        </components>
+        <config installationPath="protected/config/">
+            <filename exclude="yes">main.php</filename>
+            <filename>polls.php</filename>
+        </config>
+        <controllers>
+            <filename>PollsController.php</filename>
+        </controllers>
+        <css installationPath="assets/modules/polls/css/" byDirectory="true">
+            <filename>polls.css</filename>
+        </css>
+        <data>
+            <install>install.mysql.sql</install>
+            <update>update.002.mysql.sql</update>
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <icons installationPath="templates/backend/images/icons/">
+            <filename>polls.png</filename>
+        </icons>
+        <images installationPath="assets/modules/polls/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>
+        </images>
+        <js installationPath="assets/modules/polls/js/" byDirectory="true">
+            <filename>polls.js</filename>
+        </js>
+        <messages installationPath="protected/messages/*">
+            <en default="true">
+                <filename>polls.php</filename>
+            </en>
+            <ru>
+                <filename>polls.php</filename>
+            </ru>
+        </messages>
+        <models>
+            <filename>Polls.php</filename>
+            <filename>Votes.php</filename>
+        </models>
+        <views>
+            <polls>
+                <filename>add.php</filename>
+                <filename>edit.php</filename>
+                <filename>manage.php</filename>
+                <filename>show.php</filename>
+                <filename>showall.php</filename>
+                <filename>widget.php</filename>
+            </polls>
+        </views>
+    </files>
+</install>

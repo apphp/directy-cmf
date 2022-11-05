@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>Advertisements</name>
+    <description>Advertisements module allows the administrator to create and place ads on the site.</description>
+    <version>0.0.1</version>
+    <creationDate>03/11/2016</creationDate>
+    <lastChangedDate>03/12/2016</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <icon>assets/modules/advertisements/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>advertisements</code>
+    <requirements>
+        <framework>1.2.0</framework>
+    </requirements>
+    <files>
+        <filename>info.xml</filename>
+        <components>
+            <filename>AdvertisementsComponent.php</filename>
+        </components>
+        <config installationPath="protected/config/">
+            <filename exclude="yes">main.php</filename>
+            <filename>advertisements.php</filename>
+        </config>
+        <controllers>
+            <filename>AdvertisementsController.php</filename>
+        </controllers>
+        <data>
+            <install>install.mysql.sql</install>
+            <update>update.mysql.sql</update>
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <icons installationPath="templates/backend/images/icons/">
+            <filename>advertisements.png</filename>
+        </icons>
+        <images installationPath="assets/modules/advertisements/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>
+            <items>
+                <filename>ad_1.png</filename>
+				<filename>ad_2.png</filename>
+				<filename>no_image.png</filename>				
+            </items>
+        </images>
+        <messages installationPath="protected/messages/*">
+            <en>
+                <filename>advertisements.php</filename>
+            </en>
+        </messages>
+        <models>
+            <filename>Advertisements.php</filename>
+        </models>
+        <views>
+            <advertisements>
+                <filename>add.php</filename>
+                <filename>edit.php</filename>
+                <filename>manage.php</filename>
+            </advertisements>
+        </views>
+    </files>
+</install>

@@ -1,0 +1,46 @@
+Version 0.0.5 - [05.02.2019]
+----------------------------
+- New: added counter of hits
+- New: added possibility to use shortcodes from other modules
+- New: framework minimum version 1.2
+- New: added namespaces
+- Bug: removed module placeholders in drawLatestNewsBlock()
+
+
+Version 0.0.4 - [28.09.2017]
+----------------------------
+- New: added function 'Subscribe'
+- New: added creating RSS feed
+- Enh: added check for banned IP abd email
+- Enh: drawLastNewsBlock renamed into drawLatestNewsBlock
+- Bug: fixed wrong codes for email templates
+- Bug: non-existing variable $errorField in unsubscribe
+- Bug: fixed wrong output in latest news title
+
+
+Version 0.0.3 - [28.07.2015]
+----------------------------
+- New: added translation in Russian
+- New: added search by news feature (requires Directy CMF 6.0.0 or higher)
+- New: added possibility to add into image and show it on news page
+- New: into image is now showing on search results page
+- Enh: secure fix for wysiwyg editor
+
+
+Version 0.0.2 - [14.11.2014]
+----------------------------
+- New: added new settings property "shortcode": {modules:testimonials}
+- New: added new settings property "page size"
+- New: added new settings property "show block date"
+- New: added new settings property "news link format"
+- Enh: minor changes in uninstall.mysql.sql
+- Enh: all embedded links improved with SEO format
+- Bug: drawing wrong template in viewAllAction()
+- Bug: fixed error on news record update
+- Bug: fixed drawing draft news
+- Bug: fixed access to inactive news
+
+
+Version 0.0.1 - [02.06.2014]
+----------------------------
+Initial release

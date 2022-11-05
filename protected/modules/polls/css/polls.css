@@ -1,0 +1,32 @@
+.poll-answers .message          { margin-bottom:10px; display:inline-block; font-weight: bold; width:400px; }
+.poll-answers .message.error    { color: #f58; }
+.poll-answers .message.success  { color: #5f8; }
+.poll-answers div.slider        { float: left; margin-top: 7px; height: 3px; }
+.poll-answers div.percent       { float: left; padding: 0 5px }
+.poll-answers label input       { margin-top:-3px; }
+.polls-previous ul              { list-style-type: none; padding: 0; margin: 0; }
+.polls-previous ul li a         { color: #f58; text-decoration: none; }
+.polls-previous ul li a:hover   { text-decoration: underline; }
+.poll-side-block .bold,
+.poll-side-block .block-title   { font-weight: bold; }
+.poll-side-block a              { color: #f58 !important; }
+.poll-side-block label input    { margin-top:-3px; margin-right:5px; }
+.poll-table                     {margin-bottom:10px;}
+.poll-table .poll-bar           {display:none;width:0;height:10px;background-color:#080;-moz-border-radius:4px;-webkit-border-radius:4px;-khtml-border-radius:4px;border-radius:4px;}
+.poll-table .cell-poll-bar      {min-width: 30px;}
+.poll-table .cell-poll-percent  {width: 40px;}
+.poll-table .cell-votes         {width: 30px;}
+.polls-archive                  {display:block;margin-top:10px;}
+
+@media screen and (min-width: 450px) {
+    .poll-table .cell-answer {width: 115px;}
+}
+@media screen and (max-width: 450px) and (min-width: 350px) {
+    .poll-table .cell-answer {width: 95px;}
+}
+@media screen and (max-width: 350px) and (min-width: 250px) {
+    .poll-table .cell-answer {width: 75px;}
+}
+form.form-polls-block label     {display:block;}
+form.form-polls-block label:last-child  {margin-bottom:20px;}
+form.form-polls-block label input { margin-right:5px;}

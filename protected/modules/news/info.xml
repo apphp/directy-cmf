@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>News</name>
+    <description>News module allows creating and displaying news on the site</description>
+    <version>0.0.5</version>
+    <creationDate>15/08/2013</creationDate>
+    <lastChangedDate>04/02/2019</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <manual></manual>
+    <icon>assets/modules/news/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>news</code>
+	<requirements>
+		<framework>1.2.0</framework>
+	</requirements>	
+    <files>
+        <filename>info.xml</filename>
+        <components>
+            <filename>NewsComponent.php</filename>
+        </components>
+        <componentview installationPath="protected/views/components">
+            <filename>newssubscribers.php</filename>
+        </componentview>
+        <config installationPath="protected/config/">
+            <filename exclude="yes">main.php</filename>
+            <filename>news.php</filename>
+        </config>
+        <controllers>
+            <filename>NewsController.php</filename>
+            <filename>NewsSubscribersController.php</filename>
+        </controllers>
+        <data>
+            <install>install.mysql.sql</install>
+            <update>
+                <filename>update.002.mysql.sql</filename>
+                <filename>update.003.mysql.sql</filename>
+                <filename>update.004.mysql.sql</filename>
+                <filename>update.005.mysql.sql</filename>
+            </update>            
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <feeds installationPath="feeds/">
+			<filename>news_rss.xml</filename>
+        </feeds>
+        <images installationPath="assets/modules/news/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>
+            <intro_images>
+                <filename>no_image.png</filename>
+            </intro_images>
+        </images>
+        <css installationPath="assets/modules/news/css/" byDirectory="true">
+            <filename>news.css</filename>
+        </css>
+        <messages installationPath="protected/messages/*">
+            <en default="true">
+                <filename>news.php</filename>
+            </en>
+            <ru>
+                <filename>news.php</filename>
+            </ru>
+        </messages>
+        <models>
+            <filename>News.php</filename>
+            <filename>NewsSubscribers.php</filename>
+        </models>        
+        <views>
+            <news>
+                <filename>add.php</filename>
+                <filename>edit.php</filename>
+                <filename>error.php</filename>
+                <filename>manage.php</filename>
+                <filename>view.php</filename>
+                <filename>viewall.php</filename>
+            </news>
+            <newssubscribers>
+                <filename>add.php</filename>
+                <filename>edit.php</filename>
+                <filename>manage.php</filename>
+                <filename>view.php</filename>
+                <filename>subscribe.php</filename>
+                <filename>unsubscribe.php</filename>
+            </newssubscribers>
+        </views>        
+    </files>
+</install>

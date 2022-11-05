@@ -1,0 +1,18 @@
+Version 0.0.3 -
+----------------------------
+- New: framework minimum version 1.2
+- New: added namespaces
+
+
+Version 0.0.2 - [12.08.2017]
+----------------------------
+- New: added search functionality that allows to perform search in posts
+- Enh: date() changed with CLocale::date()
+- Enh: views for each post
+- Enh: added breadcrumbs on post and all posts pages
+- Enh: code optimized in Posts controller
+
+
+Version 0.0.1 - [08.07.2014]
+----------------------------
+Initial release

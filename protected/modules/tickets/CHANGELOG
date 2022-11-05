@@ -1,0 +1,11 @@
+Version 0.0.2 - [06.02.2019]
+----------------------------
+- New: framework minimum version 1.2
+- New: added namespaces
+- Enh: minor changes in uninstall.mysql.sql
+- Enh: minor changes in CSS
+- Bug: fixed wrong alert on non-empty message and email
+
+Version 0.0.1 - [16.02.2018]
+----------------------------
+Initial release

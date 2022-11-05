@@ -1,0 +1,178 @@
+.subscribe-form-content {
+    border: 1px solid #B7B7B7;
+}
+
+.subscribe-form-content .alert {
+    margin:10px;
+}
+
+#subscribe-form {
+    font-size: 12px;
+    margin: 0;
+    width: 580px;
+    padding: 10px 14px 20px;
+    color: #585048;
+}
+
+#subscribe-form label {
+    display: inline-block;
+    text-align: right;
+    color: #585048;
+    padding: 5px 2px 3px;
+    width: 194px;
+    float: left;
+}
+
+#subscribe-form .buttons-wrapper {
+    margin-left: 208px;
+}
+
+#subscribe-form input[type="text"] {
+    padding: 4px;
+    margin: 2px 0px 5px 10px;
+    border: 1px solid #AAA;
+    font-size: 12px;
+    width: 290px;
+    float: left;
+}
+
+#subscribe-form input[type="submit"], #subscribe-form input[type='button'] {
+    clear:both;
+    margin:4px 0px 2px 0px;
+    min-width:80px;
+    background:#4b4136;
+    margin-right:4px;
+    border:1px solid #898989;
+    background: -webkit-linear-gradient(top, #b7b7b7 0%, #ababab 10%, #ababab 100%);
+    background: -moz-linear-gradient(center top , rgb(198, 198, 198) 0%, rgb(171, 171, 171) 100%) repeat scroll 0% 0% transparent;
+    border-color: rgb(178, 178, 178) rgb(158, 158, 158) rgb(140, 140, 140);
+    -moz-text-shadow:0px 1px 0px #555;
+    -webkit-text-shadow:0px 1px 0px #555;
+    -o-text-shadow:0px 1px 0px #555;
+    text-shadow:0px 1px 0px #555;
+    color:#fff;
+    font-weight:bold;
+    padding:3px 7px;
+    -moz-border-radius:2px;
+    -webkit-border-radius:2px;
+    -khtml-border-radius:2px;
+    border-radius:2px;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+#subscribe-form input[type="submit"]:hover, #subscribe-form input[type='button']:hover {
+    color: #f1f2f3; 
+    border-color: rgb(170, 170, 170) rgb(152, 152, 152) rgb(135, 135, 135); 
+}
+
+/*
+remove dotted border
+*/
+#subscribe-form input[type="submit"]::-moz-focus-inner, #subscribe-form input[type='button']::-moz-focus-inner, .side-panel-block.subscribe-block button::-moz-focus-inner  {
+  border: none;
+}
+
+#subscribe-form .required-fields-alert {
+    font-size: 10px;
+    font-style: italic;
+    float: right;
+}
+
+#subscription-side-form input {
+    font-size: 12px;
+    padding: 4px 2px;
+    border: 1px solid #AAA;
+}
+
+#subscription-side-form input[type=submit] {
+    clear: both;
+    margin: 4px 0px 2px 0px;
+    min-width: 80px;
+    background: #4B4136;
+    margin-right: 4px;
+    border: 1px solid #898989;
+    background: -webkit-linear-gradient(top, #b7b7b7 0%, #ababab 10%, #ababab 100%);
+    background: -moz-linear-gradient(center top , #C6C6C6 0%, #ABABAB 100%) repeat scroll 0% 0% transparent;
+    border-color: #B2B2B2 #9E9E9E #8C8C8C;
+    -moz-text-shadow: 0px 1px 0px #555;
+    -webkit-text-shadow: 0px 1px 0px #555;
+    -o-text-shadow: 0px 1px 0px #555;
+    text-shadow: 0px 1px 0px #555;
+    color: #FFF;
+    font-weight: bold;
+    padding: 3px 7px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -khtml-border-radius: 2px;
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+#subscription-side-form input[type=submit]:hover {
+     color: #f1f2f3;
+     border-color: rgb(170, 170, 170) rgb(152, 152, 152) rgb(135, 135, 135); 
+}
+
+#messageInfo{
+    padding-left:15px;
+    padding-right:15px;
+    text-align: justify;
+    color:#585048;
+}
+
+.side-panel-block.subscribe-block {
+    margin-top: 30px;
+    border: 1px solid #ccc;
+}
+
+.side-panel-block.subscribe-block h3, .side-panel-block.subscribe-block button {
+    position: relative;
+    top: -26px;
+}
+
+.side-panel-block.subscribe-block h3 {
+    width: 120px;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    background-color: #fff;
+}
+
+.side-panel-block.subscribe-block button {
+    clear:both;
+    margin:4px 0px 2px 0px;
+    min-width:80px;
+    background:#4b4136;
+    margin-right:4px;
+    border:1px solid #898989;
+    background: -webkit-linear-gradient(top, #b7b7b7 0%, #ababab 10%, #ababab 100%);
+    background: -moz-linear-gradient(center top , rgb(198, 198, 198) 0%, rgb(171, 171, 171) 100%) repeat scroll 0% 0% transparent;
+    border-color: rgb(178, 178, 178) rgb(158, 158, 158) rgb(140, 140, 140);
+    -moz-text-shadow:0px 1px 0px #555;
+    -webkit-text-shadow:0px 1px 0px #555;
+    -o-text-shadow:0px 1px 0px #555;
+    text-shadow:0px 1px 0px #555;
+    color:#fff;
+    font-weight:bold;
+    padding:3px 7px;
+    -moz-border-radius:2px;
+    -webkit-border-radius:2px;
+    -khtml-border-radius:2px;
+    border-radius:2px;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+.side-panel-block.subscribe-block button:hover {
+    color: #f1f2f3; 
+    border-color: rgb(170, 170, 170) rgb(152, 152, 152) rgb(135, 135, 135); 
+}
+
+form[name='frmNewsUnsubscribe'] #news_subscribe_email {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    user-select: none;
+}

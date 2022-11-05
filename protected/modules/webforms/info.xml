@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>Web Forms</name>
+    <description>Web Forms module allows creating online forms on site pages</description>
+    <version>0.0.5</version>
+    <creationDate>31/07/2013</creationDate>
+    <lastChangedDate>06/03/2019</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <manual></manual>
+    <icon>assets/modules/webforms/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>webforms</code>
+	<requirements>
+		<framework>1.2.0</framework>
+	</requirements>	
+    <files>
+        <filename>info.xml</filename>
+        <components>
+            <filename>Webforms.php</filename>
+        </components>
+        <config installationPath="protected/config/">
+			<filename exclude="yes">main.php</filename>
+            <filename>webforms.php</filename>
+        </config>
+        <controllers>
+            <filename>WebformsController.php</filename>
+            <filename>WebformsMessagesController.php</filename>
+        </controllers>
+        <models>
+            <filename>WebformsMessages.php</filename>
+        </models>
+        <data>
+            <install>install.mysql.sql</install>
+            <update>update.002.mysql.sql</update>
+            <update>update.003.mysql.sql</update>
+            <update>update.004.mysql.sql</update>
+            <update>update.005.mysql.sql</update>
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <images installationPath="assets/modules/webforms/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>
+        </images>
+        <css installationPath="assets/modules/webforms/css/" byDirectory="true">
+            <filename>webforms.css</filename>
+        </css>
+        <js installationPath="assets/modules/webforms/js/" byDirectory="true">
+            <filename>webforms.js</filename>
+        </js>
+        <messages installationPath="protected/messages/*">
+            <en default="true">
+                <filename>webforms.php</filename>
+            </en>
+            <es>
+                <filename>webforms.php</filename>
+            </es>
+            <de>
+                <filename>webforms.php</filename>
+            </de>
+            <he>
+                <filename>webforms.php</filename>
+            </he>
+            <ru>
+                <filename>webforms.php</filename>
+            </ru>
+        </messages>
+        <views>
+            <webformsmessages>
+                <filename>manage.php</filename>
+            </webformsmessages>
+        </views>
+    </files>
+</install>

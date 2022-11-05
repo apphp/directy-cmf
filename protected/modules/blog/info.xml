@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>Blog</name>
+    <description>This module allows you to manage a simple blog on yuor site</description>
+    <version>0.0.2</version>
+    <creationDate>19/03/2014</creationDate>
+    <lastChangedDate>19/02/2019</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <manual></manual>
+    <icon>assets/modules/blog/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>blog</code>
+	<requirements>
+		<framework>1.2.0</framework>
+	</requirements>	
+    <files>
+        <filename>info.xml</filename>
+        <components>
+            <filename>BlogComponent.php</filename>
+        </components>
+        <config installationPath="protected/config/">
+			<filename exclude="yes">main.php</filename>
+            <filename>blog.php</filename>
+        </config>
+		<controllers>
+			<filename>PostsController.php</filename>
+		</controllers>
+        <data>
+            <install>install.mysql.sql</install>
+            <update>
+                <filename>update.002.mysql.sql</filename>
+            </update>
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <images installationPath="assets/modules/blog/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>
+        </images>
+        <messages installationPath="protected/messages/*">
+           	<filename>blog.php</filename>
+        </messages>
+        <models>
+            <filename>Posts.php</filename>
+        </models>
+        <views>
+            <blogposts>
+                <filename>add.php</filename>
+                <filename>edit.php</filename>
+                <filename>manage.php</filename>
+            </blogposts>
+        </views>        
+    </files>
+</install>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>Banners</name>
+    <description>This module allows you to show banners on the Frontend of the site</description>
+    <version>0.0.3</version>
+    <creationDate>16/02/2015</creationDate>
+    <lastChangedDate>18/03/2017</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <manual></manual>
+    <icon>assets/modules/banners/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>banners</code>
+	<requirements>
+		<framework>1.2.0</framework>
+	</requirements>	
+    <files>
+        <filename>info.xml</filename>
+        <components>
+            <filename>BannersComponent.php</filename>
+        </components>
+        <config installationPath="protected/config/">
+			<filename exclude="yes">main.php</filename>
+            <filename>banners.php</filename>
+        </config>
+		<controllers>
+			<filename>BannersController.php</filename>
+		</controllers>
+        <data>
+            <install>install.mysql.sql</install>
+			<update>
+				<filename>update.002.mysql.sql</filename>
+				<filename>update.003.mysql.sql</filename>
+			</update>
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <images installationPath="assets/modules/banners/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>
+            <filename>empty_slider.png</filename>
+            <filename>no_image.png</filename>
+			<items>			
+				<filename>no_image.png</filename>
+				<filename>no_banner.png</filename>
+				<filename>banner1.png</filename>
+				<filename>banner2.png</filename>
+			</items>			
+        </images>
+        <models>
+            <filename>Banners.php</filename>
+        </models>
+		<messages installationPath="protected/messages/*">
+            <en>
+                <filename>banners.php</filename>
+            </en>
+            <ru>
+                <filename>banners.php</filename>
+            </ru>
+        </messages>
+        <views>
+            <banners>
+                <filename>add.php</filename>
+                <filename>edit.php</filename>
+                <filename>manage.php</filename>
+            </banners>
+        </views>        
+    </files>
+</install>

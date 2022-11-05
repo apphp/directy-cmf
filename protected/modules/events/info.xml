@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>Events</name>
+    <description>Events module allows creating and displaying events on the site</description>				 
+    <version>0.0.2</version>
+    <creationDate>10/01/2016</creationDate>
+    <lastChangedDate>27/01/2019</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <manual></manual>
+    <icon>assets/modules/events/images/icon.png</icon> 
+    <moduleType>application</moduleType>
+    <code>events</code>
+	<requirements>
+		<framework>1.2.0</framework>
+	</requirements>	
+    <files>
+        <filename>info.xml</filename>
+        <components>
+            <filename>EventsComponent.php</filename>
+        </components>
+        <config installationPath="protected/config/">
+            <filename exclude="yes">main.php</filename>
+            <filename>events.php</filename>
+        </config>
+        <controllers>
+            <filename>EventsCategoriesController.php</filename>
+            <filename>EventsController.php</filename>
+        </controllers>
+        <data>
+            <install>install.mysql.sql</install>
+            <update>
+                <filename>update.002.mysql.sql</filename>
+            </update>
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <images installationPath="assets/modules/events/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>
+        </images>
+        <icons installationPath="templates/backend/images/icons/">
+            <filename>events.png</filename>
+        </icons>
+        <css installationPath="assets/modules/events/css/" byDirectory="true">
+            <filename>datetimepicker.css</filename>
+            <filename>events.css</filename>
+            <filename>fullcalendar.min.css</filename>
+            <filename>fullcalendar.print.css</filename>
+        </css>
+        <js installationPath="assets/modules/events/js/" byDirectory="true">
+            <filename>moment.min.js</filename> 
+            <filename>fullcalendar.min.js</filename> 
+            <filename>lang-all.js</filename> 
+            <filename>datetimepicker.js</filename> 
+        </js>
+        <messages installationPath="protected/messages/*">
+            <en default="true">
+                <filename>events.php</filename>
+            </en>
+        </messages>
+        <models>
+            <filename>Events.php</filename>
+            <filename>EventsCategories.php</filename>
+        </models>
+        <views>
+            <events>
+                <events>
+                    <filename>add.php</filename>
+                    <filename>edit.php</filename>
+                    <filename>manage.php</filename>
+                </events>
+                <eventscategories>
+                    <filename>add.php</filename>
+                    <filename>edit.php</filename>
+                    <filename>manage.php</filename>   
+                </eventscategories>
+            </events>
+        </views>        
+    </files>
+</install>

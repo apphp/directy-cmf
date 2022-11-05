@@ -1,0 +1,24 @@
+Version 0.0.4 -
+----------------------------
+- New: framework minimum version 1.2
+- New: added namespaces
+
+
+Version 0.0.3 - [18.03.2017]
+----------------------------
+- New: added new field "title" for banners
+- New: added new field "Button Text" for banners
+- New: added support of rs-slider
+- New: added default "demi" banners on istallation
+- Enh: length of banner description increased to 1024 chars
+
+
+Version 0.0.2 - [12.06.2015]
+----------------------------
+- Enh: added getBanner method in component
+- Bug: fixed showing empty links, if URL was not defined
+
+
+Version 0.0.1 - [13.02.2015]
+----------------------------
+Initial release

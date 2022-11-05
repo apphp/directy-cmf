@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>Content Management</name>
+    <description>CMS module allows management of site content</description>
+    <version>0.0.5</version>
+    <creationDate>21/04/2013</creationDate>
+    <lastChangedDate>21/07/2017</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <manual></manual>
+    <icon>assets/modules/cms/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>cms</code>
+	<requirements>
+		<framework>1.2.0</framework>
+	</requirements>	
+    <files>
+        <filename>info.xml</filename>
+        <components>
+            <filename>CmsComponent.php</filename>
+        </components>
+        <config installationPath="protected/config/">
+            <filename exclude="yes">main.php</filename>
+			<filename>cms.php</filename>
+        </config>
+        <controllers>
+            <filename>PagesController.php</filename>
+        </controllers>
+        <data>
+            <install>install.mysql.sql</install>
+            <update>
+                <filename>update.003.mysql.sql</filename>
+                <filename>update.004.mysql.sql</filename>
+				<filename>update.005.mysql.sql</filename>
+            </update>
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <images installationPath="assets/modules/cms/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>
+        </images>
+            <icons installationPath="templates/backend/images/icons/">
+            <filename>cms.png</filename>
+        </icons>
+        <messages installationPath="protected/messages/*">
+           	<filename>cms.php</filename>
+        </messages>
+        <models>
+            <filename>Pages.php</filename>
+        </models>
+        <views>
+            <pages>
+                <filename>index.php</filename>
+            </pages>
+        </views>
+    </files>
+</install>

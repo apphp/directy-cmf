@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.0" type="module">
+    <name>Users</name>
+    <description>This module allows users management on the site: creating accounts, registration, login etc.</description>
+    <version>0.0.3</version>
+    <creationDate>18/04/2014</creationDate>
+    <lastChangedDate>02/04/2019</lastChangedDate>
+    <author>ApPHP</author>
+    <authorEmail>info@apphp.com</authorEmail>
+    <authorUrl>https://www.apphp.com</authorUrl>
+    <copyright>ApPHP</copyright>
+    <license>LGPL</license>
+    <manual></manual>
+    <icon>assets/modules/users/images/icon.png</icon>
+    <moduleType>application</moduleType>
+    <code>users</code>
+	<requirements>
+		<framework>1.2.0</framework>
+	</requirements>	
+    <files>
+        <filename>info.xml</filename>
+        <components>
+            <filename>UsersComponent.php</filename>
+        </components>
+        <config installationPath="protected/config/">
+            <filename exclude="yes">main.php</filename>
+            <filename>users.php</filename>
+        </config>
+        <controllers>            
+            <filename>UsersController.php</filename>
+            <filename>UserGroupsController.php</filename>                     
+        </controllers>
+        <data>
+            <install>install.mysql.sql</install>
+            <update>
+				<filename>update.002.mysql.sql</filename>
+			</update>            
+            <uninstall>uninstall.mysql.sql</uninstall>
+        </data>
+        <images installationPath="assets/modules/users/images/" byDirectory="true">
+			<filename>.htaccess</filename>
+            <filename>icon.png</filename>            
+        </images>
+        <css installationPath="assets/modules/users/css/" byDirectory="true">
+            <filename>users.css</filename>
+            <filename>users.rtl.css</filename>
+        </css>
+        <js installationPath="assets/modules/users/js/" byDirectory="true">
+            <filename>users.js</filename>
+        </js>
+        <messages installationPath="protected/messages/*">
+           	<filename>users.php</filename>
+        </messages>        
+        <models>           
+            <filename>Users.php</filename>
+            <filename>UserGroups.php</filename>
+        </models>
+        <views>        
+            <usersGroups>
+                <filename>add.php</filename>
+                <filename>edit.php</filename>
+                <filename>manage.php</filename>
+            </usersGroups> 
+            <users>
+                <filename>add.php</filename>
+                <filename>confirmregistration.php</filename>
+                <filename>dashboard.php</filename>
+                <filename>edit.php</filename>
+                <filename>editaccount.php</filename>
+                <filename>login.php</filename>
+                <filename>manage.php</filename>                
+                <filename>myaccount.php</filename>                
+                <filename>registration.php</filename>
+                <filename>removeaccount.php</filename>
+                <filename>restorepassword.php</filename>
+            </users>
+        </views>
+    </files>
+</install>

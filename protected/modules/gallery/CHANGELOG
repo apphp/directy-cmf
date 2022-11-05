@@ -1,0 +1,14 @@
+Version 0.0.3 -
+----------------------------
+- New: framework minimum version 1.2
+- New: added namespaces
+
+Version 0.0.2 - [30.09.2017]
+----------------------------
+- New: added possibility to show single album: {module:gallery|1}
+- New: added possibility to show all images in single album: {module:gallery|1|opened}
+- Bug: fixed drawing wrong title for 1st item of album
+
+Version 0.0.1 - [01.02.2014]
+----------------------------
+Initial release
