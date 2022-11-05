@@ -1,5 +1,7 @@
  ApPHP Directy CMF - Content Management Framework
  ---------------------------------------------------------------------------
+ Directy CMF - MVC based cross-platform content management framework for publishing web content.
+
 - Version :      3.1.0
 - Developed by:  ApPHP <info@apphp.com>                                      
 - License:       GNU LGPL v.3                                                
