@@ -2,9 +2,9 @@
 <install version="1.0" type="module">
     <name>Backup and Restore</name>
     <description>Backup and Restore module allows backup and restore site database</description>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
     <creationDate>31/05/2013</creationDate>
-    <lastChangedDate>01/08/2017</lastChangedDate>
+    <lastChangedDate>04/01/2019</lastChangedDate>
     <author>ApPHP</author>
     <authorEmail>info@apphp.com</authorEmail>
     <authorUrl>https://www.apphp.com</authorUrl>
@@ -15,7 +15,7 @@
     <moduleType>application</moduleType>
     <code>backup</code>
 	<requirements>
-		<framework>1.0.0</framework>
+		<framework>1.2.0</framework>
 	</requirements>	
     <files>
         <filename>info.xml</filename>
@@ -29,6 +29,7 @@
                 <filename>update.003.mysql.sql</filename>
                 <filename>update.004.mysql.sql</filename>
 				<filename>update.005.mysql.sql</filename>
+                <filename>update.006.mysql.sql</filename>
             </update>
             <uninstall>uninstall.mysql.sql</uninstall>
         </data>

@@ -3,7 +3,7 @@
 return array(
     // Module classes
     'classes' => array(
-        'Backup'
+		'Modules\Backup\Controllers\Backup'
     ),
     // Management links
     'managementLinks' => array(

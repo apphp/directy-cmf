@@ -10,6 +10,15 @@
  *
  */
 
+namespace Modules\Backup\Models;
+
+// Framework
+use \A,
+	\CModel,
+	\CDatabase,
+	\CConfig;
+
+
 class Backup extends CModel
 {
 	/** @var string */    

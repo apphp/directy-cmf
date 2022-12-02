@@ -4,18 +4,15 @@
  *														
  * PUBLIC:                 	PRIVATE:
  * ---------------         	---------------
- * __construct             	_getExistingBackups
- * indexAction				_create
- * createAction				_restore
- * restoreAction
+ * __construct             	_prepareTab
+ * indexAction				_getExistingBackups
+ * createAction				_create
+ * restoreAction			_restore
  * deleteAction				
  * 
  */
 
 namespace Modules\Backup\Controllers;
-
-// Module
-use \Modules\Backup\Components\BackupComponent;
 
 // Framework
 use \A,
@@ -41,8 +38,7 @@ class BackupController extends CController
 	private $_backupDir = 'protected/tmp/backups/';
 	private $_backupFilePrefix = 'db-backup-';
 	private $_backupFileExt = 'sql';
-	private $_backendPath = '';
-
+	
     /**
 	 * Class default constructor
      */
@@ -58,7 +54,7 @@ class BackupController extends CController
 			if(CAuth::isLoggedInAsAdmin()){
 				$this->redirect($this->_backendPath.'modules/index');
 			}else{
-				$this->redirect(Website::getDefaultPage());
+				$this->redirect('index/index');
 			}
 		}
 
@@ -167,7 +163,7 @@ class BackupController extends CController
         }
 
         $this->_view->backupsList = $this->_getExistingBackups();
-		$this->_view->tabs = BackupComponent::prepareTab('create');
+		$this->_view->tabs = $this->_prepareTab('create');		
         $this->_view->render('backup/create');
     }
     
@@ -220,7 +216,7 @@ class BackupController extends CController
     	}
 
         $this->_view->backupsList = $this->_getExistingBackups();
-    	$this->_view->tabs = BackupComponent::prepareTab('restore');
+    	$this->_view->tabs = $this->_prepareTab('restore');
     	$this->_view->render('backup/restore');
     }
     	 
@@ -268,7 +264,7 @@ class BackupController extends CController
 		$this->_view->actionMessage = CWidget::create('CMessage', array($alertType, $alert, array('button'=>true)));
 		$this->_view->backupFileName = LocalTime::currentDate();
     	$this->_view->backupsList = $this->_getExistingBackups();
-    	$this->_view->tabs = BackupComponent::prepareTab('create');
+    	$this->_view->tabs = $this->_prepareTab('create');
     	$this->_view->render('backup/create');
     }
     
@@ -316,7 +312,30 @@ class BackupController extends CController
 		$backupModel = new Backup();
 		return $backupModel->restore($sqlDump);
     }
-
+    
+    /**
+     * Prepares backup module tabs
+     * @param string $activeTab backup|restore
+     */
+    private function _prepareTab($activeTab = 'create')
+    {
+    	return CWidget::create('CTabs', array(
+			'tabsWrapper'=>array('tag'=>'div', 'class'=>'title'),
+			'tabsWrapperInner'=>array('tag'=>'div', 'class'=>'tabs'),
+			'contentWrapper'=>array(),
+			'contentMessage'=>'',
+			'tabs'=>array(
+				A::t('backup', 'Settings') => array('href'=>$this->_backendPath.'modules/settings/code/backup', 'id'=>'tabSettings', 'content'=>'', 'active'=>false, 'htmlOptions'=>array('class'=>'modules-settings-tab')),
+				A::t('backup', 'Create')   => array('href'=>'backup/create', 'id'=>'tabCreate', 'content'=>'', 'active'=>($activeTab == 'create' ? true : false), 'disabled'=>(!Admins::hasPrivilege('backup', 'create') ? true : false)),
+				A::t('backup', 'Restore')  => array('href'=>'backup/restore', 'id'=>'tabRestore', 'content'=>'', 'active'=>($activeTab == 'restore' ? true : false), 'disabled'=>(!Admins::hasPrivilege('backup', 'restore') ? true : false)),
+			),
+			'events'=>array(
+				//'click'=>array('field'=>$errorField)
+			),
+			'return'=>true,
+    	));
+    }
+    
     /**
      * Returns array of existing backup files with fileName and fileSize values for each one. 
      */    

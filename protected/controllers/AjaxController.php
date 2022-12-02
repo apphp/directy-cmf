@@ -38,7 +38,7 @@ class AjaxController extends CController
 
     /**
      * Returns locations 
-     * @return json
+     * @return string JSON
      */
     public function getLocationsAction()
     {

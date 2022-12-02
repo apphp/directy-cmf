@@ -4,8 +4,8 @@
 	$this->_activeMenu = 'backup/create';
     $this->_pageTitle = A::t('backup', 'Create Backup').' | '.CConfig::get('name');
     $this->_breadCrumbs = array(
-        array('label'=>A::t('backup', 'Modules'), 'url'=>'modules/'),
-        array('label'=>A::t('backup', 'Backup'), 'url'=>'modules/settings/code/backup'),
+        array('label'=>A::t('backup', 'Modules'), 'url'=>$backendPath.'modules/'),
+        array('label'=>A::t('backup', 'Backup'), 'url'=>$backendPath.'modules/settings/code/backup'),
         array('label'=>A::t('backup', 'Create')),
     );
 	

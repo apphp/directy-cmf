@@ -16,7 +16,7 @@ class BackendMenu extends CComponent
 
 	/**
      *	Returns the instance of object
-     *	@return current class
+     *	@return BackendMenu
      */
 	public static function init()
 	{
