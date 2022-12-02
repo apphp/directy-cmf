@@ -716,7 +716,7 @@ class ModulesController extends CController
 		}
 		
     	// Load XML file for module info
-		$xml = simplexml_load_file('protected/modules/'.$moduleCode.'/info.xml');
+		$xml = simplexml_load_string(file_get_contents('protected/modules/'.$moduleCode.'/info.xml'));
 		if(!is_object($xml)){		
 			return A::t('app', 'XML File Error Message', array('{file}'=>CFile::createShortenName(APPHP_PATH.'/modules/'.$moduleCode.'/info.xml', 30, 50)));
 		} 

@@ -823,7 +823,7 @@ class SettingsController extends CController
 		
     	// Load XML file for template info
 		if(array_key_exists($this->_view->selectedTemplate, $this->_view->templatesList) && @file_exists('templates/'.$this->_view->selectedTemplate.'/info.xml')) {
-			$xml = simplexml_load_file('templates/'.$this->_view->selectedTemplate.'/info.xml');		 
+			$xml = simplexml_load_string(file_get_contents('templates/'.$this->_view->selectedTemplate.'/info.xml'));
         }
 		$this->_view->name = isset($xml->name) ? $xml->name : A::t('app', 'Unknown');
 		$this->_view->icon = isset($xml->icon) ? 'templates/'.$this->_view->selectedTemplate.'/'.$xml->icon : 'templates/backend/images/no_image.png';

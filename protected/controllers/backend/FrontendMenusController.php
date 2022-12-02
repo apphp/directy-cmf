@@ -281,7 +281,7 @@ class FrontendMenusController extends CController
 			$template = Bootstrap::init()->getSettings('template');
 			// Load data from XML file
 			if(@file_exists('templates/'.$template.'/info.xml')) {
-				$xml = simplexml_load_file('templates/'.$template.'/info.xml');		 
+				$xml = simplexml_load_string(file_get_contents('templates/'.$template.'/info.xml'));
 				if(isset($xml->menus->menu)){
 					$templateMenusArray = array();
 					foreach($xml->menus->menu as $menu){
