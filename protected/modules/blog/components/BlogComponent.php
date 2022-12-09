@@ -105,7 +105,6 @@ class BlogComponent extends CComponent
         );
 		
         // Draw all posts button, if access granted by settings
-        $viewAllPosts = '';
         $viewAllPosts = $viewAllPostsLink ? '<a href="posts/viewAll" class="btn btn-sm btn-default pull-right">'.A::t('blog', 'All Posts').'</a>'  : '' ;
 
         $output .= '<section class="listing-block latest-news">';

@@ -125,13 +125,13 @@ class PagesController extends CController
 
         Website::prepareBackendAction('edit', 'pages', 'pages/manage', false);
 
-        $page = $this->_checkPageAccess($id);
+        $objPage = $this->_checkPageAccess($id);
 
 		if(APPHP_MODE == 'demo'){
 			$alert = A::t('core', 'This operation is blocked in Demo Mode!');
 			$alertType = 'warning';
 		}else{
-			$result = Pages::model()->updateByPk($id, array('publish_status'=>($page->publish_status == 1 ? '0' : '1')));
+			$result = Pages::model()->updateByPk($id, array('publish_status'=>($objPage->publish_status == 1 ? '0' : '1')));
 			if($result){
 				$alert = A::t('cms', 'Page status has been successfully changed!');
 				$alertType = 'success';
