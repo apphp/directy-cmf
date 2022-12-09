@@ -1032,14 +1032,19 @@ class A
 	public function isSetup()
 	{
 		return $this->_setup;
-	} 	
+	}
 
     /**
      * Errors handler
-     * @param str $className
-     * @return void
+     * @param $errno
+     * @param $errstr
+     * @param $errfile
+     * @param $errline
+     * @param  array  $errcontext
+     * @return bool
+     * @throws ErrorException
      */
-    public function errorHandler($errno, $errstr, $errfile, $errline, array $errcontext)
+    public function errorHandler($errno, $errstr, $errfile, $errline, array $errcontext = [])
     {
 		// Error was suppressed with the @-operator
 		if (0 === error_reporting()) {
@@ -1063,6 +1068,8 @@ class A
 				CDebug::addMessage('warnings', 'errors-messages', 'Unknown Error: '.$errstr.PHP_EOL.CDebug::prepareBacktrace(), '');
 				break;
 		}
+
+        return true;
 	}
 
     /**
@@ -1162,8 +1169,10 @@ class A
                 $moduleName = strtolower($id);
                 $moduleConfig = APPHP_PATH.DS.'protected'.DS.'modules'.DS.$moduleName.DS.'config'.DS.'main.php';
                 if(file_exists($moduleConfig)){
-                    $arrConfig = include_once($moduleConfig);
-                    self::$_appModules[$moduleName] = $arrConfig;
+                    $arrConfig = include($moduleConfig);
+                    if (is_array($arrConfig)) {
+                        self::$_appModules[$moduleName] = $arrConfig;
+                    }
                 }
             }
         }
