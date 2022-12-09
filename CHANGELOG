@@ -1,7 +1,9 @@
 Version 3.2.x -
 ----------------------------
 - Enh: "simplexml_load_file" replaced with "simplexml_load_string"
-- Big: wrong parameters in A::errorHandler()
+- Bug: wrong parameters in A::errorHandler()
+- Bug: wrong login in CMS PagesController::changeStatusAction() method
+- Bug: probably undefined variable issues
 
 
 Version 3.1.1 - 01 Nov, 2022

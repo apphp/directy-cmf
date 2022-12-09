@@ -121,7 +121,7 @@ class FaqCategoryItemsController extends CController
         Website::prepareBackendAction('edit', 'faq', 'faqCategoryItems/manage', false);
         $this->_checkCategoryAccess($catId);
 
-        $this->_view->faqCategoryItem = $this->_checkCategoryItemAccess($id);
+        $this->_view->faqCategoryItem = $this->_checkCategoryItemAccess($id, $catId);
         $this->_view->render('faqCategoryItems/edit');
     }    
     
@@ -135,7 +135,7 @@ class FaqCategoryItemsController extends CController
     {
         Website::prepareBackendAction('edit', 'faq', 'faqCategoryItems/manage', false);
 		$this->_checkCategoryAccess($catId);
-        $faqCategoryItem = $this->_checkCategoryItemAccess($id);
+        $faqCategoryItem = $this->_checkCategoryItemAccess($id, $catId);
         
 		$changeResult = FaqCategoryItems::model()->updateByPk($id, array('is_active'=>($faqCategoryItem->is_active == 1 ? '0' : '1')));
 
@@ -162,7 +162,7 @@ class FaqCategoryItemsController extends CController
     {
         Website::prepareBackendAction('delete', 'faq', 'faqCategoryItems/manage', false);
         $this->_checkCategoryAccess($catId);
-        $faq = $this->_checkCategoryItemAccess($id);        
+        $faq = $this->_checkCategoryItemAccess($id, $catId);
        
         $alert = '';
         $alertType = '';
@@ -208,8 +208,9 @@ class FaqCategoryItemsController extends CController
     /**
      * Check if passed category item ID is valid
      * @param int $id
+     * @param int $catId
      */
-    private function _checkCategoryItemAccess($id = 0)
+    private function _checkCategoryItemAccess($id = 0, $catId = 0)
     {
         $faqCategoryItem = FaqCategoryItems::model()->findByPk($id);
         if(!$faqCategoryItem){

@@ -146,11 +146,12 @@ class OnlineCreditCard extends PaymentGateway
         $nl         = "\n";
         $msg        = '';
         $logData    = '';
+        $fh         = null;
 
         // Start log data
         // ---------------------------------------------------------------------
         if($this->_logMode){
-            if($this->_logTo == 'file'){
+            if($this->_logTo === 'file'){
                 $myFile = 'protected/tmp/logs/payments.log';
                 $fh = fopen($myFile, 'a') or die('can\'t open file');
             }
@@ -173,7 +174,7 @@ class OnlineCreditCard extends PaymentGateway
         // ---------------------------------------------------------------------
         if($this->_logMode){
             $logData .= '<br />'.$nl.$msg.'<br />'.$nl;
-            if($this->_logTo == 'file'){
+            if($this->_logTo === 'file' && !empty($fh)){
                 fwrite($fh, strip_tags($logData));
                 fclose($fh);
             }else{

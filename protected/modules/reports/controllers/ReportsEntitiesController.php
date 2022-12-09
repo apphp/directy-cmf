@@ -630,7 +630,7 @@ class ReportsEntitiesController extends CController
             $dataReport[0]['templateFile'] = 'default.tpl';
         }
 
-        if(CAuth::getLoggedId()){
+        if(CAuth::getLoggedId() && !empty($templateFile)){
             $dataReport[0]['missingFilename'] = $templateFile->template_name;
         }
 
@@ -731,7 +731,7 @@ class ReportsEntitiesController extends CController
                 $dataReport[1]['templateFile'] = 'default.tpl';
             }
 
-            if(CAuth::getLoggedId()){
+            if(CAuth::getLoggedId() && !empty($templateFileSecond)){
                 $dataReport[1]['missingFilename'] = $templateFileSecond->template_name;
             }
 

@@ -138,6 +138,9 @@ class AdvertisementsController extends CController
     {
         Website::prepareBackendAction('edit', 'advertisement', 'advertisements/manage', false);
 
+        $alert = '';
+        $alertType = '';
+
         $actionMessage = '';
         $advertisement = $this->_checkAdvertisementAccess($id);
 

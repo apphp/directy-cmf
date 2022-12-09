@@ -160,7 +160,7 @@ class Backup extends CModel
 					}
 				}
 				// Get last insert query
-				if($next == ''){ 
+				if(empty($next)){
 					$next = 'insert';
 				}
 				if((preg_match('/create/i', $next)) || (preg_match('/insert/i', $next)) || (preg_match('/drop t/i', $next))){

@@ -161,7 +161,8 @@ class ModulesController extends CController
 		$alertType = '';
 		
 		// Fetch the module
-		$moduleCode = $cRequest->getPost('act') == 'send' ? $cRequest->getPost('code') : $code;
+        $moduleName = '';
+        $moduleCode = $cRequest->getPost('act') == 'send' ? $cRequest->getPost('code') : $code;
         $module = Modules::model()->find('code = :code', array(':code'=>$moduleCode));
 		if(!$module){
             $this->redirect($this->_backendPath.'modules/index');

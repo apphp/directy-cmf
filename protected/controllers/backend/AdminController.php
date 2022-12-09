@@ -166,7 +166,7 @@ class AdminController extends CController
 						if($logAttempts < $this->_badLogins){
 							A::app()->getSession()->set('loginAttempts', $logAttempts+1);
 						}else{
-							A::app()->getCookie()->set('loginAttemptsAuth', md5(uniqid()));
+							A::app()->getCookie()->set('loginAttemptsAuth', md5(uniqid('', true)));
 							sleep($this->_redirectDelay);
 							$this->redirect($this->_backendPath.'admin/login');
 						}
@@ -414,10 +414,11 @@ class AdminController extends CController
 							$alert = A::t('app', 'Sorry, but we were not able to find any admin with that login information!');
 						}else{
 							$username = $admin->username;
+							$password = '';
 							$preferredLang = $admin->language_code;
 
 					        // Check if recovery is allowed or direct sending of password
-							if(CConfig::get('restoreAdminPassword.restoreType') == 'reset'){
+							if(CConfig::get('restoreAdminPassword.restoreType') === 'reset'){
 								$restoreHashCode = CHash::getRandomString(20);
 								$admin->password_restore_hash = $restoreHashCode;
 								if(!$admin->save()){
@@ -486,7 +487,7 @@ class AdminController extends CController
 								if($restoreAttempts < $this->_badRestores){
 									A::app()->getSession()->set('restoreAttempts', $restoreAttempts+1);
 								}else{
-									A::app()->getCookie()->set('restoreAttemptsAuth', md5(uniqid()));
+									A::app()->getCookie()->set('restoreAttemptsAuth', md5(uniqid('', true)));
 									sleep($this->_redirectDelay);
 									$this->redirect($this->_backendPath.'admin/restorePassword');
 								}

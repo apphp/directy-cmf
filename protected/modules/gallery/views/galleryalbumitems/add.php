@@ -1,4 +1,12 @@
 <?php
+  /**
+   * @var string $backendPath
+   * @var int $albumId
+   * @var string $albumLink
+   * @var string $albumTitle
+   * @var string $tabs
+   */
+
 	Website::setMetaTags(array('title'=>A::t('gallery', 'Add Album Item')));
 
     $this->_activeMenu = 'galleryAlbumItems/manage';
