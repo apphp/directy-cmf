@@ -26,7 +26,7 @@ class PaymentProvider
 	/**
 	 * Initializes the database class
 	 * @param string $provider
-	 * @return class
+	 * @return self class
 	 */
 	public static function init($provider = '')
 	{

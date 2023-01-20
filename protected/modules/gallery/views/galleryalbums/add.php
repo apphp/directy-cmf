@@ -1,7 +1,14 @@
 <?php
+/**
+ * @var string $backendPath
+ * @var array $albumTypes
+ * @var string $tabs
+ */
+
     Website::setMetaTags(array('title'=>A::t('gallery', 'Add Album')));
 
     $this->_activeMenu = 'galleryAlbums/manage';
+
     $this->_breadCrumbs = array(
         array('label'=>A::t('gallery', 'Modules'), 'url'=>$backendPath.'modules/'),
         array('label'=>A::t('gallery', 'Gallery'), 'url'=>$backendPath.'modules/settings/code/gallery'),
@@ -17,8 +24,8 @@
 
    	<div class="sub-title"><?= A::t('gallery', 'Add Album'); ?></div>
     <div class="content">
-    <?php			
-        echo CWidget::create('CDataForm', array(
+    <?php
+    echo CWidget::create('CDataForm', array(
             'model'             => 'Modules\Gallery\Models\GalleryAlbums',
             'operationType'     => 'add',
             'action'            => 'galleryAlbums/add/',

@@ -21,7 +21,8 @@ namespace Modules\Reports\Components;
 // Modules
 use \Modules\Reports\Models\ReportsEntities,
 	\Modules\Reports\Models\ReportsTypes,
-	\Modules\Reports\Models\ReportsTypeItems;
+	\Modules\Reports\Models\ReportsTypeItems,
+    \Modules\Reports\Models\ReportsEntityItems;
 
 // Global
 use \A,
@@ -39,6 +40,7 @@ use \Admins,
 	\Bootstrap,
 	\LocalTime,
 	\ModulesSettings;
+
 
 class ReportsProjectsComponent extends CComponent{
 

@@ -22,7 +22,8 @@ namespace Modules\Reports\Controllers;
 use \Modules\Reports\Components\ReportsProjectsComponent,
 	\Modules\Reports\Models\ReportsTypes,
 	\Modules\Reports\Models\ReportsEntities,
-	\Modules\Reports\Models\ReportsProjects;
+	\Modules\Reports\Models\ReportsProjects,
+    \Modules\Reports\Models\ReportsEntityItems;
 
 // Framework
 use \A,
@@ -39,6 +40,7 @@ use \LocalTime,
 	\Languages,
 	\ModulesSettings,
 	\Currencies;
+
 
 class ReportsProjectsController extends CController
 {

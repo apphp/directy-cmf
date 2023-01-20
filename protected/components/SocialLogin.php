@@ -14,7 +14,7 @@ class SocialLogin extends CComponent
 {
     /**
      *  Returns the instance of object
-     *  @return current class
+     *  @return self current class
      */
     public static function init()
     {
@@ -75,7 +75,7 @@ class SocialLogin extends CComponent
      * Draws payment form
      * @param array $links
      * @param bool $showOr
-     * @return HTML
+     * @return string
      */
     public static function drawButtons($links = array(), $showOr = true)
     {

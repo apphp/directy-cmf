@@ -1,13 +1,17 @@
 <?php
-    Website::setMetaTags(array('title'=>A::t('reports', 'Edit Report Type Item')));
-	
-	$this->_activeMenu = 'reportsTypeItems/manage';
-    $this->_breadCrumbs = array(
-        array('label'=>A::t('reports', 'Modules'), 'url'=>$backendPath.'modules/'),
-        array('label'=>A::t('reports', 'Reports'), 'url'=>$backendPath.'modules/settings/code/reports'),
-        array('label'=>A::t('reports', 'Report Type Items Management'), 'url'=>'reportsTypeItems/manage'),
-        array('label'=>A::t('reports', 'Edit Report Type Items')),
-    );
+/**
+ * @var string $backendPath
+ */
+
+Website::setMetaTags(['title' => A::t('reports', 'Edit Report Type Item')]);
+
+$this->_activeMenu  = 'reportsTypeItems/manage';
+$this->_breadCrumbs = [
+    ['label' => A::t('reports', 'Modules'), 'url' => $backendPath.'modules/'],
+    ['label' => A::t('reports', 'Reports'), 'url' => $backendPath.'modules/settings/code/reports'],
+    ['label' => A::t('reports', 'Report Type Items Management'), 'url' => 'reportsTypeItems/manage'],
+    ['label' => A::t('reports', 'Edit Report Type Items')],
+];
 ?>
 
 <h1><?= A::t('reports', 'Report Type Items Management'); ?></h1>

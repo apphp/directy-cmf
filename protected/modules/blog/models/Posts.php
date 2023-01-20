@@ -18,6 +18,7 @@ use \A,
 	\CActiveRecord,
 	\CModel,
 	\CDatabase,
+    \CHtml,
 	\CConfig;
 
 // Directy

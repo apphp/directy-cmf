@@ -1,13 +1,17 @@
 <?php
-    Website::setMetaTags(array('title'=>A::t('reports', 'Edit Project')));
-	
-	$this->_activeMenu = 'reportsProjects/manage';
-    $this->_breadCrumbs = array(
-        array('label'=>A::t('reports', 'Modules'), 'url'=>$backendPath.'modules/'),
-        array('label'=>A::t('reports', 'Reports'), 'url'=>$backendPath.'modules/settings/code/reports'),
-        array('label'=>A::t('reports', 'Projects Management'), 'url'=>'reportsProjects/manage'),
-        array('label'=>A::t('reports', 'Edit Project')),
-    );
+/**
+ * @var string $backendPath
+ */
+
+Website::setMetaTags(['title' => A::t('reports', 'Edit Project')]);
+
+$this->_activeMenu  = 'reportsProjects/manage';
+$this->_breadCrumbs = [
+    ['label' => A::t('reports', 'Modules'), 'url' => $backendPath.'modules/'],
+    ['label' => A::t('reports', 'Reports'), 'url' => $backendPath.'modules/settings/code/reports'],
+    ['label' => A::t('reports', 'Projects Management'), 'url' => 'reportsProjects/manage'],
+    ['label' => A::t('reports', 'Edit Project')],
+];
 ?>
 
 <h1><?= A::t('reports', 'Projects Management'); ?></h1>

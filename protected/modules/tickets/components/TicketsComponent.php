@@ -44,7 +44,7 @@ class TicketsComponent extends CComponent{
      * Prepares Tickets module sub tabs
      * @param string $parentTab
      * @param string $activeSubTab
-     * @return html
+     * @return string
      */
     public static function prepareSubTab($parentTab = 'tickets', $activeSubTab = '', $additionText = '')
     {

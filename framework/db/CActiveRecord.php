@@ -141,6 +141,8 @@ abstract class CActiveRecord extends CModel
 	 */
 	public function __construct()
 	{
+        parent::__construct();
+
 		$this->_db = CDatabase::init();
 
 		if(!empty($this->_table)){
@@ -207,8 +209,8 @@ abstract class CActiveRecord extends CModel
 	 */
 	public static function __callStatic($method, $args)
 	{
-		if(strtolower($method) == 'model'){
-			if(count($args) == 1){
+		if(strtolower($method) === 'model'){
+			if(count($args) === 1){
 				return self::_parentModel($args[0]);
 			}
 		}

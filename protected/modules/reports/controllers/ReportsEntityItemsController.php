@@ -33,6 +33,8 @@ use \A,
 	\CController,
 	\CDatabase,
 	\CHash,
+    \CDebug,
+    \CFile,
 	\CWidget;
 
 // Directy

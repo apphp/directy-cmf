@@ -27,6 +27,8 @@ class Bootstrap extends CComponent
 	 */
 	function __construct()
 	{
+        parent::__construct();
+
         $this->_settings = Settings::model()->findByPk(1);
         
 		// Check if site is offline
@@ -60,7 +62,7 @@ class Bootstrap extends CComponent
 
 	/**
      *	Returns the instance of object
-     *	@return current class
+     *	@return self current class
      */
 	public static function init()
 	{

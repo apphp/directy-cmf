@@ -16,6 +16,7 @@
 namespace Modules\Webforms\Controllers;
 
 // Modules
+use \Modules\News\Models\NewsSubscribers;
 use \Modules\Webforms\Components\WebformsComponent;
 //	\Modules\News\Models\News,
 //	\Modules\News\Models\NewsSubscribers;

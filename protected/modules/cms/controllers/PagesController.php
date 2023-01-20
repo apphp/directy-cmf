@@ -28,6 +28,7 @@ use \A,
 	\CAuth,
 	\CController,
 	\CDatabase,
+    \CDebug,
 	\CFile,
 	\CWidget;
 

@@ -29,6 +29,7 @@ use \A,
 	\CAuth,
 	\CController,
 	\CDatabase,
+    \CDebug,
 	\CFile,
 	\CLocale,
 	\CTime,
@@ -496,7 +497,7 @@ class PostsController extends CController
     /**
      * Check if passed record ID is valid
      * @param int $id
-     * @return obj
+     * @return object
      */
     private function _checkPostAccess($id = 0)
     {

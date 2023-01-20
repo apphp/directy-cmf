@@ -1,4 +1,8 @@
 <?php
+/**
+ * @var string $backendPath
+ */
+
     Website::setMetaTags(array('title'=>A::t('reports', 'Edit Report Comment')));
 	
 	$this->_activeMenu = 'reportsProjects/manage';

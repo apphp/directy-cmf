@@ -37,7 +37,7 @@ class NewsSubscribers extends CActiveRecord
 
     /**
      * Returns the static model of the specified AR class
-     * @return current class
+     * @return self current class
      */
     public static function model()
     {

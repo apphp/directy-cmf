@@ -26,8 +26,8 @@ class WebformsComponent extends CComponent
 	const NL = "\n";
 
 	/**
-	 *    Returns the instance of object
-	 * @return current class
+	 * Returns the instance of object
+	 * @return self current class
 	 */
 	public static function init()
 	{

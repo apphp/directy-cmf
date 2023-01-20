@@ -17,6 +17,7 @@
 namespace Modules\News\Controllers;
 
 // Modules
+use \CValidator;
 use \Modules\News\Components\NewsComponent,
 	\Modules\News\Models\News,
 	\Modules\News\Models\NewsSubscribers;

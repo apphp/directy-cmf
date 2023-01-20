@@ -34,7 +34,7 @@ class CmsComponent extends CComponent
 
 	/**
 	 *	Returns the instance of object
-	 *	@return current class
+	 *	@return self current class
 	 */
 	public static function init()
 	{

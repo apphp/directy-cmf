@@ -14,7 +14,7 @@ class SearchForm extends CComponent
 	
 	/**
      *	Returns the instance of object
-     *	@return current class
+     *	@return self current class
      */
 	public static function init()
 	{
@@ -25,7 +25,7 @@ class SearchForm extends CComponent
 	 * Draws search form
 	 * @param array $params
 	 * @SEE self::_getSearch() 
-	 * @return HTML code
+	 * @return string HTML code
 	 */
 	public static function draw($params = array())
 	{
@@ -45,7 +45,7 @@ class SearchForm extends CComponent
 	 * 			buttonHtml
 	 * 		</div>
 	 * </form>
-	 * @return HTML code
+	 * @return string HTML code
 	 */
 	private static function _getSearch($params = array())
 	{

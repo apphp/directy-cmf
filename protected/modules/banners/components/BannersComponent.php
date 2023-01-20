@@ -22,6 +22,7 @@ use \A,
 	\CWidget,
 	\CComponent,
 	\CFile,
+    \CAuth,
 	\CHtml;
 
 // CMF
@@ -36,7 +37,7 @@ class BannersComponent extends CComponent
 
 	/**
      *	Returns the instance of object
-     *	@return current class
+     *	@return self current class
      */
 	public static function init()
 	{
@@ -326,7 +327,7 @@ class BannersComponent extends CComponent
     /**
      * Get banner by ID
      * @param int $bannerId
-     * @return html
+     * @return string
      */
     public static function getBanner($bannerId)
     {
