@@ -222,7 +222,9 @@ abstract class CActiveRecord extends CModel
 	 */
 	public static function init($params = array())
 	{
-		if(self::$_instance == null) self::$_instance = new self($params);
+		if(self::$_instance == null) {
+            self::$_instance = new self($params);
+        }
 		return self::$_instance;
 	}
 

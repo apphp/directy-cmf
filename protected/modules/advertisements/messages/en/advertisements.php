@@ -9,7 +9,6 @@ return array (
 'Advertisement status has been successfully changed!' => 'Advertisement status has been successfully changed!',
 'Advertisements' => 'Advertisements',
 'Advertising module allows the administrator to create and place ad units on the site' => 'Advertising module allows the administrator to create and place ad units on the site',
-'Advertisements' => 'Advertisements',
 'Advertisements Management' => 'Advertisements Management',
 'Allow Advertisements' => 'Allow Advertisements',
 'An error occurred while changing advertisement status! Please try again later.' => 'An error occurred while changing advertisement status! Please try again later.',

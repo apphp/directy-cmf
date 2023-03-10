@@ -116,7 +116,6 @@
 'Wrong parameter passed! Please try again later.' => 'Передан неправильный параметр! Пожалуйста, повторите попытку позже.',
 'Wrong parameter passed or there are no news!' => 'Передан неправильный параметр, либо новость не отсутствует!',
 'Yes' => 'Да',
-'You have been successfully unsubscribed' => 'Вы успешно отписались.',
 'You have subscribed' => 'Поздравляем!<br/>Вы успешно подписались на нашу рассылку! Письмо с уведомлением, будет отправлено на Ваш электронный адрес.',
 'You have been successfully unsubscribed' => 'Вы успешно отписались от рассылки!',
 'You have successfully subscribed' => 'Вы успешно подписались!',

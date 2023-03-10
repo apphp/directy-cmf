@@ -1,3 +1,8 @@
+<?php
+  use Modules\Polls\Components\PollsComponent;
+  /** @var string $baseUrl */
+  /** @var string $widget */
+?>
 <!DOCTYPE html>
 <html>
     <head>

@@ -22,7 +22,7 @@ class SocialNetworksLogin extends CActiveRecord
 
     /**
      * Returns the static model of the specified AR class
-     * @return void
+     * @return mixed
      */
     public static function model()
     {

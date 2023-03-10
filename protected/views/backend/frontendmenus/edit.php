@@ -70,7 +70,6 @@
 				'name'				=> 'frmMenuEdit',
 				'autoGenerateId'	=> true
 			),
-			'requiredFieldsAlert' => true,
 			'fields'			=> $fields,
 			'translationInfo' 	=> array('relation'=>array('id', 'menu_id'), 'languages'=>Languages::model()->findAll(array('condition'=>'is_active = 1', 'orderBy'=>'sort_order ASC'))),
 			'translationFields' => array(
@@ -81,9 +80,7 @@
                 'submitUpdate' 		=> array('type'=>'submit', 'value'=>A::t('app', 'Update'), 'htmlOptions'=>array('name'=>'btnUpdate')),
                 'cancel' 			=> array('type'=>'button', 'value'=>A::t('app', 'Cancel'), 'htmlOptions'=>array('name'=>'', 'class'=>'button white')),
 			),
-			'messagesSource'	=> 'core',
 			'alerts'			=> array('type'=>'flash', 'itemName'=>A::t('app', 'Menu').' '.$menuName),
-            'return'            => true,
 		));
 	?>
 	

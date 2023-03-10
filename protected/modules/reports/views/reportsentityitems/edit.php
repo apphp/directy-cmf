@@ -65,8 +65,7 @@
             'messagesSource'        => 'core',
             'buttonsPosition'       => 'both',
             'showAllErrors'         => false,
-			'alerts'				=> array('type'=>'flash', 'itemName'=>A::t('reports', 'Report Row')),
-			'showAllErrors'     	=> false,
+			      'alerts'				=> array('type'=>'flash', 'itemName'=>A::t('reports', 'Report Row')),
             'return'                => true,
         ));
     ?>

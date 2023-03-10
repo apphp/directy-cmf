@@ -47,7 +47,6 @@
 			),                
 			'messagesSource'	=> 'core',
 			'alerts'			=> array('type'=>'flash', 'itemName'=>A::t('app', 'Country')),
-            'return'            => true,
 		));
 	?>    
     </div>

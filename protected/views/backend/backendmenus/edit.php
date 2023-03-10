@@ -71,8 +71,7 @@
             'messagesSource'        => 'core',
             'showAllErrors'         => false,
 			'alerts'				=> array('type'=>'flash', 'itemName'=>A::t('app', 'Menu').' '.$menuName),
-            'return'                => true,
-   		));            
+   		));
 	?>
     </div>
 </div>

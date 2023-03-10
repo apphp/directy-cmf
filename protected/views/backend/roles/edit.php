@@ -43,7 +43,6 @@
             ),
 			'messagesSource'	=> 'core',
 			'alerts'			=> array('type'=>'flash', 'itemName'=>A::t('app', 'Role')),
-            'return'            => true,
         ));				
     ?>        	
     </div>

@@ -353,9 +353,9 @@ class ReportsEntityItemsController extends CController
     /**
      * Add some empty rows
      * @param int $id
-     * @param int $count
+     * @param int $paramCount
      */
-    public function addMassAction($id = 0, $count = 0)
+    public function addMassAction($id = 0, $paramCount = 0)
     {
         Website::prepareBackendAction('edit', 'reports', 'reportsEntityItems/manage', false);
 
@@ -468,7 +468,7 @@ class ReportsEntityItemsController extends CController
                                 $currentField = array('title'=> A::t('reports', $fields['field_title']), 'type'=>'decimal', 'width'=>$fields['field_width']!='' ? $fields['field_width'] : '', 'align'=>'', 'format'=>$this->_view->numberFormat, 'decimalPoints'=>'', 'default' => $fields['field_default_value'], 'class'=>'right', 'headerClass'=>'right', 'isSortable'=>true, 'sortType' => 'numeric', 'prependCode'=>$fields['field_prepend_code'], 'appendCode'=>$fields['field_append_code']);
                             }
                         }else{
-                            $currentField = array('title'=> A::t('reports', $fields['field_title']), 'type'=>'label', 'align'=>'', 'default' => $fields['field_default_value'], 'sortType' => 'string', 'class'=>'left', 'headerClass'=>'left', 'isSortable'=>true, 'sortType' => 'numeric', 'prependCode'=>$fields['field_prepend_code'], 'appendCode'=>$fields['field_append_code']);
+                            $currentField = array('title'=> A::t('reports', $fields['field_title']), 'type'=>'label', 'align'=>'', 'default' => $fields['field_default_value'], 'class'=>'left', 'headerClass'=>'left', 'isSortable'=>true, 'sortType' => 'numeric', 'prependCode'=>$fields['field_prepend_code'], 'appendCode'=>$fields['field_append_code']);
                         }
                         break;
                     case 'textarea':
@@ -555,7 +555,9 @@ class ReportsEntityItemsController extends CController
                         $indexMax = 0;
                         for($idx = 0; $idx < $indexCount; $idx++){
                             CDebug::c($allIndex[$idx]['field_'.$fieldNumber]);
-                            (int)$allIndex[$idx]['field_'.$fieldNumber] > (int)$indexMax ? $indexMax = $allIndex[$idx]['field_'.$fieldNumber] : '';
+                            if((int)$allIndex[$idx]['field_'.$fieldNumber] > (int)$indexMax){
+                                $indexMax = $allIndex[$idx]['field_'.$fieldNumber];
+                            }
                         }
                         $lastItemIndex = $indexMax+1;
                         $currentField = array('type' => 'textbox', 'title'=>A::t('reports', $fields['field_title']), 'width'=>$fields['field_width']!='' ? $fields['field_width'] : '85px', 'tooltip'=>$fields['field_tooltip'], 'default'=>(int)$lastItemIndex, 'validation'=>array('required'=>$fields['field_required'], 'type'=>$fields['field_validation_type'], 'maxLength' => $fields['field_maxlength']), 'htmlOptions'=> $fields['readonly'] == 1 ? $htmlOptions +array('readonly' => 'true'): $htmlOptions, 'prependCode'=>$fields['field_prepend_code'], 'appendCode'=>$fields['field_append_code']);

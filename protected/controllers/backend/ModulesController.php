@@ -247,6 +247,8 @@ class ModulesController extends CController
                             break;
 						case 'email': 
 							$maxLength = 100;
+                            $validationType = $setting['property_type'];
+                            break;
 						case 'numeric': 
 						case 'integer':
 						case 'float':
