@@ -107,7 +107,9 @@ class TicketRepliesController extends CController
 		$patchName = 'assets/modules/tickets/uploaded/'.date('Y-m').'/';
 
 		if(!file_exists($patchName)){
-			mkdir($patchName);
+            if (!mkdir($patchName) && !is_dir($patchName)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $patchName));
+            }
 		}
 		if($this->_cSession->hasFlash('alert')){
 			$alert = $this->_cSession->getFlash('alert');
@@ -120,7 +122,9 @@ class TicketRepliesController extends CController
 
 		$patchName = 'assets/modules/tickets/uploaded/'.date('Y-m').'/';
 		if(!file_exists($patchName)){
-			mkdir($patchName);
+            if (!mkdir($patchName) && !is_dir($patchName)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $patchName));
+            }
 		}
 
         $modelTickets = Tickets::model()->findByPk($id);

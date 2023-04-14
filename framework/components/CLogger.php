@@ -52,7 +52,9 @@ class CLogger extends CComponent
 		$logFilePermissions = CConfig::get('log.filePermissions') !== '' ? CConfig::get('log.filePermissions') : '';
 		
 		if(!file_exists($this->_logPath)){
-			mkdir($this->_logPath, 0755, true);	
+            if (!mkdir($concurrentDirectory = $this->_logPath, 0755, true) && !is_dir($concurrentDirectory)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
 		}
 		
 		if(!is_dir($this->_logPath) || !CFile::isWritable($this->_logPath)){

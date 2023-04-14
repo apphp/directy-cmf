@@ -73,7 +73,9 @@ class BackupController extends CController
     	
     	// Create the backup directory if it doesn't exist
     	if(!file_exists($this->_backupDir)){
-    		@mkdir($this->_backupDir, 0755);
+            if (!mkdir($concurrentDirectory = $this->_backupDir, 0755) && !is_dir($concurrentDirectory)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
     	}
 
 		$this->_cRequest = A::app()->getRequest();

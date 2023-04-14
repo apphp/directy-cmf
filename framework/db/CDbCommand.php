@@ -112,9 +112,9 @@ class CDbCommand
 	public function reset()
 	{
 		$this->_text = null;
-		$this->_query = null;
+		$this->_query = [];
 		$this->_statement = null;
-		$this->_params = array();
+		$this->_params = [];
 		return $this;
 	}
 
@@ -672,8 +672,13 @@ class CDbCommand
 		if(isset($this->_query['union']) && is_string($this->_query['union'])){
 			$this->_query['union'] = array($this->_query['union']);
 		}
-		
-		$this->_query['union'][] = $sql;
+
+        if (is_array($this->_query['union'])) {
+            $this->_query['union'][] = $sql;
+        } else {
+            $this->_query['union'] = $sql;
+        }
+
 		return $this;
 	}
 	
@@ -788,8 +793,13 @@ class CDbCommand
 		if(isset($this->_query['join']) && is_string($this->_query['join'])){
 			$this->_query['join'] = array($this->_query['join']);
 		}
-		
-		$this->_query['join'][] = strtoupper($type) . ' ' . $table . $conditions;
+
+        if (is_array($this->_query['join'])) {
+            $this->_query['join'][] = strtoupper($type) . ' ' . $table . $conditions;
+        } else {
+            $this->_query['join'] = strtoupper($type) . ' ' . $table . $conditions;
+        }
+
 		foreach($params as $name => $value){
 			$this->_params[$name] = $value;
 		}

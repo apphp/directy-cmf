@@ -278,7 +278,9 @@ class TicketsController extends CController
 		$patchName = 'assets/modules/tickets/uploaded/'.date('Y-m').'/';
 
 		if(!file_exists($patchName)){
-			mkdir($patchName);
+            if (!mkdir($patchName) && !is_dir($patchName)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $patchName));
+            }
 		}
 		$this->_view->createPath = date('Y-m');
 		$this->_view->render('tickets/userAddTicket');

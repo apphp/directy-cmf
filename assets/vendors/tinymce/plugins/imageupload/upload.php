@@ -86,7 +86,7 @@ if(!CAuth::isLoggedIn()){
 	$imageDir = 'images/upload/'.md5($hash.'-'.$loggedRole.'-'.$loggedId).'/';
     if(!$isDemo){
         if(!is_dir($baseDir.$imageDir)){
-            if(!mkdir($baseDir.$imageDir, 0755, true)){
+            if(!mkdir($concurrentDirectory = $baseDir.$imageDir, 0755, true) && !is_dir($concurrentDirectory)){
                 A::t('core', 'Failed to create directory {path}.', array('{path}'=>$imageDir));
                 exit;
             }

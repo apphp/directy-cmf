@@ -561,7 +561,7 @@ class CHtml
 		$checkAll = true;
 
 		foreach($data as $value => $label){
-			$checked = !is_array($select) && !strcmp($value, $select) || is_array($select) && in_array($value, $select);
+			$checked = (!is_array($select) && !strcmp($value, $select)) || (is_array($select) && in_array($value, $select));
 			$checkAll = $checkAll && $checked;
 			$htmlOptions['value'] = $value;
 			$htmlOptions['id'] = $baseID.'_'.$id++;
@@ -765,7 +765,7 @@ class CHtml
                     // For single-level arrays where additional options available
                     $attributes = array('value'=>(string)$key, 'encode'=>!$raw);
                     if(!empty($value['optionDisabled'])) $attributes['disabled'] = true;
-                    if(!is_array($selection) && !strcmp($key,$selection) || is_array($selection) && in_array($key,$selection)){
+                    if((!is_array($selection) && !strcmp($key, $selection)) || (is_array($selection) && in_array($key, $selection))){
                         $attributes['selected'] = 'selected';
                     }
                     if(isset($options[$key])) $attributes = array_merge($attributes, $options[$key]);
@@ -780,7 +780,7 @@ class CHtml
                 }
 			}else{
 				$attributes = array('value'=>(string)$key, 'encode'=>!$raw);
-				if(!is_array($selection) && !strcmp($key,$selection) || is_array($selection) && in_array($key,$selection)){
+				if((!is_array($selection) && !strcmp($key, $selection)) || (is_array($selection) && in_array($key, $selection))){
 					$attributes['selected'] = 'selected';
 				}
 				if(isset($options[$key])) $attributes = array_merge($attributes, $options[$key]);
@@ -901,7 +901,7 @@ class CHtml
 			$htmlOptions['autoplay'] = !empty($options['autoplay']) ? ' autoplay' : null;
 			$htmlOptions['controls'] = !empty($options['controls']) ? ' controls' : null;
 			$videoHtml = self::openTag('video', $htmlOptions);
-			$videoHtml = self::tag('source', array('src'=>$src, 'type'=>'video/mp4'));
+			$videoHtml .= self::tag('source', array('src'=>$src, 'type'=>'video/mp4'));
 			$videoHtml .= self::closeTag('video');
 		}
 		
@@ -926,7 +926,7 @@ class CHtml
 		$htmlOptions['controls'] = !empty($options['controls']) ? ' controls' : null;
 		
 		$videoHtml = self::openTag('audio', $htmlOptions);
-		$videoHtml = self::tag('source', array('src'=>$src, 'type'=>'audio/mpeg'));
+		$videoHtml .= self::tag('source', array('src'=>$src, 'type'=>'audio/mpeg'));
 		$videoHtml .= self::closeTag('audio');
 	}
 

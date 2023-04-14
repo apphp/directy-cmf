@@ -129,7 +129,7 @@ class CTime
 				}elseif('\\' == $char ){
 					$regex .= $char;
 				}else{
-					$regex .= preg_quote($char);
+					$regex .= preg_quote($char, '/');
 				}
 			}
 	
