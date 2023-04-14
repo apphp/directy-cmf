@@ -1,4 +1,7 @@
 <?php
+    /** @var $backendPath */
+    /** @var $tabs */
+
     Website::setMetaTags(array('title'=>A::t('events', 'Add Event Category')));
     
     $this->_activeMenu = 'eventsCategories/manage';

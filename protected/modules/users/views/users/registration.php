@@ -8,9 +8,6 @@
 	// Define active menu	
 	$this->_activeMenu = 'users/registration';
 
-	// Define active menu	
-	$this->_activeMenu = 'users/login';
-
 	// Define breadcrumbs title
 	$this->_breadcrumbsTitle = A::t('users', 'User Registration');
 

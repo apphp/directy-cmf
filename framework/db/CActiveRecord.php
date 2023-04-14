@@ -174,6 +174,16 @@ abstract class CActiveRecord extends CModel
 	}
 
 	/**
+	 * Unset
+	 * @param string $index
+	 * @return bool
+	 */
+	public function __isset($index)
+	{
+	    return isset($this->_columns[$index]);
+	}
+
+	/**
 	 * Getter
 	 * @param string $index
 	 * @return string

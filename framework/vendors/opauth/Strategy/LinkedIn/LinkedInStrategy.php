@@ -44,8 +44,6 @@ class LinkedInStrategy extends OpauthStrategy{
 	public function request(){
 		$url = 'https://www.linkedin.com/uas/oauth2/authorization';
 
-		$params = array();
-
 		$params = array(
 			'client_id' => $this->strategy['api_key'],
 			'state' => sha1(time())

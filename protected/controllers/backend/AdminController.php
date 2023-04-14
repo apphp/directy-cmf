@@ -285,7 +285,7 @@ class AdminController extends CController
 							if($resetAttempts < $this->_badResetPasswords){
 								A::app()->getSession()->set('resetAttempts', $resetAttempts+1);
 							}else{
-								A::app()->getCookie()->set('resetAttemptsAuth', md5(uniqid()));
+								A::app()->getCookie()->set('resetAttemptsAuth', md5(uniqid('', true)));
 								sleep($this->_redirectDelay);
 								$this->redirect($this->_backendPath.'admin/resetPassword/'.$urlParams);
 							}

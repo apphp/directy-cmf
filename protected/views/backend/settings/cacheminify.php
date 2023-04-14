@@ -1,7 +1,9 @@
 <?php
+    /** @var $backendPath */
+
     Website::setMetaTags(array('title'=>A::t('app', 'Cache & Minification Settings')));
 	
-	$this->_activeMenu = $backendPath.'settings/';
+	  $this->_activeMenu = $backendPath.'settings/';
     $this->_breadCrumbs = array(
         array('label'=>A::t('app', 'General'), 'url'=>$backendPath.'dashboard'),
         array('label'=>A::t('app', 'Site Settings'), 'url'=>$backendPath.'settings/general'),

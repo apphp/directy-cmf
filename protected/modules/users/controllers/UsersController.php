@@ -110,9 +110,9 @@ class UsersController extends CController
         
     /**
      * Manage users action handler
-     * @param string $alert
+     * @param string $paramAlert
      */
-    public function manageAction($alert = '')
+    public function manageAction($paramAlert = '')
     {
         Website::prepareBackendAction('manage', 'users', 'users/manage', false);
         $this->_prepareAccountFields();
@@ -401,7 +401,7 @@ class UsersController extends CController
 						if($logAttempts < $this->_badLogins){
 							A::app()->getSession()->set('userLoginAttempts', $logAttempts+1);
 						}else{
-							A::app()->getCookie()->set('userLoginAttemptsAuth', md5(uniqid()));
+							A::app()->getCookie()->set('userLoginAttemptsAuth', md5(uniqid('', true)));
 							sleep($this->_redirectDelay);
 							$this->redirect('users/login');
 						}					

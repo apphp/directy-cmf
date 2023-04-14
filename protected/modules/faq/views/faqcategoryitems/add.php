@@ -1,4 +1,6 @@
 <?php
+    /** @var $backendPath */
+
     Website::setMetaTags(array('title'=>A::t('faq', 'Add Category Item')));
 
     $this->_activeMenu = 'faqCategories/manage';

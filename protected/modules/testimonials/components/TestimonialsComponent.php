@@ -56,7 +56,6 @@ class TestimonialsComponent extends CComponent
 	{
 		$output = '';
 		$headerLength = 250;
-		$testimonialsCount = 2;
 
 		$testimonialsCount = ModulesSettings::model()->param('testimonials', 'testimonials_count');
 		$viewAll = ModulesSettings::model()->param('testimonials', 'view_all_link');

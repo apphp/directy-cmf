@@ -117,6 +117,16 @@ class CView
  	}
 
 	/**
+	 *	Isset
+	 *	@param string $index
+     *  @return bool
+	 */
+	public function __isset($index)
+ 	{
+		return isset($this->_vars[$index]);
+ 	}
+
+	/**
 	 *	Getter method
 	 *	@param string $index
 	 */

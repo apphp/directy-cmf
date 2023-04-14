@@ -265,7 +265,7 @@ class ReportsProjectsComponent extends CComponent{
 	
 							if($format === 'european'){
 								// 1,222.33 => '1.222,33'
-								$replaceContent = str_replace(',', '', $reportRows['field_'.$elem]);
+								///$replaceContent = str_replace(',', '', $reportRows['field_'.$elem]);
 								$replaceContent = number_format((float)$reportRows['field_'.$elem], $decimalPoints, ',', '.');
 							}else{
 								$replaceContent = number_format((float)$reportRows['field_'.$elem], $decimalPoints);
